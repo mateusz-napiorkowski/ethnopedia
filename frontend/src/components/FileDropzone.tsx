@@ -1,21 +1,45 @@
 import { useState } from "react"
 import { ReactComponent as DragAndDrop } from "../assets/icons/dragAndDrop.svg"
 import { ReactComponent as Close } from "../assets/icons/close.svg"
+import * as XLSX from 'xlsx';
+import { importData } from "../api/importData"
 
 type Props = {
     onClose: () => void
 }
 
 const FileDropzone = ({ onClose }: Props) => {
-    const [, setWindowOpen] = useState(false)
-    const [, setUploadedFile] = useState(null)
+    const [headerText, setHeaderText] = useState("Prześlij plik")
+    const [filename, setFilename] = useState("")
+    const [showDropzone, setShowDropzone] = useState(true)
+    const [showImportOptions, setShowImportOptions] = useState(false)
+    const [dataToSend, setDataToSend] = useState<any>()
+
+    const handleSubmit = (event: any) => {
+        importData(dataToSend)
+    }
 
     const handleFileUpload = (event: any) => {
         const file = event.target.files[0]
+        var name = file.name;
+        const reader = new FileReader();
+        reader.onload = (evt: any) => {
+            const bString = evt.target.result;
+            const workbook = XLSX.read(bString, {type:'binary'});
+            
+            const worksheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[worksheetName];
+
+            const parsedData = XLSX.utils.sheet_to_json(worksheet, {header:1, defval: ""});
+            setDataToSend(parsedData)
+        };
+        reader.readAsBinaryString(file);
 
         if (file) {
-            setUploadedFile(file)
-            setWindowOpen(true)
+            setHeaderText("Ustawienia importu metadanych z pliku .xlsx")
+            setShowDropzone(false)
+            setShowImportOptions(true)
+            setFilename(name)
         }
     }
 
@@ -30,7 +54,7 @@ const FileDropzone = ({ onClose }: Props) => {
                 <div className="relative bg-white rounded-lg shadow dark:bg-gray-800 border dark:border-gray-600">
                     <div className="flex items-start justify-between p-4 rounded-t">
                         <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                            Prześlij plik
+                            {headerText}
                         </h3>
                         <button type="button"
                                 className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg
@@ -41,7 +65,7 @@ const FileDropzone = ({ onClose }: Props) => {
                             <Close />
                         </button>
                     </div>
-                    <div className="w-full h-full flex items-center justify-center">
+                    { showDropzone && <div className="w-full h-full flex items-center justify-center">
                         <label
                             htmlFor="dropzone-file"
                             className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300
@@ -62,7 +86,21 @@ const FileDropzone = ({ onClose }: Props) => {
                                 onChange={handleFileUpload}
                             />
                         </label>
-                    </div>
+                    </div> }
+                    { showImportOptions && <div>
+                        <form onSubmit={handleSubmit}>
+                            <div className="flex py-2 px-4 text-base">
+                                <p><span className="font-medium">Plik:</span> {filename}</p>
+                            </div>
+                            <div className="flex justify-end px-4 py-4">  
+                                    <input className="flex items-center justify-end dark:text-white
+                                        hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium px-4 py-2
+                                        dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
+                                        type="submit" value="Importuj metadane" onClick={() => {}}
+                                    ></input>
+                            </div>
+                        </form>
+                    </div> }
                 </div>
             </div>
         </div>

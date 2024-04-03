@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom"
 import { useQuery, useQueryClient } from "react-query"
 import { useUser } from "../../providers/UserProvider"
 import Pagination from "../../components/Pagination"
-
+import { getXlsxWithCollectionData } from "../../api/xlsxFileHandler"
 
 interface Option {
     value: string
@@ -25,6 +25,7 @@ const CollectionsPage = () => {
     const [checkedCollections, setCheckedCollections] = useState<{ [key: string]: boolean }>({})
     const [showWarningPopup, setShowWarningPopup] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
+    const [exportErrorMessage, setExportErrorMessage] = useState("")
     const pageSize = 10
 
     const queryClient = useQueryClient()
@@ -158,6 +159,9 @@ const CollectionsPage = () => {
                                                deleteSelected={deleteSelected}
                                                warningMessage={"Czy na pewno chcesz usunąć zaznaczone kolekcje?"} />}
             <div className="mx-auto max-w-screen-xl px-4 lg:px-12">
+                <div className="flex justify-end text-red-500 ml-2 px-1 h-5">
+                    <p>{exportErrorMessage}</p>
+                </div>
                 <div className="flex flex-row">
                     <div className="w-full">
                         <h1 className="font-bold text-4xl mb-4">
@@ -186,7 +190,22 @@ const CollectionsPage = () => {
                                     text-sm px-4 py-2 mb-2 hover:bg-gray-700 bg-gray-800 text-white border-gray-800
                                     font-semibold mr-2"
                             type="button"
-                            onClick={() => exportToExcel()}
+                            onClick={() => {
+                                if(Object.keys(checkedCollections).length === 1) {
+                                    for(const key in fetchedData.collections) {
+                                        if(fetchedData.collections[key].id === Object.keys(checkedCollections)[0]) {
+                                            getXlsxWithCollectionData(fetchedData.collections[key].name)
+                                            setExportErrorMessage("")
+                                        }
+                                    }
+                                } else {
+                                    if(Object.keys(checkedCollections).length === 0){
+                                        setExportErrorMessage("Najpierw należy zaznaczyć kolekcję do wyeksportowania.")
+                                    } else {
+                                        setExportErrorMessage("Aby wyeksportować kolekcję należy zaznaczyć tylko jedną z nich.")
+                                    }
+                                }
+                            }}
                         >
                             <span className="text-white">
                                 <FileExportIcon />

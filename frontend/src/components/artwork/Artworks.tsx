@@ -1,11 +1,13 @@
 import { useQuery, useQueryClient } from "react-query"
 import { getArtworksByCategory, useBatchDeleteArtworkMutation } from "../../api/artworks"
+import { getAllKeys } from "../../api/xlsxFileHandler"
 import LoadingPage from "../../pages/LoadingPage"
 import React, { useMemo, useState } from "react"
 import Navbar from "../navbar/Navbar"
 import { useNavigate, useParams } from "react-router-dom"
 import SearchComponent from "../search/SearchComponent"
 import FileDropzone from "../FileDropzone"
+import ExportOptions from "../ExportOptions"
 import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg"
 import { ReactComponent as FileImportIcon } from "../../assets/icons/fileImport.svg"
 import { ReactComponent as FileExportIcon } from "../../assets/icons/fileExport.svg"
@@ -21,11 +23,13 @@ import category from "../Category"
 const Artworks = () => {
     const [selectedArtworks, setSelectedArtworks] = useState<{ [key: string]: boolean }>({})
     const [showFileDropzone, setShowFileDropzone] = useState<boolean>(false)
+    const [showExportOptions, setShowExportOptions] = useState<boolean>(false)
     const [showCreateArtwork, setShowCreateArtwork] = useState<boolean>(false)
     const [showDeleteRecordsWarning, setShowDeleteRecordsWarning] = useState(false)
     const [showDeleteCollectionWarning, setShowDeleteCollectionWarning] = useState(false)
     const [sortOrder, setSortOrder] = useState<string>("default")
     const [showEditCollection, setShowEditCollection] = useState<boolean>(false)
+    const [keys, setKeys] = useState<Array<string>>([])
 
     const [currentPage, setCurrentPage] = useState(1)
     const pageSize = 10
@@ -59,13 +63,6 @@ const Artworks = () => {
             return acc
         }, {})
         setSelectedArtworks(newSelection)
-    }
-
-    const exportToExcel = () => {
-        // const ws = XLSX.utils.json_to_sheet(artworkData)
-        // const wb = XLSX.utils.book_new()
-        // XLSX.utils.book_append_sheet(wb, ws, "DataSheet")
-        // XLSX.writeFile(wb, "DataExport.xlsx")
     }
 
     const sortArtworks = (artworks: any[], order: string) => {
@@ -159,7 +156,8 @@ const Artworks = () => {
         return <>
             <Navbar />
 
-            {showFileDropzone && <FileDropzone onClose={() => setShowFileDropzone(false)} />}
+            {/* {showFileDropzone && <FileDropzone onClose={() => setShowFileDropzone(false)} />}
+            {showExportOptions && <ExportOptions onClose={() => setShowExportOptions(false)} />} */}
             {/*{showCreateArtwork && <CreateArtwork onClose={() => setShowCreateArtwork(false)} />}*/}
             {showDeleteRecordsWarning &&
                 <WarningPopup onClose={() => setShowDeleteRecordsWarning(false)}
@@ -223,17 +221,21 @@ const Artworks = () => {
                                     </span>
                                 Nowy rekord
                             </button>
-                            <button className="flex items-center justify-center dark:text-white
-                                        hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2
-                                        dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
-                                    type="button"
-                                    onClick={() => exportToExcel()}
-                            >
-                            <span className="text-white dark:text-gray-400">
-                                <FileExportIcon />
-                            </span>
-                                Eksportuj plik
-                            </button>
+                                <button className="flex items-center justify-center dark:text-white
+                                            hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium px-4 py-2
+                                            dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
+                                        type="button"
+                                        onClick={async () => {
+                                            const keyData = await getAllKeys(collection as string);
+                                            setKeys(keyData.keysUnique);
+                                            setShowExportOptions(showExportOptions => !showExportOptions)
+                                        }}
+                                >
+                                <span className="text-white dark:text-gray-400">
+                                    <FileExportIcon />
+                                </span>
+                                    Eksportuj plik
+                                </button>
                             <button className="flex items-center justify-center dark:text-white
                                         hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2
                                         dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
@@ -285,6 +287,7 @@ const Artworks = () => {
                             </span>
                     </div>
                     {showFileDropzone && <FileDropzone onClose={() => setShowFileDropzone(false)} />}
+                    {showExportOptions && <ExportOptions keys={keys} selectedArtworks={selectedArtworks} onClose={() => setShowExportOptions(false)} />}
                 </div>
             </div>
 
