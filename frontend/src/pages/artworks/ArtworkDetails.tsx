@@ -35,7 +35,7 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
                 <p className="text-xl text-gray-600 dark:text-gray-400 mt-1">Artysta: {Artyści}</p>
                 <p className="text-lg text-gray-500 dark:text-gray-300 mt-1">Rok: {Rok}</p>
 
-                <div className="flex flex-row gap-2 items-center w-full">
+                {/* <div className="flex flex-row gap-2 items-center w-full">
                     <div className="mt-2 p-2 bg-blue-50 rounded-lg shadow w-fit border border-blue-300">
                         <h2 className="font-medium text-blue-800">Kolekcja: {collectionName}</h2>
                     </div>
@@ -45,7 +45,7 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
                     <div className="mt-2 p-2 bg-blue-50 rounded-lg shadow w-fit  border border-purple-300">
                         <h2 className="font-medium text-purple-800 w-full">Podregion: {Podregion}</h2>
                     </div>
-                </div>
+                </div> */}
 
                 {Object.entries(detailsToShow).filter(([key]) => !["__v", "userId", "_id"].includes(key)).map(([columnName, value]) => {
                     let displayValue

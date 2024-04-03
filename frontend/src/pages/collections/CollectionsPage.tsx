@@ -123,7 +123,7 @@ const CollectionsPage = () => {
                         </div>
                     </div>
 
-                    <div className="flex flex-col">
+                    {/* <div className="flex flex-col"> */}
                         <h2 className="text-md min-w-fit items-center flex mx-2">
                         <span className="font-bold mr-1">
                             {collection.artworksCount ?? 0}
@@ -134,7 +134,7 @@ const CollectionsPage = () => {
                             }
                         </h2>
 
-                        <h2 className="text-md min-w-fit items-center flex mx-2">
+                        {/* <h2 className="text-md min-w-fit items-center flex mx-2">
                         <span className="font-bold mr-1">
                             {collection.categoriesCount ?? 0}
                         </span>
@@ -142,8 +142,8 @@ const CollectionsPage = () => {
                                 (collection.categoriesCount ?? 0) === 1 ? "kategoria" :
                                     (collection.categoriesCount ?? 0) > 1 && (collection.categoriesCount ?? 0) < 5 ? "kategorie" : "kategorii"
                             }
-                        </h2>
-                    </div>
+                        </h2> */}
+                    {/* </div> */}
                 </div>
             </div>
         ))

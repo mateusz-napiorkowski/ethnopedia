@@ -109,7 +109,7 @@ const ArtworkPage = () => {
                     <div className="mx-auto max-w-screen-xl lg:px-6">
                         <Navigation />
 
-                        <ul className="flex flex-wrap text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-600 dark:text-gray-300 mt-4">
+                        {/* <ul className="flex flex-wrap text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-600 dark:text-gray-300 mt-4">
                             <li className="me-2">
                                 <div
                                     onClick={() => handleTabClick("ArtworkDetails")}
@@ -128,7 +128,7 @@ const ArtworkPage = () => {
                                     Struktura rekordu
                                 </div>
                             </li>
-                        </ul>
+                        </ul> */}
 
                         {activeTab === "ArtworkDetails" && (
                             <ArtworkDetails

@@ -294,7 +294,7 @@ const Artworks = () => {
             <div className="flex flex-row">
                 <div
                     className="flex mx-auto flex-1 justify-end w-full">
-                    <FilterDropdown />
+                    {/* <FilterDropdown /> */}
                 </div>
                 <div className="w-full flex-2 lg:px-6 max-w-screen-xl">
                     {allArtworks}
