@@ -45,8 +45,8 @@ const Artworks = () => {
         { value: "year-desc", label: "Rok malejąco" },
     ]
 
-    const { data: artworkData } = useQuery({
-        queryKey: ["artwork"],
+    const { data: artworkData} = useQuery({
+        queryKey: ["artwork", currentPage],
         queryFn: () => getArtworksByCategory(collection as string, currentPage, pageSize),
         enabled: !!collection,
     })
