@@ -16,7 +16,7 @@ const FileDropzone = ({ onClose }: Props) => {
     const [dataToSend, setDataToSend] = useState<any>()
 
     const handleSubmit = (event: any) => {
-        importData(dataToSend)
+        importData(dataToSend, window.location.href.split("/")[window.location.href.split("/").findIndex((element) => element === "collections") + 1])
     }
 
     const handleFileUpload = (event: any) => {

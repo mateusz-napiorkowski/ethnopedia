@@ -35,12 +35,12 @@ const fillSubcategories: any = (depth: number, fields: any, allAttrs: any, heade
 
 const importData = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const header = req.body[0]
+        const header = req.body.importData[0]
         let headerAttrsInArrays: any = []
         header.forEach((attr:string, index:String) => {
             headerAttrsInArrays.push(attr.split("."))
         });
-        const recordsData = req.body.slice(1)
+        const recordsData = req.body.importData.slice(1)
         const records: Array<[]> = []
         for(const recordIndex in recordsData) {
             const recordAttrs = recordsData[recordIndex]
@@ -67,6 +67,7 @@ const importData = async (req: Request, res: Response, next: NextFunction) => {
                     categories.push(newCaterory)
                 }
             });
+            newRecord.collectionName = req.body.collectionName
             records.push(newRecord)
         }
         mongoClient.db().collection('artworks').insertMany(records)

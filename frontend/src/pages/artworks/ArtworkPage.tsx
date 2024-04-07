@@ -22,6 +22,19 @@ const ArtworkPage = () => {
 
     const [activeTab, setActiveTab] = useState("ArtworkDetails")
 
+    const findValue = (artwork: any, categoryName: string) => {
+        let val = ""
+        artwork.categories.forEach((category: any) => {
+            console.log(category.name + " " + categoryName)
+            if(category.name == categoryName) {
+                console.log(category.values.toString())
+                val = category.values.toString()
+                return
+            }
+        });
+        return val
+    }
+
     const { data: fetchedData } = useQuery({
         queryKey: ["artwork", artworkId],
         queryFn: () => getArtwork(artworkId as string),
@@ -85,8 +98,8 @@ const ArtworkPage = () => {
     if (fetchedData === undefined) {
         return <LoadingPage />
     } else {
-        const { Tytuł, Artyści, Rok, collectionName, Region, Podregion, ...otherDetails } = fetchedData.artwork
-        const detailsToShow = showMore ? otherDetails : {}
+        const artworkData = fetchedData.artwork
+        const detailsToShow = showMore ? artworkData : {}
 
         const artworksEdit = Object.entries(textFields).map(([columnName, value]: [string, any], index: number) => {
             return columnName !== "_id" && <div className="py-2" key={`${columnName}-${index}`}>
@@ -132,12 +145,10 @@ const ArtworkPage = () => {
 
                         {activeTab === "ArtworkDetails" && (
                             <ArtworkDetails
-                                Tytuł={Tytuł}
-                                Artyści={Artyści}
-                                Rok={Rok}
-                                Podregion={Podregion}
-                                Region={Region}
-                                collectionName={collectionName}
+                                Tytuł={findValue(artworkData, "Tytuł")}
+                                Artyści={findValue(artworkData, "Artyści")}
+                                Rok={findValue(artworkData, "Rok")}
+                                collectionName={artworkData.collectionName}
                                 detailsToShow={detailsToShow}
                                 showStructure={showStructure}
                                 handleEditClick={handleEditClick}

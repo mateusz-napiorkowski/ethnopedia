@@ -40,6 +40,19 @@ const Artworks = () => {
     const queryClient = useQueryClient()
     const { mutate: batchDeleteMutation } = useBatchDeleteArtworkMutation()
 
+    const findValue = (artwork: any, categoryName: string) => {
+        let val = ""
+        artwork.categories.forEach((category: any) => {
+            console.log(category.name + " " + categoryName)
+            if(category.name == categoryName) {
+                console.log(category.values.toString())
+                val = category.values.toString()
+                return
+            }
+        });
+        return val
+    }
+
     const sortOptions = [
         { value: "title-asc", label: "Tytuł rosnąco" },
         { value: "title-desc", label: "Tytuł malejąco" },
@@ -147,9 +160,9 @@ const Artworks = () => {
                         </span>
 
                     <div>
-                        <h3 className="text-lg font-semibold text-gray-800 dark:text-white">{artwork.Tytuł}</h3>
-                        <p className="text-gray-600 dark:text-gray-400 mb-1">{artwork.Artyści}</p>
-                        <p className=" text-gray-500 dark:text-gray-300">{artwork.Rok}</p>
+                        <h3 className="text-lg font-semibold text-gray-800 dark:text-white">{findValue(artwork, "Tytuł")}</h3>
+                        <p className="text-gray-600 dark:text-gray-400 mb-1">{findValue(artwork, "Artyści")}</p>
+                        <p className=" text-gray-500 dark:text-gray-300">{findValue(artwork, "Rok")}</p>
                     </div>
                 </div>
             </div>

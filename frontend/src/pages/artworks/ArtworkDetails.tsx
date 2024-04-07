@@ -7,8 +7,6 @@ interface ArtworkDetailsProps {
     Tytuł: string;
     Artyści: string;
     Rok: string;
-    Podregion: string;
-    Region: string;
     collectionName: string;
     detailsToShow: { [key: string]: string };
     showStructure: boolean;
@@ -21,8 +19,6 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
                                                            Artyści,
                                                            Rok,
                                                            collectionName,
-                                                           Podregion,
-                                                           Region,
                                                            detailsToShow,
                                                            showStructure,
                                                            handleEditClick,
@@ -32,22 +28,11 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
         <div className="flex flex-row">
             <div className="mt-2 flex-2">
                 <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-2">{Tytuł}</h1>
-                <p className="text-xl text-gray-600 dark:text-gray-400 mt-1">Artysta: {Artyści}</p>
+                <p className="text-xl text-gray-600 dark:text-gray-400 mt-1">Artyści: {Artyści}</p>
                 <p className="text-lg text-gray-500 dark:text-gray-300 mt-1">Rok: {Rok}</p>
-
-                {/* <div className="flex flex-row gap-2 items-center w-full">
-                    <div className="mt-2 p-2 bg-blue-50 rounded-lg shadow w-fit border border-blue-300">
-                        <h2 className="font-medium text-blue-800">Kolekcja: {collectionName}</h2>
-                    </div>
-                    <div className="mt-2 p-2 bg-orange-50 rounded-lg shadow w-fit border border-orange-300">
-                        <h2 className="font-medium text-orange-800">Region: {Region}</h2>
-                    </div>
-                    <div className="mt-2 p-2 bg-blue-50 rounded-lg shadow w-fit  border border-purple-300">
-                        <h2 className="font-medium text-purple-800 w-full">Podregion: {Podregion}</h2>
-                    </div>
-                </div> */}
-
-                {Object.entries(detailsToShow).filter(([key]) => !["__v", "userId", "_id"].includes(key)).map(([columnName, value]) => {
+                <p className="text-lg text-gray-500 dark:text-gray-300 mt-1">Kolekcja: {collectionName}</p>
+                
+                {/* {Object.entries(detailsToShow).filter(([key]) => !["__v", "userId", "_id"].includes(key)).map(([columnName, value]) => {
                     let displayValue
                     let displayName = columnName
 
@@ -70,7 +55,7 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
                             {displayValue}
                         </div>
                     </div>
-                })}
+                })} */}
             </div>
 
             {!showStructure && (
