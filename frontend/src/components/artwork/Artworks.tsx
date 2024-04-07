@@ -2,7 +2,7 @@ import { useQuery, useQueryClient } from "react-query"
 import { getArtworksByCategory, useBatchDeleteArtworkMutation } from "../../api/artworks"
 import { getAllKeys } from "../../api/xlsxFileHandler"
 import LoadingPage from "../../pages/LoadingPage"
-import React, { useMemo, useState } from "react"
+import React, { useMemo, useState} from "react"
 import Navbar from "../navbar/Navbar"
 import { useNavigate, useParams } from "react-router-dom"
 import SearchComponent from "../search/SearchComponent"
@@ -31,6 +31,8 @@ const Artworks = () => {
     const [showEditCollection, setShowEditCollection] = useState<boolean>(false)
     const [keys, setKeys] = useState<Array<string>>([])
 
+    const queryParameters = new URLSearchParams(window.location.search)
+    const searchText = queryParameters.get("searchText")
     const [currentPage, setCurrentPage] = useState(1)
     const pageSize = 10
 
@@ -46,8 +48,8 @@ const Artworks = () => {
     ]
 
     const { data: artworkData} = useQuery({
-        queryKey: ["artwork", currentPage],
-        queryFn: () => getArtworksByCategory(collection as string, currentPage, pageSize),
+        queryKey: ["artwork", currentPage, searchText],
+        queryFn: () => getArtworksByCategory(collection as string, currentPage, pageSize, searchText),
         enabled: !!collection,
     })
 

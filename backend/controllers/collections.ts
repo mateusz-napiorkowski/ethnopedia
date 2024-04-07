@@ -81,9 +81,12 @@ const artworksInCollection = async (req: Request, res: Response, next: NextFunct
     try {
         const page = parseInt(req.query.page as string) || 1
         const pageSize = parseInt(req.query.pageSize as string) || 10
-
         const totalArtworks = await Artwork.countDocuments({ collectionName: req.params.name })
-
+        
+        if(req.query.searchText!==undefined) {
+            // quicksearch
+        }
+        
         const records = await Artwork.find({ collectionName: req.params.name })
             .skip((page - 1) * pageSize)
             .limit(pageSize)
