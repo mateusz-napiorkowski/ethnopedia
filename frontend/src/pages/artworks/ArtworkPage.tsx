@@ -25,9 +25,7 @@ const ArtworkPage = () => {
     const findValue = (artwork: any, categoryName: string) => {
         let val = ""
         artwork.categories.forEach((category: any) => {
-            console.log(category.name + " " + categoryName)
             if(category.name == categoryName) {
-                console.log(category.values.toString())
                 val = category.values.toString()
                 return
             }

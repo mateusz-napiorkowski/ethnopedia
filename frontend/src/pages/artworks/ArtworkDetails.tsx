@@ -8,10 +8,14 @@ interface ArtworkDetailsProps {
     Artyści: string;
     Rok: string;
     collectionName: string;
-    detailsToShow: { [key: string]: string };
+    detailsToShow: { [key: string]: any };
     showStructure: boolean;
     handleEditClick: () => void;
     setShowDeleteArtworkWarning: (value: boolean) => void;
+}
+
+interface SublistProps {
+    subcategories: any;
 }
 
 const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
@@ -24,6 +28,17 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
                                                            handleEditClick,
                                                            setShowDeleteArtworkWarning,
                                                        }) => {
+
+    const Sublist: React.FC<SublistProps> = ({subcategories}) => {
+        return <ul className="px-4 list-disc">
+            {subcategories.map((category: any) => {
+            return <li>{category.name}: {category.values.join(", ")}
+                <Sublist subcategories={category.subcategories}/>
+            </li>
+            })}
+        </ul>
+    }
+
     return (
         <div className="flex flex-row">
             <div className="mt-2 flex-2">
@@ -31,31 +46,16 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
                 <p className="text-xl text-gray-600 dark:text-gray-400 mt-1">Artyści: {Artyści}</p>
                 <p className="text-lg text-gray-500 dark:text-gray-300 mt-1">Rok: {Rok}</p>
                 <p className="text-lg text-gray-500 dark:text-gray-300 mt-1">Kolekcja: {collectionName}</p>
-                
-                {/* {Object.entries(detailsToShow).filter(([key]) => !["__v", "userId", "_id"].includes(key)).map(([columnName, value]) => {
-                    let displayValue
-                    let displayName = columnName
+                {detailsToShow.categories && 
+                    <ul className="px-4 list-disc">
+                        {detailsToShow.categories.map((category: any) => {
+                            return <li>{category.name}: {category.values.join(", ")}
+                                <Sublist subcategories={category.subcategories}/>
+                            </li>
+                        })}
+                    </ul>
+                }
 
-                    if (columnName === "createdAt") {
-                        displayName = "Data dodania"
-                        displayValue = new Date(value).toLocaleString("pl-PL", { year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" })
-                    } else if (columnName === "updatedAt") {
-                        displayName = "Data edycji"
-                        displayValue = new Date(value).toLocaleString("pl-PL", { year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" })
-                    } else {
-                        displayValue = value
-                    }
-
-                    return <div key={uuidv4()}
-                                className="flex py-2 font-medium w-128">
-                            <span className="mr-2 flex-1">
-                                {displayName}:
-                            </span>
-                        <div className="flex flex-1 items-end">
-                            {displayValue}
-                        </div>
-                    </div>
-                })} */}
             </div>
 
             {!showStructure && (
