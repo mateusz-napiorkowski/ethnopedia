@@ -77,23 +77,65 @@ function countLabelsRecursively(categoryDetails: any) {
     return count
 }
 
+const findSearchText = (searchText: any, subcategories: any) => {
+    for(const category of subcategories){
+        for(const value of category.values) {
+            if(value.toString().includes(searchText)) {
+                return true
+            }
+        }
+        if(findSearchText(searchText, category.subcategories)) {
+            return true
+        }
+    }
+    return false
+}
+
 const artworksInCollection = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
         const page = parseInt(req.query.page as string) || 1
         const pageSize = parseInt(req.query.pageSize as string) || 10
-        const totalArtworks = await Artwork.countDocuments({ collectionName: req.params.name })
-        
+        let totalArtworks = await Artwork.countDocuments({ collectionName: req.params.name })
+        let records = []
+        const searchText = req.query.searchText
+        let recordsFinal: Array<any> = []
+     
         if(req.query.searchText!==undefined) {
             // quicksearch
-        }
-        
-        const records = await Artwork.find({ collectionName: req.params.name })
+            records = await Artwork.find({ collectionName: req.params.name })
+            let foundSearchText: boolean = false
+            records.forEach((record:any) => {
+                for(const category of record.categories){
+                    foundSearchText = false
+                    for(const value of category.values) {
+                        if(value.toString().includes(searchText)) {
+                            recordsFinal.push(record)
+                            foundSearchText = true
+                            break;
+                        }
+                    }
+                    if(foundSearchText) {
+                        break;
+                    } else {
+                        foundSearchText = findSearchText(searchText, category.subcategories)
+                        if(foundSearchText) {
+                            recordsFinal.push(record)
+                            break;
+                        }
+                    }
+                }
+            });
+            totalArtworks = recordsFinal.length
+            recordsFinal = recordsFinal.slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize)   
+        } else {
+            // without search criteria
+            recordsFinal = await Artwork.find({ collectionName: req.params.name })
             .skip((page - 1) * pageSize)
             .limit(pageSize)
             .exec()
-
+        }
         return res.json({
-            artworks: records,
+            artworks: recordsFinal,
             total: totalArtworks,
             currentPage: page,
             pageSize: pageSize,
