@@ -5,40 +5,28 @@ const asyncWrapper = require("../middleware/async")
 const Artwork = require("../models/artwork")
 const Category = require("../models/category")
 
-const getNestedKeys = (record: any, parents: any) => {
-    let keys: any = []
-
-    for (const property in record) {
-        keys.push(`${parents}.${property}`)
-        if (record[property]["subcategories"] !== undefined) {
-            let subkeys = getNestedKeys(record[property]["subcategories"], `${parents}.${property}`)
-            keys = keys.concat(subkeys)
-        }
+const getNestedKeys = ((prefix: string, subcategories: any) => {
+    let nestedCategories: Array<string> = []
+    for(const subcategory of subcategories){
+        nestedCategories.push(`${prefix}${subcategory.name}`)
+        nestedCategories.push(...getNestedKeys(`${prefix}${subcategory.name}.`, subcategory.subcategories))
     }
-    return keys
-}
+    return nestedCategories
+})
 
 export const getAllKeys = async (req: Request, res: Response, next: NextFunction) => {
-    const records = await Artwork.find({ Collection: { value: req.query.collection } }).toArray()
-    let keys: any = []
-
-    records.forEach((record: any) => {
-        for (const property in record) {
-            if (property != "_id") {
-                keys.push(property)
-            }
-            if (record[property]["subcategories"] !== undefined) {
-                let subkeys = getNestedKeys(record[property]["subcategories"], property)
-                keys = keys.concat(subkeys)
-            }
+    const records = await Artwork.find({ collectionName: req.params.collectionName })
+    let allCategories: Array<string> = []
+    records.forEach((record:any) => {
+        for(const category of record.categories){
+            allCategories.push(category.name)
+            allCategories.push(...getNestedKeys(`${category.name}.`, category.subcategories))
         }
+    });
+    const allCategoriesUnique = allCategories.filter((value, index, array) => {
+        return array.indexOf(value) === index;
     })
-
-    let keysUnique = keys.filter((value: any, index: number, array: any) => {
-        return array.indexOf(value) === index
-    })
-
-    res.status(200).json(keysUnique)
+    res.status(200).json({categories: allCategoriesUnique})
 }
 
 const getCategoriesById = async (req: Request, res: Response, next: NextFunction) => {

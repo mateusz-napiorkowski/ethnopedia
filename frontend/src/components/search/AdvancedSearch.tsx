@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { useFormik } from "formik"
 import { useQuery } from "react-query"
-import { getCategories } from "../../api/categories"
+import { getCategories, getAllCategories } from "../../api/categories"
 import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg"
 import { ReactComponent as CloseIcon } from "../../assets/icons/close.svg"
 import { ReactComponent as SearchLoopIcon } from "../../assets/icons/searchLoop.svg"
@@ -29,13 +29,19 @@ const AdvancedSearch: React.FC<SearchComponentProps> = ({ id }) => {
     const [rules, setRules] = useState<any[]>([])
     const [showValidationMessage, setShowValidationMessage] = useState<boolean>(false)
 
-    const { data: categoriesData } = useQuery<Category[], Error>(
-        ["allCategories"],
-        () => getCategories(id),
-        {
-            enabled: !!id,
-        },
-    )
+    // const { data: categoriesData } = useQuery<Category[], Error>(
+    //     ["allCategories"],
+    //     () => getCategories(id),
+    //     {
+    //         enabled: !!id,
+    //     },
+    // )
+    const collection = window.location.href.split("/")[window.location.href.split("/").findIndex((element) => element === "collections") + 1];
+    const { data: categoriesData } = useQuery({
+        queryKey: ["allCategories"],
+        queryFn: () => getAllCategories(collection as string),
+        enabled: !!collection,
+    })
 
 
     const navigate = useNavigate()
@@ -76,8 +82,8 @@ const AdvancedSearch: React.FC<SearchComponentProps> = ({ id }) => {
                         className="border p-2"
                     >
                         <option hidden selected>Wybierz kategorię</option>
-                        {categoriesData.map((subcategory: Category) => (
-                            <option value={subcategory.category} key={uuidv4()}>{subcategory.category}</option>
+                        {categoriesData.categories.map((categoryName: string) => (
+                            <option value={categoryName} key={uuidv4()}>{categoryName}</option>
                         ))}
                     </select>
                     <input
