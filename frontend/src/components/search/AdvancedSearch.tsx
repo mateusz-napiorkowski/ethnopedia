@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useFormik } from "formik"
 import { useQuery } from "react-query"
 import { getCategories, getAllCategories } from "../../api/categories"
@@ -6,7 +6,7 @@ import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg"
 import { ReactComponent as CloseIcon } from "../../assets/icons/close.svg"
 import { ReactComponent as SearchLoopIcon } from "../../assets/icons/searchLoop.svg"
 import LoadingPage from "../../pages/LoadingPage"
-import { useNavigate, useParams } from "react-router-dom"
+import { useLocation, useNavigate, useParams } from "react-router-dom"
 import { v4 as uuidv4 } from "uuid"
 
 const initialRule = { id: Date.now(), field: "", operator: "", value: "" }
@@ -27,15 +27,20 @@ interface SearchComponentProps {
 
 const AdvancedSearch: React.FC<SearchComponentProps> = ({ id }) => {
     const [rules, setRules] = useState<any[]>([])
-    const [showValidationMessage, setShowValidationMessage] = useState<boolean>(false)
+    const [textInputCategory, setTextInputCategory] = useState((""))
+    const [textInputValue, setTextInputValue] = useState((""))
 
-    // const { data: categoriesData } = useQuery<Category[], Error>(
-    //     ["allCategories"],
-    //     () => getCategories(id),
-    //     {
-    //         enabled: !!id,
-    //     },
-    // )
+    const location = useLocation()
+    useEffect(() => {
+        if(location.state) {  
+            if(location.state.newestCategory && location.state.newestValue) {
+                setRules([...location.state.rules, { field: location.state.newestCategory, value: location.state.newestValue, id: Date.now() }])
+            } else {
+                setRules(location.state.rules)
+            }
+        }
+      }, [location]);
+    
     const collection = window.location.href.split("/")[window.location.href.split("/").findIndex((element) => element === "collections") + 1];
     const { data: categoriesData } = useQuery({
         queryKey: ["allCategories"],
@@ -49,13 +54,11 @@ const AdvancedSearch: React.FC<SearchComponentProps> = ({ id }) => {
     const formik = useFormik({
         initialValues: initialRule,
         onSubmit: (values, { resetForm }) => {
-            if (values.field && values.value) {
-                setRules([...rules, { ...values, id: Date.now() }])
-                resetForm()
-                // setShowValidationMessage(() => false)
-            } else {
-                // setShowValidationMessage(() => true)
+            let lastQueryParamStr = ""
+            if(textInputCategory && textInputValue) {
+                lastQueryParamStr = `&${textInputCategory}=${textInputValue}`
             }
+            navigate(`/collections/${collection}/artworks?${rules.map(rule => `${rule.field}=${rule.value}`).join("&")}${lastQueryParamStr}`, {state: {rules: rules, newestCategory: textInputCategory, newestValue: textInputValue}})
         },
     })
 
@@ -63,9 +66,22 @@ const AdvancedSearch: React.FC<SearchComponentProps> = ({ id }) => {
         setRules(rules.filter((rule) => rule.id !== id))
     }
 
+    const handletextInputCategoryChange = (e: any) => {
+        setTextInputCategory(e.target.value);
+    }
+
+    const handletextInputValueChange = (e: any) => {
+        setTextInputValue(e.target.value);
+    }
+
+    const handleAddRule = () => {
+        setRules([...rules, { field: textInputCategory, value: textInputValue, id: Date.now() }])
+        setTextInputCategory("")
+        setTextInputValue("")
+    }
+    
     const handleSearch = () => {
-        navigate(`/collections/${collection}/artworks?${rules.map(rule => `${rule.field}=${rule.value}`).join("&")}`)
-        // setShowValidationMessage(() => false)
+        navigate(`/collections/${collection}/artworks?${rules.map(rule => `${rule.field}=${rule.value}`).join("&")}`, {state: {rules: rules}})
     }
 
     if (categoriesData === undefined) {
@@ -77,8 +93,8 @@ const AdvancedSearch: React.FC<SearchComponentProps> = ({ id }) => {
                 <div className="flex items-center gap-2">
                     <select
                         name="field"
-                        onChange={formik.handleChange}
-                        value={formik.values.field}
+                        onChange={handletextInputCategoryChange}
+                        value={textInputCategory}
                         className="border p-2"
                     >
                         <option hidden selected>Wybierz kategorię</option>
@@ -89,29 +105,24 @@ const AdvancedSearch: React.FC<SearchComponentProps> = ({ id }) => {
                     <input
                         name="value"
                         type="text"
-                        onChange={formik.handleChange}
-                        value={formik.values.value}
+                        onChange={handletextInputValueChange}
+                        value={textInputValue}
                         className="border p-2 rounded-lg"
                     />
 
-                    <button className="border-gray-800 flex items-center bg-gray-800 hover:bg-gray-700 text-white p-2
-                            font-semibold">
+                    <button type="button" className="border-gray-800 flex items-center bg-gray-800 hover:bg-gray-700 text-white p-2
+                            font-semibold" onClick={handleAddRule}>
                         <span className="mr-1">
                             <PlusIcon />
                         </span>
                         Dodaj regułę
                     </button>
-                    <button type="submit" className="flex items-center font-semibold color-button p-2"
-                            onClick={handleSearch}
-                    >
+                    <button type="submit" className="flex items-center font-semibold color-button p-2">
                         <span className="mr-1">
                             <SearchLoopIcon />
                         </span>
                         Wyszukaj
                     </button>
-                    {showValidationMessage && <span className="text-red-500 ml-2">
-                        All fields are required to add a rule.
-                    </span>}
                 </div>
             </form>
 
