@@ -17,11 +17,12 @@ export const getAdvancedSearchResult = async (queryParameters: string) => {
         .then(res => res.data)
 }
 
-export const getArtworksByCategory = async (collection: string, page: number, pageSize: number, searchText: string | null, queryParams: any) => {
+export const getArtworksByCategory = async (collection: string, page: number, pageSize: number, sortOrder: string, searchText: string | null, queryParams: any) => {
     return await axios.get(`${API_URL}v1/collection/${collection}/artworks/`, {
         params: {
             page: page,
             pageSize: pageSize,
+            sortOrder: sortOrder,
             searchText: searchText,
             advSearch: Object.entries(queryParams).length !== 0 ? true : false,
             ...queryParams

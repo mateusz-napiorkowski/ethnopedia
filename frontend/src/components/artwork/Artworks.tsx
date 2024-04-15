@@ -27,7 +27,7 @@ const Artworks = () => {
     const [showCreateArtwork, setShowCreateArtwork] = useState<boolean>(false)
     const [showDeleteRecordsWarning, setShowDeleteRecordsWarning] = useState(false)
     const [showDeleteCollectionWarning, setShowDeleteCollectionWarning] = useState(false)
-    const [sortOrder, setSortOrder] = useState<string>("default")
+    const [sortOrder, setSortOrder] = useState<string>("newest-first")
     const [showEditCollection, setShowEditCollection] = useState<boolean>(false)
     const [keys, setKeys] = useState<Array<string>>([])
 
@@ -57,15 +57,15 @@ const Artworks = () => {
     }
 
     const sortOptions = [
+        { value: "newest-first", label: "Od najnowszych" },
+        { value: "oldest-first", label: "Od najstarszych" },
         { value: "title-asc", label: "Tytuł rosnąco" },
         { value: "title-desc", label: "Tytuł malejąco" },
-        { value: "year-asc", label: "Rok rosnąco" },
-        { value: "year-desc", label: "Rok malejąco" },
     ]
 
     const { data: artworkData} = useQuery({
-        queryKey: ["artwork", currentPage, searchText, queryParameters, location],
-        queryFn: () => getArtworksByCategory(collection as string, currentPage, pageSize, searchText, Object.fromEntries(queryParameters.entries())),
+        queryKey: ["artwork", currentPage, searchText, queryParameters, location, sortOrder],
+        queryFn: () => getArtworksByCategory(collection as string, currentPage, pageSize, sortOrder, searchText, Object.fromEntries(queryParameters.entries())),
         enabled: !!collection,
     })
 
@@ -84,18 +84,7 @@ const Artworks = () => {
     }
 
     const sortArtworks = (artworks: any[], order: string) => {
-        switch (order) {
-            case "title-asc":
-                return artworks.sort((a, b) => a.Tytuł.localeCompare(b.Tytuł))
-            case "title-desc":
-                return artworks.sort((a, b) => b.Tytuł.localeCompare(a.Tytuł))
-            case "year-asc":
-                return artworks.sort((a, b) => a.Rok - b.Rok)
-            case "year-desc":
-                return artworks.sort((a, b) => b.Rok - a.Rok)
-            default:
-                return artworks
-        }
+        return artworks
     }
 
     const sortedArtworks = useMemo(() => {

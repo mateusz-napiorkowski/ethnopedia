@@ -116,6 +116,29 @@ const findMatch = (subcategories: any, nameArray: Array<string>, ruleValue: stri
     return false
 }
 
+const sortRecordsByTitle = (records: any, order: any) => {
+    if(order == "title-asc" || order == "title-desc") {
+        let tempArray: any = []
+        records.forEach((record:any) => {
+            for(const category of record.categories){
+                if(category.name == "Tytuł") {
+                    tempArray.push([record, category.values.join(", ")])
+                }
+            }
+        })
+        tempArray.sort((a: any,b: any) => a[1].toUpperCase().localeCompare(b[1].toUpperCase()));
+        let sortedRecords: any = []
+        tempArray.forEach((pair:any) => {
+            sortedRecords.push(pair[0])
+        })
+        if(order == "title-asc") {
+            return sortedRecords
+        } else {
+            return sortedRecords.reverse()
+        }
+    }
+}
+
 const artworksInCollection = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
         const page = parseInt(req.query.page as string) || 1
@@ -123,10 +146,15 @@ const artworksInCollection = async (req: Request, res: Response, next: NextFunct
         let totalArtworks = await Artwork.countDocuments({ collectionName: req.params.name })
         let records = []
         const searchText = req.query.searchText
+        const sortOrder = req.query.sortOrder
+        if(sortOrder == "newest-first") {
+            records = await Artwork.find({ collectionName: req.params.name }).sort({ "$natural": -1 })
+        } else {
+            records = await Artwork.find({ collectionName: req.params.name }).sort({ "$natural": 1 })
+        }
         let recordsFinal: Array<any> = []
         if(req.query.searchText!==undefined) {
             // quicksearch
-            records = await Artwork.find({ collectionName: req.params.name })
             let foundSearchText: boolean = false
             records.forEach((record:any) => {
                 for(const category of record.categories){
@@ -148,16 +176,12 @@ const artworksInCollection = async (req: Request, res: Response, next: NextFunct
                         }
                     }
                 }
-            });
-            totalArtworks = recordsFinal.length
-            recordsFinal = recordsFinal.slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize)   
+            })
         } else if(req.query.advSearch == "true") {
             /*advanced search*/
-            records = await Artwork.find({ collectionName: req.params.name })
-
             let rules: any = {}
             for(const ruleField in req.query) {
-                if(req.query.hasOwnProperty(ruleField) && !["page", "pageSize", "advSearch"].includes(ruleField)) {
+                if(req.query.hasOwnProperty(ruleField) && !["page", "pageSize", "sortOrder", "advSearch"].includes(ruleField)) {
                     rules[ruleField] = req.query[ruleField]
                 }
             }
@@ -174,15 +198,17 @@ const artworksInCollection = async (req: Request, res: Response, next: NextFunct
                     recordsFinal.push(record)
                 }
             })
-            totalArtworks = recordsFinal.length
-            recordsFinal = recordsFinal.slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize)
-        } else {
+        } 
+        else {
             // without search criteria
-            recordsFinal = await Artwork.find({ collectionName: req.params.name })
-            .skip((page - 1) * pageSize)
-            .limit(pageSize)
-            .exec()
+            recordsFinal = records
         }
+
+        if(sortOrder == "title-asc" || sortOrder == "title-desc") {
+            recordsFinal = sortRecordsByTitle(recordsFinal, sortOrder)
+        }
+        totalArtworks = recordsFinal.length
+        recordsFinal = recordsFinal.slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize)
         return res.json({
             artworks: recordsFinal,
             total: totalArtworks,
