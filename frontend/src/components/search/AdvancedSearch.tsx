@@ -52,9 +52,9 @@ const AdvancedSearch: React.FC<SearchComponentProps> = ({ id }) => {
             if (values.field && values.value) {
                 setRules([...rules, { ...values, id: Date.now() }])
                 resetForm()
-                setShowValidationMessage(() => false)
+                // setShowValidationMessage(() => false)
             } else {
-                setShowValidationMessage(() => true)
+                // setShowValidationMessage(() => true)
             }
         },
     })
@@ -64,8 +64,8 @@ const AdvancedSearch: React.FC<SearchComponentProps> = ({ id }) => {
     }
 
     const handleSearch = () => {
-        navigate(`/artworks/search?${rules.map(rule => `${rule.field}=${rule.value}`).join("&")}`)
-        setShowValidationMessage(() => false)
+        navigate(`/collections/${collection}/artworks?${rules.map(rule => `${rule.field}=${rule.value}`).join("&")}`)
+        // setShowValidationMessage(() => false)
     }
 
     if (categoriesData === undefined) {
@@ -94,14 +94,14 @@ const AdvancedSearch: React.FC<SearchComponentProps> = ({ id }) => {
                         className="border p-2 rounded-lg"
                     />
 
-                    <button type="submit" className="border-gray-800 flex items-center bg-gray-800 hover:bg-gray-700 text-white p-2
+                    <button className="border-gray-800 flex items-center bg-gray-800 hover:bg-gray-700 text-white p-2
                             font-semibold">
                         <span className="mr-1">
                             <PlusIcon />
                         </span>
                         Dodaj regułę
                     </button>
-                    <button className="flex items-center font-semibold color-button p-2"
+                    <button type="submit" className="flex items-center font-semibold color-button p-2"
                             onClick={handleSearch}
                     >
                         <span className="mr-1">

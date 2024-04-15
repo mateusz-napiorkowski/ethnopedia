@@ -2,9 +2,9 @@ import { useQuery, useQueryClient } from "react-query"
 import { getArtworksByCategory, useBatchDeleteArtworkMutation } from "../../api/artworks"
 import { getAllKeys } from "../../api/xlsxFileHandler"
 import LoadingPage from "../../pages/LoadingPage"
-import React, { useMemo, useState} from "react"
+import React, { useEffect, useMemo, useState} from "react"
 import Navbar from "../navbar/Navbar"
-import { useNavigate, useParams } from "react-router-dom"
+import { useLocation, useNavigate, useParams } from "react-router-dom"
 import SearchComponent from "../search/SearchComponent"
 import FileDropzone from "../FileDropzone"
 import ExportOptions from "../ExportOptions"
@@ -30,6 +30,11 @@ const Artworks = () => {
     const [sortOrder, setSortOrder] = useState<string>("default")
     const [showEditCollection, setShowEditCollection] = useState<boolean>(false)
     const [keys, setKeys] = useState<Array<string>>([])
+
+    const location = useLocation()
+    useEffect(() => {
+
+      }, [location]);
 
     const queryParameters = new URLSearchParams(window.location.search)
     const searchText = queryParameters.get("searchText")
@@ -59,8 +64,8 @@ const Artworks = () => {
     ]
 
     const { data: artworkData} = useQuery({
-        queryKey: ["artwork", currentPage, searchText],
-        queryFn: () => getArtworksByCategory(collection as string, currentPage, pageSize, searchText),
+        queryKey: ["artwork", currentPage, searchText, queryParameters, location],
+        queryFn: () => getArtworksByCategory(collection as string, currentPage, pageSize, searchText, Object.fromEntries(queryParameters.entries())),
         enabled: !!collection,
     })
 

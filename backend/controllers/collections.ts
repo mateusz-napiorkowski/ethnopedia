@@ -91,6 +91,31 @@ const findSearchText = (searchText: any, subcategories: any) => {
     return false
 }
 
+const findMatch = (subcategories: any, nameArray: Array<string>, ruleValue: string) => {
+    let matched: boolean = false
+    const categoryDepth = nameArray.length
+    if(categoryDepth > 1) {
+        const categoryPrefix = nameArray[0]
+        for(const subcategory of subcategories) {
+            if(subcategory.name == categoryPrefix) {
+                matched = findMatch(subcategory.subcategories, nameArray.slice(1), ruleValue)
+                if(matched) return true
+            }
+        }
+    } else if (categoryDepth == 1) {
+        for(const subcategory of subcategories) {
+            if(subcategory.name == nameArray[0]) {   
+                for(const subcategoryValue of subcategory.values) {
+                    if(subcategoryValue == ruleValue) {
+                        return true
+                    }
+                }
+            }
+        }
+    }
+    return false
+}
+
 const artworksInCollection = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
         const page = parseInt(req.query.page as string) || 1
@@ -99,7 +124,6 @@ const artworksInCollection = async (req: Request, res: Response, next: NextFunct
         let records = []
         const searchText = req.query.searchText
         let recordsFinal: Array<any> = []
-     
         if(req.query.searchText!==undefined) {
             // quicksearch
             records = await Artwork.find({ collectionName: req.params.name })
@@ -127,6 +151,31 @@ const artworksInCollection = async (req: Request, res: Response, next: NextFunct
             });
             totalArtworks = recordsFinal.length
             recordsFinal = recordsFinal.slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize)   
+        } else if(req.query.advSearch == "true") {
+            /*advanced search*/
+            records = await Artwork.find({ collectionName: req.params.name })
+
+            let rules: any = {}
+            for(const ruleField in req.query) {
+                if(req.query.hasOwnProperty(ruleField) && !["page", "pageSize", "advSearch"].includes(ruleField)) {
+                    rules[ruleField] = req.query[ruleField]
+                }
+            }
+
+            records.forEach((record:any) => {
+                let matched: boolean = true
+                for(const ruleField in rules) {
+                    if(!findMatch(record.categories, ruleField.split("."), rules[ruleField])) {
+                        matched = false
+                        break
+                    }
+                }
+                if(matched) {
+                    recordsFinal.push(record)
+                }
+            })
+            totalArtworks = recordsFinal.length
+            recordsFinal = recordsFinal.slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize)
         } else {
             // without search criteria
             recordsFinal = await Artwork.find({ collectionName: req.params.name })
