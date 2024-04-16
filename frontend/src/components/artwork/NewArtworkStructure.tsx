@@ -1,277 +1,301 @@
-import React, { useEffect, useRef, useState } from "react"
+import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg"
-import CategorySelector from "./recordBuilder/CategorySelector"
-import SubcategoryList from "./recordBuilder/SubcategoryList"
-import { LocationDetail, SelectedDetail, Subcategory } from "./types/ArtworkTypes"
+import { ReactComponent as MinusIcon } from "../../assets/icons/minus.svg";
+import { createArtwork } from '../../api/artworks';
 
-interface CollectionItem {
-    _id: any
-    collectionId: any
-    label: string
-    name: string
-    locationDetails: LocationDetail[]
+import { Category } from './types/ArtworkTypes';
+
+// interface Category {
+//   name: string;
+//   values: string[];
+//   subcategories?: Category[];
+//   isSelectable?: boolean;
+// }
+
+let example_data: Category[] = [
+  { name: "Tytuł", values: ["tytuł utworu"], subcategories: [] },
+  { name: "Wykonawca", values: ["nazwa zespołu"], subcategories: [
+    { name: "Wykonawca nr 1", values: ["Imię Nazwisko 1"] },
+    { name: "Wykonawca nr 2", values: ["Imię Nazwisko 2"] } ] },
+  { name: "Region", values: ["Wielkopolska"], subcategories: [
+    { name: "Podregion", values: ["Wielkopolska Północna"] },
+    { name: "Podregion etnograficzny", values: ["Szamotulskie"] },
+    { name: "Powiat", values: ["Szamotulski"]} ] }
+]
+
+
+function transformToNewStructure(data: Category[]): { categories: Category[]; collectionName: string } {
+  return { categories: data, collectionName: 'test' };  //TODO
 }
 
-interface CategoryAndValueSelectorProps {
-    selectedDetail: SelectedDetail;
-    selectedDetails: { [key: string]: SelectedDetail };
-    setSelectedDetails: React.Dispatch<React.SetStateAction<{ [key: string]: SelectedDetail }>>;
-    identifier: string;
-    categoriesData: CollectionItem[]
+interface FormFieldProps {
+  formData: Category;
+  formDataList: Category[];
+  index: string;
+  level: number;
+  handleInputChange: (index: string, e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleRemove: (index: string) => void;
+  handleAddSubcategory: (index: string) => void;
 }
+
+const FormField: React.FC<FormFieldProps> = ({
+  formData,
+  formDataList,
+  index,
+  level,
+  handleInputChange,
+  handleRemove,
+  handleAddSubcategory,
+}) => {
+  // Generate options for the category name input based on the example_data structure
+  const nameOptions = example_data
+    .filter((category) => !formDataList.some((data) => data.name === category.name))
+    .map((category, i) => (
+      <option key={i} value={category.name} />
+    ));
+
+  // Generate options for the value input based on the selected key
+  const valueOptions = example_data
+    .find((category) => category.name === formData.name)
+    ?.subcategories?.filter((subcategory) => !formData.subcategories?.some((data) => data.name === subcategory.name))
+    .map((subcategory, i) => (
+      <option key={i} value={subcategory.values[0]} />
+  ));
+    
+  return (
+    <div key={index} className="flex flex-col pb-1 mt-1 relative">
+      <div className="flex items-center group relative">
+        {level > 0 && (
+          <span className="absolute left-0 top-1/2 transform -translate-y-1/2 border-l-2 border-gray-400 h-full"></span>
+        )}
+        <label className="flex items-center">
+          <input
+            type="text"
+            name={`name`}
+            value={formData.name}
+            onChange={(e) => handleInputChange(index, e)}
+            placeholder="Podaj nazwę kategorii..."
+            className="mx-2 p-2"
+            list="name-options"
+          />
+        </label>
+        <label className="flex items-center">
+          <span>:</span>
+          <input
+            type="text"
+            name={`values`}
+            value={formData.values[0]}
+            onChange={(e) => handleInputChange(index, e)}
+            className="mx-2 p-2"
+            list="values-options"
+          />
+        </label>
+        <div className="actions opacity-0 group-hover:opacity-100 transition-opacity duration-100">
+          {level < 5 && (
+            <button type="button" onClick={() => handleAddSubcategory(index)} title="Dodaj podkategorię">
+              <PlusIcon />
+            </button>
+          )}
+          <button type="button" onClick={() => handleRemove(index)} title="Usuń kategorię">
+            <MinusIcon />
+          </button>
+        </div>
+      </div>
+      {/* render subcategories */}
+      {formData.subcategories &&
+        formData.subcategories.map((subCategory, subIndex) => {
+          const uniqueSubIndex = `${index}-${subIndex}`;  // e.g. index '2-0-1'
+          return (
+            <div className="ml-8 flex flex-row relative mt-1">
+              <FormField
+                key={uniqueSubIndex}
+                index={uniqueSubIndex}
+                level={level + 1}
+                formData={subCategory}
+                formDataList={formDataList}
+                handleInputChange={handleInputChange}
+                handleRemove={handleRemove}
+                handleAddSubcategory={handleAddSubcategory}
+              />
+            </div>
+          );
+        })}
+    </div>
+  );
+};
+
 
 interface NewArtworkStructureProps {
-    selectedDetails: { [key: string]: SelectedDetail };
-    setSelectedDetails: React.Dispatch<React.SetStateAction<{ [key: string]: SelectedDetail }>>;
-    categoriesData: CollectionItem[]
+  initialFormData: Category[];
 }
 
-const NewArtworkStructure: React.FC<NewArtworkStructureProps> = ({
-                                                                     selectedDetails,
-                                                                     setSelectedDetails,
-                                                                     categoriesData,
-                                                                 }) => {
-    const addCategory = () => {
-        const newCategoryId = `${Date.now()}`
 
-        setSelectedDetails(prevDetails => ({
-            ...prevDetails,
-            [newCategoryId]: {
-                label: "",
-                name: "",
-                values: [],
-                subcategories: [],
-                collectionName: "Wielkopolska",
-                date: new Date().toISOString(),
-                value: "",
-            },
-        }))
+const NewArtworkStructure: React.FC<NewArtworkStructureProps> = ({ initialFormData }) => {
+  const [formDataList, setFormDataList] = React.useState<Category[]>(initialFormData); // Ustaw początkowe dane
+  
+  const [jsonOutput, setJsonOutput] = useState<string>('');
+  const handleShowJson = () => {
+    let jsonData = transformToNewStructure(formDataList);
+    setJsonOutput(JSON.stringify(jsonData, null, 2));
+  };
+
+  const handleInputChange = (index: string, e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    const indexParts = index.split('-').map(Number);  // e.g. index '2-0-1' -> [2, 0, 1]
+
+    setFormDataList((prevDataList) =>
+      updateNestedValue(prevDataList, indexParts, name, value)
+    );
+  };
+
+  // recursively update the value of a nested object
+  const updateNestedValue = (dataList: Category[], indexParts: number[], name: string, value: string): Category[] => {
+    if (indexParts.length === 0) {
+      return dataList;
     }
 
-    return (
-        <div className="flex flex-col p-4 w-full">
-            {categoriesData[0].label}
-            <div className="p-4">
+    const [currentIndex, ...remainingIndexParts] = indexParts;
 
-                {Object.entries(selectedDetails) !== undefined && Object.entries(selectedDetails)
-                    .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
-                    .map(([key, selectedDetail]) => (
-
-                        <div className="flex flex-row" key={key}>
-                            <div className="ml-2 flex flex-row relative">
-                                <span className="absolute border-l-4 border-gray-300 h-full w-0.5"></span>
-
-                                <CategoryAndValueSelector
-                                    selectedDetail={selectedDetail}
-                                    selectedDetails={selectedDetails}
-                                    setSelectedDetails={setSelectedDetails}
-                                    identifier={key}
-                                    categoriesData={categoriesData}
-                                />
-                            </div>
-                        </div>
-                    ))}
-
-                <div className="flex flex-row w-full ml-2">
-                    <div className="flex flex-col w-full">
-                        <div className="flex flex-row items-center">
-                            <span className="border-l-4 border-gray-300 h-1/2 flex self-start"></span>
-                            <hr className="border-t-4 border-gray-300 dark:border-gray-700 w-8 self-center" />
-
-                            <div className="flex items-center flex-row">
-                                <button
-                                    className="p-2 border-gray-300 shadow-md"
-                                    onClick={() => addCategory()}
-                                    type="button">
-                                    <PlusIcon />
-                                </button>
-                            </div>
-                            <div className="flex items-center flex-row pt-4 h-12">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    )
-}
-
-interface EditingState {
-    isEditing: boolean;
-    editingIndex: number | null;
-    editValue: string;
-}
-
-const CategoryAndValueSelector: React.FC<CategoryAndValueSelectorProps> = ({
-                                                                               selectedDetails,
-                                                                               selectedDetail,
-                                                                               setSelectedDetails,
-                                                                               identifier,
-                                                                               categoriesData,
-                                                                           }) => {
-    const [valueInput, setValueInput] = useState<string>("")
-
-    const addSubcategory = (identifier: string) => {
-        setSelectedDetails(prevDetails => {
-            const newSubcategory = {
-                label: "",
-                name: "",
-                values: [],
-                value: "",
-                subcategories: [],
-                isSelectable: true,
-            }
-
-            const existingSubcategories = prevDetails[identifier]?.subcategories || []
-
-            return {
-                ...prevDetails,
-                [identifier]: {
-                    ...prevDetails[identifier],
-                    subcategories: [...existingSubcategories, newSubcategory],
-                },
-            }
-        })
-    }
-
-    const addValue = (identifier: string): void => {
-        setSelectedDetails((prevDetails: { [key: string]: SelectedDetail }) => {
-            const newValues = [...(prevDetails[identifier].values || []), valueInput]
-
-            return {
-                ...prevDetails,
-                [identifier]: {
-                    ...prevDetails[identifier],
-                    values: newValues,
-                },
-            }
-        })
-        setValueInput("")
-    }
-
-    const handleCategoryChange = (identifier: string, label: string) => {
-        setSelectedDetails(prevDetails => {
-            const categoryData = categoriesData[0].locationDetails.find(detail => detail.label === label)
-
-            const newSubcategories = categoryData?.subcategories?.map(subcat => ({
-                label: subcat.label,
-                values: subcat.values || [],
-                name: subcat.name,
-                date: new Date().toISOString(),
-            })) || []
-
-            return {
-                ...prevDetails,
-                [identifier]: {
-                    label: label,
-                    subcategories: newSubcategories,
-                    values: categoryData?.values || [],
-                    collectionName: "Wielkopolska",
-                    date: new Date().toISOString(),
-                    value: "",
-                } as any,
-            }
-        })
-    }
-
-    const deleteSubcategory = (identifier: string, subcatIndex: number) => {
-        setSelectedDetails(prevDetails => {
-            const currentSubcategories = prevDetails[identifier].subcategories
-            const updatedSubcategories = currentSubcategories.filter((_, index) => index !== subcatIndex)
-
-            return {
-                ...prevDetails,
-                [identifier]: {
-                    ...prevDetails[identifier],
-                    subcategories: updatedSubcategories,
-                },
-            }
-        })
-    }
-
-    const handleSubcategoryChange = (itemIndex: string, subcatIndex: number, newName: string) => {
-        setSelectedDetails(prevDetails => ({
-            ...prevDetails,
-            [itemIndex]: {
-                ...prevDetails[itemIndex],
-                subcategories: prevDetails[itemIndex].subcategories.map((subcat, index) =>
-                    index === subcatIndex ? { ...subcat, label: newName } : subcat,
-                ),
-            },
-        }))
-    }
-
-    const [editingState, setEditingState] = useState<EditingState>({
-        isEditing: false,
-        editingIndex: null,
-        editValue: "",
-    })
-
-    const inputRef = useRef<HTMLTextAreaElement>(null)
-
-    const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        const value = e.target.value
-        setEditingState(prevState => ({ ...prevState, editValue: value }))
-        resizeTextarea(e.target)
-    }
-
-    const resizeTextarea = (textarea: HTMLTextAreaElement) => {
-        textarea.style.height = "auto"
-        textarea.style.height = `${textarea.scrollHeight}px`
-    }
-
-    const handleDoubleClick = (index: number | null, name: string) => {
-        setEditingState({
-            isEditing: true,
-            editingIndex: index,
-            editValue: name,
-        })
-    }
-
-    useEffect(() => {
-        if (editingState.isEditing && inputRef.current) {
-            resizeTextarea(inputRef.current)
+    return dataList.map((item, i) => {
+      if (i === currentIndex) {
+        if (remainingIndexParts.length === 0) {
+          if (name === 'value') {
+            // If it is a value field
+            // const updatedValues = [name];
+            // updatedValues[0] = value;
+            // return { ...item, [name]: updatedValues };  //TODO !!!
+            return { ...item, [name]: [value] }; 
+          } else {
+            // If it is a name field
+            return { ...item, [name]: value };
+          }
+        } else {
+          // We need to go deeper, recurse
+          const updatedSubcategories = updateNestedValue(item.subcategories || [], remainingIndexParts, name, value);
+          return { ...item, subcategories: updatedSubcategories };
         }
-    }, [editingState.isEditing, editingState.editValue])
+      } else {
+        return item;
+      }
+    });
+  };
 
-    const handleBlur = () => {
-        if (editingState.isEditing && editingState.editingIndex !== null) {
-            handleSubcategoryChange(identifier, editingState.editingIndex, editingState.editValue)
-        }
-        setEditingState({
-            isEditing: false,
-            editingIndex: null,
-            editValue: "",
-        })
+  const handleAddCategory = () => {
+    setFormDataList((prevDataList) => [...prevDataList, { name: '', values: [''], subcategories: [] }]);
+  };
+
+  const handleAddSubcategory = (index: string) => {
+    const indexParts = index.split('-').map(Number);  // e.g. index '2-0-1' -> [2, 0, 1]
+  
+    setFormDataList((prevDataList) =>
+      addSubcategory(prevDataList, indexParts)
+    );
+  };
+
+  const addSubcategory = (dataList: Category[], indexParts: number[]): Category[] => {
+    if (indexParts.length === 0) {
+      return [...dataList, { name: '', values: [''], subcategories: [] }];
     }
+  
+    const [currentIndex, ...remainingIndexParts] = indexParts;
+  
+    return dataList.map((item, i) => {
+      if (i === currentIndex) {
+        if (remainingIndexParts.length === 0) {
+          // We're at the correct item, add a subcategory
+          return {
+            ...item,
+            subcategories: [
+              ...(item.subcategories || []),
+              { name: '', values: [''] }
+            ]
+          };
+        } else {
+          // We need to go deeper, recurse
+          const updatedSubcategories = addSubcategory(item.subcategories || [], remainingIndexParts);
+          return { ...item, subcategories: updatedSubcategories };
+        }
+      } else {
+        return item;
+      }
+    });
+  };
 
-    return <div>
-        <CategorySelector
-            identifier={identifier}
-            selectedCategory={selectedDetail.label}
-            handleCategoryChange={handleCategoryChange}
-            addSubcategory={addSubcategory}
-            locationDetails={categoriesData[0].locationDetails!}
-            addValue={addValue}
-        />
+  // const handleSubmit = async (e: FormEvent) => {
+  //   e.preventDefault();
 
-        <div className="ml-16">
-            <SubcategoryList
-                identifier={identifier}
-                subcategories={selectedDetail.subcategories}
-                selectedDetails={selectedDetails}
-                setSelectedDetails={setSelectedDetails}
-                editingState={editingState}
-                handleDoubleClick={handleDoubleClick}
-                handleChange={handleChange}
-                handleBlur={handleBlur}
-                deleteSubcategory={deleteSubcategory}
-                inputRef={inputRef}
-                handleSubcategoryChange={handleSubcategoryChange}
-                setEditingState={setEditingState}
+  //   let mongoDBData = transformToNewStructure(formDataList);
+    
+  //   // Przekazanie danych formularza do funkcji createArtwork
+  //   try {
+  //     const response = await createArtwork(mongoDBData);
+  //     console.log(response.data);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+
+   const handleRemove = (index: string) => {
+    const indexParts = index.split('-').map(Number);  // e.g. index '2-0-1' -> [2, 0, 1]
+  
+    setFormDataList((prevDataList) =>
+      removeCategory(prevDataList, indexParts)
+    );
+  };
+  
+  const removeCategory = (dataList: Category[], indexParts: number[]): Category[] => {
+    if (indexParts.length === 0) {
+      return dataList;
+    }
+  
+    const [currentIndex, ...remainingIndexParts] = indexParts;
+  
+    return dataList.map((item, i) => {
+      if (i === currentIndex) {
+        if (remainingIndexParts.length === 0) {
+          // We're at the correct item, remove it
+          return null;
+        } else {
+          // We need to go deeper, recurse
+          const updatedSubcategories = removeCategory(item.subcategories || [], remainingIndexParts);
+          return { ...item, subcategories: updatedSubcategories };
+        }
+      } else {
+        return item;
+      }
+    }).filter(item => item !== null) as Category[];
+  };
+
+  return (
+    <div style={{ overflowY: 'auto', height: '70vh', minWidth: '2000px'}}> {/* TODO */}
+      <div className="m-4">
+        {/* <form onSubmit={handleSubmit}> */}
+        <form>
+          {formDataList.map((formData, index) => (
+            <FormField
+              key={index.toString()}
+              index={index.toString()}
+              level={0}
+              formData={formData}
+              formDataList={formDataList}
+              handleInputChange={handleInputChange}
+              handleRemove={handleRemove}
+              handleAddSubcategory={handleAddSubcategory}
             />
-        </div>
+          ))}
+          <div className="flex flex-col justify-between items-start mt-4 space-y-4">
+            <button type="button" onClick={handleAddCategory} title="Dodaj kategorię">
+              <PlusIcon />
+            </button>
+            <button type="button" onClick={handleShowJson}>
+              Show JSON
+            </button>
+          </div>
+        </form>
+        <pre>{jsonOutput}</pre>
+      </div>
     </div>
+  );
 }
 
-export default NewArtworkStructure
+export default NewArtworkStructure;

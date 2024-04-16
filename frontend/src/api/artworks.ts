@@ -29,9 +29,11 @@ export const getArtworksByCategory = async (collection: string, page: number, pa
 }
 
 
-export const createArtwork = async () => {
+export const createArtwork = async (artworkData: any) => {
+    console.log("frontend");
+    console.log("dane:", artworkData);
     return await axios
-        .post(`${API_URL}v1/artworks`, {})
+        .post(`${API_URL}v1/artworks/create`, artworkData)
         .then(res => res.data)
 }
 
