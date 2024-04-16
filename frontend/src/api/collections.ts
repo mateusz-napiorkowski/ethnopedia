@@ -23,6 +23,12 @@ export const getCollections = async (page: number = 1, pageSize: number = 10): P
     return response.data as CollectionsResponse
 }
 
+export const addNewCollection = async (name: any, description: any) => {
+    return await axios
+        .post(`${API_URL}v1/collection/add`, {name, description})
+        .then(res => res.data)
+}
+
 export const useCreateCollectionMutation = () => {
     return useMutation(async (newCollectionData: Collection) => {
         const res = await axios.post(`${API_URL}v1/collection`, newCollectionData)

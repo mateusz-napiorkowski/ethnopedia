@@ -2,9 +2,9 @@ import { useQuery, useQueryClient } from "react-query"
 import { getArtworksByCategory, useBatchDeleteArtworkMutation } from "../../api/artworks"
 import { getAllKeys } from "../../api/xlsxFileHandler"
 import LoadingPage from "../../pages/LoadingPage"
-import React, { useMemo, useState} from "react"
+import React, { useEffect, useMemo, useState} from "react"
 import Navbar from "../navbar/Navbar"
-import { useNavigate, useParams } from "react-router-dom"
+import { useLocation, useNavigate, useParams } from "react-router-dom"
 import SearchComponent from "../search/SearchComponent"
 import FileDropzone from "../FileDropzone"
 import ExportOptions from "../ExportOptions"
@@ -27,9 +27,14 @@ const Artworks = () => {
     const [showCreateArtwork, setShowCreateArtwork] = useState<boolean>(false)
     const [showDeleteRecordsWarning, setShowDeleteRecordsWarning] = useState(false)
     const [showDeleteCollectionWarning, setShowDeleteCollectionWarning] = useState(false)
-    const [sortOrder, setSortOrder] = useState<string>("default")
+    const [sortOrder, setSortOrder] = useState<string>("newest-first")
     const [showEditCollection, setShowEditCollection] = useState<boolean>(false)
     const [keys, setKeys] = useState<Array<string>>([])
+
+    const location = useLocation()
+    useEffect(() => {
+
+      }, [location]);
 
     const queryParameters = new URLSearchParams(window.location.search)
     const searchText = queryParameters.get("searchText")
@@ -52,15 +57,15 @@ const Artworks = () => {
     }
 
     const sortOptions = [
+        { value: "newest-first", label: "Od najnowszych" },
+        { value: "oldest-first", label: "Od najstarszych" },
         { value: "title-asc", label: "Tytuł rosnąco" },
         { value: "title-desc", label: "Tytuł malejąco" },
-        { value: "year-asc", label: "Rok rosnąco" },
-        { value: "year-desc", label: "Rok malejąco" },
     ]
 
     const { data: artworkData} = useQuery({
-        queryKey: ["artwork", currentPage, searchText],
-        queryFn: () => getArtworksByCategory(collection as string, currentPage, pageSize, searchText),
+        queryKey: ["artwork", currentPage, searchText, queryParameters, location, sortOrder],
+        queryFn: () => getArtworksByCategory(collection as string, currentPage, pageSize, sortOrder, searchText, Object.fromEntries(queryParameters.entries())),
         enabled: !!collection,
     })
 
@@ -79,18 +84,7 @@ const Artworks = () => {
     }
 
     const sortArtworks = (artworks: any[], order: string) => {
-        switch (order) {
-            case "title-asc":
-                return artworks.sort((a, b) => a.Tytuł.localeCompare(b.Tytuł))
-            case "title-desc":
-                return artworks.sort((a, b) => b.Tytuł.localeCompare(a.Tytuł))
-            case "year-asc":
-                return artworks.sort((a, b) => a.Rok - b.Rok)
-            case "year-desc":
-                return artworks.sort((a, b) => b.Rok - a.Rok)
-            default:
-                return artworks
-        }
+        return artworks
     }
 
     const sortedArtworks = useMemo(() => {

@@ -32,15 +32,9 @@ const CollectionsPage = () => {
 
     const { mutate: batchDeleteMutation } = useBatchDeleteCollectionMutation()
 
-    const exportToExcel = () => {
-        // const ws = XLSX.utils.json_to_sheet(fetchedData)
-        // const wb = XLSX.utils.book_new()
-        // XLSX.utils.book_append_sheet(wb, ws, "DataSheet")
-        // XLSX.writeFile(wb, "DataExport.xlsx")
-    }
-
+    const[newCollection, setNewCollection]=useState<string>("");
     const { data: fetchedData } = useQuery(
-        ["collection", currentPage, pageSize],
+        ["collection", currentPage, pageSize, newCollection],
         () => getCollections(currentPage, pageSize),
         {
             keepPreviousData: true,
@@ -154,7 +148,7 @@ const CollectionsPage = () => {
         ]
 
         return <section className="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5 h-full">
-            {showPopup && <CreateCollectionModal onClose={() => setShowNewCollectionPopup(!showPopup)} />}
+            {showPopup && <CreateCollectionModal stateChanger={setNewCollection} onClose={() => setShowNewCollectionPopup(!showPopup)} />}
             {showWarningPopup && <WarningPopup onClose={() => setShowWarningPopup(!showWarningPopup)}
                                                deleteSelected={deleteSelected}
                                                warningMessage={"Czy na pewno chcesz usunąć zaznaczone kolekcje?"} />}

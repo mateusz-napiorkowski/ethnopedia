@@ -6,3 +6,7 @@ export const getCategories = async (id: string) => {
     return response.data
 }
 
+export const getAllCategories = async (collection: string) => {
+    const response = await axios.get(`${API_URL}v1/categories/all/${collection}`)
+    return response.data
+}

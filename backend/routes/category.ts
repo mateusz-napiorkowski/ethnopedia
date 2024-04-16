@@ -8,6 +8,6 @@ const {
 } = require("../controllers/categories")
 
 router.route("/:name").get(getCategoriesById)
-router.route("/test").get(getAllKeys)
+router.route("/all/:collectionName").get(getAllKeys)
 
 module.exports = router
