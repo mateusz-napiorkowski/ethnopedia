@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express"
 import mongoose from "mongoose"
 import { ObjectId } from "mongodb"
-
+import {getMongoDBNativeDriverClient} from "../db/connect"
+const mongoClient = getMongoDBNativeDriverClient()
 const Collection = require("../models/collection")
 const Category = require("../models/collection")
 const Artwork = require("../models/artwork")
@@ -60,6 +61,15 @@ const getAllCollections = async (req: Request, res: Response, next: any) => {
         currentPage: page,
         pageSize: pageSize,
     })
+}
+
+const addNewCollection = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        console.log(req.body)
+        mongoClient.db().collection('collections').insertOne({name: req.body.name, description: req.body.description})
+    } catch (error) {
+        next(error)
+    }
 }
 
 function countLabelsRecursively(categoryDetails: any) {
@@ -312,4 +322,5 @@ module.exports = {
     batchDeleteCollections,
     artworksInCollection,
     patchCollection,
+    addNewCollection
 }

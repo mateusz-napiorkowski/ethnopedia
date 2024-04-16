@@ -1,14 +1,15 @@
 import { ReactComponent as Close } from "../../assets/icons/close.svg"
 import { Formik, Form, Field, ErrorMessage } from "formik"
-import { useCreateCollectionMutation } from "../../api/collections"
+import { addNewCollection, useCreateCollectionMutation } from "../../api/collections"
 import { useQueryClient } from "react-query"
 import { useNavigate } from "react-router-dom"
 
 type Props = {
+    stateChanger: any
     onClose: () => void
 }
 
-const CreateCollectionModal = ({ onClose }: Props) => {
+const CreateCollectionModal = ({ stateChanger, onClose }: Props) => {
     const { mutate: createCollection } = useCreateCollectionMutation()
     const queryClient = useQueryClient()
     const navigate = useNavigate()
@@ -24,19 +25,11 @@ const CreateCollectionModal = ({ onClose }: Props) => {
             <div className="relative w-full max-w-2xl max-h-full">
                 <Formik
                     initialValues={{ name: "", description: "" }}
-                    onSubmit={(values, { setSubmitting }) => {
+                    onSubmit={(values, { setSubmitting }) => {    
                         const { name, description } = values
-
-                        createCollection({ name, description }, {
-                            onSuccess: () => {
-                                queryClient.invalidateQueries(["collection"])
-                                onClose()
-                            },
-                            onError: (error) => {
-                                console.error(error)
-                                setSubmitting(false)
-                            },
-                        })
+                        addNewCollection(name, description)
+                        stateChanger(name)
+                        onClose()
                     }}>
 
                     {({ isSubmitting }) => (
@@ -96,7 +89,6 @@ const CreateCollectionModal = ({ onClose }: Props) => {
                                 <button
                                     type="submit"
                                     className="ml-2 px-4 py-2 color-button"
-                                    onClick={() => navigate("/create-collection")}
                                     // disabled={isSubmitting}
                                 >
                                     Utwórz
