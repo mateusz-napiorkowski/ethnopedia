@@ -13,6 +13,7 @@ const fillSubcategories: any = (depth: number, fields: any, allAttrs: any, heade
     let subs: any = []
     let deeperFields: any = []
     fields.forEach((field: any) => {
+        deeperFields = []
         header.forEach((attrName: string, elementIndex: number) => {
             if(attrName.startsWith(field) && attrName.split(".").length === depth + 1) {
                 deeperFields.push(attrName)
