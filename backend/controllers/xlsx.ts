@@ -5,6 +5,38 @@ const mongoClient = getMongoDBNativeDriverClient()
 
 const Subsection = require("../models/subsection")
 
+const fillRow: any = (keys: any, categories: any) => {
+    let rowdata: any = {}
+    keys.forEach((key: any) => {
+        rowdata[key] = findValue(categories, key.split("."))
+    });
+    return rowdata
+}
+
+const findValue: any = (subcategories: any, keySplit: any) => {
+    let v: string | undefined = undefined
+    const categoryDepth = keySplit.length
+    if(categoryDepth > 1) {
+        const categoryPrefix = keySplit[0]
+        for(const subcategory of subcategories) {
+            if(subcategory.name == categoryPrefix) {
+                v = findValue(subcategory.subcategories, keySplit.slice(1))
+                if(v !== undefined) return v
+            }
+        }
+    } else if (categoryDepth == 1) {
+        for(const subcategory of subcategories) {
+            if(subcategory.name == keySplit[0]) {
+                let v_temp: Array<string> = []
+                for(const subcategoryValue of subcategory.values) {
+                    v_temp.push(subcategoryValue)
+                }
+                return v_temp.join(";")
+            }
+        }
+    }
+    return ""
+}
 
 const getXlsxWithArtworksData = async (req: Request, res: Response, next: any) => {
     try {
@@ -33,14 +65,14 @@ const getXlsxWithArtworksData = async (req: Request, res: Response, next: any) =
         sheet.columns = columnNames
 
         if(exportSelectedRecords === "true") {
-            records.forEach((record: any) => {
+            records.forEach((record: any) => {                  
                 if(selectedArtworks.includes(record._id.toString())) {
-                    sheet.addRow(record)
+                    sheet.addRow(fillRow(keysToInclude, record.categories))
                 }            
             })
         } else {
             records.forEach((record: any) => {
-                sheet.addRow(record)         
+                sheet.addRow(fillRow(keysToInclude, record.categories))         
             })
         }        
         
