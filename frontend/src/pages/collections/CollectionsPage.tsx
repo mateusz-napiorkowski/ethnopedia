@@ -127,17 +127,6 @@ const CollectionsPage = () => {
                                     (collection.artworksCount ?? 0) > 1 && (collection.artworksCount ?? 0) < 5 ? "rekordy" : "rekordów"
                             }
                         </h2>
-
-                        {/* <h2 className="text-md min-w-fit items-center flex mx-2">
-                        <span className="font-bold mr-1">
-                            {collection.categoriesCount ?? 0}
-                        </span>
-                            {
-                                (collection.categoriesCount ?? 0) === 1 ? "kategoria" :
-                                    (collection.categoriesCount ?? 0) > 1 && (collection.categoriesCount ?? 0) < 5 ? "kategorie" : "kategorii"
-                            }
-                        </h2> */}
-                    {/* </div> */}
                 </div>
             </div>
         ))
@@ -196,7 +185,10 @@ const CollectionsPage = () => {
                                     if(Object.keys(checkedCollections).length === 0){
                                         setExportErrorMessage("Najpierw należy zaznaczyć kolekcję do wyeksportowania.")
                                     } else {
-                                        setExportErrorMessage("Aby wyeksportować kolekcję należy zaznaczyć tylko jedną z nich.")
+                                        for(const key in fetchedData.collections) {
+                                            getXlsxWithCollectionData(fetchedData.collections[key].name)
+                                        }
+                                        setExportErrorMessage("")
                                     }
                                 }
                             }}
