@@ -4,6 +4,7 @@ import {getMongoDBNativeDriverClient} from "../db/connect"
 const mongoClient = getMongoDBNativeDriverClient()
 
 const Subsection = require("../models/subsection")
+const Artwork = require("../models/artwork")
 
 const fillRow: any = (keys: any, categories: any) => {
     let rowdata: any = {}
@@ -99,37 +100,48 @@ const getXlsxWithArtworksData = async (req: Request, res: Response, next: any) =
     }
 }
 
+const getNestedKeys = ((prefix: string, subcategories: any) => {
+    let nestedCategories: Array<string> = []
+    for(const subcategory of subcategories){
+        nestedCategories.push(`${prefix}${subcategory.name}`)
+        nestedCategories.push(...getNestedKeys(`${prefix}${subcategory.name}.`, subcategory.subcategories))
+    }
+    return nestedCategories
+})
+
+const getAllKeys = async (collectionName: any) => {
+    const records = await Artwork.find({ collectionName: collectionName })
+    let allCategories: Array<string> = []
+    records.forEach((record:any) => {
+        for(const category of record.categories){
+            allCategories.push(category.name)
+            allCategories.push(...getNestedKeys(`${category.name}.`, category.subcategories))
+        }
+    });
+    const allCategoriesUnique = allCategories.filter((value, index, array) => {
+        return array.indexOf(value) === index;
+    })
+    return allCategoriesUnique
+}
+
 const getXlsxWithCollectionData = async (req: Request, res: Response, next: any) => {
     try {
-        const collectionName = decodeURIComponent(req.params.collectionName)
-
+        const collectionName = await decodeURIComponent(req.params.collectionName)
         let workbook = new excelJS.Workbook()
         const sheet = workbook.addWorksheet("test")
 
         const records = await mongoClient.db().collection('artworks').find({collectionName: collectionName}).toArray()
 
         let columnNames: Array<any> = []      
-        // find keys
-        let keys: any = []
-        records.forEach((record: any) => {
-            for (const property in record) {
-                if (property != "_id") {
-                    keys.push(property)
-                }
-            }
-        })
-        let keysUnique = keys.filter((value: any, index: number, array: any) => {
-            return array.indexOf(value) === index
-        })
-
+        let keysUnique = await getAllKeys(collectionName)
         keysUnique.forEach((k: any) => {
             columnNames.push({header: k, key: k})
         })
         sheet.columns = columnNames
 
         records.forEach((record: any) => {
-            sheet.addRow(record)         
-        })        
+            sheet.addRow(fillRow(keysUnique, record.categories))         
+        })
         
         // //cell formatting
         sheet.columns.forEach(function (column, i) {
