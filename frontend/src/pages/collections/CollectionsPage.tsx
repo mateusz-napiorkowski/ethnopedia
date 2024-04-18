@@ -13,6 +13,7 @@ import { useQuery, useQueryClient } from "react-query"
 import { useUser } from "../../providers/UserProvider"
 import Pagination from "../../components/Pagination"
 import { getXlsxWithCollectionData } from "../../api/xlsxFileHandler"
+import FileDropzone from "../../components/FileDropzone"
 
 interface Option {
     value: string
@@ -21,11 +22,12 @@ interface Option {
 
 const CollectionsPage = () => {
     const { firstName } = useUser()
-    const [, setShowFileDropzone] = useState<boolean>(false)
+    const [showFileDropzone, setShowFileDropzone] = useState<boolean>(false)
     const [checkedCollections, setCheckedCollections] = useState<{ [key: string]: boolean }>({})
     const [showWarningPopup, setShowWarningPopup] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
     const [exportErrorMessage, setExportErrorMessage] = useState("")
+    
     const pageSize = 10
 
     const queryClient = useQueryClient()
@@ -211,7 +213,7 @@ const CollectionsPage = () => {
 
                     </div>
                 </div>
-
+                {showFileDropzone && <FileDropzone onClose={() => setShowFileDropzone(false)} inCollectionPage={true} />}
                 <div className="flex flex-row">
                     <div className="flex flex-1">
                         <button type="button" className="px-4 py-2 mb-2 bg-white"
