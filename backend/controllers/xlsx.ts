@@ -26,15 +26,17 @@ const findValue: any = (subcategories: any, keySplit: any) => {
             }
         }
     } else if (categoryDepth == 1) {
-        for(const subcategory of subcategories) {
-            if(subcategory.name == keySplit[0]) {
-                let v_temp: Array<string> = []
-                for(const subcategoryValue of subcategory.values) {
-                    v_temp.push(subcategoryValue)
+        if(subcategories !== undefined) {
+            for(const subcategory of subcategories) {
+                if(subcategory.name == keySplit[0]) {
+                    let v_temp: Array<string> = []
+                    for(const subcategoryValue of subcategory.values) {
+                        v_temp.push(subcategoryValue)
+                    }
+                    return v_temp.join(";")
                 }
-                return v_temp.join(";")
             }
-        }
+        }  
     }
     return ""
 }
@@ -102,10 +104,12 @@ const getXlsxWithArtworksData = async (req: Request, res: Response, next: any) =
 
 const getNestedKeys = ((prefix: string, subcategories: any) => {
     let nestedCategories: Array<string> = []
-    for(const subcategory of subcategories){
-        nestedCategories.push(`${prefix}${subcategory.name}`)
-        nestedCategories.push(...getNestedKeys(`${prefix}${subcategory.name}.`, subcategory.subcategories))
-    }
+    if(subcategories !== undefined) {
+        for(const subcategory of subcategories){
+            nestedCategories.push(`${prefix}${subcategory.name}`)
+            nestedCategories.push(...getNestedKeys(`${prefix}${subcategory.name}.`, subcategory.subcategories))
+        }
+    }  
     return nestedCategories
 })
 
