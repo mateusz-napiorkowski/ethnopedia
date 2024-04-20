@@ -81,12 +81,13 @@ const ArtworkPage = () => {
     )
 
     const handleEditClick = () => {
-        if (showStructure) {
-            updateArtworkMutation.mutate({ id: artworkId as string, artwork: textFields, jwtToken })
-        } else {
-            setShowStructure(true)
-            setShowMore(true)
-        }
+        navigate(`edit-artwork`, {state:{categories: fetchedData.artwork.categories}})
+        // if (showStructure) {
+        //     updateArtworkMutation.mutate({ id: artworkId as string, artwork: textFields, jwtToken })
+        // } else {
+        //     setShowStructure(true)
+        //     setShowMore(true)
+        // }
     }
 
     const handleTabClick = (tabName: string) => {

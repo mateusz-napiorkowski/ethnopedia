@@ -23,9 +23,8 @@ let example_data: Category[] = [
     { name: "Powiat", values: ["Szamotulski"]} ] }
 ]
 
-
-function transformToNewStructure(data: Category[]): { categories: Category[]; collectionName: string } {
-  return { categories: data, collectionName: window.location.href.split("/")[window.location.href.split("/").length-2] };
+function transformToNewStructure(data: Category[], collectionName: string): { categories: Category[]; collectionName: string } {
+  return { categories: data, collectionName: collectionName };
 }
 
 interface FormFieldProps {
@@ -133,14 +132,20 @@ interface NewArtworkStructureProps {
 
 const NewArtworkStructure: React.FC<NewArtworkStructureProps> = ({ initialFormData, setDataToInsert }) => {
   const [formDataList, setFormDataList] = React.useState<Category[]>(initialFormData); // Ustaw początkowe dane
+
+  const createOrEdit = window.location.href.split("/")[window.location.href.split("/").length-1]
+  let collectionName = window.location.href.split("/")[window.location.href.split("/").length-2]
+  if(createOrEdit === "edit-artwork") {
+    collectionName = window.location.href.split("/")[window.location.href.split("/").length-4]
+  }
   
   useEffect(() => {
-    setDataToInsert(transformToNewStructure(formDataList))
+    setDataToInsert(transformToNewStructure(formDataList, collectionName))
   }, [formDataList])
 
   const [jsonOutput, setJsonOutput] = useState<string>('');
   const handleShowJson = () => {
-    let jsonData = transformToNewStructure(formDataList);
+    let jsonData = transformToNewStructure(formDataList, collectionName);
     setJsonOutput(JSON.stringify(jsonData, null, 2));
   };
 

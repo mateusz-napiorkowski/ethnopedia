@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useQueryClient } from "react-query";
 import { Form, Formik } from "formik";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../navbar/Navbar";
 import { useUser } from "../../providers/UserProvider";
 import Navigation from "../Navigation";
@@ -19,13 +19,13 @@ let example_data: Category[] = [
 ]
 
 // Function to create an empty structure based on the example_data
-const createEmptyStructure = (category: Category): Category => {
-    return {
-      name: category.name,
-      values: [''],
-      subcategories: category.subcategories ? category.subcategories.map(createEmptyStructure) : undefined,
-    };
-};
+// const createEmptyStructure = (category: Category): Category => {
+//     return {
+//       name: category.name,
+//       values: [''],
+//       subcategories: category.subcategories ? category.subcategories.map(createEmptyStructure) : undefined,
+//     };
+// };
 
 // function transformToJson(data: Category[]): { categories: Category[]; collectionName: string } {
 //     return { categories: data, collectionName: window.location.href.split("/")[window.location.href.split("/").length-2] };
@@ -34,20 +34,31 @@ const createEmptyStructure = (category: Category): Category => {
 
 
 const CreateArtwork: React.FC = () => {
+    const location = useLocation();    
     const queryClient = useQueryClient();
     const { jwtToken } = useUser();
     const navigate = useNavigate();
     const [dataToInsert, setDataToInsert] = useState({})
 
     // Inicjalizacja danych formularza
-    const initialFormData: Category[] = example_data.map(createEmptyStructure);
+    let initialFormData: Category[] = example_data
+    if(location.state && location.state.categories) {
+        initialFormData = location.state.categories
+    }
+    
 
     const handleSubmit = async (formDataList: Category[]) => {
         console.log("Submit");
         // Przekazanie danych formularza do funkcji createArtwork
         try {
-            const response = await createArtwork(dataToInsert);
-            queryClient.invalidateQueries(["collection"]);
+            if(!location.state) {
+                // dodawanie rekordu
+                const response = await createArtwork(dataToInsert);
+                queryClient.invalidateQueries(["collection"]);
+            } else {
+                // edycja rekordu
+                // const response = await editArtwork(dataToInsert)
+            }
             navigate(-1); // Powrót do poprzedniej strony
         } catch (error) {
             console.error(error);
@@ -76,7 +87,7 @@ const CreateArtwork: React.FC = () => {
                                         <Form className="flex flex-col bg-white rounded-lg w-full dark:bg-gray-800 border shadow dark:border-gray-600">
                                             <div className="flex items-start p-4 rounded-t border-b pb-2">
                                                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-                                                    Dodaj nowy rekord
+                                                    {(!location.state) ? "Dodaj nowy rekord" : "Edytuj rekord"}
                                                 </h3>
                                             </div>
                                             <div className="flex-grow">
@@ -97,7 +108,7 @@ const CreateArtwork: React.FC = () => {
                                                     className="ml-2 color-button"
                                                     disabled={isSubmitting}
                                                 >
-                                                    Utwórz
+                                                    {(!location.state) ? "Utwórz": "Edytuj"}
                                                 </button>
                                             </div>
                                         </Form>

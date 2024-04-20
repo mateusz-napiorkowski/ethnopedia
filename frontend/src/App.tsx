@@ -29,6 +29,7 @@ const App = () => {
                     <Routes>
                         <Route path="/collections/:collection/artworks/:artworkId" element={<ArtworkPage />} />
                         <Route path="/collections/:collection/create-artwork" element={<CreateArtwork />} />
+                        <Route path="/collections/:collection/artworks/:artworkId/edit-artwork" element={<CreateArtwork />} />
 
                         <Route path="/" element={<Home />} />
                         <Route path="/collections/:collection/artworks" element={<Artworks />} />
