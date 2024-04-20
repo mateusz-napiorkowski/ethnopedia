@@ -33,10 +33,14 @@ export const getArtworksByCategory = async (collection: string, page: number, pa
 
 
 export const createArtwork = async (artworkData: any) => {
-    console.log("frontend");
-    console.log("dane:", artworkData);
     return await axios
         .post(`${API_URL}v1/artworks/create`, artworkData)
+        .then(res => res.data)
+}
+
+export const editArtwork = async (artworkData: any, artworkId: string) => {
+    return await axios
+        .post(`${API_URL}v1/artworks/edit/${artworkId}`, artworkData)
         .then(res => res.data)
 }
 

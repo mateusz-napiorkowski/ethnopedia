@@ -6,6 +6,7 @@ const {
     getAllArtworks,
     getArtwork,
     createArtwork,
+    editArtwork, 
     searchArtworks,
     batchDeleteArtworks,
     filterArtworks,
@@ -19,4 +20,5 @@ router.route("/:artworkId").put(patchArtwork)
 router.route("/:artworkId").get(getArtwork)
 router.route("/:artwork").delete(batchDeleteArtworks)
 router.route("/create").post(createArtwork)
+router.route("/edit/:artworkId").post(editArtwork)
 module.exports = router

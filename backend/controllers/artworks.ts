@@ -143,6 +143,15 @@ const createArtwork = (async (req: Request, res: Response, next: NextFunction) =
     }
 })
 
+const editArtwork = (async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const editedArtwork = await Artwork.replaceOne({_id: req.params.artworkId}, req.body)
+        return res.status(201).json(editedArtwork)
+    } catch (error) {
+        next(error)
+    }
+})
+
 const deleteArtwork = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     const artworkId = req.params.artworkId
 
@@ -189,6 +198,7 @@ module.exports = {
     getAllArtworks,
     getArtwork,
     createArtwork,
+    editArtwork,
     searchArtworks,
     batchDeleteArtworks,
     filterArtworks,

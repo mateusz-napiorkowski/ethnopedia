@@ -8,7 +8,7 @@ import Navigation from "../Navigation";
 import FetchDataWrapper from "../TreeWrapper";
 
 import { Category } from "./types/ArtworkTypes";
-import { createArtwork } from "../../api/artworks";
+import { createArtwork, editArtwork } from "../../api/artworks";
 import NewArtworkStructure from "./NewArtworkStructure";
 
 
@@ -54,11 +54,12 @@ const CreateArtwork: React.FC = () => {
             if(!location.state) {
                 // dodawanie rekordu
                 const response = await createArtwork(dataToInsert);
-                queryClient.invalidateQueries(["collection"]);
             } else {
                 // edycja rekordu
-                // const response = await editArtwork(dataToInsert)
+                const artworkID = window.location.href.split("/")[window.location.href.split("/").length-2]
+                const response = await editArtwork(dataToInsert, artworkID)   
             }
+            queryClient.invalidateQueries(["collection"]);
             navigate(-1); // Powrót do poprzedniej strony
         } catch (error) {
             console.error(error);

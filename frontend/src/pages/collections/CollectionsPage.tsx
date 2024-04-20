@@ -84,8 +84,6 @@ const CollectionsPage = () => {
     if (fetchedData === undefined) {
         return <LoadingPage />
     } else {
-        console.log(fetchedData.collections)
-
         const sortedCollections = fetchedData.collections ? [...fetchedData.collections].sort((a, b) => {
             if (sortOrder === "A-Z") {
                 return a.name.localeCompare(b.name)
