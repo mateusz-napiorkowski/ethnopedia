@@ -30,13 +30,15 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
                                                        }) => {
 
     const Sublist: React.FC<SublistProps> = ({subcategories}) => {
-        return <ul className="px-4 list-disc">
+        if(subcategories !== undefined) {
+            return <ul className="px-4 list-disc">
             {subcategories.map((category: any) => {
             return <li>{category.name}: {category.values.join(", ")}
                 <Sublist subcategories={category.subcategories}/>
             </li>
             })}
         </ul>
+        } else return <></> 
     }
 
     return (

@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg"
 import { ReactComponent as MinusIcon } from "../../assets/icons/minus.svg";
 import { createArtwork } from '../../api/artworks';
@@ -25,7 +25,7 @@ let example_data: Category[] = [
 
 
 function transformToNewStructure(data: Category[]): { categories: Category[]; collectionName: string } {
-  return { categories: data, collectionName: 'test' };  //TODO
+  return { categories: data, collectionName: window.location.href.split("/")[window.location.href.split("/").length-2] };
 }
 
 interface FormFieldProps {
@@ -127,12 +127,17 @@ const FormField: React.FC<FormFieldProps> = ({
 
 interface NewArtworkStructureProps {
   initialFormData: Category[];
+  setDataToInsert: any
 }
 
 
-const NewArtworkStructure: React.FC<NewArtworkStructureProps> = ({ initialFormData }) => {
+const NewArtworkStructure: React.FC<NewArtworkStructureProps> = ({ initialFormData, setDataToInsert }) => {
   const [formDataList, setFormDataList] = React.useState<Category[]>(initialFormData); // Ustaw początkowe dane
   
+  useEffect(() => {
+    setDataToInsert(transformToNewStructure(formDataList))
+  }, [formDataList])
+
   const [jsonOutput, setJsonOutput] = useState<string>('');
   const handleShowJson = () => {
     let jsonData = transformToNewStructure(formDataList);
@@ -159,11 +164,8 @@ const NewArtworkStructure: React.FC<NewArtworkStructureProps> = ({ initialFormDa
     return dataList.map((item, i) => {
       if (i === currentIndex) {
         if (remainingIndexParts.length === 0) {
-          if (name === 'value') {
+          if (name === 'values') {
             // If it is a value field
-            // const updatedValues = [name];
-            // updatedValues[0] = value;
-            // return { ...item, [name]: updatedValues };  //TODO !!!
             return { ...item, [name]: [value] }; 
           } else {
             // If it is a name field

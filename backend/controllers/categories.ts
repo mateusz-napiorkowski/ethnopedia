@@ -7,9 +7,11 @@ const Category = require("../models/category")
 
 const getNestedKeys = ((prefix: string, subcategories: any) => {
     let nestedCategories: Array<string> = []
-    for(const subcategory of subcategories){
-        nestedCategories.push(`${prefix}${subcategory.name}`)
-        nestedCategories.push(...getNestedKeys(`${prefix}${subcategory.name}.`, subcategory.subcategories))
+    if(subcategories !== undefined) {
+        for(const subcategory of subcategories){
+            nestedCategories.push(`${prefix}${subcategory.name}`)
+            nestedCategories.push(...getNestedKeys(`${prefix}${subcategory.name}.`, subcategory.subcategories))
+        }
     }
     return nestedCategories
 })

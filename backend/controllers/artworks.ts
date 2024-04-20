@@ -134,12 +134,9 @@ const filterArtworks = async (req: Request, res: Response, next: NextFunction): 
     }
 }
 
-const createArtwork = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+const createArtwork = (async (req: Request, res: Response, next: NextFunction) => {
     try {
-        console.log("backend");
-        console.log(req.body)
         const newArtwork = await Artwork.create(req.body)
-
         return res.status(201).json(newArtwork)
     } catch (error) {
         next(error)

@@ -13,15 +13,10 @@ import NewArtworkStructure from "./NewArtworkStructure";
 
 
 let example_data: Category[] = [
-    { name: "Tytuł", values: ["tytuł utworu"], subcategories: [] },
-    { name: "Wykonawca", values: ["nazwa zespołu"], subcategories: [
-      { name: "Wykonawca nr 1", values: ["Imię Nazwisko 1"] },
-      { name: "Wykonawca nr 2", values: ["Imię Nazwisko 2"] } ] },
-    { name: "Region", values: ["Wielkopolska"], subcategories: [
-      { name: "Podregion", values: ["Wielkopolska Północna"] },
-      { name: "Podregion etnograficzny", values: ["Szamotulskie"] },
-      { name: "Powiat", values: ["Szamotulski"]} ] }
-  ]
+    { name: "Tytuł", values: [""], subcategories: [] },
+    { name: "Artyści", values: [""], subcategories: [] },
+    { name: "Rok", values: [""], subcategories: []}
+]
 
 // Function to create an empty structure based on the example_data
 const createEmptyStructure = (category: Category): Category => {
@@ -32,9 +27,9 @@ const createEmptyStructure = (category: Category): Category => {
     };
 };
 
-function transformToJson(data: Category[]): { categories: Category[]; collectionName: string } {
-    return { categories: data, collectionName: 'test' };  //TODO
-}
+// function transformToJson(data: Category[]): { categories: Category[]; collectionName: string } {
+//     return { categories: data, collectionName: window.location.href.split("/")[window.location.href.split("/").length-2] };
+// }
   
 
 
@@ -42,6 +37,7 @@ const CreateArtwork: React.FC = () => {
     const queryClient = useQueryClient();
     const { jwtToken } = useUser();
     const navigate = useNavigate();
+    const [dataToInsert, setDataToInsert] = useState({})
 
     // Inicjalizacja danych formularza
     const initialFormData: Category[] = example_data.map(createEmptyStructure);
@@ -50,10 +46,7 @@ const CreateArtwork: React.FC = () => {
         console.log("Submit");
         // Przekazanie danych formularza do funkcji createArtwork
         try {
-            const mongoDBData = transformToJson(formDataList);
-            console.log("dane:", mongoDBData);
-            const response = await createArtwork(mongoDBData);
-            console.log(response.data);
+            const response = await createArtwork(dataToInsert);
             queryClient.invalidateQueries(["collection"]);
             navigate(-1); // Powrót do poprzedniej strony
         } catch (error) {
@@ -88,7 +81,8 @@ const CreateArtwork: React.FC = () => {
                                             </div>
                                             <div className="flex-grow">
                                                 <NewArtworkStructure 
-                                                    initialFormData={initialFormData} />
+                                                    initialFormData={initialFormData}
+                                                    setDataToInsert={(dataToInsert: any) => setDataToInsert(dataToInsert)} />
                                             </div>
                                             <div className="flex justify-end px-4 pb-4 border-t pt-4 h-auto">
                                                 <button
