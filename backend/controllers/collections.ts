@@ -281,6 +281,10 @@ const batchDeleteCollections = async (req: Request, res: Response, next: NextFun
             return res.status(404).send({ message: `Collection with id ${collectionsToDelete} not found` })
         }
 
+        for(const id of collectionsToDeleteList) {
+            const collection = await Collection.find({_id: id})
+            await Artwork.deleteMany({collectionName: collection[0].name.toString()})
+        }
         const result = await Collection.deleteMany({ _id: { $in: collectionsToDeleteList } })
 
         res.status(200).json({ message: req.params.collection, deletedCount: result.deletedCount })
