@@ -293,7 +293,7 @@ const Artworks = () => {
                                 />
                             </span>
                     </div>
-                    {showFileDropzone && <FileDropzone onClose={() => setShowFileDropzone(false)} />}
+                    {showFileDropzone && <FileDropzone onClose={() => setShowFileDropzone(false)} inCollectionPage={false}/>}
                     {showExportOptions && <ExportOptions keys={keys} selectedArtworks={selectedArtworks} onClose={() => setShowExportOptions(false)} />}
                 </div>
             </div>

@@ -13,6 +13,7 @@ import { useQuery, useQueryClient } from "react-query"
 import { useUser } from "../../providers/UserProvider"
 import Pagination from "../../components/Pagination"
 import { getXlsxWithCollectionData } from "../../api/xlsxFileHandler"
+import FileDropzone from "../../components/FileDropzone"
 
 interface Option {
     value: string
@@ -21,11 +22,12 @@ interface Option {
 
 const CollectionsPage = () => {
     const { firstName } = useUser()
-    const [, setShowFileDropzone] = useState<boolean>(false)
+    const [showFileDropzone, setShowFileDropzone] = useState<boolean>(false)
     const [checkedCollections, setCheckedCollections] = useState<{ [key: string]: boolean }>({})
     const [showWarningPopup, setShowWarningPopup] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
     const [exportErrorMessage, setExportErrorMessage] = useState("")
+    
     const pageSize = 10
 
     const queryClient = useQueryClient()
@@ -127,17 +129,6 @@ const CollectionsPage = () => {
                                     (collection.artworksCount ?? 0) > 1 && (collection.artworksCount ?? 0) < 5 ? "rekordy" : "rekordów"
                             }
                         </h2>
-
-                        {/* <h2 className="text-md min-w-fit items-center flex mx-2">
-                        <span className="font-bold mr-1">
-                            {collection.categoriesCount ?? 0}
-                        </span>
-                            {
-                                (collection.categoriesCount ?? 0) === 1 ? "kategoria" :
-                                    (collection.categoriesCount ?? 0) > 1 && (collection.categoriesCount ?? 0) < 5 ? "kategorie" : "kategorii"
-                            }
-                        </h2> */}
-                    {/* </div> */}
                 </div>
             </div>
         ))
@@ -196,7 +187,10 @@ const CollectionsPage = () => {
                                     if(Object.keys(checkedCollections).length === 0){
                                         setExportErrorMessage("Najpierw należy zaznaczyć kolekcję do wyeksportowania.")
                                     } else {
-                                        setExportErrorMessage("Aby wyeksportować kolekcję należy zaznaczyć tylko jedną z nich.")
+                                        for(const key in fetchedData.collections) {
+                                            getXlsxWithCollectionData(fetchedData.collections[key].name)
+                                        }
+                                        setExportErrorMessage("")
                                     }
                                 }
                             }}
@@ -219,7 +213,7 @@ const CollectionsPage = () => {
 
                     </div>
                 </div>
-
+                {showFileDropzone && <FileDropzone onClose={() => setShowFileDropzone(false)} inCollectionPage={true} />}
                 <div className="flex flex-row">
                     <div className="flex flex-1">
                         <button type="button" className="px-4 py-2 mb-2 bg-white"

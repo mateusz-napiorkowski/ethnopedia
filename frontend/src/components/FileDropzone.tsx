@@ -3,22 +3,39 @@ import { ReactComponent as DragAndDrop } from "../assets/icons/dragAndDrop.svg"
 import { ReactComponent as Close } from "../assets/icons/close.svg"
 import * as XLSX from 'xlsx';
 import { importData } from "../api/importData"
+import { addNewCollection } from "../api/collections";
 
 type Props = {
+    inCollectionPage: boolean
     onClose: () => void
 }
 
-const FileDropzone = ({ onClose }: Props) => {
+const FileDropzone = ({ onClose, inCollectionPage }: Props) => {
     const [headerText, setHeaderText] = useState("Prześlij plik")
     const [filename, setFilename] = useState("")
     const [showDropzone, setShowDropzone] = useState(true)
     const [showImportOptions, setShowImportOptions] = useState(false)
     const [dataToSend, setDataToSend] = useState<any>()
+    const [collectionName, setCollectionName] = useState("")
+    const [description, setDescription] = useState("")
 
     const handleSubmit = (event: any) => {
         importData(dataToSend, window.location.href.split("/")[window.location.href.split("/").findIndex((element) => element === "collections") + 1])
     }
 
+    const handleNameChange = (event: any) => {
+        setCollectionName(event.target.value)
+    }
+
+    const handleDescriptionChange = (event: any) => {
+        setDescription(event.target.value)
+    }
+
+    const handleCollectionSubmit = (event: any) => {
+        addNewCollection(collectionName, description)
+        importData(dataToSend, collectionName)
+    }
+    
     const handleFileUpload = (event: any) => {
         const file = event.target.files[0]
         var name = file.name;
@@ -87,7 +104,7 @@ const FileDropzone = ({ onClose }: Props) => {
                             />
                         </label>
                     </div> }
-                    { showImportOptions && <div>
+                    { !inCollectionPage && showImportOptions && <div>
                         <form onSubmit={handleSubmit}>
                             <div className="flex py-2 px-4 text-base">
                                 <p><span className="font-medium">Plik:</span> {filename}</p>
@@ -98,6 +115,55 @@ const FileDropzone = ({ onClose }: Props) => {
                                         dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
                                         type="submit" value="Importuj metadane" onClick={() => {}}
                                     ></input>
+                            </div>
+                        </form>
+                    </div> }
+                    { inCollectionPage && showImportOptions && <div>
+                        <form onSubmit={handleCollectionSubmit} className="relative bg-white rounded-lg shadow-md dark:bg-gray-800 border
+                            dark:border-gray-600">
+                            <div className="px-4 pb-4">
+                                <label htmlFor="name"
+                                       className="text-sm font-bold text-gray-700 dark:text-white dark:border-gray-600
+                                       block my-2">
+                                    Nazwa kolekcji
+                                </label>
+                                <textarea
+                                    id="name"
+                                    name="name"
+                                    value = {collectionName}
+                                    onChange={handleNameChange}
+                                    className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none"
+                                />
+
+                                <label htmlFor="description"
+                                       className="text-sm font-bold text-gray-700 dark:text-white dark:border-gray-600
+                                       block my-2">
+                                    Opis kolekcji
+                                </label>
+                                <textarea
+                                    id="description"
+                                    name="description"
+                                    rows={4}
+                                    value = {description}
+                                    onChange={handleDescriptionChange}
+                                    className="w-full resize-y min-h-[12rem] px-4 py-2 border rounded-lg
+                                    focus:outline-none dark:border-gray-600 dark:bg-gray-800"
+                                />
+                            </div>
+                            <div className="flex justify-end px-4 pb-4">
+                                <button
+                                    type="button"
+                                    className="px-4 py-2 color-button"
+                                    onClick={onClose}
+                                >
+                                    Anuluj
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="ml-2 px-4 py-2 color-button"
+                                >
+                                    Utwórz
+                                </button>
                             </div>
                         </form>
                     </div> }

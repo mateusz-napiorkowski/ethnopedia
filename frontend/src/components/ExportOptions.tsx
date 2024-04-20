@@ -2,6 +2,8 @@ import { useState } from "react"
 import { ReactComponent as Close } from "../assets/icons/close.svg"
 import { useParams } from "react-router-dom"
 import { getXlsxWithArtworksData } from "../api/xlsxFileHandler"
+import { useQuery } from "react-query"
+import { getAllCategories } from "../api/categories"
 
 type Props = {
     onClose: () => void,
@@ -11,9 +13,15 @@ type Props = {
 
 const ExportOptions = (props: Props) => {
     const { collection } = useParams()
-    const [selectedKeys, setSelectedKeys] = useState<any>(props.keys);
+    const [selectedKeys, setSelectedKeys] = useState<any>([]);
     const [exportSelectedRecords, setExportSelectedRecords] = useState<boolean>(false)
     const [filename, setFilename] = useState(`${collection}.xlsx`);
+
+    const { data: categoriesData } = useQuery({
+        queryKey: ["allCategories"],
+        queryFn: () => getAllCategories(collection as string),
+        enabled: !!collection,
+    })
 
     const handleCheckboxChange = (event: any) => {
         const key = event.target.value
@@ -26,7 +34,6 @@ const ExportOptions = (props: Props) => {
 
     const handleExportSelectedRecordsChange = (event: any) => {
         const chosen = event.target.value
-        console.log(chosen)
         if(chosen === "onlyChecked") {
             setExportSelectedRecords(true)
         } else {
@@ -45,8 +52,8 @@ const ExportOptions = (props: Props) => {
         return keysInRightOrder
     }
 
-    function AllKeysWithCheckboxes(props: any) {
-        const keys = props.keys;
+    function AllKeysWithCheckboxes(data: any) {
+        const keys = data.keys.categories;
         const listItems = keys.map((key: string) =>
             <span>
                 <input type="checkbox" id={key} name={key} value={key} onChange={event => handleCheckboxChange(event)} checked={selectedKeys.includes(key)}></input>
@@ -83,7 +90,7 @@ const ExportOptions = (props: Props) => {
                     <div>          
                         <p className="flex py-2 px-4 text-base font-medium">Kolumny do wyeksportowania:</p>     
                         <div className="flex flex-col items-start px-4 h-64 overflow-y-auto">   
-                            <AllKeysWithCheckboxes keys={props.keys}/>                                    
+                            <AllKeysWithCheckboxes keys={categoriesData}/>                                    
                         </div>
                         <div className="flex flex-row space-x-2 items-start px-4 py-4">
                             <input className="flex items-center justify-end dark:text-white text-xs
@@ -94,7 +101,7 @@ const ExportOptions = (props: Props) => {
                                         name="checkAllKeys"
                                         value="Zaznacz wszystkie"
                                         onClick={() => {
-                                            setSelectedKeys(props.keys)
+                                            setSelectedKeys(categoriesData.categories)
                                         }}
                                         ></input>
                             <input className="flex items-center justify-end dark:text-white text-xs
@@ -127,7 +134,7 @@ const ExportOptions = (props: Props) => {
                             <input className="flex items-center justify-end dark:text-white
                                         hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium px-4 py-2
                                         dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
-                                        type="submit" value="Eksportuj metadane" onClick={() => {getXlsxWithArtworksData(collection as string, sortKeysInRightOrder(props.keys), props.selectedArtworks, exportSelectedRecords, filename)}}
+                                        type="submit" value="Eksportuj metadane" onClick={() => {getXlsxWithArtworksData(collection as string, sortKeysInRightOrder(categoriesData.categories), props.selectedArtworks, exportSelectedRecords, filename)}}
                                         ></input>
                         </div>
                     </div>                   
