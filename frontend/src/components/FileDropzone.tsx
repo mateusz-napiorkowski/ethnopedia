@@ -4,6 +4,7 @@ import { ReactComponent as Close } from "../assets/icons/close.svg"
 import * as XLSX from 'xlsx';
 import { importData } from "../api/importData"
 import { addNewCollection } from "../api/collections";
+import { useUser } from "../providers/UserProvider";
 
 type Props = {
     inCollectionPage: boolean
@@ -18,9 +19,10 @@ const FileDropzone = ({ onClose, inCollectionPage }: Props) => {
     const [dataToSend, setDataToSend] = useState<any>()
     const [collectionName, setCollectionName] = useState("")
     const [description, setDescription] = useState("")
+    const { jwtToken } = useUser();
 
     const handleSubmit = (event: any) => {
-        importData(dataToSend, window.location.href.split("/")[window.location.href.split("/").findIndex((element) => element === "collections") + 1])
+        importData(dataToSend, jwtToken, window.location.href.split("/")[window.location.href.split("/").findIndex((element) => element === "collections") + 1])
     }
 
     const handleNameChange = (event: any) => {
@@ -33,7 +35,7 @@ const FileDropzone = ({ onClose, inCollectionPage }: Props) => {
 
     const handleCollectionSubmit = (event: any) => {
         addNewCollection(collectionName, description)
-        importData(dataToSend, collectionName)
+        importData(dataToSend, jwtToken, collectionName)
     }
     
     const handleFileUpload = (event: any) => {

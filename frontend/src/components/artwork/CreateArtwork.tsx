@@ -53,11 +53,11 @@ const CreateArtwork: React.FC = () => {
         try {
             if(!location.state) {
                 // dodawanie rekordu
-                const response = await createArtwork(dataToInsert);
+                const response = await createArtwork(dataToInsert, jwtToken);
             } else {
                 // edycja rekordu
                 const artworkID = window.location.href.split("/")[window.location.href.split("/").length-2]
-                const response = await editArtwork(dataToInsert, artworkID)   
+                const response = await editArtwork(dataToInsert, artworkID, jwtToken)   
             }
             queryClient.invalidateQueries(["collection"]);
             navigate(-1); // Powrót do poprzedniej strony

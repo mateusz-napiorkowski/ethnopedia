@@ -19,6 +19,7 @@ import Navigation from "../Navigation"
 import EditCollection from "../../pages/collections/EditCollection"
 import Pagination from "../Pagination"
 import category from "../Category"
+import { useUser } from "../../providers/UserProvider"
 
 const Artworks = () => {
     const [selectedArtworks, setSelectedArtworks] = useState<{ [key: string]: boolean }>({})
@@ -30,7 +31,7 @@ const Artworks = () => {
     const [sortOrder, setSortOrder] = useState<string>("newest-first")
     const [showEditCollection, setShowEditCollection] = useState<boolean>(false)
     const [keys, setKeys] = useState<Array<string>>([])
-
+    const { jwtToken } = useUser();
     const location = useLocation()
     useEffect(() => {
 
@@ -103,7 +104,7 @@ const Artworks = () => {
         const selectedIds = Object.keys(selectedArtworks).filter(id => selectedArtworks[id])
 
         if (selectedIds.length > 0) {
-            batchDeleteMutation(selectedIds,
+            batchDeleteMutation([selectedIds, jwtToken],
                 {
                     onSuccess: () => {
                         queryClient.invalidateQueries(["artwork"])

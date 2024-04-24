@@ -32,15 +32,21 @@ export const getArtworksByCategory = async (collection: string, page: number, pa
 }
 
 
-export const createArtwork = async (artworkData: any) => {
+export const createArtwork = async (artworkData: any, jwtToken: any) => {
+    const config = {
+        headers: { Authorization: `Bearer ${jwtToken}` }
+    };
     return await axios
-        .post(`${API_URL}v1/artworks/create`, artworkData)
+        .post(`${API_URL}v1/artworks/create`, artworkData, config)
         .then(res => res.data)
 }
 
-export const editArtwork = async (artworkData: any, artworkId: string) => {
+export const editArtwork = async (artworkData: any, artworkId: string, jwtToken: any) => {
+    const config = {
+        headers: { Authorization: `Bearer ${jwtToken}` }
+    };
     return await axios
-        .post(`${API_URL}v1/artworks/edit/${artworkId}`, artworkData)
+        .post(`${API_URL}v1/artworks/edit/${artworkId}`, artworkData, config)
         .then(res => res.data)
 }
 
@@ -54,11 +60,14 @@ export const updateArtwork = async ({ id, artwork, jwtToken }: {
 }
 
 export const useBatchDeleteArtworkMutation = () => {
-    return useMutation(async (artworks: string[]) => {
-        const artworkIds = artworks.join(",")
+    return useMutation(async (data: Array<any>) => {
+        const artworkIds = data[0].join(",")
+        const config = {
+            headers: { Authorization: `Bearer ${data[1]}` }
+        };
         const url = `${API_URL}v1/artworks/${artworkIds}`
 
-        const res = await axios.delete(url)
+        const res = await axios.delete(url, config)
         return res.data
     })
 }

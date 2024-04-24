@@ -53,9 +53,9 @@ const ArtworkPage = () => {
     }, [fetchedData])
 
     const handleArtworkDeletion = () => {
-        if (!jwtToken || !artworkId) {
-            return
-        }
+        // if (!jwtToken || !artworkId) {
+        //     return
+        // }
 
         deleleArtwork.mutate()
     }
