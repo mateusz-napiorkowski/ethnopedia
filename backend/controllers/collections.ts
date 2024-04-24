@@ -97,14 +97,16 @@ function countLabelsRecursively(categoryDetails: any) {
 }
 
 const findSearchText = (searchText: any, subcategories: any) => {
-    for(const category of subcategories){
-        for(const value of category.values) {
-            if(value.toString().includes(searchText)) {
+    if(subcategories !== undefined) {
+        for(const category of subcategories){
+            for(const value of category.values) {
+                if(value.toString().includes(searchText)) {
+                    return true
+                }
+            }
+            if(findSearchText(searchText, category.subcategories)) {
                 return true
             }
-        }
-        if(findSearchText(searchText, category.subcategories)) {
-            return true
         }
     }
     return false
