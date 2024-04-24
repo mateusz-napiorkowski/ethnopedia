@@ -7,6 +7,7 @@ const Collection = require("../models/collection")
 const Category = require("../models/collection")
 const Artwork = require("../models/artwork")
 const asyncWrapper = require("../middleware/async")
+const jwt = require("jsonwebtoken")
 
 const getAllCollections = async (req: Request, res: Response, next: any) => {
     const page = parseInt(req.query.page as string) || 1
@@ -65,8 +66,16 @@ const getAllCollections = async (req: Request, res: Response, next: any) => {
 
 const addNewCollection = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        console.log(req.body)
-        mongoClient.db().collection('collections').insertOne({name: req.body.name, description: req.body.description})
+        const token = req.headers.authorization?.split(" ")[1]
+        if (!token) return res.status(401).json({ error: 'Access denied' });
+        try {
+            const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string)
+            mongoClient.db().collection('collections').insertOne({name: req.body.name, description: req.body.description})
+            return res.status(201)
+        } catch (error) {
+            return res.status(401).json({ error: 'Access denied' });
+        }
+        
     } catch (error) {
         next(error)
     }

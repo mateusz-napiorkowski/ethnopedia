@@ -3,6 +3,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik"
 import { addNewCollection, useCreateCollectionMutation } from "../../api/collections"
 import { useQueryClient } from "react-query"
 import { useNavigate } from "react-router-dom"
+import { useUser } from "../../providers/UserProvider"
 
 type Props = {
     stateChanger: any
@@ -13,6 +14,7 @@ const CreateCollectionModal = ({ stateChanger, onClose }: Props) => {
     const { mutate: createCollection } = useCreateCollectionMutation()
     const queryClient = useQueryClient()
     const navigate = useNavigate()
+    const { jwtToken } = useUser();
 
     return <div
         id="default-modal"
@@ -27,7 +29,7 @@ const CreateCollectionModal = ({ stateChanger, onClose }: Props) => {
                     initialValues={{ name: "", description: "" }}
                     onSubmit={(values, { setSubmitting }) => {    
                         const { name, description } = values
-                        addNewCollection(name, description)
+                        addNewCollection(name, description, jwtToken)
                         stateChanger(name)
                         onClose()
                     }}>

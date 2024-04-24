@@ -23,9 +23,12 @@ export const getCollections = async (page: number = 1, pageSize: number = 10): P
     return response.data as CollectionsResponse
 }
 
-export const addNewCollection = async (name: any, description: any) => {
+export const addNewCollection = async (name: any, description: any, jwtToken: any) => {
+    const config = {
+        headers: { Authorization: `Bearer ${jwtToken}` }
+    };
     return await axios
-        .post(`${API_URL}v1/collection/add`, {name, description})
+        .post(`${API_URL}v1/collection/add`, {name, description}, config)
         .then(res => res.data)
 }
 
