@@ -197,9 +197,10 @@ const CollectionsPage = () => {
                             <span className="text-white">
                                 <FileExportIcon />
                             </span>
-                            Eksportuj plik
+                            Eksportuj kolekcję
                         </button>
-                        <button
+                        {
+                            jwtToken && <button
                             className="flex items-center justify-center dark:text-white
                                     text-sm px-4 py-2 mb-2 hover:bg-gray-700 bg-gray-800 text-white border-gray-800
                                     font-semibold"
@@ -207,8 +208,22 @@ const CollectionsPage = () => {
                             onClick={() => setShowFileDropzone(showFileDropzone => !showFileDropzone)}
                         >
                             <FileImportIcon />
-                            Importuj plik
+                            Importuj kolekcję
                         </button>
+                        }
+                        {
+                            !jwtToken && <button
+                            className="flex items-center justify-center dark:text-white
+                                    text-sm px-4 py-2 mb-2 hover:bg-gray-600 bg-gray-600 text-white border-gray-800
+                                    font-semibold"
+                            type="button" disabled={true} title={"Aby zaimportować kolecję musisz się zalogować."}
+                            onClick={() => setShowFileDropzone(showFileDropzone => !showFileDropzone)}
+                        >
+                            <FileImportIcon />
+                            Importuj kolekcję
+                        </button>
+                        }
+                        
 
                     </div>
                 </div>
@@ -225,13 +240,20 @@ const CollectionsPage = () => {
                             Odznacz wszystkie
                         </button>
 
-                        <button type="button" className="px-4 py-2 mb-2 ml-2 bg-white"
+                        {jwtToken && <button type="button" className="px-4 py-2 mb-2 ml-2 bg-white"
                                 onClick={() => {
                                     if (Object.keys(checkedCollections).length !== 0)
                                         setShowWarningPopup(!showWarningPopup)
                                 }}>
                             Usuń zaznaczone
-                        </button>
+                        </button>}
+                        {!jwtToken && <button type="button" disabled={true} title={"Aby usuwać kolecje musisz się zalogować."} className="px-4 py-2 mb-2 ml-2 bg-gray-100 hover:bg-gray-100"
+                                onClick={() => {
+                                    if (Object.keys(checkedCollections).length !== 0)
+                                        setShowWarningPopup(!showWarningPopup)
+                                }}>
+                            Usuń zaznaczone
+                        </button>}
                     </div>
                     <span className="mb-2">
                     <CustomDropdown

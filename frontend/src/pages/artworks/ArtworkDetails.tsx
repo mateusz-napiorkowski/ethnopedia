@@ -2,6 +2,7 @@ import React from "react"
 import { v4 as uuidv4 } from "uuid"
 import { ReactComponent as EditIcon } from "../../assets/icons/edit.svg"
 import { ReactComponent as TrashBinIcon } from "../../assets/icons/trashBin.svg"
+import { useUser } from "../../providers/UserProvider"
 
 interface ArtworkDetailsProps {
     Tytuł: string;
@@ -28,7 +29,8 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
                                                            handleEditClick,
                                                            setShowDeleteArtworkWarning,
                                                        }) => {
-
+    
+    const { jwtToken } = useUser();
     const Sublist: React.FC<SublistProps> = ({subcategories}) => {
         if(subcategories !== undefined) {
             return <ul className="px-4 list-disc">
@@ -62,21 +64,35 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
 
             {!showStructure && (
                 <div className="flex-1 mt-4 flex justify-end text-gray-700">
-                    <button className="text-lg font-semibold h-fit mr-4" onClick={handleEditClick}>
+                    {jwtToken &&<button className="text-lg font-semibold h-fit mr-4" onClick={handleEditClick}>
                         <span className="flex-row flex items-center">
                             <EditIcon />
                             <p className="ml-2">Edytuj</p>
                         </span>
-                    </button>
+                    </button>}
+                    {!jwtToken &&<button disabled={true} title={"Aby edytować rekord musisz się zalogować."} className="text-lg font-semibold h-fit mr-4 bg-gray-100 hover:bg-gray-100" onClick={handleEditClick}>
+                        <span className="flex-row flex items-center">
+                            <EditIcon />
+                            <p className="ml-2">Edytuj</p>
+                        </span>
+                    </button>}
 
-                    <button
+                    {jwtToken && <button
                         className="text-lg font-semibold h-fit border-red-700 text-red-700 bg-red-50 hover:bg-white"
                         onClick={() => setShowDeleteArtworkWarning(true)}>
                         <span className="flex-row flex items-center">
                             <TrashBinIcon />
                             <p className="ml-2">Usuń</p>
                         </span>
-                    </button>
+                    </button>}
+                    {!jwtToken && <button
+                        disabled={true} title={"Aby usunąć rekord musisz się zalogować."} className="text-lg font-semibold h-fit border-red-700 text-red-700 bg-red-50 hover:bg-red-50"
+                        onClick={() => setShowDeleteArtworkWarning(true)}>
+                        <span className="flex-row flex items-center">
+                            <TrashBinIcon />
+                            <p className="ml-2">Usuń</p>
+                        </span>
+                    </button>}
                 </div>
             )}
         </div>

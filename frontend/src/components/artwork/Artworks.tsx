@@ -190,7 +190,7 @@ const Artworks = () => {
                             </p>
                         </div>
 
-                        <div className="flex items-center">
+                        {/* <div className="flex items-center">
                             <button className="text-lg mr-2 h-fit font-semibold ml-4"
                                     onClick={() => setShowEditCollection(true)}>
                                 Edytuj
@@ -205,7 +205,7 @@ const Artworks = () => {
                                     <p>Usuń</p>
                                 </span>
                             </button>
-                        </div>
+                        </div> */}
 
                         {showEditCollection && (
                             <EditCollection
@@ -219,7 +219,7 @@ const Artworks = () => {
 
                     <div className="flex w-full md:w-auto">
                         <div className="flex flex-1 space-x-2">
-                            <button className="flex items-center justify-center dark:text-white
+                            {jwtToken && <button className="flex items-center justify-center dark:text-white
                             hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2
                             dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
                                     type="button"
@@ -228,7 +228,17 @@ const Artworks = () => {
                                         <PlusIcon />
                                     </span>
                                 Nowy rekord
-                            </button>
+                            </button>}
+                            {!jwtToken && <button disabled={true} title={"Aby dodać rekord musisz się zalogować."} className="flex items-center justify-center dark:text-white
+                            hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2
+                            dark:focus:ring-primary-800 font-semibold text-white hover:bg-gray-600 bg-gray-600 border-gray-800"
+                                    type="button"
+                                    onClick={() => navigate(`/collections/${collection}/create-artwork`)}>
+                                    <span className="mr-2 text-white dark:text-gray-400">
+                                        <PlusIcon />
+                                    </span>
+                                Nowy rekord
+                            </button>}
                                 <button className="flex items-center justify-center dark:text-white
                                             hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium px-4 py-2
                                             dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
@@ -244,7 +254,7 @@ const Artworks = () => {
                                 </span>
                                     Eksportuj plik
                                 </button>
-                            <button className="flex items-center justify-center dark:text-white
+                            {jwtToken && <button className="flex items-center justify-center dark:text-white
                                         hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2
                                         dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
                                     type="button"
@@ -254,7 +264,18 @@ const Artworks = () => {
                                     <FileImportIcon />
                                 </span>
                                 Importuj plik
-                            </button>
+                            </button>}
+                            {!jwtToken && <button disabled={true} title={"Aby zaimportować plik musisz się zalogować."} className="flex items-center justify-center dark:text-white
+                                        hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2
+                                        dark:focus:ring-primary-800 font-semibold text-white bg-gray-600 hover:bg-gray-600 border-gray-800"
+                                    type="button"
+                                    onClick={() => setShowFileDropzone(showFileDropzone => !showFileDropzone)}
+                            >
+                                <span className="text-white dark:text-gray-400">
+                                    <FileImportIcon />
+                                </span>
+                                Importuj plik
+                            </button>}
 
                             <button className="flex items-center justify-center dark:text-white
                                         hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2
@@ -274,7 +295,7 @@ const Artworks = () => {
                                 Odznacz wszystkie
                             </button>
 
-                            <button className="flex items-center justify-center dark:text-white
+                            {jwtToken && <button className="flex items-center justify-center dark:text-white
                                         hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2
                                         dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
                                     type="button"
@@ -284,7 +305,18 @@ const Artworks = () => {
                                     }}
                             >
                                 Usuń zaznaczone
-                            </button>
+                            </button>}
+                            {!jwtToken && <button disabled={true} title={"Aby usuwać rekordy musisz się zalogować."} className="flex items-center justify-center dark:text-white
+                                        hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2
+                                        dark:focus:ring-primary-800 font-semibold text-white bg-gray-600 hover:bg-gray-600 border-gray-800"
+                                    type="button"
+                                    onClick={() => {
+                                        if (Object.keys(selectedArtworks).length !== 0)
+                                            setShowDeleteRecordsWarning(!showDeleteRecordsWarning)
+                                    }}
+                            >
+                                Usuń zaznaczone
+                            </button>}
                         </div>
 
                         <span className="">
