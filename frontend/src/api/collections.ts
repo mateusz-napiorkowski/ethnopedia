@@ -50,11 +50,13 @@ export const useCreateRecordMutation = (jwtToken: string) => {
     })
 }
 export const useBatchDeleteCollectionMutation = () => {
-    return useMutation(async (collections: string[]) => {
-        const collectionIds = collections.join(",")
+    return useMutation(async (data: Array<any>) => {
+        const collectionIds = data[0].join(",")
         const url = `${API_URL}v1/collection/${collectionIds}`
-
-        const res = await axios.delete(url)
+        const config = {
+            headers: { Authorization: `Bearer ${data[1]}` }
+        };
+        const res = await axios.delete(url, config)
         return res.data
     })
 }

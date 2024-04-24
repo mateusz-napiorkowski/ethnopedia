@@ -278,25 +278,32 @@ const createCollection = async (req: Request, res: Response, next: NextFunction)
 
 const batchDeleteCollections = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const collectionsToDelete = req.params.collection
+        const token = req.headers.authorization?.split(" ")[1]
+        if (!token) return res.status(401).json({ error: 'Access denied' });
+        try {
+            const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string)
+            const collectionsToDelete = req.params.collection
 
-        if (!collectionsToDelete) {
-            return res.status(400).send({ message: "Collections not found" })
-        }
-        const collectionsToDeleteList = collectionsToDelete.split(",")
-        const existingCollections = await Collection.find({ _id: { $in: collectionsToDeleteList } })
+            if (!collectionsToDelete) {
+                return res.status(400).send({ message: "Collections not found" })
+            }
+            const collectionsToDeleteList = collectionsToDelete.split(",")
+            const existingCollections = await Collection.find({ _id: { $in: collectionsToDeleteList } })
 
-        if (existingCollections.length === 0) {
-            return res.status(404).send({ message: `Collection with id ${collectionsToDelete} not found` })
-        }
+            if (existingCollections.length === 0) {
+                return res.status(404).send({ message: `Collection with id ${collectionsToDelete} not found` })
+            }
 
-        for(const id of collectionsToDeleteList) {
-            const collection = await Collection.find({_id: id})
-            await Artwork.deleteMany({collectionName: collection[0].name.toString()})
-        }
-        const result = await Collection.deleteMany({ _id: { $in: collectionsToDeleteList } })
+            for(const id of collectionsToDeleteList) {
+                const collection = await Collection.find({_id: id})
+                await Artwork.deleteMany({collectionName: collection[0].name.toString()})
+            }
+            const result = await Collection.deleteMany({ _id: { $in: collectionsToDeleteList } })
 
-        res.status(200).json({ message: req.params.collection, deletedCount: result.deletedCount })
+            res.status(200).json({ message: req.params.collection, deletedCount: result.deletedCount })
+        } catch (error) {
+            return res.status(401).json({ error: 'Access denied' });
+        } 
     } catch (error) {
         next(error)
     }

@@ -14,6 +14,7 @@ import { useUser } from "../../providers/UserProvider"
 import Pagination from "../../components/Pagination"
 import { getXlsxWithCollectionData } from "../../api/xlsxFileHandler"
 import FileDropzone from "../../components/FileDropzone"
+import { jwtDecode } from "jwt-decode"
 
 interface Option {
     value: string
@@ -27,7 +28,7 @@ const CollectionsPage = () => {
     const [showWarningPopup, setShowWarningPopup] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
     const [exportErrorMessage, setExportErrorMessage] = useState("")
-    
+    const { jwtToken } = useUser();
     const pageSize = 10
 
     const queryClient = useQueryClient()
@@ -66,7 +67,7 @@ const CollectionsPage = () => {
         const selectedIds = Object.keys(checkedCollections).filter(id => checkedCollections[id])
 
         if (selectedIds.length > 0) {
-            batchDeleteMutation(selectedIds,
+            batchDeleteMutation([selectedIds, jwtToken],
                 {
                     onSuccess: () => {
                         queryClient.invalidateQueries(["collection"])
