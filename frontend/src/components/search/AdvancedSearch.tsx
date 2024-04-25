@@ -75,9 +75,11 @@ const AdvancedSearch: React.FC<SearchComponentProps> = ({ id }) => {
     }
 
     const handleAddRule = () => {
-        setRules([...rules, { field: textInputCategory, value: textInputValue, id: Date.now() }])
-        setTextInputCategory("")
-        setTextInputValue("")
+        if(textInputCategory !== "" && textInputValue !== "") {
+            setRules([...rules, { field: textInputCategory, value: textInputValue, id: Date.now() }])
+            setTextInputCategory("")
+            setTextInputValue("")
+        }
     }
     
     const handleSearch = () => {
