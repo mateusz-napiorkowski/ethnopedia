@@ -17,6 +17,7 @@ interface ArtworkDetailsProps {
 
 interface SublistProps {
     subcategories: any;
+    depth: number;
 }
 
 const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
@@ -31,18 +32,18 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
                                                        }) => {
     
     const { jwtToken } = useUser();
-    const Sublist: React.FC<SublistProps> = ({subcategories}) => {
+    const bulletClassnames = ["px-4 list-[circle]", "px-4 list-[square]", "px-4 list-[disc]"]
+    const Sublist: React.FC<SublistProps> = ({subcategories, depth}) => {
         if(subcategories !== undefined) {
-            return <ul className="px-4 list-disc">
+            return <ul className={bulletClassnames[depth%3]}>
             {subcategories.map((category: any) => {
             return <li>{category.name}: {category.values.join(", ")}
-                <Sublist subcategories={category.subcategories}/>
+                <Sublist subcategories={category.subcategories} depth={depth+1}/>
             </li>
             })}
         </ul>
         } else return <></> 
-    }
-
+    } 
     return (
         <div className="flex flex-row">
             <div className="mt-2 flex-2">
@@ -51,10 +52,10 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
                 <p className="text-lg text-gray-500 dark:text-gray-300 mt-1">Rok: {Rok}</p>
                 <p className="text-lg text-gray-500 dark:text-gray-300 mt-1">Kolekcja: {collectionName}</p>
                 {detailsToShow.categories && 
-                    <ul className="px-4 list-disc">
+                    <ul className={bulletClassnames[0]}>
                         {detailsToShow.categories.map((category: any) => {
                             return <li>{category.name}: {category.values.join(", ")}
-                                <Sublist subcategories={category.subcategories}/>
+                                <Sublist subcategories={category.subcategories} depth={1}/>
                             </li>
                         })}
                     </ul>
