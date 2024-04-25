@@ -25,7 +25,6 @@ const CollectionsPage = () => {
     const { firstName } = useUser()
     const [showFileDropzone, setShowFileDropzone] = useState<boolean>(false)
     const [checkedCollections, setCheckedCollections] = useState<{ [key: string]: boolean }>({})
-    console.log(checkedCollections)
     const [showWarningPopup, setShowWarningPopup] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
     const [exportErrorMessage, setExportErrorMessage] = useState("")

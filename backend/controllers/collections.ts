@@ -70,8 +70,13 @@ const addNewCollection = async (req: Request, res: Response, next: NextFunction)
         if (!token) return res.status(401).json({ error: 'Access denied' });
         try {
             const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string)
-            mongoClient.db().collection('collections').insertOne({name: req.body.name, description: req.body.description})
-            return res.status(201)
+            const duplicate = await Collection.findOne({name: req.body.name})
+            if(duplicate) {
+                return res.status(400).json({error: `Kolekcja o nazwie ${req.body.name} już istnieje.`})
+            } else {
+                const newCollection = await mongoClient.db().collection('collections').insertOne({name: req.body.name, description: req.body.description})
+                return res.status(201).json({newCollection: newCollection})
+            }
         } catch (error) {
             return res.status(401).json({ error: 'Access denied' });
         }

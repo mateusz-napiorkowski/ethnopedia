@@ -4,6 +4,7 @@ import { addNewCollection, useCreateCollectionMutation } from "../../api/collect
 import { useQueryClient } from "react-query"
 import { useNavigate } from "react-router-dom"
 import { useUser } from "../../providers/UserProvider"
+import { useState } from "react"
 
 type Props = {
     stateChanger: any
@@ -15,6 +16,7 @@ const CreateCollectionModal = ({ stateChanger, onClose }: Props) => {
     const queryClient = useQueryClient()
     const navigate = useNavigate()
     const { jwtToken } = useUser();
+    const [showErrorMessage, setShowErrorMessage] = useState<boolean>(false)
 
     return <div
         id="default-modal"
@@ -27,11 +29,17 @@ const CreateCollectionModal = ({ stateChanger, onClose }: Props) => {
             <div className="relative w-full max-w-2xl max-h-full">
                 <Formik
                     initialValues={{ name: "", description: "" }}
-                    onSubmit={(values, { setSubmitting }) => {    
+                    onSubmit={async (values, { setSubmitting }) => {    
                         const { name, description } = values
-                        addNewCollection(name, description, jwtToken)
-                        stateChanger(name)
-                        onClose()
+                        try {
+                            const response = await addNewCollection(name, description, jwtToken)
+                            setShowErrorMessage(false)
+                            stateChanger(name)
+                            onClose()
+                        } catch (error) {
+                            console.error(error)
+                            setShowErrorMessage(true)
+                        }                      
                     }}>
 
                     {({ isSubmitting }) => (
@@ -62,7 +70,7 @@ const CreateCollectionModal = ({ stateChanger, onClose }: Props) => {
                                     name="name"
                                     type="text"
                                     className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none"
-                                />
+                                />     
                                 <ErrorMessage name="name" component="div" className="text-red-500 text-sm" />
 
                                 <label htmlFor="description"
@@ -79,7 +87,11 @@ const CreateCollectionModal = ({ stateChanger, onClose }: Props) => {
                                     focus:outline-none dark:border-gray-600 dark:bg-gray-800"
                                 />
                                 <ErrorMessage name="description" component="div" className="text-red-500 text-sm" />
+                                <div className="h-8 py-2">
+                                    {showErrorMessage && <p className="text-red-500 text-sm">Kolekcja o podanej nazwie już istnieje.</p>}
+                                </div>
                             </div>
+                
                             <div className="flex justify-end px-4 pb-4">
                                 <button
                                     type="button"
