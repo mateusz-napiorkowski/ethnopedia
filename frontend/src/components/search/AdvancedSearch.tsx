@@ -1,25 +1,25 @@
 import React, { useEffect, useState } from "react"
 import { useFormik } from "formik"
 import { useQuery } from "react-query"
-import { getCategories, getAllCategories } from "../../api/categories"
+import { getAllCategories } from "../../api/categories"
 import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg"
 import { ReactComponent as CloseIcon } from "../../assets/icons/close.svg"
 import { ReactComponent as SearchLoopIcon } from "../../assets/icons/searchLoop.svg"
 import LoadingPage from "../../pages/LoadingPage"
-import { useLocation, useNavigate, useParams } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import { v4 as uuidv4 } from "uuid"
 
 const initialRule = { id: Date.now(), field: "", operator: "", value: "" }
 
-type Subcategory = {
-    name: string
-    values?: string[]
-}
+// type Subcategory = {
+//     name: string
+//     values?: string[]
+// }
 
-type Category = {
-    category: string
-    subcategories?: Subcategory[]
-}
+// type Category = {
+//     category: string
+//     subcategories?: Subcategory[]
+// }
 
 interface SearchComponentProps {
     id: string;
@@ -82,9 +82,9 @@ const AdvancedSearch: React.FC<SearchComponentProps> = ({ id }) => {
         }
     }
     
-    const handleSearch = () => {
-        navigate(`/collections/${collection}/artworks?${rules.map(rule => `${rule.field}=${rule.value}`).join("&")}`, {state: {rules: rules}})
-    }
+    // const handleSearch = () => {
+    //     navigate(`/collections/${collection}/artworks?${rules.map(rule => `${rule.field}=${rule.value}`).join("&")}`, {state: {rules: rules}})
+    // }
 
     if (categoriesData === undefined) {
         return <LoadingPage />

@@ -14,7 +14,6 @@ import { ReactComponent as FileExportIcon } from "../../assets/icons/fileExport.
 import WarningPopup from "../../pages/collections/WarningPopup"
 import CustomDropdown from "../CustomDropdown"
 import { getSingleCollection, useBatchDeleteCollectionMutation } from "../../api/collections"
-import FilterDropdown from "../filter/FilterDropdown"
 import Navigation from "../Navigation"
 import EditCollection from "../../pages/collections/EditCollection"
 import Pagination from "../Pagination"
@@ -25,7 +24,6 @@ const Artworks = () => {
     const [selectedArtworks, setSelectedArtworks] = useState<{ [key: string]: boolean }>({})
     const [showFileDropzone, setShowFileDropzone] = useState<boolean>(false)
     const [showExportOptions, setShowExportOptions] = useState<boolean>(false)
-    const [showCreateArtwork, setShowCreateArtwork] = useState<boolean>(false)
     const [showDeleteRecordsWarning, setShowDeleteRecordsWarning] = useState(false)
     const [showDeleteCollectionWarning, setShowDeleteCollectionWarning] = useState(false)
     const [sortOrder, setSortOrder] = useState<string>("newest-first")
@@ -49,7 +47,7 @@ const Artworks = () => {
     const findValue = (artwork: any, categoryName: string) => {
         let val = ""
         artwork.categories.forEach((category: any) => {
-            if(category.name == categoryName) {
+            if(category.name === categoryName) {
                 val = category.values.toString()
                 return
             }

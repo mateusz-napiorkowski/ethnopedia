@@ -1,8 +1,6 @@
 import { ReactComponent as Close } from "../../assets/icons/close.svg"
 import { Formik, Form, Field, ErrorMessage } from "formik"
-import { addNewCollection, useCreateCollectionMutation } from "../../api/collections"
-import { useQueryClient } from "react-query"
-import { useNavigate } from "react-router-dom"
+import { addNewCollection } from "../../api/collections"
 import { useUser } from "../../providers/UserProvider"
 import { useState } from "react"
 
@@ -12,9 +10,9 @@ type Props = {
 }
 
 const CreateCollectionModal = ({ stateChanger, onClose }: Props) => {
-    const { mutate: createCollection } = useCreateCollectionMutation()
-    const queryClient = useQueryClient()
-    const navigate = useNavigate()
+    // const { mutate: createCollection } = useCreateCollectionMutation()
+    // const queryClient = useQueryClient()
+    // const navigate = useNavigate()
     const { jwtToken } = useUser();
     const [showErrorMessage, setShowErrorMessage] = useState<boolean>(false)
 
@@ -32,7 +30,7 @@ const CreateCollectionModal = ({ stateChanger, onClose }: Props) => {
                     onSubmit={async (values, { setSubmitting }) => {    
                         const { name, description } = values
                         try {
-                            const response = await addNewCollection(name, description, jwtToken)
+                            await addNewCollection(name, description, jwtToken)
                             setShowErrorMessage(false)
                             stateChanger(name)
                             onClose()

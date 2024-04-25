@@ -4,7 +4,7 @@ import Navbar from "../../components/navbar/Navbar"
 import Navigation from "../../components/Navigation"
 import React, { useEffect, useState } from "react"
 import WarningPopup from "../collections/WarningPopup"
-import { deleteArtwork, getArtwork, updateArtwork } from "../../api/artworks"
+import { deleteArtwork, getArtwork } from "../../api/artworks"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { useNavigate, useParams } from "react-router-dom"
 import { useUser } from "../../providers/UserProvider"
@@ -18,14 +18,14 @@ const ArtworkPage = () => {
     const navigate = useNavigate()
     const queryClient = useQueryClient()
     const [textFields, setTextFields] = useState<any>([])
-    const [showStructure, setShowStructure] = useState<boolean>(false)
+    const [showStructure, ] = useState<boolean>(false)
 
-    const [activeTab, setActiveTab] = useState("ArtworkDetails")
+    const [activeTab, ] = useState("ArtworkDetails")
 
     const findValue = (artwork: any, categoryName: string) => {
         let val = ""
         artwork.categories.forEach((category: any) => {
-            if(category.name == categoryName) {
+            if(category.name === categoryName) {
                 val = category.values.toString()
                 return
             }
@@ -68,17 +68,17 @@ const ArtworkPage = () => {
     }
 
 
-    const updateArtworkMutation = useMutation(
-        (artworkData: { id: string, artwork: any, jwtToken: string }) => updateArtwork(artworkData),
-        {
-            onSuccess: () => {
-                queryClient.invalidateQueries("artwork")
-                setShowStructure(false)
-            },
-            onError: (error) => {
-            },
-        },
-    )
+    // const updateArtworkMutation = useMutation(
+    //     (artworkData: { id: string, artwork: any, jwtToken: string }) => updateArtwork(artworkData),
+    //     {
+    //         onSuccess: () => {
+    //             queryClient.invalidateQueries("artwork")
+    //             setShowStructure(false)
+    //         },
+    //         onError: (error) => {
+    //         },
+    //     },
+    // )
 
     const handleEditClick = () => {
         navigate(`edit-artwork`, {state:{categories: fetchedData.artwork.categories}})
@@ -90,9 +90,9 @@ const ArtworkPage = () => {
         // }
     }
 
-    const handleTabClick = (tabName: string) => {
-        setActiveTab(tabName)
-    }
+    // const handleTabClick = (tabName: string) => {
+    //     setActiveTab(tabName)
+    // }
 
     if (fetchedData === undefined) {
         return <LoadingPage />

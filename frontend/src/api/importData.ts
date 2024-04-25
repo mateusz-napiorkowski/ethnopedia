@@ -1,6 +1,5 @@
 import axios from "axios"
 import { API_URL } from "../config"
-import { useMutation } from "react-query"
 
 export const importData = async (importData: any, jwtToken: any, collectionName: any) => {
     const config = {

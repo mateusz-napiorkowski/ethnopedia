@@ -1,7 +1,6 @@
-import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react';
+import React, { useState, ChangeEvent, useEffect } from 'react';
 import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg"
 import { ReactComponent as MinusIcon } from "../../assets/icons/minus.svg";
-import { createArtwork } from '../../api/artworks';
 
 import { Category } from './types/ArtworkTypes';
 
@@ -12,16 +11,16 @@ import { Category } from './types/ArtworkTypes';
 //   isSelectable?: boolean;
 // }
 
-let example_data: Category[] = [
-  { name: "Tytuł", values: ["tytuł utworu"], subcategories: [] },
-  { name: "Wykonawca", values: ["nazwa zespołu"], subcategories: [
-    { name: "Wykonawca nr 1", values: ["Imię Nazwisko 1"] },
-    { name: "Wykonawca nr 2", values: ["Imię Nazwisko 2"] } ] },
-  { name: "Region", values: ["Wielkopolska"], subcategories: [
-    { name: "Podregion", values: ["Wielkopolska Północna"] },
-    { name: "Podregion etnograficzny", values: ["Szamotulskie"] },
-    { name: "Powiat", values: ["Szamotulski"]} ] }
-]
+// let example_data: Category[] = [
+//   { name: "Tytuł", values: ["tytuł utworu"], subcategories: [] },
+//   { name: "Wykonawca", values: ["nazwa zespołu"], subcategories: [
+//     { name: "Wykonawca nr 1", values: ["Imię Nazwisko 1"] },
+//     { name: "Wykonawca nr 2", values: ["Imię Nazwisko 2"] } ] },
+//   { name: "Region", values: ["Wielkopolska"], subcategories: [
+//     { name: "Podregion", values: ["Wielkopolska Północna"] },
+//     { name: "Podregion etnograficzny", values: ["Szamotulskie"] },
+//     { name: "Powiat", values: ["Szamotulski"]} ] }
+// ]
 
 function transformToNewStructure(data: Category[], collectionName: string): { categories: Category[]; collectionName: string } {
   return { categories: data, collectionName: collectionName };
@@ -47,19 +46,19 @@ const FormField: React.FC<FormFieldProps> = ({
   handleAddSubcategory,
 }) => {
   // Generate options for the category name input based on the example_data structure
-  const nameOptions = example_data
-    .filter((category) => !formDataList.some((data) => data.name === category.name))
-    .map((category, i) => (
-      <option key={i} value={category.name} />
-    ));
+  // const nameOptions = example_data
+  //   .filter((category) => !formDataList.some((data) => data.name === category.name))
+  //   .map((category, i) => (
+  //     <option key={i} value={category.name} />
+  //   ));
 
-  // Generate options for the value input based on the selected key
-  const valueOptions = example_data
-    .find((category) => category.name === formData.name)
-    ?.subcategories?.filter((subcategory) => !formData.subcategories?.some((data) => data.name === subcategory.name))
-    .map((subcategory, i) => (
-      <option key={i} value={subcategory.values[0]} />
-  ));
+  // // Generate options for the value input based on the selected key
+  // const valueOptions = example_data
+  //   .find((category) => category.name === formData.name)
+  //   ?.subcategories?.filter((subcategory) => !formData.subcategories?.some((data) => data.name === subcategory.name))
+  //   .map((subcategory, i) => (
+  //     <option key={i} value={subcategory.values[0]} />
+  // ));
     
   return (
     <div key={index} className="flex flex-col pb-1 mt-1 relative">
@@ -141,7 +140,7 @@ const NewArtworkStructure: React.FC<NewArtworkStructureProps> = ({ initialFormDa
   
   useEffect(() => {
     setDataToInsert(transformToNewStructure(formDataList, collectionName))
-  }, [formDataList])
+  }, [formDataList, collectionName, setDataToInsert])
 
   const [jsonOutput, setJsonOutput] = useState<string>('');
   const handleShowJson = () => {

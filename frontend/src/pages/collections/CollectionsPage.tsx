@@ -14,7 +14,6 @@ import { useUser } from "../../providers/UserProvider"
 import Pagination from "../../components/Pagination"
 import { getXlsxWithCollectionData } from "../../api/xlsxFileHandler"
 import FileDropzone from "../../components/FileDropzone"
-import { jwtDecode } from "jwt-decode"
 
 interface Option {
     value: string
@@ -39,6 +38,7 @@ const CollectionsPage = () => {
 
     useEffect(() => {
         refetch()
+// eslint-disable-next-line
     }, [newCollection]);
 
     const { data: fetchedData, refetch } = useQuery(

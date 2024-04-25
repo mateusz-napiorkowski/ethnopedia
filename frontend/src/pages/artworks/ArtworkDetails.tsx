@@ -1,5 +1,4 @@
 import React from "react"
-import { v4 as uuidv4 } from "uuid"
 import { ReactComponent as EditIcon } from "../../assets/icons/edit.svg"
 import { ReactComponent as TrashBinIcon } from "../../assets/icons/trashBin.svg"
 import { useUser } from "../../providers/UserProvider"
