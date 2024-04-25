@@ -1,7 +1,7 @@
 import CreateCollectionModal from "./CreateCollectionModal"
 import CustomDropdown from "../../components/CustomDropdown"
 import LoadingPage from "../LoadingPage"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import WarningPopup from "./WarningPopup"
 import { Collection } from "../../@types/Collection"
 import { ReactComponent as FileExportIcon } from "../../assets/icons/fileExport.svg"
@@ -25,6 +25,7 @@ const CollectionsPage = () => {
     const { firstName } = useUser()
     const [showFileDropzone, setShowFileDropzone] = useState<boolean>(false)
     const [checkedCollections, setCheckedCollections] = useState<{ [key: string]: boolean }>({})
+    console.log(checkedCollections)
     const [showWarningPopup, setShowWarningPopup] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
     const [exportErrorMessage, setExportErrorMessage] = useState("")
@@ -36,7 +37,12 @@ const CollectionsPage = () => {
     const { mutate: batchDeleteMutation } = useBatchDeleteCollectionMutation()
 
     const[newCollection, setNewCollection]=useState<string>("");
-    const { data: fetchedData } = useQuery(
+
+    useEffect(() => {
+        refetch()
+    }, [newCollection]);
+
+    const { data: fetchedData, refetch } = useQuery(
         ["collection", currentPage, pageSize, newCollection],
         () => getCollections(currentPage, pageSize),
         {
@@ -65,7 +71,6 @@ const CollectionsPage = () => {
 
     const deleteSelected = () => {
         const selectedIds = Object.keys(checkedCollections).filter(id => checkedCollections[id])
-
         if (selectedIds.length > 0) {
             batchDeleteMutation([selectedIds, jwtToken],
                 {
