@@ -16,8 +16,6 @@ const general = require("./routes/general")
 const xlsx = require("./routes/xlsx")
 const importFromFile = require("./routes/import")
 
-const {connectMongoDBNativeDriver} = require("./db/connect")
-import initializeDatabase from "./initialization"
 import connectDB from "./db/connect"
 
 app.use(cors())
