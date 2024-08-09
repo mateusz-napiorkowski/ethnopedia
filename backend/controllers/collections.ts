@@ -1,8 +1,6 @@
 import { NextFunction, Request, Response } from "express"
 import mongoose from "mongoose"
 import { ObjectId } from "mongodb"
-import {getMongoDBNativeDriverClient} from "../db/connect"
-const mongoClient = getMongoDBNativeDriverClient()
 const Collection = require("../models/collection")
 const Category = require("../models/collection")
 const Artwork = require("../models/artwork")
@@ -74,7 +72,7 @@ const addNewCollection = async (req: Request, res: Response, next: NextFunction)
             if(duplicate) {
                 return res.status(400).json({error: `Kolekcja o nazwie ${req.body.name} już istnieje.`})
             } else {
-                const newCollection = await mongoClient.db().collection('collections').insertOne({name: req.body.name, description: req.body.description})
+                const newCollection = await Collection.create({name: req.body.name, description: req.body.description})
                 return res.status(201).json({newCollection: newCollection})
             }
         } catch (error) {
