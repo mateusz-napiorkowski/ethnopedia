@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express"
-import { getMongoDBNativeDriverClient } from "../db/connect"
-const mongoClient = getMongoDBNativeDriverClient()
+const Artwork = require("../models/artwork")
 const jwt = require("jsonwebtoken")
 
 interface subData {
@@ -76,7 +75,7 @@ const importData = async (req: Request, res: Response, next: NextFunction) => {
                 newRecord.collectionName = req.body.collectionName
                 records.push(newRecord)
             }
-            mongoClient.db().collection('artworks').insertMany(records)
+            const newRecords = await Artwork.insertMany(records)
             return res.status(201)
             } catch (error) {
                 return res.status(401).json({ error: 'Access denied' });
