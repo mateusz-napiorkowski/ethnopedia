@@ -1,7 +1,5 @@
 import { Request, Response } from "express"
 import excelJS from "exceljs"
-import {getMongoDBNativeDriverClient} from "../db/connect"
-const mongoClient = getMongoDBNativeDriverClient()
 
 const Subsection = require("../models/subsection")
 const Artwork = require("../models/artwork")
@@ -55,7 +53,7 @@ const getXlsxWithArtworksData = async (req: Request, res: Response, next: any) =
         let workbook = new excelJS.Workbook()
         const sheet = workbook.addWorksheet("test")
 
-        const records = await mongoClient.db().collection('artworks').find({collectionName: collectionName}).toArray()
+        const records = await Artwork.find({collectionName: collectionName})
         
         let columnNames: Array<any> = []
         
@@ -134,7 +132,7 @@ const getXlsxWithCollectionData = async (req: Request, res: Response, next: any)
         let workbook = new excelJS.Workbook()
         const sheet = workbook.addWorksheet("test")
 
-        const records = await mongoClient.db().collection('artworks').find({collectionName: collectionName}).toArray()
+        const records = await Artwork.find({collectionName: collectionName})
 
         let columnNames: Array<any> = []      
         let keysUnique = await getAllKeys(collectionName)
@@ -174,7 +172,7 @@ const getAllCaterories = async (req: Request, res: Response, next: any) => {
     try {
         const collectionName = decodeURIComponent(req.params.collectionName)
 
-        const records = await mongoClient.db().collection('artworks').find({collectionName: collectionName}).toArray()
+        const records = await Artwork.find({collectionName: collectionName})
         
         // find keys
         let keys: any = []
