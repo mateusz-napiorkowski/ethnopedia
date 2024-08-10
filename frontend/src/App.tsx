@@ -4,7 +4,6 @@ import { QueryClient, QueryClientProvider } from "react-query"
 import LoginPage from "./pages/LoginPage"
 import Home from "./pages/Home"
 import "./index.css"
-import Categories from "./pages/Categories"
 import ArtworkPage from "./pages/artworks/ArtworkPage"
 import NotFoundPage from "./pages/NotFoundPage"
 import Artworks from "./components/artwork/Artworks"
@@ -33,7 +32,6 @@ const App = () => {
 
                         <Route path="/" element={<Home />} />
                         <Route path="/collections/:collection/artworks" element={<Artworks />} />
-                        <Route path="/categories/:collectionName" element={<Categories />} />
 
                         <Route path="/create-collection" element={<CreateCollectionPage />} />
 
