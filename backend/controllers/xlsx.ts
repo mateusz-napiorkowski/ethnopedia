@@ -1,7 +1,6 @@
 import { Request, Response } from "express"
 import excelJS from "exceljs"
 
-const Subsection = require("../models/subsection")
 const Artwork = require("../models/artwork")
 
 const fillRow: any = (keys: any, categories: any) => {
