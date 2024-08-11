@@ -84,21 +84,6 @@ const addNewCollection = async (req: Request, res: Response, next: NextFunction)
     }
 }
 
-function countLabelsRecursively(categoryDetails: any) {
-    let count = 0
-    const recurse = (details: any) => {
-        if (details)
-            details.forEach((detail: any) => {
-                count++
-                if (detail.subcategories) {
-                    recurse(detail.subcategories)
-                }
-            })
-    }
-    recurse(categoryDetails)
-    return count
-}
-
 const findSearchText = (searchText: any, subcategories: any) => {
     if(subcategories !== undefined) {
         for(const category of subcategories){

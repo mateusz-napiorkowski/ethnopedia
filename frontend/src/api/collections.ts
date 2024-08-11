@@ -11,8 +11,6 @@ interface CollectionsResponse {
     pageSize: number;
 }
 
-
-
 export const getCollections = async (page: number = 1, pageSize: number = 10): Promise<CollectionsResponse> => {
     const response = await axios.get(`${API_URL}v1/collection`, {
         params: {
@@ -39,16 +37,6 @@ export const useCreateCollectionMutation = () => {
     })
 }
 
-export const useCreateRecordMutation = (jwtToken: string) => {
-    return useMutation(async (details: SelectedDetail[]) => {
-        const res = await axios.post(`${API_URL}v1/artworks`, details, {
-            headers: {
-                Authorization: `Bearer ${jwtToken}`,
-            },
-        })
-        return res.data
-    })
-}
 export const useBatchDeleteCollectionMutation = () => {
     return useMutation(async (data: Array<any>) => {
         const collectionIds = data[0].join(",")

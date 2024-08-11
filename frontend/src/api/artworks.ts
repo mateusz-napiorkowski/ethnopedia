@@ -2,11 +2,6 @@ import axios from "axios"
 import { API_URL } from "../config"
 import { useMutation } from "react-query"
 
-export const getArtworks = async () => {
-    const response = await axios.get(`${API_URL}v1/artworks`)
-    return response.data
-}
-
 export const getArtwork = async (id: string) => {
     return await axios.get(`${API_URL}v1/artworks/${id}`)
         .then(res => res.data)

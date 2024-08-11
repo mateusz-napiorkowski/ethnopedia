@@ -8,27 +8,6 @@ const Category = require("../models/category")
 const jwt = require("jsonwebtoken")
 const ObjectId = require("mongodb").ObjectId
 
-const getAllArtworks = async (req: Request, res: Response, next: NextFunction) => {
-    const page = parseInt(req.query.page as string) || 1
-    const pageSize = parseInt(req.query.pageSize as string) || 10
-
-    const totalArtworks = await Artwork.countDocuments({})
-
-    const artworks = await Artwork.find({})
-        .skip((page - 1) * pageSize)
-        .limit(pageSize)
-
-    const columnNames = artworks.length > 0 ? Object.keys(artworks[0].toObject()) : []
-
-    res.status(200).json({
-        artworks: artworks,
-        total: totalArtworks,
-        currentPage: page,
-        pageSize: pageSize,
-        columnNames: columnNames,
-    })
-}
-
 const getArtwork = async (req: Request, res: Response, next: NextFunction) => {
     const artworkId = req.params.artworkId
 
@@ -77,22 +56,6 @@ const patchArtwork = asyncWrapper(async (req: Request, res: Response, next: Next
         next(error)
     }
 })
-
-const searchArtworks = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        // let query = JSON.parse(JSON.stringify(req.query))
-        // const collection = req.query.collection
-        // const searchText = req.query.searchText
-        // let query_json: object = {Kolekcja: {value: collection}, $text: { $search: searchText }}
-        // const records = await mongoClient.db().collection('artworks').find(query_json).toArray()
-        // // const keys = await getAllKeys(collection)
-        // // console.log(keys)
-        // console.log(records)
-        // return res.status(200).json(records)
-    } catch (error) {
-        next(error)
-    }
-}
 
 const filterArtworks = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
@@ -215,11 +178,9 @@ const batchDeleteArtworks = async (req: Request, res: Response, next: NextFuncti
 }
 
 module.exports = {
-    getAllArtworks,
     getArtwork,
     createArtwork,
     editArtwork,
-    searchArtworks,
     batchDeleteArtworks,
     filterArtworks,
     patchArtwork,
