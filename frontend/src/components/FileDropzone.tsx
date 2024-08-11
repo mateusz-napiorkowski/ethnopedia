@@ -2,7 +2,7 @@ import { useState } from "react"
 import { ReactComponent as DragAndDrop } from "../assets/icons/dragAndDrop.svg"
 import { ReactComponent as Close } from "../assets/icons/close.svg"
 import * as XLSX from 'xlsx';
-import { importData } from "../api/importData"
+import { importData } from "../api/dataImport"
 import { createCollection } from "../api/collections";
 import { useUser } from "../providers/UserProvider";
 

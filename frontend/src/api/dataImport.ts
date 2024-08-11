@@ -6,6 +6,6 @@ export const importData = async (importData: any, jwtToken: any, collectionName:
         headers: { Authorization: `Bearer ${jwtToken}` }
     };
     return await axios
-        .post(`${API_URL}v1/import`, {importData, collectionName}, config)
+        .post(`${API_URL}v1/dataImport`, {importData, collectionName}, config)
         .then(res => res.data)
 }
