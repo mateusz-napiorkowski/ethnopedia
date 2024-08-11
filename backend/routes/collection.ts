@@ -5,15 +5,15 @@ const router = express.Router()
 const {
     getAllCollections,
     getCollection,
-    createCollection,
-    batchDeleteCollections,
     getArtworksInCollection,
+    createCollection,
+    batchDeleteCollections
 } = require("../controllers/collections")
 
-router.route("/:name/artworks").get(getArtworksInCollection)
 router.route("/").get(getAllCollections)
 router.route("/:name").get(getCollection)
-router.route("/:collection").delete(batchDeleteCollections)
+router.route("/:name/artworks").get(getArtworksInCollection)
 router.route("/add").post(createCollection)
+router.route("/:collection").delete(batchDeleteCollections)
 
 module.exports = router

@@ -61,23 +61,22 @@ const getAllCollections = async (req: Request, res: Response, next: any) => {
     })
 }
 
-const createCollection = async (req: Request, res: Response, next: NextFunction) => {
+const getCollection = async (req: Request, res: Response, next: any) => {
+    const collectionName = req.params.name
+
     try {
-        const token = req.headers.authorization?.split(" ")[1]
-        if (!token) return res.status(401).json({ error: 'Access denied' });
-        try {
-            const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string)
-            const duplicate = await Collection.findOne({name: req.body.name})
-            if(duplicate) {
-                return res.status(400).json({error: `Kolekcja o nazwie ${req.body.name} już istnieje.`})
-            } else {
-                const newCollection = await Collection.create({name: req.body.name, description: req.body.description})
-                return res.status(201).json({newCollection: newCollection})
-            }
-        } catch (error) {
-            return res.status(401).json({ error: 'Access denied' });
+        // if (!mongoose.isValidObjectId(collectionId)) {
+        //     return res.status(400).json(`Invalid collection id: ${collectionId}`)
+        // }
+
+        const collection = await Collection.find({ name: collectionName }).exec()
+
+        if (!collection) {
+            return res.status(404).json("Collection not found")
+        } else {
+            return res.status(200).json(collection[0])
         }
-        
+
     } catch (error) {
         next(error)
     }
@@ -228,22 +227,23 @@ const getArtworksInCollection = async (req: Request, res: Response, next: NextFu
     }
 }
 
-const getCollection = async (req: Request, res: Response, next: any) => {
-    const collectionName = req.params.name
-
+const createCollection = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        // if (!mongoose.isValidObjectId(collectionId)) {
-        //     return res.status(400).json(`Invalid collection id: ${collectionId}`)
-        // }
-
-        const collection = await Collection.find({ name: collectionName }).exec()
-
-        if (!collection) {
-            return res.status(404).json("Collection not found")
-        } else {
-            return res.status(200).json(collection[0])
+        const token = req.headers.authorization?.split(" ")[1]
+        if (!token) return res.status(401).json({ error: 'Access denied' });
+        try {
+            const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string)
+            const duplicate = await Collection.findOne({name: req.body.name})
+            if(duplicate) {
+                return res.status(400).json({error: `Kolekcja o nazwie ${req.body.name} już istnieje.`})
+            } else {
+                const newCollection = await Collection.create({name: req.body.name, description: req.body.description})
+                return res.status(201).json({newCollection: newCollection})
+            }
+        } catch (error) {
+            return res.status(401).json({ error: 'Access denied' });
         }
-
+        
     } catch (error) {
         next(error)
     }
@@ -285,7 +285,7 @@ const batchDeleteCollections = async (req: Request, res: Response, next: NextFun
 module.exports = {
     getAllCollections,
     getCollection,
+    getArtworksInCollection,
     createCollection,
-    batchDeleteCollections,
-    getArtworksInCollection
+    batchDeleteCollections
 }

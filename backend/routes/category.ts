@@ -7,7 +7,7 @@ const {
     getArtworkCategories
 } = require("../controllers/categories")
 
-router.route("/:name").get(getArtworkCategories)
 router.route("/all/:collectionName").get(getCollectionCategories)
+router.route("/:name").get(getArtworkCategories)
 
 module.exports = router

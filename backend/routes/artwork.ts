@@ -10,7 +10,8 @@ const {
 } = require("../controllers/artworks")
 
 router.route("/:artworkId").get(getArtwork)
-router.route("/:artwork").delete(batchDeleteArtworks)
 router.route("/create").post(createArtwork)
 router.route("/edit/:artworkId").post(editArtwork)
+router.route("/:artwork").delete(batchDeleteArtworks)
+
 module.exports = router
