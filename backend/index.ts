@@ -10,7 +10,7 @@ const auth = require("./routes/auth")
 const artworks = require("./routes/artwork")
 const collections = require("./routes/collection")
 const categories = require("./routes/category")
-const xlsx = require("./routes/xlsx")
+const dataExport = require("./routes/dataExport")
 const dataImport = require("./routes/dataImport")
 
 import connectDB from "./db/connect"
@@ -22,7 +22,7 @@ app.use("/api/v1/auth", auth)
 app.use("/api/v1/artworks", artworks)
 app.use("/api/v1/collection", collections)
 app.use("/api/v1/categories", categories)
-app.use("/api/v1/xlsx", xlsx)
+app.use("/api/v1/dataExport", dataExport)
 app.use("/api/v1/dataImport", dataImport)
 
 const port = process.env.PORT || 5000

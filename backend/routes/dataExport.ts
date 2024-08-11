@@ -6,7 +6,7 @@ const {
     getXlsxWithArtworksData,
     getXlsxWithCollectionData,
     getAllCaterories
-} = require("../controllers/xlsx")
+} = require("../controllers/dataExport")
 
 router.route("/:collectionName").get(getXlsxWithArtworksData)
 router.route("/collection/:collectionName").get(getXlsxWithCollectionData)

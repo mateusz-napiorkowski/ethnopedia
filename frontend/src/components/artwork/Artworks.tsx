@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from "react-query"
 import { useBatchDeleteArtworkMutation } from "../../api/artworks"
 import { getArtworksInCollection } from "../../api/collections"
-import { getAllKeys } from "../../api/xlsxFileHandler"
+import { getAllKeys } from "../../api/dataExport"
 import LoadingPage from "../../pages/LoadingPage"
 import React, { useEffect, useMemo, useState} from "react"
 import Navbar from "../navbar/Navbar"

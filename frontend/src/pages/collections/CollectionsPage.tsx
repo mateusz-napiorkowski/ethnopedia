@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom"
 import { useQuery, useQueryClient } from "react-query"
 import { useUser } from "../../providers/UserProvider"
 import Pagination from "../../components/Pagination"
-import { getXlsxWithCollectionData } from "../../api/xlsxFileHandler"
+import { getXlsxWithCollectionData } from "../../api/dataExport"
 import FileDropzone from "../../components/FileDropzone"
 
 interface Option {

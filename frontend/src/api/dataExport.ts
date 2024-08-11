@@ -12,7 +12,7 @@ export const getXlsxWithArtworksData = async (collectionName: string, keysToIncl
     params.append(`exportSelectedRecords`, exportSelectedRecords.toString())
     params.append(`exportFilename`, filename)
     return await axios({
-        url: `${API_URL}v1/xlsx/${collectionName}`,
+        url: `${API_URL}v1/dataExport/${collectionName}`,
         method: 'GET',
         responseType: 'blob',
         params: params
@@ -36,7 +36,7 @@ export const getXlsxWithArtworksData = async (collectionName: string, keysToIncl
 export const getXlsxWithCollectionData = async (collectionName: string) => {
     const params = new URLSearchParams();
     return await axios({
-        url: `${API_URL}v1/xlsx/collection/${collectionName}`,
+        url: `${API_URL}v1/dataExport/collection/${collectionName}`,
         method: 'GET',
         responseType: 'blob',
         params: params
@@ -58,6 +58,6 @@ export const getXlsxWithCollectionData = async (collectionName: string) => {
 }
 
 export const getAllKeys = async (collectionName: string) => {
-    return await axios.get(`${API_URL}v1/xlsx/keys/${collectionName}`)
+    return await axios.get(`${API_URL}v1/dataExport/keys/${collectionName}`)
         .then(res => res.data)
 }

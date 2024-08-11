@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { ReactComponent as Close } from "../assets/icons/close.svg"
 import { useParams } from "react-router-dom"
-import { getXlsxWithArtworksData } from "../api/xlsxFileHandler"
+import { getXlsxWithArtworksData } from "../api/dataExport"
 import { useQuery } from "react-query"
 import { getAllCategories } from "../api/categories"
 
