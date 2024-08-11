@@ -3,11 +3,11 @@ import express from "express"
 const router = express.Router()
 
 const {
-    getCategoriesById,
-    getAllKeys
+    getCollectionCategories,
+    getArtworkCategories
 } = require("../controllers/categories")
 
-router.route("/:name").get(getCategoriesById)
-router.route("/all/:collectionName").get(getAllKeys)
+router.route("/:name").get(getArtworkCategories)
+router.route("/all/:collectionName").get(getCollectionCategories)
 
 module.exports = router

@@ -30,13 +30,6 @@ export const addNewCollection = async (name: any, description: any, jwtToken: an
         .then(res => res.data)
 }
 
-export const useCreateCollectionMutation = () => {
-    return useMutation(async (newCollectionData: Collection) => {
-        const res = await axios.post(`${API_URL}v1/collection`, newCollectionData)
-        return res.data
-    })
-}
-
 export const useBatchDeleteCollectionMutation = () => {
     return useMutation(async (data: Array<any>) => {
         const collectionIds = data[0].join(",")
@@ -47,21 +40,6 @@ export const useBatchDeleteCollectionMutation = () => {
         const res = await axios.delete(url, config)
         return res.data
     })
-}
-
-export const updateCollection = async ({
-                                           id,
-                                           collectionData,
-                                           jwtToken,
-                                       }: {
-    id: string;
-    collectionData: Collection;
-    jwtToken: string;
-}) => {
-    const response = await axios.patch(`${API_URL}v1/collection/${id}`, collectionData, {
-        headers: { "Authorization": `Bearer ${jwtToken}` },
-    })
-    return response.data
 }
 
 export const getSingleCollection = async (id: string) => {

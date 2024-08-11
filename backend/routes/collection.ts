@@ -7,17 +7,13 @@ const {
     getCollection,
     createCollection,
     batchDeleteCollections,
-    artworksInCollection,
-    patchCollection,
-    addNewCollection
+    getArtworksInCollection,
 } = require("../controllers/collections")
 
-router.route("/:name/artworks").get(artworksInCollection)
+router.route("/:name/artworks").get(getArtworksInCollection)
 router.route("/").get(getAllCollections)
-router.route("/").post(createCollection)
 router.route("/:name").get(getCollection)
 router.route("/:collection").delete(batchDeleteCollections)
-router.route("/:id").patch(patchCollection)
-router.route("/add").post(addNewCollection)
+router.route("/add").post(createCollection)
 
 module.exports = router

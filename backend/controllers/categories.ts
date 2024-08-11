@@ -1,28 +1,26 @@
 import { NextFunction, Request, Response } from "express"
 
-const asyncWrapper = require("../middleware/async")
-
 const Artwork = require("../models/artwork")
 const Category = require("../models/category")
 
-const getNestedKeys = ((prefix: string, subcategories: any) => {
+const getNestedCategories = ((prefix: string, subcategories: any) => {
     let nestedCategories: Array<string> = []
     if(subcategories !== undefined) {
         for(const subcategory of subcategories){
             nestedCategories.push(`${prefix}${subcategory.name}`)
-            nestedCategories.push(...getNestedKeys(`${prefix}${subcategory.name}.`, subcategory.subcategories))
+            nestedCategories.push(...getNestedCategories(`${prefix}${subcategory.name}.`, subcategory.subcategories))
         }
     }
     return nestedCategories
 })
 
-export const getAllKeys = async (req: Request, res: Response, next: NextFunction) => {
+export const getCollectionCategories = async (req: Request, res: Response, next: NextFunction) => {
     const records = await Artwork.find({ collectionName: req.params.collectionName })
     let allCategories: Array<string> = []
     records.forEach((record:any) => {
         for(const category of record.categories){
             allCategories.push(category.name)
-            allCategories.push(...getNestedKeys(`${category.name}.`, category.subcategories))
+            allCategories.push(...getNestedCategories(`${category.name}.`, category.subcategories))
         }
     });
     const allCategoriesUnique = allCategories.filter((value, index, array) => {
@@ -31,7 +29,7 @@ export const getAllKeys = async (req: Request, res: Response, next: NextFunction
     res.status(200).json({categories: allCategoriesUnique})
 }
 
-const getCategoriesById = async (req: Request, res: Response, next: NextFunction) => {
+const getArtworkCategories = async (req: Request, res: Response, next: NextFunction) => {
     const page = typeof req.query.page === "string" ? parseInt(req.query.page) : 1
     const limit = typeof req.query.limit === "string" ? parseInt(req.query.limit) : 5
 
@@ -54,6 +52,6 @@ const getCategoriesById = async (req: Request, res: Response, next: NextFunction
 }
 
 module.exports = {
-    getCategoriesById,
-    getAllKeys,
+    getCollectionCategories,
+    getArtworkCategories,
 }

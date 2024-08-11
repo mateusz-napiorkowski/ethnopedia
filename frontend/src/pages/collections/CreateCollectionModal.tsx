@@ -10,9 +10,6 @@ type Props = {
 }
 
 const CreateCollectionModal = ({ stateChanger, onClose }: Props) => {
-    // const { mutate: createCollection } = useCreateCollectionMutation()
-    // const queryClient = useQueryClient()
-    // const navigate = useNavigate()
     const { jwtToken } = useUser();
     const [showErrorMessage, setShowErrorMessage] = useState<boolean>(false)
 

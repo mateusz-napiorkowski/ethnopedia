@@ -15,7 +15,6 @@ import WarningPopup from "../../pages/collections/WarningPopup"
 import CustomDropdown from "../CustomDropdown"
 import { getSingleCollection, useBatchDeleteCollectionMutation } from "../../api/collections"
 import Navigation from "../Navigation"
-import EditCollection from "../../pages/collections/EditCollection"
 import Pagination from "../Pagination"
 import category from "../Category"
 import { useUser } from "../../providers/UserProvider"
@@ -205,12 +204,6 @@ const Artworks = () => {
                             </button>
                         </div> */}
 
-                        {showEditCollection && (
-                            <EditCollection
-                                onClose={() => setShowEditCollection(false)}
-                                collectionData={collectionData}
-                            />
-                        )}
                     </div>
 
                     {collection && <SearchComponent id={collection} />}
