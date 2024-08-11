@@ -1,5 +1,6 @@
 import { useQuery, useQueryClient } from "react-query"
-import { getArtworksByCategory, useBatchDeleteArtworkMutation } from "../../api/artworks"
+import { useBatchDeleteArtworkMutation } from "../../api/artworks"
+import { getArtworksInCollection } from "../../api/collections"
 import { getAllKeys } from "../../api/xlsxFileHandler"
 import LoadingPage from "../../pages/LoadingPage"
 import React, { useEffect, useMemo, useState} from "react"
@@ -13,7 +14,7 @@ import { ReactComponent as FileImportIcon } from "../../assets/icons/fileImport.
 import { ReactComponent as FileExportIcon } from "../../assets/icons/fileExport.svg"
 import WarningPopup from "../../pages/collections/WarningPopup"
 import CustomDropdown from "../CustomDropdown"
-import { getSingleCollection, useBatchDeleteCollectionMutation } from "../../api/collections"
+import { getCollection, useBatchDeleteCollectionMutation } from "../../api/collections"
 import Navigation from "../Navigation"
 import Pagination from "../Pagination"
 import category from "../Category"
@@ -63,14 +64,14 @@ const Artworks = () => {
 
     const { data: artworkData} = useQuery({
         queryKey: ["artwork", currentPage, searchText, queryParameters, location, sortOrder],
-        queryFn: () => getArtworksByCategory(collection as string, currentPage, pageSize, sortOrder, searchText, Object.fromEntries(queryParameters.entries())),
+        queryFn: () => getArtworksInCollection(collection as string, currentPage, pageSize, sortOrder, searchText, Object.fromEntries(queryParameters.entries())),
         enabled: !!collection,
     })
 
     const { data: collectionData } = useQuery({
         queryKey: [`${collection}`],
         enabled: !!collection,
-        queryFn: () => getSingleCollection(collection as string),
+        queryFn: () => getCollection(collection as string),
     })
 
     const selectAll = () => {

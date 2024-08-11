@@ -1,6 +1,6 @@
 import { ReactComponent as Close } from "../../assets/icons/close.svg"
 import { Formik, Form, Field, ErrorMessage } from "formik"
-import { addNewCollection } from "../../api/collections"
+import { createCollection} from "../../api/collections"
 import { useUser } from "../../providers/UserProvider"
 import { useState } from "react"
 
@@ -27,7 +27,7 @@ const CreateCollectionModal = ({ stateChanger, onClose }: Props) => {
                     onSubmit={async (values, { setSubmitting }) => {    
                         const { name, description } = values
                         try {
-                            await addNewCollection(name, description, jwtToken)
+                            await createCollection(name, description, jwtToken)
                             setShowErrorMessage(false)
                             stateChanger(name)
                             onClose()

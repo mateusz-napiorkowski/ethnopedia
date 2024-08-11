@@ -11,7 +11,7 @@ interface CollectionsResponse {
     pageSize: number;
 }
 
-export const getCollections = async (page: number = 1, pageSize: number = 10): Promise<CollectionsResponse> => {
+export const getAllCollections = async (page: number = 1, pageSize: number = 10): Promise<CollectionsResponse> => {
     const response = await axios.get(`${API_URL}v1/collection`, {
         params: {
             page: page,
@@ -21,7 +21,26 @@ export const getCollections = async (page: number = 1, pageSize: number = 10): P
     return response.data as CollectionsResponse
 }
 
-export const addNewCollection = async (name: any, description: any, jwtToken: any) => {
+export const getCollection = async (id: string) => {
+    const response = await axios.get(`${API_URL}v1/collection/${id}`)
+    return response.data as Collection
+}
+
+export const getArtworksInCollection = async (collection: string, page: number, pageSize: number, sortOrder: string, searchText: string | null, queryParams: any) => {
+    return await axios.get(`${API_URL}v1/collection/${collection}/artworks/`, {
+        params: {
+            page: page,
+            pageSize: pageSize,
+            sortOrder: sortOrder,
+            searchText: searchText,
+            advSearch: Object.entries(queryParams).length !== 0 ? true : false,
+            ...queryParams
+        }
+    })
+        .then(res => res.data)
+}
+
+export const createCollection = async (name: any, description: any, jwtToken: any) => {
     const config = {
         headers: { Authorization: `Bearer ${jwtToken}` }
     };
@@ -42,7 +61,3 @@ export const useBatchDeleteCollectionMutation = () => {
     })
 }
 
-export const getSingleCollection = async (id: string) => {
-    const response = await axios.get(`${API_URL}v1/collection/${id}`)
-    return response.data as Collection
-}

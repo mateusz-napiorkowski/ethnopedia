@@ -58,7 +58,7 @@ const editArtwork = (async (req: Request, res: Response, next: NextFunction) => 
     }
 })
 
-const batchDeleteArtworks = async (req: Request, res: Response, next: NextFunction) => {
+const deleteArtworks = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const token = req.headers.authorization?.split(" ")[1]
         if (!token) return res.status(401).json({ error: 'Access denied' });
@@ -91,5 +91,5 @@ module.exports = {
     getArtwork,
     createArtwork,
     editArtwork,
-    batchDeleteArtworks
+    deleteArtworks
 }

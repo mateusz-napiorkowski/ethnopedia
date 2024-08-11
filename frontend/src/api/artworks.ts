@@ -7,26 +7,6 @@ export const getArtwork = async (id: string) => {
         .then(res => res.data)
 }
 
-export const getAdvancedSearchResult = async (queryParameters: string) => {
-    return await axios.get(`${API_URL}v1${queryParameters}`)
-        .then(res => res.data)
-}
-
-export const getArtworksByCategory = async (collection: string, page: number, pageSize: number, sortOrder: string, searchText: string | null, queryParams: any) => {
-    return await axios.get(`${API_URL}v1/collection/${collection}/artworks/`, {
-        params: {
-            page: page,
-            pageSize: pageSize,
-            sortOrder: sortOrder,
-            searchText: searchText,
-            advSearch: Object.entries(queryParams).length !== 0 ? true : false,
-            ...queryParams
-        }
-    })
-        .then(res => res.data)
-}
-
-
 export const createArtwork = async (artworkData: any, jwtToken: any) => {
     const config = {
         headers: { Authorization: `Bearer ${jwtToken}` }
@@ -45,6 +25,8 @@ export const editArtwork = async (artworkData: any, artworkId: string, jwtToken:
         .then(res => res.data)
 }
 
+
+// deletes selected records (used on collection page)
 export const useBatchDeleteArtworkMutation = () => {
     return useMutation(async (data: Array<any>) => {
         const artworkIds = data[0].join(",")
@@ -58,7 +40,14 @@ export const useBatchDeleteArtworkMutation = () => {
     })
 }
 
+// deletes one artwork (used on artwork page)
 export const deleteArtwork = async (artworkId: string, jwtToken: string) => {
     const response = await axios.delete(`${API_URL}v1/artworks/${artworkId}`, { headers: { "Authorization": `Bearer ${jwtToken}` } })
     return response.data
 }
+
+
+
+
+
+

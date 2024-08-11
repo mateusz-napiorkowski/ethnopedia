@@ -6,12 +6,12 @@ const {
     getArtwork,
     createArtwork,
     editArtwork,
-    batchDeleteArtworks
+    deleteArtworks
 } = require("../controllers/artworks")
 
 router.route("/:artworkId").get(getArtwork)
 router.route("/create").post(createArtwork)
 router.route("/edit/:artworkId").post(editArtwork)
-router.route("/:artwork").delete(batchDeleteArtworks)
+router.route("/:artwork").delete(deleteArtworks)
 
 module.exports = router

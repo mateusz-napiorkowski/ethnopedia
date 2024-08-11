@@ -3,7 +3,7 @@ import { ReactComponent as DragAndDrop } from "../assets/icons/dragAndDrop.svg"
 import { ReactComponent as Close } from "../assets/icons/close.svg"
 import * as XLSX from 'xlsx';
 import { importData } from "../api/importData"
-import { addNewCollection } from "../api/collections";
+import { createCollection } from "../api/collections";
 import { useUser } from "../providers/UserProvider";
 
 type Props = {
@@ -34,7 +34,7 @@ const FileDropzone = ({ onClose, inCollectionPage }: Props) => {
     }
 
     const handleCollectionSubmit = (event: any) => {
-        addNewCollection(collectionName, description, jwtToken)
+        createCollection(collectionName, description, jwtToken)
         importData(dataToSend, jwtToken, collectionName)
     }
     

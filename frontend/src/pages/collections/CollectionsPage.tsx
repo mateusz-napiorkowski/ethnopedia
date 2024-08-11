@@ -7,7 +7,7 @@ import { Collection } from "../../@types/Collection"
 import { ReactComponent as FileExportIcon } from "../../assets/icons/fileExport.svg"
 import { ReactComponent as FileImportIcon } from "../../assets/icons/fileImport.svg"
 import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg"
-import { getCollections, useBatchDeleteCollectionMutation } from "../../api/collections"
+import { getAllCollections, useBatchDeleteCollectionMutation } from "../../api/collections"
 import { useNavigate } from "react-router-dom"
 import { useQuery, useQueryClient } from "react-query"
 import { useUser } from "../../providers/UserProvider"
@@ -43,7 +43,7 @@ const CollectionsPage = () => {
 
     const { data: fetchedData, refetch } = useQuery(
         ["collection", currentPage, pageSize, newCollection],
-        () => getCollections(currentPage, pageSize),
+        () => getAllCollections(currentPage, pageSize),
         {
             keepPreviousData: true,
         },
