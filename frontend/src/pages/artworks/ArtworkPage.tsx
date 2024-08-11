@@ -67,32 +67,9 @@ const ArtworkPage = () => {
         })
     }
 
-
-    // const updateArtworkMutation = useMutation(
-    //     (artworkData: { id: string, artwork: any, jwtToken: string }) => updateArtwork(artworkData),
-    //     {
-    //         onSuccess: () => {
-    //             queryClient.invalidateQueries("artwork")
-    //             setShowStructure(false)
-    //         },
-    //         onError: (error) => {
-    //         },
-    //     },
-    // )
-
     const handleEditClick = () => {
         navigate(`edit-artwork`, {state:{categories: fetchedData.artwork.categories}})
-        // if (showStructure) {
-        //     updateArtworkMutation.mutate({ id: artworkId as string, artwork: textFields, jwtToken })
-        // } else {
-        //     setShowStructure(true)
-        //     setShowMore(true)
-        // }
     }
-
-    // const handleTabClick = (tabName: string) => {
-    //     setActiveTab(tabName)
-    // }
 
     if (fetchedData === undefined) {
         return <LoadingPage />

@@ -10,7 +10,6 @@ const ObjectId = require("mongodb").ObjectId
 
 const getArtwork = async (req: Request, res: Response, next: NextFunction) => {
     const artworkId = req.params.artworkId
-
     try {
         if (!mongoose.isValidObjectId(artworkId)) {
             return res.status(400).json(`Invalid artwork id: ${artworkId}`)
@@ -29,33 +28,6 @@ const getArtwork = async (req: Request, res: Response, next: NextFunction) => {
         next(error)
     }
 }
-
-
-const patchArtwork = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
-    const artworkId = req.params.artworkId
-    const updateData = req.body
-
-    if (!mongoose.isValidObjectId(artworkId)) {
-        return res.status(400).json({ message: "Invalid artwork ID" })
-    }
-
-    try {
-        const result = await Artwork.updateOne({ _id: new ObjectId(artworkId) }, { $set: updateData }, { upsert: true })
-
-        if (result.matchedCount === 0) {
-            return res.status(404).json({ message: `Artwork with id ${artworkId} not found` })
-        }
-
-        if (result.modifiedCount === 0) {
-            return res.status(200).json({ message: "No changes made to the artwork" })
-        }
-
-        const updatedArtwork = await Artwork.findById(artworkId)
-        return res.status(200).json(updatedArtwork)
-    } catch (error) {
-        next(error)
-    }
-})
 
 const filterArtworks = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
@@ -182,6 +154,5 @@ module.exports = {
     createArtwork,
     editArtwork,
     batchDeleteArtworks,
-    filterArtworks,
-    patchArtwork,
+    filterArtworks
 }

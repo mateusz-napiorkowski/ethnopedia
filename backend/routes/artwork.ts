@@ -7,12 +7,10 @@ const {
     createArtwork,
     editArtwork,
     batchDeleteArtworks,
-    filterArtworks,
-    patchArtwork
+    filterArtworks
 } = require("../controllers/artworks")
 
 router.route("/filter").get(filterArtworks)
-router.route("/:artworkId").put(patchArtwork)
 router.route("/:artworkId").get(getArtwork)
 router.route("/:artwork").delete(batchDeleteArtworks)
 router.route("/create").post(createArtwork)
