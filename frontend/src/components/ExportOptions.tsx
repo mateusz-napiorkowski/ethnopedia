@@ -7,7 +7,6 @@ import { getAllCategories } from "../api/categories"
 
 type Props = {
     onClose: () => void,
-    keys: Array<string>
     selectedArtworks: { [key: string]: boolean }
 }
 

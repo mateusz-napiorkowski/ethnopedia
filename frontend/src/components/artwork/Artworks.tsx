@@ -1,7 +1,6 @@
 import { useQuery, useQueryClient } from "react-query"
 import { useBatchDeleteArtworkMutation } from "../../api/artworks"
 import { getArtworksInCollection } from "../../api/collections"
-import { getAllKeys } from "../../api/dataExport"
 import LoadingPage from "../../pages/LoadingPage"
 import React, { useEffect, useMemo, useState} from "react"
 import Navbar from "../navbar/Navbar"
@@ -28,7 +27,6 @@ const Artworks = () => {
     const [showDeleteCollectionWarning, setShowDeleteCollectionWarning] = useState(false)
     const [sortOrder, setSortOrder] = useState<string>("newest-first")
     const [showEditCollection, setShowEditCollection] = useState<boolean>(false)
-    const [keys, setKeys] = useState<Array<string>>([])
     const { jwtToken } = useUser();
     const location = useLocation()
     useEffect(() => {
@@ -236,8 +234,6 @@ const Artworks = () => {
                                             dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
                                         type="button"
                                         onClick={async () => {
-                                            const keyData = await getAllKeys(collection as string);
-                                            setKeys(keyData.keysUnique);
                                             setShowExportOptions(showExportOptions => !showExportOptions)
                                         }}
                                 >
@@ -319,7 +315,7 @@ const Artworks = () => {
                             </span>
                     </div>
                     {showFileDropzone && <FileDropzone onClose={() => setShowFileDropzone(false)} inCollectionPage={false}/>}
-                    {showExportOptions && <ExportOptions keys={keys} selectedArtworks={selectedArtworks} onClose={() => setShowExportOptions(false)} />}
+                    {showExportOptions && <ExportOptions selectedArtworks={selectedArtworks} onClose={() => setShowExportOptions(false)} />}
                 </div>
             </div>
 

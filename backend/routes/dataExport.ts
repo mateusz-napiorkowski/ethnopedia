@@ -4,12 +4,10 @@ const router = express.Router()
 
 const {
     getXlsxWithArtworksData,
-    getXlsxWithCollectionData,
-    getAllCaterories
+    getXlsxWithCollectionData
 } = require("../controllers/dataExport")
 
 router.route("/:collectionName").get(getXlsxWithArtworksData)
 router.route("/collection/:collectionName").get(getXlsxWithCollectionData)
-router.route("/keys/:collectionName").get(getAllCaterories)
 
 module.exports = router

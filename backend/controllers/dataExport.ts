@@ -167,32 +167,7 @@ const getXlsxWithCollectionData = async (req: Request, res: Response, next: any)
     }
 }
 
-const getAllCaterories = async (req: Request, res: Response, next: any) => {
-    try {
-        const collectionName = decodeURIComponent(req.params.collectionName)
-
-        const records = await Artwork.find({collectionName: collectionName})
-        
-        // find keys
-        let keys: any = []
-        records.forEach((record: any) => {
-            for (const property in record) {
-                if (property != "_id") {
-                    keys.push(property)
-                }
-            }
-        })
-        let keysUnique = keys.filter((value: any, index: number, array: any) => {
-            return array.indexOf(value) === index
-        })
-        return res.status(200).json({ keysUnique })
-    } catch (error) {
-        next(error)
-    }
-}
-
 module.exports = {
     getXlsxWithArtworksData,
-    getXlsxWithCollectionData,
-    getAllCaterories
+    getXlsxWithCollectionData
 }
