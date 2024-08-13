@@ -5,6 +5,10 @@ const Artwork = require("../models/artwork")
 const Category = require("../models/category")
 const jwt = require("jsonwebtoken")
 
+export const addTwoNumbers = (x: number, y: number) => {
+    return x + y
+}
+
 const getArtwork = async (req: Request, res: Response, next: NextFunction) => {
     const artworkId = req.params.artworkId
     try {
@@ -91,5 +95,6 @@ module.exports = {
     getArtwork,
     createArtwork,
     editArtwork,
-    deleteArtworks
+    deleteArtworks,
+    addTwoNumbers
 }
