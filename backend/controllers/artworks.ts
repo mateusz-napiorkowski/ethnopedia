@@ -5,26 +5,18 @@ const Artwork = require("../models/artwork")
 const Category = require("../models/category")
 const jwt = require("jsonwebtoken")
 
-export const addTwoNumbers = (x: number, y: number) => {
-    return x + y
-}
-
-const getArtwork = async (req: Request, res: Response, next: NextFunction) => {
-    const artworkId = req.params.artworkId
+export const getArtwork = async (req: Request, res: Response, next: NextFunction) => {
     try {
+        const artworkId = req.params.artworkId
         if (!mongoose.isValidObjectId(artworkId)) {
             return res.status(400).json(`Invalid artwork id: ${artworkId}`)
         }
-
         const artwork = await Artwork.findById(artworkId).exec()
-
         if (!artwork) {
             return res.status(404).json("Artwork not found")
         } else {
-            const columnNames = Category.find({ collectionId: artwork.collectionId }).exec()
-            return res.status(200).json({ artwork, columnNames })
+            return res.status(200).json({ artwork })
         }
-
     } catch (error) {
         next(error)
     }
@@ -95,6 +87,5 @@ module.exports = {
     getArtwork,
     createArtwork,
     editArtwork,
-    deleteArtworks,
-    addTwoNumbers
+    deleteArtworks
 }
