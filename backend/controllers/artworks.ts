@@ -3,6 +3,7 @@ import mongoose from "mongoose"
 const Artwork = require("../models/artwork")
 const Category = require("../models/category")
 const jwt = require("jsonwebtoken")
+import checkUserIsLoggedIn from "../utils/auth"
 
 export const getArtwork = async (req: Request, res: Response, next: NextFunction) => {
     const artworkId = req.params.artworkId
@@ -28,18 +29,20 @@ export const getArtwork = async (req: Request, res: Response, next: NextFunction
 }
 
 const createArtwork = (async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const token = req.headers.authorization?.split(" ")[1]
-        if (!token) return res.status(401).json({ error: 'Access denied' });
+    const userIsLoggedIn = await checkUserIsLoggedIn(req)
+    if (userIsLoggedIn) {
         try {
-            const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string)
             const newArtwork = await Artwork.create(req.body)
             return res.status(201).json(newArtwork)
-        } catch (error) {
-            return res.status(401).json({ error: 'Access denied' });
+        } catch {
+            const err = new Error(`Database unavailable`)
+            res.status(503)
+            return next(err)
         }
-    } catch (error) {
-        next(error)
+    } else {
+        const err = new Error('Access denied')
+        res.status(401)
+        return next(err)
     }
 })
 
