@@ -12,6 +12,7 @@ const collections = require("./routes/collection")
 const categories = require("./routes/category")
 const dataExport = require("./routes/dataExport")
 const dataImport = require("./routes/dataImport")
+const errorHandler = require("./middleware/errorHandler")
 
 import connectDB from "./db/connect"
 
@@ -24,6 +25,7 @@ app.use("/api/v1/collection", collections)
 app.use("/api/v1/categories", categories)
 app.use("/api/v1/dataExport", dataExport)
 app.use("/api/v1/dataImport", dataImport)
+app.use(errorHandler)
 
 const port = process.env.PORT || 5000
 

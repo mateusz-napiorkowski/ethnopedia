@@ -1,4 +1,4 @@
-import { describe, expect, beforeAll, it, afterAll } from "@jest/globals"
+import { describe, expect, beforeEach, it, afterEach } from "@jest/globals"
 require("dotenv").config()
 const mongoose = require('mongoose')
 const express = require("express")
@@ -7,7 +7,7 @@ const ArtworksRouter = require("../../routes/artwork")
 const request = require("supertest")
 
 describe('getArtwork tests', () =>{
-    beforeAll(async () => {
+    beforeEach(async () => {
         await mongoose.connect(process.env.MONGO_URI, {
           useNewUrlParser: true,
           useUnifiedTopology: true,
@@ -34,7 +34,13 @@ describe('getArtwork tests', () =>{
         .get('/');
         expect(res.status).toBe(404);
     })
-    afterAll(async () => {
+    it("should return status 503", async () => {
+        await mongoose.connection.close();
+        const res = await request(app.use(ArtworksRouter))
+        .get('/662e92b5d628570afa5357c3');
+        expect(res.status).toBe(503);
+    })
+    afterEach(async () => {
         await mongoose.connection.close();
     });
 })
