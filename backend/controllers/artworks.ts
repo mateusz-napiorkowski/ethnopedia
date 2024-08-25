@@ -11,7 +11,7 @@ export const getArtwork = async (req: Request, res: Response, next: NextFunction
         return next(err)
     } else {
         try {
-            const artwork = await Artwork.findById(artworkId)//.exec()
+            const artwork = await Artwork.findById(artworkId).exec()
             if (!artwork) {
                 const err = new Error(`Artwork ${artworkId} not found`)
                 res.status(404)

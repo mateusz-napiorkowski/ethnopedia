@@ -7,7 +7,7 @@ jest.mock('mongoose', () => ({
 }))
 const Artwork = require("../../models/artwork")
 jest.mock("../../models/artwork", () => ({
-  findById: jest.fn()
+  findById: jest.fn().mockReturnValue({exec: jest.fn().mockReturnValue({_id: "662e92b5d628570afa5357c3"})})
 }))
 require("dotenv").config()
 const express = require("express")
@@ -21,7 +21,7 @@ const request = require("supertest")
 describe('getArtwork tests', () =>{
     it("Response has status 200 and res.body has artwork data with appropriate artworkId", async () => {
         mongoose.isValidObjectId.mockImplementationOnce(() => {return true})
-        Artwork.findById.mockImplementationOnce(() => {return Promise.resolve({_id: "662e92b5d628570afa5357c3"})})
+        // Artwork.findById().exec.mockImplementationOnce(() => {return Promise.resolve({_id: "662e92b5d628570afa5357c3"})})
         const res = await request(app.use(ArtworksRouter))
         .get('/662e92b5d628570afa5357c3');
         expect(res.status).toMatchInlineSnapshot(`200`)
