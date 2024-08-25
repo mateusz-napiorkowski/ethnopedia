@@ -1,15 +1,4 @@
-import { describe, expect, beforeEach, it, afterEach, jest } from "@jest/globals"
-const mongoose = require('mongoose')
-jest.mock('mongoose', () => ({
-  isValidObjectId: jest.fn(),
-  model: jest.fn().mockReturnThis(),
-  Schema: jest.fn().mockImplementation(() => { return {} })
-}))
-const Artwork = require("../../models/artwork")
-jest.mock("../../models/artwork", () => ({
-  findById: jest.fn()
-}))
-require("dotenv").config()
+import { describe, expect, it, afterEach, jest } from "@jest/globals"
 const express = require("express")
 const bodyParser = require("body-parser");
 const app = express()
@@ -18,8 +7,18 @@ app.use(bodyParser.urlencoded({extended: true}));
 const ArtworksRouter = require("../../routes/artwork")
 const request = require("supertest")
 
+const mongoose = require('mongoose')
+jest.mock('mongoose', () => ({
+  isValidObjectId: jest.fn()
+}))
+const Artwork = require("../../models/artwork")
+jest.mock("../../models/artwork", () => ({
+  findById: jest.fn()
+}))
+
+
 describe('getArtwork tests', () =>{
-    it("Response has status 200 and res.body has artwork data with appropriate artworkId", async () => {
+    it("Response has status 200 and res.body has artwork object with _id parameter", async () => {
         mongoose.isValidObjectId.mockImplementationOnce(() => {return true})
         Artwork.findById.mockImplementationOnce(() => {
           return {
@@ -37,37 +36,35 @@ describe('getArtwork tests', () =>{
         .get('/123');
         expect(res.status).toMatchInlineSnapshot(`400`)
     })
-    // // it("Response has status 404", async () => {
-    // //     let res = await request(app.use(ArtworksRouter))
-    // //     .get('/aaaaaaaad628570afa5357c3');
+    it("Response has status 404", async () => {
+      mongoose.isValidObjectId.mockImplementationOnce(() => {return true})
+      Artwork.findById.mockImplementationOnce(() => {
+        return {
+          exec: jest.fn().mockImplementationOnce(() => {return Promise.resolve(null)})
+        }
+      })
+      let res = await request(app.use(ArtworksRouter))
+      .get('/aaaaaaaad628570afa5357c3');
+      expect(res.status).toMatchInlineSnapshot(`404`)
+    })
+    it("Response has status 503", async () => {
+        mongoose.isValidObjectId.mockImplementationOnce(() => {return true})
+        Artwork.findById.mockImplementationOnce(() => {
+          return {
+            exec: jest.fn().mockImplementationOnce(() => {return Promise.reject()})
+          }
+        })
+        const res = await request(app.use(ArtworksRouter))
+        .get('/662e92b5d628570afa5357c3');
 
-    // //     expect(res.status).toMatchInlineSnapshot(`404`)
-
-    // //     res = await request(app.use(ArtworksRouter))
-    // //     .get('/');
-
-    // //     expect(res.status).toMatchInlineSnapshot(`404`)
-    // // })
-    // // it("Response has status 503", async () => {
-    // //     await mongoose.connection.close();
-    // //     const res = await request(app.use(ArtworksRouter))
-    // //     .get('/662e92b5d628570afa5357c3');
-
-    // //     expect(res.status).toMatchInlineSnapshot(`503`)
-    // // })
+        expect(res.status).toMatchInlineSnapshot(`503`)
+    })
     afterEach(async () => {
         jest.restoreAllMocks();
-        // await mongoose.connection.close();
     });
 })
 
 describe('createArtwork tests', () =>{
-    // beforeEach(async () => {
-    //     await mongoose.connect(process.env.MONGO_URI, {
-    //       useNewUrlParser: true,
-    //       useUnifiedTopology: true,
-    //     });
-    // });
     // it("Inserts new artwork data to database", async () => {
     //     const payload = {
     //         categories: [
@@ -146,7 +143,7 @@ describe('createArtwork tests', () =>{
     //     expect(res.status).toMatchInlineSnapshot(`503`)
     // })
     // afterEach(async () => {
-    //     await mongoose.connection.close();
+    //   jest.restoreAllMocks();
     // });
 })
 
