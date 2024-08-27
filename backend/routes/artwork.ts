@@ -11,7 +11,7 @@ const {
 
 router.route("/:artworkId").get(getArtwork)
 router.route("/create").post(createArtwork)
-router.route("/edit/:artworkId").post(editArtwork)
+router.route("/edit/:artworkId").put(editArtwork)
 router.route("/:artwork").delete(deleteArtworks)
 
 module.exports = router

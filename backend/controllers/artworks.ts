@@ -47,10 +47,11 @@ const createArtwork = (async (req: Request, res: Response, next: NextFunction) =
 })
 
 const editArtwork = (async (req: Request, res: Response, next: NextFunction) => {
+    const artworkId = req.params.artworkId
     const userIsLoggedIn = await checkUserIsLoggedIn(req)
     if (userIsLoggedIn) {
         try {
-            const editedArtwork = await Artwork.replaceOne({_id: req.params.artworkId}, req.body)
+            const editedArtwork = await Artwork.replaceOne({_id: artworkId}, req.body).exec()
             return res.status(201).json(editedArtwork)
         } catch {
             const err = new Error(`Database unavailable`)

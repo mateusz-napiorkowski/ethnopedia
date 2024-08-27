@@ -21,7 +21,7 @@ export const editArtwork = async (artworkData: any, artworkId: string, jwtToken:
         headers: { Authorization: `Bearer ${jwtToken}` }
     };
     return await axios
-        .post(`${API_URL}v1/artworks/edit/${artworkId}`, artworkData, config)
+        .put(`${API_URL}v1/artworks/edit/${artworkId}`, artworkData, config)
         .then(res => res.data)
 }
 
