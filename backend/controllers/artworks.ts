@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express"
 import mongoose from "mongoose"
 const Artwork = require("../models/artwork")
-import checkUserIsLoggedIn from "../utils/auth"
+import {checkUserIsLoggedIn} from "../utils/auth"
+const util = require('util');
 
 export const getArtwork = async (req: Request, res: Response, next: NextFunction) => {
     const artworkId = req.params.artworkId
@@ -31,7 +32,7 @@ const createArtwork = (async (req: Request, res: Response, next: NextFunction) =
     const userIsLoggedIn = await checkUserIsLoggedIn(req)
     if (userIsLoggedIn) {
         try {
-            const newArtwork = await Artwork.create(req.body)
+            const newArtwork = await Artwork.create(req.body).exec()
             return res.status(201).json(newArtwork)
         } catch {
             const err = new Error(`Database unavailable`)

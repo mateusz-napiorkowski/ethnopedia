@@ -16,4 +16,4 @@ export const checkUserIsLoggedIn = async (req: Request) => {
     }
 }
 
-export default checkUserIsLoggedIn
+module.exports = { checkUserIsLoggedIn }

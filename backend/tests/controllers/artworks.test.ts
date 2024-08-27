@@ -13,9 +13,13 @@ jest.mock('mongoose', () => ({
 }))
 const Artwork = require("../../models/artwork")
 jest.mock("../../models/artwork", () => ({
-  findById: jest.fn()
+  findById: jest.fn(),
+  create: jest.fn()
 }))
-
+const auth = require("../../utils/auth")
+jest.mock("../../utils/auth", () => ({
+  checkUserIsLoggedIn: jest.fn()
+}))
 
 describe('getArtwork tests', () =>{
     it("Response has status 200 and res.body has artwork object with _id parameter", async () => {
@@ -65,86 +69,99 @@ describe('getArtwork tests', () =>{
 })
 
 describe('createArtwork tests', () =>{
-    // it("Inserts new artwork data to database", async () => {
-    //     const payload = {
-    //         categories: [
-    //           { name: 'Tytuł', values: [ 'created by test' ], subcategories: [] },
-    //           {
-    //             name: 'Artyści',
-    //             values: [ 'Jan Testowy' ],
-    //             subcategories: [ ]
-    //           },
-    //           { name: 'Rok', values: [ '2024' ], subcategories: [] }
-    //         ],
-    //         collectionName: '123'
-    //       }
-    //     const res = await request(app.use(ArtworksRouter))
-    //     .post('/create')
-    //     .send(payload)
-    //     .set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
-    //     .set('Content-Type', 'application/json')
-    //     .set('Accept', 'application/json')
+  it("Response has status 201", async () => {
+    auth.checkUserIsLoggedIn.mockImplementationOnce(() => {return true})
+    Artwork.create.mockImplementation(() => {
+      return {
+        exec: jest.fn().mockImplementation(() => {return Promise.resolve({
+          _id: "66ce0bf156199c1b8df5db7d",
+          categories: [
+            { name: 'Tytuł', values: [ 'Tytuł testowy' ], subcategories: [] },
+            { name: 'Artyści', values: [ 'Jan Testowy' ], subcategories: [] },
+            { name: 'Rok', values: [ '2024' ], subcategories: [] }
+          ],
+          collectionName: 'testowa',
+          createdAt: '2024-08-27T17:25:05.352Z',
+          updatedAt: '2024-08-27T17:25:05.352Z',
+          __v: 0
+        })})
+      }
+    })
+    const payload = {
+        categories: [
+          { name: 'Tytuł', values: [ 'Tytuł testowy' ], subcategories: [] },
+          {
+            name: 'Artyści',
+            values: [ 'Jan Testowy' ],
+            subcategories: [ ]
+          },
+          { name: 'Rok', values: [ '2024' ], subcategories: [] }
+        ],
+        collectionName: 'testowa'
+    }
+    const res = await request(app.use(ArtworksRouter))
+    .post('/create')
+    .send(payload)
+    .set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
 
-    //     expect(res.status).toMatchInlineSnapshot(`201`)
-    // })
-    // it("Response has status 401", async () => {
-    //     const payload = {
-    //         categories: [
-    //           { name: 'Tytuł', values: [ 'created by test' ], subcategories: [] },
-    //           {
-    //             name: 'Artyści',
-    //             values: [ 'Jan Testowy' ],
-    //             subcategories: [ ]
-    //           },
-    //           { name: 'Rok', values: [ '2024' ], subcategories: [] }
-    //         ],
-    //         collectionName: '123'
-    //       }
-    //     let res = await request(app.use(ArtworksRouter))
-    //     .post('/create')
-    //     .send(payload)
-    //     .set('Authorization', 'Bearer ')
-    //     .set('Content-Type', 'application/json')
-    //     .set('Accept', 'application/json')
+    expect(res.status).toMatchInlineSnapshot(`201`)
+  })
+  it("Response has status 401", async () => {
+      auth.checkUserIsLoggedIn.mockImplementationOnce(() => {return false})
+      const payload = {
+        categories: [
+          { name: 'Tytuł', values: [ 'Tytuł testowy' ], subcategories: [] },
+          {
+            name: 'Artyści',
+            values: [ 'Jan Testowy' ],
+            subcategories: [ ]
+          },
+          { name: 'Rok', values: [ '2024' ], subcategories: [] }
+        ],
+        collectionName: 'testowa'
+    }
+      let res = await request(app.use(ArtworksRouter))
+      .post('/create')
+      .send(payload)
+      .set('Authorization', 'Bearer ')
+      .set('Content-Type', 'application/json')
+      .set('Accept', 'application/json')
 
-    //     expect(res.status).toMatchInlineSnapshot(`401`)
+      expect(res.status).toMatchInlineSnapshot(`401`)
+  })
+  it("Response has status 503", async () => {
+    auth.checkUserIsLoggedIn.mockImplementationOnce(() => {return true})
+    Artwork.create.mockImplementationOnce(() => {
+      return {
+        exec: jest.fn().mockImplementationOnce(() => {return Promise.reject()})
+      }
+    })
+    const payload = {
+      categories: [
+        { name: 'Tytuł', values: [ 'Tytuł testowy' ], subcategories: [] },
+        {
+          name: 'Artyści',
+          values: [ 'Jan Testowy' ],
+          subcategories: [ ]
+        },
+        { name: 'Rok', values: [ '2024' ], subcategories: [] }
+      ],
+      collectionName: 'testowa'
+  }
+      const res = await request(app.use(ArtworksRouter))
+      .post('/create')
+      .send(payload)
+      .set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
+      .set('Content-Type', 'application/json')
+      .set('Accept', 'application/json')
 
-    //     res = await request(app.use(ArtworksRouter))
-    //     .post('/create')
-    //     .send(payload)
-    //     .set('Authorization', 'Bearer testtokeniJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
-    //     .set('Content-Type', 'application/json')
-    //     .set('Accept', 'application/json')
-
-    //     expect(res.status).toMatchInlineSnapshot(`401`)
-
-    // })
-    // it("Response has status 503", async () => {
-    //     await mongoose.connection.close();
-    //     const payload = {
-    //         categories: [
-    //           { name: 'Tytuł', values: [ 'created by test' ], subcategories: [] },
-    //           {
-    //             name: 'Artyści',
-    //             values: [ 'Jan Testowy' ],
-    //             subcategories: [ ]
-    //           },
-    //           { name: 'Rok', values: [ '2024' ], subcategories: [] }
-    //         ],
-    //         collectionName: '123'
-    //       }
-    //     const res = await request(app.use(ArtworksRouter))
-    //     .post('/create')
-    //     .send(payload)
-    //     .set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
-    //     .set('Content-Type', 'application/json')
-    //     .set('Accept', 'application/json')
-
-    //     expect(res.status).toMatchInlineSnapshot(`503`)
-    // })
-    // afterEach(async () => {
-    //   jest.restoreAllMocks();
-    // });
+      expect(res.status).toMatchInlineSnapshot(`503`)
+  })
+    afterEach(async () => {
+      jest.restoreAllMocks();
+    });
 })
 
 describe('editArtwork tests', () =>{
