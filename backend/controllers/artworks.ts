@@ -32,7 +32,7 @@ const createArtwork = (async (req: Request, res: Response, next: NextFunction) =
     const userIsLoggedIn = await checkUserIsLoggedIn(req)
     if (userIsLoggedIn) {
         try {
-            const newArtwork = await Artwork.create(req.body).exec()
+            const newArtwork = await Artwork.create(req.body)
             return res.status(201).json(newArtwork)
         } catch {
             const err = new Error(`Database unavailable`)
@@ -52,7 +52,13 @@ const editArtwork = (async (req: Request, res: Response, next: NextFunction) => 
     if (userIsLoggedIn) {
         try {
             const editedArtwork = await Artwork.replaceOne({_id: artworkId}, req.body).exec()
-            return res.status(201).json(editedArtwork)
+            if(editedArtwork.modifiedCount === 0) {
+                const err = new Error(`Artwork not found`)
+                res.status(404)
+                return next(err)
+            } else {
+                return res.status(201).json(editedArtwork)
+            }
         } catch {
             const err = new Error(`Database unavailable`)
             res.status(503)
