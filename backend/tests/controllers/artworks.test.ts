@@ -1,4 +1,4 @@
-import { describe, expect, it, afterEach, jest, beforeEach } from "@jest/globals"
+import { describe, expect, it, jest } from "@jest/globals"
 const express = require("express")
 const bodyParser = require("body-parser");
 const app = express()
@@ -34,6 +34,7 @@ describe('getArtwork tests', () =>{
         })
         const res = await request(app.use(ArtworksRouter))
         .get('/662e92b5d628570afa5357c3');
+
         expect(res.status).toMatchInlineSnapshot(`200`)
         expect(res.body.artwork._id).toMatchInlineSnapshot(`"662e92b5d628570afa5357c3"`)
     })
@@ -42,6 +43,7 @@ describe('getArtwork tests', () =>{
         mongoose.isValidObjectId.mockImplementationOnce(() => {return false})
         const res = await request(app.use(ArtworksRouter))
         .get('/123');
+
         expect(res.status).toMatchInlineSnapshot(`400`)
     })
 
@@ -54,6 +56,7 @@ describe('getArtwork tests', () =>{
       	})
 		let res = await request(app.use(ArtworksRouter))
 		.get('/aaaaaaaad628570afa5357c3');
+
 		expect(res.status).toMatchInlineSnapshot(`404`)
     })
 
@@ -66,18 +69,15 @@ describe('getArtwork tests', () =>{
 		})
         const res = await request(app.use(ArtworksRouter))
         .get('/662e92b5d628570afa5357c3');
+
         expect(res.status).toMatchInlineSnapshot(`503`)
     })
-
-    afterEach(async () => {
-        jest.restoreAllMocks();
-    });
 })
 
 describe('createArtwork tests', () =>{
 	it("Response has status 201", async () => {
 		auth.checkUserIsLoggedIn.mockImplementationOnce(() => {return true})
-		Artwork.create.mockImplementation(() => {
+		Artwork.create.mockImplementationOnce(() => {
 			return Promise.resolve({
 					_id: "66ce0bf156199c1b8df5db7d",
 					categories: [
@@ -146,20 +146,17 @@ describe('createArtwork tests', () =>{
 		.set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
 		.set('Content-Type', 'application/json')
 		.set('Accept', 'application/json')
+		
 		expect(res.status).toMatchInlineSnapshot(`503`)
 	})
-
-	afterEach(async () => {
-		jest.restoreAllMocks();
-	});
 })
 
 describe('editArtwork tests', () =>{
 	it("Response has status 201", async () => {
 		auth.checkUserIsLoggedIn.mockImplementationOnce(() => {return true})
-		Artwork.replaceOne.mockImplementation(() => {
+		Artwork.replaceOne.mockImplementationOnce(() => {
 			return {
-				exec: jest.fn().mockImplementation(() => {return Promise.resolve({
+				exec: jest.fn().mockImplementationOnce(() => {return Promise.resolve({
 					acknowledged: true,
 					modifiedCount: 1,
 					upsertedId: null,
@@ -193,9 +190,9 @@ describe('editArtwork tests', () =>{
 
 	it("Response has status 404", async () => {
 		auth.checkUserIsLoggedIn.mockImplementationOnce(() => {return true})
-		Artwork.replaceOne.mockImplementation(() => {
+		Artwork.replaceOne.mockImplementationOnce(() => {
 			return {
-				exec: jest.fn().mockImplementation(() => {return Promise.resolve({
+				exec: jest.fn().mockImplementationOnce(() => {return Promise.resolve({
 					acknowledged: true,
 					modifiedCount: 0,
 					upsertedId: null,
@@ -278,10 +275,6 @@ describe('editArtwork tests', () =>{
 
 		expect(res.status).toMatchInlineSnapshot(`503`)
 	})
-
-	afterEach(async () => {
-		jest.restoreAllMocks();
-	});
 })
 
 describe('deleteArtworks tests', () =>{
@@ -311,16 +304,6 @@ describe('deleteArtworks tests', () =>{
 
 	it("Response has status 401", async () => {
 		auth.checkUserIsLoggedIn.mockImplementationOnce(() => {return false})
-		Artwork.count.mockImplementationOnce(() => {
-			return {
-				exec: jest.fn().mockImplementationOnce(() => {return Promise.resolve(2)})
-			}
-		})
-		Artwork.deleteMany.mockImplementationOnce(() => {
-			return {
-				exec: jest.fn().mockImplementationOnce(() => {return Promise.resolve({ acknowledged: true, deletedCount: 2 })})
-			}
-		})
 		const payload = { 
 		ids: [ '662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc' ] 
 		}
@@ -339,11 +322,6 @@ describe('deleteArtworks tests', () =>{
 		Artwork.count.mockImplementationOnce(() => {
 			return {
 				exec: jest.fn().mockImplementationOnce(() => {return Promise.reject()})
-			}
-		})
-		Artwork.deleteMany.mockImplementationOnce(() => {
-			return {
-				exec: jest.fn().mockImplementationOnce(() => {return Promise.resolve({ acknowledged: true, deletedCount: 2 })})
 			}
 		})
 		const payload = { 
@@ -386,16 +364,6 @@ describe('deleteArtworks tests', () =>{
 	
 	it("Response has status 400", async () => {
 		auth.checkUserIsLoggedIn.mockImplementationOnce(() => {return true})
-		Artwork.count.mockImplementationOnce(() => {
-			return {
-				exec: jest.fn().mockImplementationOnce(() => {return Promise.resolve(2)})
-			}
-		})
-		Artwork.deleteMany.mockImplementationOnce(() => {
-			return {
-				exec: jest.fn().mockImplementationOnce(() => {return Promise.resolve({ acknowledged: true, deletedCount: 2 })})
-			}
-		})
 		const payload = { ids: [ ] }
 		const res = await request(app.use(ArtworksRouter))
 		.delete('/delete')
@@ -412,11 +380,6 @@ describe('deleteArtworks tests', () =>{
 		Artwork.count.mockImplementationOnce(() => {
 			return {
 				exec: jest.fn().mockImplementationOnce(() => {return Promise.resolve(2)})
-			}
-		})
-		Artwork.deleteMany.mockImplementationOnce(() => {
-			return {
-				exec: jest.fn().mockImplementationOnce(() => {return Promise.resolve({ acknowledged: true, deletedCount: 2 })})
 			}
 		})
 		const payload = { ids: ["662e92a5d628570afa5357bc"] }
@@ -437,11 +400,6 @@ describe('deleteArtworks tests', () =>{
 				exec: jest.fn().mockImplementationOnce(() => {return Promise.resolve(1)})
 			}
 		})
-		Artwork.deleteMany.mockImplementationOnce(() => {
-			return {
-				exec: jest.fn().mockImplementationOnce(() => {return Promise.resolve({ acknowledged: true, deletedCount: 2 })})
-			}
-		})
 		const payload = { ids: [ '662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc' ]  }
 		const res = await request(app.use(ArtworksRouter))
 		.delete('/delete')
@@ -452,8 +410,4 @@ describe('deleteArtworks tests', () =>{
 
 		expect(res.status).toMatchInlineSnapshot(`404`)
 	})
-
-	afterEach(async () => {
-		jest.resetAllMocks();
-	});
 })
