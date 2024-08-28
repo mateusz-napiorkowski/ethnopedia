@@ -69,20 +69,23 @@ const deleteArtworks = async (req: Request, res: Response, next: NextFunction) =
     const userIsLoggedIn = await checkUserIsLoggedIn(req)
     if (userIsLoggedIn) {
         try {
-            const artworksToDelete = req.params.artwork
-            if (!artworksToDelete) {
-                return res.status(400).send({ message: "Artworks not found" })
-            }
-            const artworksToDeleteList = artworksToDelete.split(",")
-            const existingArtworks = await Artwork.find({ _id: { $in: artworksToDeleteList } })
-
-            if (existingArtworks.length === 0) {
-                return res.status(404).send({ message: "Artworks not found" })
+            const artworksToDelete = req.body.ids
+            if (Array.isArray(artworksToDelete) && artworksToDelete.length === 0) {
+                const err = new Error("Artworks not specified")
+                res.status(400)
+                return next(err)
             }
 
-            const result = await Artwork.deleteMany({ _id: { $in: artworksToDeleteList } })
+            const databaseArtworksToDeleteCounted = await Artwork.count({ _id: { $in: artworksToDelete } }).exec()
 
-            res.status(200).json({ message: req.params.artwork, deletedCount: result.deletedCount })
+            if (databaseArtworksToDeleteCounted !== artworksToDelete.length) {
+                const err = new Error("Artworks not found")
+                res.status(404)
+                return next(err)
+            }
+
+            const result = await Artwork.deleteMany({ _id: { $in: artworksToDelete } }).exec()
+            return res.status(200).json(result)
         } catch {
             const err = new Error(`Database unavailable`)
             res.status(503)

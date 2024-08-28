@@ -31,9 +31,10 @@ export const useBatchDeleteArtworkMutation = () => {
     return useMutation(async (data: Array<any>) => {
         const artworkIds = data[0].join(",")
         const config = {
-            headers: { Authorization: `Bearer ${data[1]}` }
+            headers: { Authorization: `Bearer ${data[1]}` },
+            data: { ids: data[0]}
         };
-        const url = `${API_URL}v1/artworks/${artworkIds}`
+        const url = `${API_URL}v1/artworks/delete`
 
         const res = await axios.delete(url, config)
         return res.data
@@ -42,7 +43,11 @@ export const useBatchDeleteArtworkMutation = () => {
 
 // deletes one artwork (used on artwork page)
 export const deleteArtwork = async (artworkId: string, jwtToken: string) => {
-    const response = await axios.delete(`${API_URL}v1/artworks/${artworkId}`, { headers: { "Authorization": `Bearer ${jwtToken}` } })
+    const config = {
+        headers: { "Authorization": `Bearer ${jwtToken}` },
+        data: { ids: [artworkId]}
+    };
+    const response = await axios.delete(`${API_URL}v1/artworks/delete`, config)
     return response.data
 }
 
