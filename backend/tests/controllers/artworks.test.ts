@@ -1,4 +1,5 @@
-import { describe, expect, it, jest } from "@jest/globals"
+import { describe, expect, it, jest, afterEach } from "@jest/globals"
+import { isValidObjectId } from "mongoose";
 const express = require("express")
 const bodyParser = require("body-parser");
 const app = express()
@@ -8,9 +9,11 @@ const ArtworksRouter = require("../../routes/artwork")
 const request = require("supertest")
 
 const mongoose = require('mongoose')
-jest.mock('mongoose', () => ({
-	isValidObjectId: jest.fn()
-}))
+// jest.mock('mongoose', () => ({
+// 	isValidObjectId: jest.fn().mockImplementation(() => {return true})
+// }))
+jest.spyOn(mongoose, 'isValidObjectId').mockImplementation(() => {return true})
+
 const Artwork = require("../../models/artwork")
 jest.mock("../../models/artwork", () => ({
 	findById: jest.fn(),
@@ -19,14 +22,20 @@ jest.mock("../../models/artwork", () => ({
 	count: jest.fn(),
 	deleteMany: jest.fn()
 }))
-const auth = require("../../utils/auth")
-jest.mock("../../utils/auth", () => ({
-	checkUserIsLoggedIn: jest.fn()
+
+const jwt = require("jsonwebtoken")
+jest.mock("jsonwebtoken", () => ({
+	verify: jest.fn().mockImplementation(() => {return {
+		username: 'testowy',
+		firstName: 'testowy',
+		userId: '12b2343fbb64df643e8a9ce6',
+		iat: 1725211851,
+		exp: 1726211851
+	}})
 }))
 
 describe('getArtwork tests', () =>{
     it("Response has status 200 and res.body has artwork object with _id parameter", async () => {
-        mongoose.isValidObjectId.mockImplementationOnce(() => {return true})
         Artwork.findById.mockImplementationOnce(() => {
         	return {
             	exec: jest.fn().mockImplementationOnce(() => {return Promise.resolve({_id: "662e92b5d628570afa5357c3"})})
@@ -48,7 +57,6 @@ describe('getArtwork tests', () =>{
     })
 
     it("Response has status 404", async () => {
-      	mongoose.isValidObjectId.mockImplementationOnce(() => {return true})
       	Artwork.findById.mockImplementationOnce(() => {
 			return {
 				exec: jest.fn().mockImplementationOnce(() => {return Promise.resolve(null)})
@@ -61,7 +69,6 @@ describe('getArtwork tests', () =>{
     })
 
     it("Response has status 503", async () => {
-        mongoose.isValidObjectId.mockImplementationOnce(() => {return true})
         Artwork.findById.mockImplementationOnce(() => {
 			return {
 				exec: jest.fn().mockImplementationOnce(() => {return Promise.reject()})
@@ -76,7 +83,6 @@ describe('getArtwork tests', () =>{
 
 describe('createArtwork tests', () =>{
 	it("Response has status 201", async () => {
-		auth.checkUserIsLoggedIn.mockImplementationOnce(() => {return true})
 		Artwork.create.mockImplementationOnce(() => {
 			return Promise.resolve({
 					_id: "66ce0bf156199c1b8df5db7d",
@@ -109,8 +115,7 @@ describe('createArtwork tests', () =>{
 		expect(res.status).toMatchInlineSnapshot(`201`)
 	})
 
-	it("Response has status 401", async () => {
-		auth.checkUserIsLoggedIn.mockImplementationOnce(() => {return false})
+	it("Response has status 400", async () => {
 		const payload = {
 			categories: [
 			{ name: 'Tytuł', values: [ 'Tytuł testowy' ], subcategories: [] },
@@ -126,11 +131,30 @@ describe('createArtwork tests', () =>{
 		.set('Content-Type', 'application/json')
 		.set('Accept', 'application/json')
 
+		expect(res.status).toMatchInlineSnapshot(`400`)
+	})
+
+	it("Response has status 401", async () => {
+		jwt.verify.mockImplementationOnce(() => {throw new Error()})
+		const payload = {
+			categories: [
+			{ name: 'Tytuł', values: [ 'Tytuł testowy' ], subcategories: [] },
+			{ name: 'Artyści', values: [ 'Jan Testowy' ], subcategories: [ ] },
+			{ name: 'Rok', values: [ '2024' ], subcategories: [] }
+			],
+			collectionName: 'testowa'
+		}
+		let res = await request(app.use(ArtworksRouter))
+		.post('/create')
+		.send(payload)
+		.set('Authorization', 'Bearer invalidtoken')
+		.set('Content-Type', 'application/json')
+		.set('Accept', 'application/json')
+
 		expect(res.status).toMatchInlineSnapshot(`401`)
 	})
 
 	it("Response has status 503", async () => {
-		auth.checkUserIsLoggedIn.mockImplementationOnce(() => {return true})
 		Artwork.create.mockImplementationOnce(() => { return Promise.reject() })
 		const payload = {
 		categories: [
@@ -153,7 +177,6 @@ describe('createArtwork tests', () =>{
 
 describe('editArtwork tests', () =>{
 	it("Response has status 201", async () => {
-		auth.checkUserIsLoggedIn.mockImplementationOnce(() => {return true})
 		Artwork.replaceOne.mockImplementationOnce(() => {
 			return {
 				exec: jest.fn().mockImplementationOnce(() => {return Promise.resolve({
@@ -189,7 +212,6 @@ describe('editArtwork tests', () =>{
 	})
 
 	it("Response has status 404", async () => {
-		auth.checkUserIsLoggedIn.mockImplementationOnce(() => {return true})
 		Artwork.replaceOne.mockImplementationOnce(() => {
 			return {
 				exec: jest.fn().mockImplementationOnce(() => {return Promise.resolve({
@@ -223,8 +245,7 @@ describe('editArtwork tests', () =>{
 		expect(res.status).toMatchInlineSnapshot(`404`)
 	})
 
-	it("Response has status 401", async () => {
-		auth.checkUserIsLoggedIn.mockImplementationOnce(() => {return false})
+	it("Response has status 400", async () => {
 		const payload = {
 			categories: [
 			{ name: 'Tytuł', values: [ 'Tytuł zamieniony' ], subcategories: [] },
@@ -244,11 +265,34 @@ describe('editArtwork tests', () =>{
 		.set('Content-Type', 'application/json')
 		.set('Accept', 'application/json')
 
+		expect(res.status).toMatchInlineSnapshot(`400`)
+	})
+
+	it("Response has status 401", async () => {
+		jwt.verify.mockImplementationOnce(() => {throw new Error()})
+		const payload = {
+			categories: [
+			{ name: 'Tytuł', values: [ 'Tytuł zamieniony' ], subcategories: [] },
+			{
+				name: 'Artyści',
+				values: [ 'Jan Zamieniony' ],
+				subcategories: [ ]
+			},
+			{ name: 'Rok', values: [ '2024' ], subcategories: [] }
+			],
+			collectionName: 'testowa'
+		}
+		let res = await request(app.use(ArtworksRouter))
+		.put('/edit/66ce0bf156199c1b8df5db7d')
+		.send(payload)
+		.set('Authorization', 'Bearer invalidtoken')
+		.set('Content-Type', 'application/json')
+		.set('Accept', 'application/json')
+
 		expect(res.status).toMatchInlineSnapshot(`401`)
 	})
 
 	it("Response has status 503", async () => {
-		auth.checkUserIsLoggedIn.mockImplementationOnce(() => {return true})
 		Artwork.replaceOne.mockImplementationOnce(() => {
 		return {
 			exec: jest.fn().mockImplementationOnce(() => {return Promise.reject()})
@@ -277,9 +321,8 @@ describe('editArtwork tests', () =>{
 	})
 })
 
-describe('deleteArtworks tests', () =>{
+describe('deleteArtworks tests', () => {
 	it("Response has status 200", async () => {
-		auth.checkUserIsLoggedIn.mockImplementationOnce(() => {return true})
 		Artwork.count.mockImplementationOnce(() => {
 			return {
 				exec: jest.fn().mockImplementationOnce(() => {return Promise.resolve(2)})
@@ -302,8 +345,23 @@ describe('deleteArtworks tests', () =>{
 		expect(res.text).toMatchInlineSnapshot(`"{"acknowledged":true,"deletedCount":2}"`)
 	})
 
+	it("Response has status 400 (no token provided)", async () => {
+		jwt.verify.mockImplementationOnce(() => {throw new Error()})
+		const payload = { 
+		ids: [ '662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc' ] 
+		}
+		const res = await request(app.use(ArtworksRouter))
+		.delete('/delete')
+		.send(payload)
+		.set('Authorization', 'Bearer ')
+		.set('Content-Type', 'application/json')
+		.set('Accept', 'application/json')
+
+		expect(res.status).toMatchInlineSnapshot(`400`)
+	})
+
 	it("Response has status 401", async () => {
-		auth.checkUserIsLoggedIn.mockImplementationOnce(() => {return false})
+		jwt.verify.mockImplementationOnce(() => {throw new Error()})
 		const payload = { 
 		ids: [ '662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc' ] 
 		}
@@ -318,7 +376,7 @@ describe('deleteArtworks tests', () =>{
 	})
 
 	it("Response has status 503 (count reject)", async () => {
-		auth.checkUserIsLoggedIn.mockImplementationOnce(() => {return true})
+		
 		Artwork.count.mockImplementationOnce(() => {
 			return {
 				exec: jest.fn().mockImplementationOnce(() => {return Promise.reject()})
@@ -338,7 +396,6 @@ describe('deleteArtworks tests', () =>{
 	})
 
 	it("Response has status 503 (deleteMany reject)", async () => {
-		auth.checkUserIsLoggedIn.mockImplementationOnce(() => {return true})
 		Artwork.count.mockImplementationOnce(() => {
 			return {
 				exec: jest.fn().mockImplementationOnce(() => {return Promise.resolve(2)})
@@ -362,8 +419,7 @@ describe('deleteArtworks tests', () =>{
 		expect(res.status).toMatchInlineSnapshot(`503`)
 	})
 	
-	it("Response has status 400", async () => {
-		auth.checkUserIsLoggedIn.mockImplementationOnce(() => {return true})
+	it("Response has status 400 (Artworks not specified)", async () => {
 		const payload = { ids: [ ] }
 		const res = await request(app.use(ArtworksRouter))
 		.delete('/delete')
@@ -376,7 +432,6 @@ describe('deleteArtworks tests', () =>{
 	})
 
 	it("Response has status 404", async () => {
-		auth.checkUserIsLoggedIn.mockImplementationOnce(() => {return true})
 		Artwork.count.mockImplementationOnce(() => {
 			return {
 				exec: jest.fn().mockImplementationOnce(() => {return Promise.resolve(2)})
@@ -394,7 +449,6 @@ describe('deleteArtworks tests', () =>{
 	})
 
 	it("Response has status 404 2", async () => {
-		auth.checkUserIsLoggedIn.mockImplementationOnce(() => {return true})
 		Artwork.count.mockImplementationOnce(() => {
 			return {
 				exec: jest.fn().mockImplementationOnce(() => {return Promise.resolve(1)})

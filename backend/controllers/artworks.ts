@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express"
 import mongoose from "mongoose"
 const Artwork = require("../models/artwork")
-import {checkUserIsLoggedIn} from "../utils/auth"
-const util = require('util');
+
+import { authAsyncWrapper } from "../middleware/auth"
 
 export const getArtwork = async (req: Request, res: Response, next: NextFunction) => {
     const artworkId = req.params.artworkId
@@ -28,28 +28,19 @@ export const getArtwork = async (req: Request, res: Response, next: NextFunction
     }   
 }
 
-const createArtwork = (async (req: Request, res: Response, next: NextFunction) => {
-    const userIsLoggedIn = await checkUserIsLoggedIn(req)
-    if (userIsLoggedIn) {
-        try {
-            const newArtwork = await Artwork.create(req.body)
-            return res.status(201).json(newArtwork)
-        } catch {
-            const err = new Error(`Database unavailable`)
-            res.status(503)
-            return next(err)
-        }
-    } else {
-        const err = new Error('Access denied')
-        res.status(401)
+const createArtwork = authAsyncWrapper((async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const newArtwork = await Artwork.create(req.body)
+        return res.status(201).json(newArtwork)
+    } catch {
+        const err = new Error(`Database unavailable`)
+        res.status(503)
         return next(err)
     }
-})
+}))
 
-const editArtwork = (async (req: Request, res: Response, next: NextFunction) => {
+const editArtwork = authAsyncWrapper((async (req: Request, res: Response, next: NextFunction) => {
     const artworkId = req.params.artworkId
-    const userIsLoggedIn = await checkUserIsLoggedIn(req)
-    if (userIsLoggedIn) {
         try {
             const editedArtwork = await Artwork.replaceOne({_id: artworkId}, req.body).exec()
             if(editedArtwork.modifiedCount === 0) {
@@ -64,16 +55,9 @@ const editArtwork = (async (req: Request, res: Response, next: NextFunction) => 
             res.status(503)
             return next(err)
         }
-    } else {
-        const err = new Error('Access denied')
-        res.status(401)
-        return next(err)
-    }
-})
+}))
 
-const deleteArtworks = async (req: Request, res: Response, next: NextFunction) => {
-    const userIsLoggedIn = await checkUserIsLoggedIn(req)
-    if (userIsLoggedIn) {
+const deleteArtworks = authAsyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
         try {
             const artworksToDelete = req.body.ids
             if (Array.isArray(artworksToDelete) && artworksToDelete.length === 0) {
@@ -97,12 +81,7 @@ const deleteArtworks = async (req: Request, res: Response, next: NextFunction) =
             res.status(503)
             return next(err)
         }
-    } else {
-        const err = new Error('Access denied')
-        res.status(401)
-        return next(err)
-    }
-}
+})
 
 module.exports = {
     getArtwork,
