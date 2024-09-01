@@ -1,5 +1,4 @@
 import { describe, expect, it, jest, afterEach } from "@jest/globals"
-import { isValidObjectId } from "mongoose";
 const express = require("express")
 const bodyParser = require("body-parser");
 const app = express()
@@ -9,10 +8,9 @@ const ArtworksRouter = require("../../routes/artwork")
 const request = require("supertest")
 
 const mongoose = require('mongoose')
-// jest.mock('mongoose', () => ({
-// 	isValidObjectId: jest.fn().mockImplementation(() => {return true})
-// }))
-jest.spyOn(mongoose, 'isValidObjectId').mockImplementation(() => {return true})
+jest.mock('mongoose', () => ({
+	isValidObjectId: jest.fn()
+}))
 
 const Artwork = require("../../models/artwork")
 jest.mock("../../models/artwork", () => ({
@@ -25,17 +23,12 @@ jest.mock("../../models/artwork", () => ({
 
 const jwt = require("jsonwebtoken")
 jest.mock("jsonwebtoken", () => ({
-	verify: jest.fn().mockImplementation(() => {return {
-		username: 'testowy',
-		firstName: 'testowy',
-		userId: '12b2343fbb64df643e8a9ce6',
-		iat: 1725211851,
-		exp: 1726211851
-	}})
+	verify: jest.fn()
 }))
 
 describe('getArtwork tests', () =>{
     it("Response has status 200 and res.body has artwork object with _id parameter", async () => {
+		mongoose.isValidObjectId.mockImplementationOnce(() => {return true})
         Artwork.findById.mockImplementationOnce(() => {
         	return {
             	exec: jest.fn().mockImplementationOnce(() => {return Promise.resolve({_id: "662e92b5d628570afa5357c3"})})
@@ -57,6 +50,7 @@ describe('getArtwork tests', () =>{
     })
 
     it("Response has status 404", async () => {
+		mongoose.isValidObjectId.mockImplementationOnce(() => {return true})
       	Artwork.findById.mockImplementationOnce(() => {
 			return {
 				exec: jest.fn().mockImplementationOnce(() => {return Promise.resolve(null)})
@@ -69,6 +63,7 @@ describe('getArtwork tests', () =>{
     })
 
     it("Response has status 503", async () => {
+		mongoose.isValidObjectId.mockImplementationOnce(() => {return true})
         Artwork.findById.mockImplementationOnce(() => {
 			return {
 				exec: jest.fn().mockImplementationOnce(() => {return Promise.reject()})
@@ -79,10 +74,20 @@ describe('getArtwork tests', () =>{
 
         expect(res.status).toMatchInlineSnapshot(`503`)
     })
+	afterEach(() => {
+		jest.resetAllMocks()
+	})
 })
 
 describe('createArtwork tests', () =>{
 	it("Response has status 201", async () => {
+		jwt.verify.mockImplementationOnce(() => {return {
+			username: 'testowy',
+			firstName: 'testowy',
+			userId: '12b2343fbb64df643e8a9ce6',
+			iat: 1725211851,
+			exp: 1726211851
+		}})
 		Artwork.create.mockImplementationOnce(() => {
 			return Promise.resolve({
 					_id: "66ce0bf156199c1b8df5db7d",
@@ -155,6 +160,13 @@ describe('createArtwork tests', () =>{
 	})
 
 	it("Response has status 503", async () => {
+		jwt.verify.mockImplementationOnce(() => {return {
+			username: 'testowy',
+			firstName: 'testowy',
+			userId: '12b2343fbb64df643e8a9ce6',
+			iat: 1725211851,
+			exp: 1726211851
+		}})
 		Artwork.create.mockImplementationOnce(() => { return Promise.reject() })
 		const payload = {
 		categories: [
@@ -173,10 +185,20 @@ describe('createArtwork tests', () =>{
 		
 		expect(res.status).toMatchInlineSnapshot(`503`)
 	})
+	afterEach(() => {
+		jest.resetAllMocks()
+	})
 })
 
 describe('editArtwork tests', () =>{
 	it("Response has status 201", async () => {
+		jwt.verify.mockImplementationOnce(() => {return {
+			username: 'testowy',
+			firstName: 'testowy',
+			userId: '12b2343fbb64df643e8a9ce6',
+			iat: 1725211851,
+			exp: 1726211851
+		}})
 		Artwork.replaceOne.mockImplementationOnce(() => {
 			return {
 				exec: jest.fn().mockImplementationOnce(() => {return Promise.resolve({
@@ -212,6 +234,13 @@ describe('editArtwork tests', () =>{
 	})
 
 	it("Response has status 404", async () => {
+		jwt.verify.mockImplementationOnce(() => {return {
+			username: 'testowy',
+			firstName: 'testowy',
+			userId: '12b2343fbb64df643e8a9ce6',
+			iat: 1725211851,
+			exp: 1726211851
+		}})
 		Artwork.replaceOne.mockImplementationOnce(() => {
 			return {
 				exec: jest.fn().mockImplementationOnce(() => {return Promise.resolve({
@@ -293,6 +322,13 @@ describe('editArtwork tests', () =>{
 	})
 
 	it("Response has status 503", async () => {
+		jwt.verify.mockImplementationOnce(() => {return {
+			username: 'testowy',
+			firstName: 'testowy',
+			userId: '12b2343fbb64df643e8a9ce6',
+			iat: 1725211851,
+			exp: 1726211851
+		}})
 		Artwork.replaceOne.mockImplementationOnce(() => {
 		return {
 			exec: jest.fn().mockImplementationOnce(() => {return Promise.reject()})
@@ -319,10 +355,20 @@ describe('editArtwork tests', () =>{
 
 		expect(res.status).toMatchInlineSnapshot(`503`)
 	})
+	afterEach(() => {
+		jest.resetAllMocks()
+	})
 })
 
 describe('deleteArtworks tests', () => {
 	it("Response has status 200", async () => {
+		jwt.verify.mockImplementationOnce(() => {return {
+			username: 'testowy',
+			firstName: 'testowy',
+			userId: '12b2343fbb64df643e8a9ce6',
+			iat: 1725211851,
+			exp: 1726211851
+		}})
 		Artwork.count.mockImplementationOnce(() => {
 			return {
 				exec: jest.fn().mockImplementationOnce(() => {return Promise.resolve(2)})
@@ -376,7 +422,13 @@ describe('deleteArtworks tests', () => {
 	})
 
 	it("Response has status 503 (count reject)", async () => {
-		
+		jwt.verify.mockImplementationOnce(() => {return {
+			username: 'testowy',
+			firstName: 'testowy',
+			userId: '12b2343fbb64df643e8a9ce6',
+			iat: 1725211851,
+			exp: 1726211851
+		}})
 		Artwork.count.mockImplementationOnce(() => {
 			return {
 				exec: jest.fn().mockImplementationOnce(() => {return Promise.reject()})
@@ -396,6 +448,13 @@ describe('deleteArtworks tests', () => {
 	})
 
 	it("Response has status 503 (deleteMany reject)", async () => {
+		jwt.verify.mockImplementationOnce(() => {return {
+			username: 'testowy',
+			firstName: 'testowy',
+			userId: '12b2343fbb64df643e8a9ce6',
+			iat: 1725211851,
+			exp: 1726211851
+		}})
 		Artwork.count.mockImplementationOnce(() => {
 			return {
 				exec: jest.fn().mockImplementationOnce(() => {return Promise.resolve(2)})
@@ -420,6 +479,13 @@ describe('deleteArtworks tests', () => {
 	})
 	
 	it("Response has status 400 (Artworks not specified)", async () => {
+		jwt.verify.mockImplementationOnce(() => {return {
+			username: 'testowy',
+			firstName: 'testowy',
+			userId: '12b2343fbb64df643e8a9ce6',
+			iat: 1725211851,
+			exp: 1726211851
+		}})
 		const payload = { ids: [ ] }
 		const res = await request(app.use(ArtworksRouter))
 		.delete('/delete')
@@ -432,6 +498,13 @@ describe('deleteArtworks tests', () => {
 	})
 
 	it("Response has status 404", async () => {
+		jwt.verify.mockImplementationOnce(() => {return {
+			username: 'testowy',
+			firstName: 'testowy',
+			userId: '12b2343fbb64df643e8a9ce6',
+			iat: 1725211851,
+			exp: 1726211851
+		}})
 		Artwork.count.mockImplementationOnce(() => {
 			return {
 				exec: jest.fn().mockImplementationOnce(() => {return Promise.resolve(2)})
@@ -449,6 +522,13 @@ describe('deleteArtworks tests', () => {
 	})
 
 	it("Response has status 404 2", async () => {
+		jwt.verify.mockImplementationOnce(() => {return {
+			username: 'testowy',
+			firstName: 'testowy',
+			userId: '12b2343fbb64df643e8a9ce6',
+			iat: 1725211851,
+			exp: 1726211851
+		}})
 		Artwork.count.mockImplementationOnce(() => {
 			return {
 				exec: jest.fn().mockImplementationOnce(() => {return Promise.resolve(1)})
@@ -463,5 +543,8 @@ describe('deleteArtworks tests', () => {
 		.set('Accept', 'application/json')
 
 		expect(res.status).toMatchInlineSnapshot(`404`)
+	})
+	afterEach(() => {
+		jest.resetAllMocks()
 	})
 })
