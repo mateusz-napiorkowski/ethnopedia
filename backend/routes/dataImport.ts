@@ -4,7 +4,7 @@ const router = express.Router()
 
 const {
     importData
-} = require("../controllers/dataImport")
+} = require("../controllers/data-import")
 
 router.route("/").post(importData)
 

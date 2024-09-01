@@ -1,18 +1,8 @@
 import { NextFunction, Request, Response } from "express"
+import { getNestedCategories } from "../utils/controllers-utils/categories"
 
 const Artwork = require("../models/artwork")
 const Category = require("../models/category")
-
-const getNestedCategories = ((prefix: string, subcategories: any) => {
-    let nestedCategories: Array<string> = []
-    if(subcategories !== undefined) {
-        for(const subcategory of subcategories){
-            nestedCategories.push(`${prefix}${subcategory.name}`)
-            nestedCategories.push(...getNestedCategories(`${prefix}${subcategory.name}.`, subcategory.subcategories))
-        }
-    }
-    return nestedCategories
-})
 
 export const getCollectionCategories = async (req: Request, res: Response, next: NextFunction) => {
     const records = await Artwork.find({ collectionName: req.params.collectionName })
