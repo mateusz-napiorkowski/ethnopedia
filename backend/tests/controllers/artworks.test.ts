@@ -1,4 +1,4 @@
-import { describe, expect, it, jest, afterEach } from "@jest/globals"
+import { describe, expect, test, jest, afterEach } from "@jest/globals"
 const express = require("express")
 const bodyParser = require("body-parser");
 const app = express()
@@ -27,7 +27,7 @@ jest.mock("jsonwebtoken", () => ({
 }))
 
 describe('getArtwork tests', () =>{
-    it("Response has status 200 and res.body has artwork object with _id parameter", async () => {
+    test("Response has status 200 and res.body has artwork object with _id parameter (request successful)", async () => {
 		mongoose.isValidObjectId.mockImplementationOnce(() => {return true})
         Artwork.findById.mockImplementationOnce(() => {
         	return {
@@ -41,7 +41,7 @@ describe('getArtwork tests', () =>{
         expect(res.body.artwork._id).toMatchInlineSnapshot(`"662e92b5d628570afa5357c3"`)
     })
 
-    it("Response has status 400", async () => {
+    test("Response has status 400 (ObjectId is invalid)", async () => {
         mongoose.isValidObjectId.mockImplementationOnce(() => {return false})
         const res = await request(app.use(ArtworksRouter))
         .get('/123');
@@ -49,7 +49,7 @@ describe('getArtwork tests', () =>{
         expect(res.status).toMatchInlineSnapshot(`400`)
     })
 
-    it("Response has status 404", async () => {
+    test("Response has status 404 (artwork with given ID doesn't exist)", async () => {
 		mongoose.isValidObjectId.mockImplementationOnce(() => {return true})
       	Artwork.findById.mockImplementationOnce(() => {
 			return {
@@ -62,7 +62,7 @@ describe('getArtwork tests', () =>{
 		expect(res.status).toMatchInlineSnapshot(`404`)
     })
 
-    it("Response has status 503", async () => {
+    test("Response has status 503 (can't access the database to find an artwork)", async () => {
 		mongoose.isValidObjectId.mockImplementationOnce(() => {return true})
         Artwork.findById.mockImplementationOnce(() => {
 			return {
@@ -80,7 +80,7 @@ describe('getArtwork tests', () =>{
 })
 
 describe('createArtwork tests', () =>{
-	it("Response has status 201", async () => {
+	test("Response has status 201 (artwork creation successful)", async () => {
 		jwt.verify.mockImplementationOnce(() => {return {
 			username: 'testowy',
 			firstName: 'testowy',
@@ -120,7 +120,7 @@ describe('createArtwork tests', () =>{
 		expect(res.status).toMatchInlineSnapshot(`201`)
 	})
 
-	it("Response has status 400", async () => {
+	test("Response has status 400 (no jwt provided)", async () => {
 		const payload = {
 			categories: [
 			{ name: 'Tytuł', values: [ 'Tytuł testowy' ], subcategories: [] },
@@ -139,7 +139,7 @@ describe('createArtwork tests', () =>{
 		expect(res.status).toMatchInlineSnapshot(`400`)
 	})
 
-	it("Response has status 401", async () => {
+	test("Response has status 401 (jwt invalid)", async () => {
 		jwt.verify.mockImplementationOnce(() => {throw new Error()})
 		const payload = {
 			categories: [
@@ -159,7 +159,7 @@ describe('createArtwork tests', () =>{
 		expect(res.status).toMatchInlineSnapshot(`401`)
 	})
 
-	it("Response has status 503", async () => {
+	test("Response has status 503 (can't access database to add new artwork)", async () => {
 		jwt.verify.mockImplementationOnce(() => {return {
 			username: 'testowy',
 			firstName: 'testowy',
@@ -191,7 +191,7 @@ describe('createArtwork tests', () =>{
 })
 
 describe('editArtwork tests', () =>{
-	it("Response has status 201", async () => {
+	test("Response has status 201 (request successful)", async () => {
 		jwt.verify.mockImplementationOnce(() => {return {
 			username: 'testowy',
 			firstName: 'testowy',
@@ -233,7 +233,7 @@ describe('editArtwork tests', () =>{
 		expect(res.text).toMatchInlineSnapshot(`"{"acknowledged":true,"modifiedCount":1,"upsertedId":null,"upsertedCount":0,"matchedCount":1}"`)
 	})
 
-	it("Response has status 404", async () => {
+	test("Response has status 404 (artwork with given ID doesn't exist)", async () => {
 		jwt.verify.mockImplementationOnce(() => {return {
 			username: 'testowy',
 			firstName: 'testowy',
@@ -274,7 +274,7 @@ describe('editArtwork tests', () =>{
 		expect(res.status).toMatchInlineSnapshot(`404`)
 	})
 
-	it("Response has status 400", async () => {
+	test("Response has status 400 (no jwt provided)", async () => {
 		const payload = {
 			categories: [
 			{ name: 'Tytuł', values: [ 'Tytuł zamieniony' ], subcategories: [] },
@@ -297,7 +297,7 @@ describe('editArtwork tests', () =>{
 		expect(res.status).toMatchInlineSnapshot(`400`)
 	})
 
-	it("Response has status 401", async () => {
+	test("Response has status 401 (invalid jwt)", async () => {
 		jwt.verify.mockImplementationOnce(() => {throw new Error()})
 		const payload = {
 			categories: [
@@ -321,7 +321,7 @@ describe('editArtwork tests', () =>{
 		expect(res.status).toMatchInlineSnapshot(`401`)
 	})
 
-	it("Response has status 503", async () => {
+	test("Response has status 503 (can't access database to edit artwork)", async () => {
 		jwt.verify.mockImplementationOnce(() => {return {
 			username: 'testowy',
 			firstName: 'testowy',
@@ -361,7 +361,7 @@ describe('editArtwork tests', () =>{
 })
 
 describe('deleteArtworks tests', () => {
-	it("Response has status 200", async () => {
+	test("Response has status 200 (artwork deletion successful)", async () => {
 		jwt.verify.mockImplementationOnce(() => {return {
 			username: 'testowy',
 			firstName: 'testowy',
@@ -391,7 +391,7 @@ describe('deleteArtworks tests', () => {
 		expect(res.text).toMatchInlineSnapshot(`"{"acknowledged":true,"deletedCount":2}"`)
 	})
 
-	it("Response has status 400 (no token provided)", async () => {
+	test("Response has status 400 (no jwt provided)", async () => {
 		jwt.verify.mockImplementationOnce(() => {throw new Error()})
 		const payload = { 
 		ids: [ '662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc' ] 
@@ -406,7 +406,7 @@ describe('deleteArtworks tests', () => {
 		expect(res.status).toMatchInlineSnapshot(`400`)
 	})
 
-	it("Response has status 401", async () => {
+	test("Response has status 401 (invalid jwt)", async () => {
 		jwt.verify.mockImplementationOnce(() => {throw new Error()})
 		const payload = { 
 		ids: [ '662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc' ] 
@@ -421,7 +421,7 @@ describe('deleteArtworks tests', () => {
 		expect(res.status).toMatchInlineSnapshot(`401`)
 	})
 
-	it("Response has status 503 (count reject)", async () => {
+	test("Response has status 503 (can't count artworks to be deleted in the database)", async () => {
 		jwt.verify.mockImplementationOnce(() => {return {
 			username: 'testowy',
 			firstName: 'testowy',
@@ -447,7 +447,7 @@ describe('deleteArtworks tests', () => {
 		expect(res.status).toMatchInlineSnapshot(`503`)
 	})
 
-	it("Response has status 503 (deleteMany reject)", async () => {
+	test("Response has status 503 (can't delete artworks from the database)", async () => {
 		jwt.verify.mockImplementationOnce(() => {return {
 			username: 'testowy',
 			firstName: 'testowy',
@@ -478,7 +478,7 @@ describe('deleteArtworks tests', () => {
 		expect(res.status).toMatchInlineSnapshot(`503`)
 	})
 	
-	it("Response has status 400 (Artworks not specified)", async () => {
+	test("Response has status 400 (artworks to be deleted not specified)", async () => {
 		jwt.verify.mockImplementationOnce(() => {return {
 			username: 'testowy',
 			firstName: 'testowy',
@@ -497,7 +497,7 @@ describe('deleteArtworks tests', () => {
 		expect(res.status).toMatchInlineSnapshot(`400`)
 	})
 
-	it("Response has status 404", async () => {
+	test("Response has status 404 (artworks with provided ids don't exist)", async () => {
 		jwt.verify.mockImplementationOnce(() => {return {
 			username: 'testowy',
 			firstName: 'testowy',
@@ -521,7 +521,7 @@ describe('deleteArtworks tests', () => {
 		expect(res.status).toMatchInlineSnapshot(`404`)
 	})
 
-	it("Response has status 404 2", async () => {
+	test("Response has status 404 (didn't find all artworks to be deleted in the database)", async () => {
 		jwt.verify.mockImplementationOnce(() => {return {
 			username: 'testowy',
 			firstName: 'testowy',
