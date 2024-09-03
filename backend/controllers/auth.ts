@@ -8,15 +8,25 @@ const jwt = require("jsonwebtoken")
 require("dotenv").config()
 import { NextFunction, Request, Response } from "express"
 
-const registerUser = async (req: Request, res: Response): Promise<Response> => {
+const registerUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const existingUser = await User.findOne({ username: req.body.username })
-        if (existingUser) {
-            return res.status(409).json({ message: "User already exists" })
+        try{
+            const existingUser = await User.findOne({ username: req.body.username }).exec()
+            if (existingUser) {
+                const err = new Error("User already exists")
+                res.status(409)
+                return next(err)
+            }
+        } catch {
+            const err = new Error("Database unavailable")
+            res.status(503)
+            return next(err)
         }
 
         const salt = await bcrypt.genSalt(10)
+        console.log(salt)
         const hashedPassword = await bcrypt.hash(req.body.password, salt)
+        console.log(hashedPassword)
 
         const newUser = new User({
             username: req.body.username,

@@ -12,8 +12,8 @@ export const authAsyncWrapper = (
                 res.status(400)
                 return next(err)
             }
-
-            const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string)
+            
+            const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string)         
             await handler(req, res, next)
         } catch {
             const err = new Error('Access denied')
