@@ -22,7 +22,7 @@ const registerUser = async (req: Request, res: Response, next: NextFunction) => 
         return next(err)
     }
 
-    const bcryptCallback = async (err: Error, hashedPassword: string) => {
+    const hashCallback = async (err: Error, hashedPassword: string) => {
         if(err) {
             const err = new Error("Password encryption error")
             res.status(500)
@@ -48,30 +48,41 @@ const registerUser = async (req: Request, res: Response, next: NextFunction) => 
     }
 
     const saltRounds = 10
-    bcrypt.hash(req.body.password, saltRounds, bcryptCallback)        
+    bcrypt.hash(req.body.password, saltRounds, hashCallback)        
 }
 
-const loginUser = async (req: Request, res: Response): Promise<Response> => {
+const loginUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const user = await User.findOne({ username: req.body.username })
-
+        const user = await User.findOne({ username: req.body.username }).exec()
         if (!user) {
-            return res.status(404).send("Invalid username or password")
+            const err = new Error("Invalid username or password")
+            res.status(404)
+            return next(err)
         }
 
-        const validPassword = await bcrypt.compare(req.body.password, user.password)
-
-        if (!validPassword) {
-            return res.status(404).json("Invalid username or password")
+        const compareCallback = (err: Error, validPassword: string) => {
+            if(err) {
+                const err = new Error("Internal server error")
+                res.status(500)
+                return next(err)
+            }
+            if (!validPassword) {
+                const err = new Error("Invalid username or password")
+                res.status(404)
+                return next(err)
+            } 
+            const token = jwt.sign(
+                { username: user.username, firstName: user.firstName, userId: user._id },
+                process.env.ACCESS_TOKEN_SECRET,
+                { expiresIn: process.env.EXPIRATION_TIME })
+            return res.status(200).json({ token })
         }
 
-        const token = jwt.sign({ username: user.username, firstName: user.firstName, userId: user._id },
-            process.env.ACCESS_TOKEN_SECRET,
-            { expiresIn: process.env.EXPIRATION_TIME })
-        return res.status(200).json({ token })
-
-    } catch (err) {
-        return res.status(500).json(err)
+        bcrypt.compare(req.body.password, user.password, compareCallback)      
+    } catch {
+        const err = new Error("Database unavailable")
+        res.status(503)
+        return next(err)
     }
 }
 
