@@ -1,6 +1,6 @@
 import mongoose from "mongoose"
 
-const asyncWrapper = require("../middleware/async")
+import { authAsyncWrapper } from "../middleware/auth"
 
 const User = require("../models/user")
 const bcrypt = require("bcrypt")
@@ -86,23 +86,25 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
     }
 }
 
-const deleteUser = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+const deleteUser = authAsyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.params.userId
-
+    if (!mongoose.isValidObjectId(userId)) {
+        const err = new Error(`Invalid user id: ${userId}`)
+        res.status(400)
+        return next(err)
+    }
     try {
-        if (!mongoose.isValidObjectId(userId)) {
-            return res.status(400).json(`Invalid user id: ${userId}`)
+        const deletedUserData = await User.findByIdAndRemove(userId).exec()
+        if (!deletedUserData) {
+            const err = new Error(`User not found`)
+            res.status(404)
+            return next(err)
         }
-
-        const isSuccess = await User.findByIdAndRemove(userId).exec()
-
-        if (!isSuccess) {
-            return res.status(404).json("User not found")
-        }
-
-        return res.sendStatus(204)
+        return res.status(200).json(deletedUserData)
     } catch (error) {
-        next(error)
+        const err = new Error("Database unavailable")
+        res.status(503)
+        return next(err)
     }
 })
 

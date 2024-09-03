@@ -41,7 +41,7 @@ describe('getArtwork tests', () =>{
         expect(res.body.artwork._id).toMatchInlineSnapshot(`"662e92b5d628570afa5357c3"`)
     })
 
-    test("Response has status 400 (ObjectId is invalid)", async () => {
+    test("Response has status 400 (artwork ObjectId is invalid)", async () => {
         mongoose.isValidObjectId.mockImplementationOnce(() => {return false})
         const res = await request(app.use(ArtworksRouter))
         .get('/123');
