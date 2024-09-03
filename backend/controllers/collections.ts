@@ -5,7 +5,6 @@ import { findSearchText, findMatch, sortRecordsByTitle } from "../utils/controll
 const Collection = require("../models/collection")
 const Category = require("../models/collection")
 const Artwork = require("../models/artwork")
-const asyncWrapper = require("../middleware/async")
 const jwt = require("jsonwebtoken")
 
 const getAllCollections = async (req: Request, res: Response, next: any) => {
