@@ -27,7 +27,7 @@ jest.mock("jsonwebtoken", () => ({
 }))
 
 describe('getArtwork tests', () =>{
-    test("Response has status 200 and res.body has artwork object with _id parameter (request successful)", async () => {
+    test("Response has status 200 and res.body has artwork object with _id parameter (get request successful)", async () => {
 		mongoose.isValidObjectId.mockImplementationOnce(() => {return true})
         Artwork.findById.mockImplementationOnce(() => {
         	return {

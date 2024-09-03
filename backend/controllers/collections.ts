@@ -61,24 +61,19 @@ const getAllCollections = async (req: Request, res: Response, next: any) => {
     })
 }
 
-const getCollection = async (req: Request, res: Response, next: any) => {
+const getCollection = async (req: Request, res: Response, next: NextFunction) => {
     const collectionName = req.params.name
-
     try {
-        // if (!mongoose.isValidObjectId(collectionId)) {
-        //     return res.status(400).json(`Invalid collection id: ${collectionId}`)
-        // }
-
-        const collection = await Collection.find({ name: collectionName }).exec()
-
+        const collection = await Collection.findOne({ name: collectionName }).exec()
         if (!collection) {
             return res.status(404).json("Collection not found")
         } else {
             return res.status(200).json(collection[0])
         }
-
-    } catch (error) {
-        next(error)
+    } catch {
+        const err = new Error(`Database unavailable`)
+        res.status(503)
+        return next(err)
     }
 }
 
