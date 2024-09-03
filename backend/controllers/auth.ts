@@ -10,40 +10,45 @@ import { NextFunction, Request, Response } from "express"
 
 const registerUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        try{
-            const existingUser = await User.findOne({ username: req.body.username }).exec()
-            if (existingUser) {
-                const err = new Error("User already exists")
-                res.status(409)
-                return next(err)
-            }
+        const existingUser = await User.findOne({ username: req.body.username }).exec()
+        if (existingUser) {
+            const err = new Error("User already exists")
+            res.status(409)
+            return next(err)
+        }
+    } catch {
+        const err = new Error("Database unavailable")
+        res.status(503)
+        return next(err)
+    }
+
+    const bcryptCallback = async (err: Error, hashedPassword: string) => {
+        if(err) {
+            const err = new Error("Password encryption error")
+            res.status(500)
+            return next(err)
+        }
+        try {
+            const user = await User.create({
+                username: req.body.username,
+                password: hashedPassword,
+                firstName: req.body.firstName,
+            })
+            const token = jwt.sign(
+                { username: user.username, firstName: user.firstName, userId: user._id },
+                process.env.ACCESS_TOKEN_SECRET,
+                { expiresIn: process.env.EXPIRATION_TIME }
+            )
+            return res.status(201).json({ token })
         } catch {
             const err = new Error("Database unavailable")
             res.status(503)
             return next(err)
         }
-
-        const salt = await bcrypt.genSalt(10)
-        console.log(salt)
-        const hashedPassword = await bcrypt.hash(req.body.password, salt)
-        console.log(hashedPassword)
-
-        const newUser = new User({
-            username: req.body.username,
-            password: hashedPassword,
-            firstName: req.body.firstName,
-        })
-
-        const user = await newUser.save()
-
-        const token = jwt.sign({ username: user.username, firstName: user.firstName, userId: user._id },
-            process.env.ACCESS_TOKEN_SECRET,
-            { expiresIn: process.env.EXPIRATION_TIME })
-
-        return res.status(200).json({ token })
-    } catch (err) {
-        return res.status(500).json(err)
     }
+
+    const saltRounds = 10
+    bcrypt.hash(req.body.password, saltRounds, bcryptCallback)        
 }
 
 const loginUser = async (req: Request, res: Response): Promise<Response> => {
