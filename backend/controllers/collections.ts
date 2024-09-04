@@ -6,6 +6,7 @@ const Collection = require("../models/collection")
 const Category = require("../models/collection")
 const Artwork = require("../models/artwork")
 const jwt = require("jsonwebtoken")
+import { authAsyncWrapper } from "../middleware/auth"
 
 const getAllCollections = async (req: Request, res: Response, next: any) => {
     const page = parseInt(req.query.page as string) || 1
@@ -158,27 +159,31 @@ const getArtworksInCollection = async (req: Request, res: Response, next: NextFu
     }
 }
 
-const createCollection = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const token = req.headers.authorization?.split(" ")[1]
-        if (!token) return res.status(401).json({ error: 'Access denied' });
+const createCollection = authAsyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+    const collectionName = req.body.name
+    const collectionDescription = req.body.description
+    if(collectionName !== undefined && collectionDescription !== undefined) {
         try {
-            const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string)
-            const duplicate = await Collection.findOne({name: req.body.name})
-            if(duplicate) {
-                return res.status(400).json({error: `Kolekcja o nazwie ${req.body.name} już istnieje.`})
+            const duplicateCollection = await Collection.findOne({name: collectionName}).exec()
+            if(duplicateCollection) {
+                const err = new Error(`Collection with provided name already exists`)
+                res.status(409)
+                return next(err)
             } else {
                 const newCollection = await Collection.create({name: req.body.name, description: req.body.description})
-                return res.status(201).json({newCollection: newCollection})
+                return res.status(201).json(newCollection)
             }
-        } catch (error) {
-            return res.status(401).json({ error: 'Access denied' });
+        } catch {
+            const err = new Error(`Database unavailable`)
+            res.status(503)
+            return next(err)
         }
-        
-    } catch (error) {
-        next(error)
+    } else {
+        const err = new Error(`Incorrect request body provided`)
+        res.status(400)
+        return next(err)
     }
-}
+})
 
 const batchDeleteCollections = async (req: Request, res: Response, next: NextFunction) => {
     try {
