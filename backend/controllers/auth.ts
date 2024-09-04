@@ -9,80 +9,98 @@ require("dotenv").config()
 import { NextFunction, Request, Response } from "express"
 
 const registerUser = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const existingUser = await User.findOne({ username: req.body.username }).exec()
-        if (existingUser) {
-            const err = new Error("User already exists")
-            res.status(409)
-            return next(err)
-        }
-    } catch {
-        const err = new Error("Database unavailable")
-        res.status(503)
-        return next(err)
-    }
-
-    const hashCallback = async (err: Error, hashedPassword: string) => {
-        if(err) {
-            const err = new Error("Password encryption error")
-            res.status(500)
-            return next(err)
-        }
+    const newUsername = req.body.username
+    const newFirstName = req.body.firstName
+    const newPassword = req.body.password
+    if(newUsername !== undefined && newFirstName !== undefined && newPassword !== undefined) {
         try {
-            const user = await User.create({
-                username: req.body.username,
-                password: hashedPassword,
-                firstName: req.body.firstName,
-            })
-            const token = jwt.sign(
-                { username: user.username, firstName: user.firstName, userId: user._id },
-                process.env.ACCESS_TOKEN_SECRET,
-                { expiresIn: process.env.EXPIRATION_TIME }
-            )
-            return res.status(201).json({ token })
+            const existingUser = await User.findOne({ username: newUsername }).exec()
+            if (existingUser) {
+                const err = new Error("User already exists")
+                res.status(409)
+                return next(err)
+            }
         } catch {
             const err = new Error("Database unavailable")
             res.status(503)
             return next(err)
         }
-    }
-
-    const saltRounds = 10
-    bcrypt.hash(req.body.password, saltRounds, hashCallback)        
-}
-
-const loginUser = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const user = await User.findOne({ username: req.body.username }).exec()
-        if (!user) {
-            const err = new Error("Invalid username or password")
-            res.status(404)
-            return next(err)
-        }
-
-        const compareCallback = (err: Error, validPassword: string) => {
+    
+        const hashCallback = async (err: Error, hashedPassword: string) => {
             if(err) {
-                const err = new Error("Internal server error")
+                const err = new Error("Password encryption error")
                 res.status(500)
                 return next(err)
             }
-            if (!validPassword) {
+            try {
+                const user = await User.create({
+                    username: newUsername,
+                    password: hashedPassword,
+                    firstName: newFirstName,
+                })
+                const token = jwt.sign(
+                    { username: user.username, firstName: user.firstName, userId: user._id },
+                    process.env.ACCESS_TOKEN_SECRET,
+                    { expiresIn: process.env.EXPIRATION_TIME }
+                )
+                return res.status(201).json({ token })
+            } catch {
+                const err = new Error("Database unavailable")
+                res.status(503)
+                return next(err)
+            }
+        }
+    
+        const saltRounds = 10
+        bcrypt.hash(newPassword, saltRounds, hashCallback)
+    } else {
+        const err = new Error(`Incorrect request body provided`)
+        res.status(400)
+        return next(err)
+    }
+            
+}
+
+const loginUser = async (req: Request, res: Response, next: NextFunction) => {
+    const loginUsername = req.body.username
+    const loginPassword = req.body.password
+    if(loginUsername !== undefined && loginPassword !== undefined) {
+        try {
+            const user = await User.findOne({ username: loginUsername }).exec()
+            if (!user) {
                 const err = new Error("Invalid username or password")
                 res.status(404)
                 return next(err)
-            } 
-            const token = jwt.sign(
-                { username: user.username, firstName: user.firstName, userId: user._id },
-                process.env.ACCESS_TOKEN_SECRET,
-                { expiresIn: process.env.EXPIRATION_TIME })
-            return res.status(200).json({ token })
+            }
+    
+            const compareCallback = (err: Error, validPassword: string) => {
+                if(err) {
+                    const err = new Error("Internal server error")
+                    res.status(500)
+                    return next(err)
+                }
+                if (!validPassword) {
+                    const err = new Error("Invalid username or password")
+                    res.status(404)
+                    return next(err)
+                } 
+                const token = jwt.sign(
+                    { username: user.username, firstName: user.firstName, userId: user._id },
+                    process.env.ACCESS_TOKEN_SECRET,
+                    { expiresIn: process.env.EXPIRATION_TIME })
+                return res.status(200).json({ token })
+            }
+    
+            bcrypt.compare(loginPassword, user.password, compareCallback)      
+        } catch {
+            const err = new Error("Database unavailable")
+            res.status(503)
+            return next(err)
         }
-
-        bcrypt.compare(req.body.password, user.password, compareCallback)      
-    } catch {
-        const err = new Error("Database unavailable")
-        res.status(503)
-        return next(err)
+    } else {
+        const err = new Error(`Incorrect request body provided`)
+        res.status(400)
+        return next(err)        
     }
 }
 

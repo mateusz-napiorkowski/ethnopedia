@@ -32,6 +32,63 @@ jest.mock('mongoose', () => ({
 }))
 
 describe('registerUser tests', () =>{
+    test("Response has status 400 (incorrect payload)", async () => {
+        let payload = { }
+        let res = await request(app.use(AuthRouter))
+        .post('/register')
+        .send(payload)
+		.set('Content-Type', 'application/json')
+		.set('Accept', 'application/json')
+        expect(res.status).toMatchInlineSnapshot(`400`)
+
+        payload = { username: 'user' }
+        res = await request(app.use(AuthRouter))
+        .post('/register')
+        .send(payload)
+		.set('Content-Type', 'application/json')
+		.set('Accept', 'application/json')
+        expect(res.status).toMatchInlineSnapshot(`400`)
+
+        payload = { firstName: 'user' }
+        res = await request(app.use(AuthRouter))
+        .post('/register')
+        .send(payload)
+		.set('Content-Type', 'application/json')
+		.set('Accept', 'application/json')
+        expect(res.status).toMatchInlineSnapshot(`400`)
+
+        payload = { password: 'hasl1242o2' }
+        res = await request(app.use(AuthRouter))
+        .post('/register')
+        .send(payload)
+		.set('Content-Type', 'application/json')
+		.set('Accept', 'application/json')
+        expect(res.status).toMatchInlineSnapshot(`400`)
+
+        payload = { firstName: 'user', password: 'hasl1242o2' }
+        res = await request(app.use(AuthRouter))
+        .post('/register')
+        .send(payload)
+		.set('Content-Type', 'application/json')
+		.set('Accept', 'application/json')
+        expect(res.status).toMatchInlineSnapshot(`400`)
+
+        payload = { username: 'user', password: 'hasl1242o2' }
+        res = await request(app.use(AuthRouter))
+        .post('/register')
+        .send(payload)
+		.set('Content-Type', 'application/json')
+		.set('Accept', 'application/json')
+        expect(res.status).toMatchInlineSnapshot(`400`)
+
+        payload = { username: 'user', firstName: 'user'}
+        res = await request(app.use(AuthRouter))
+        .post('/register')
+        .send(payload)
+		.set('Content-Type', 'application/json')
+		.set('Accept', 'application/json')
+        expect(res.status).toMatchInlineSnapshot(`400`)
+    })
     test("Response has status 409 (user already exists)", async () => {
         User.findOne.mockImplementationOnce(() => {
             return {
@@ -155,6 +212,31 @@ describe('registerUser tests', () =>{
 })
 
 describe('loginUser tests', () =>{
+    test("Response has status 400 (incorrect payload)", async () => {
+        let payload = { }
+        let res = await request(app.use(AuthRouter))
+        .post('/login')
+        .send(payload)
+		.set('Content-Type', 'application/json')
+		.set('Accept', 'application/json')
+        expect(res.status).toMatchInlineSnapshot(`400`)
+
+        payload = { username: 'user' }
+        res = await request(app.use(AuthRouter))
+        .post('/login')
+        .send(payload)
+		.set('Content-Type', 'application/json')
+		.set('Accept', 'application/json')
+        expect(res.status).toMatchInlineSnapshot(`400`)
+
+        payload = { password: 'hasl1242o2' }
+        res = await request(app.use(AuthRouter))
+        .post('/login')
+        .send(payload)
+		.set('Content-Type', 'application/json')
+		.set('Accept', 'application/json')
+        expect(res.status).toMatchInlineSnapshot(`400`)
+    })
     test("Response has status 503 (can't check if provided username is already in the database)", async () => {
         User.findOne.mockImplementationOnce(() => {
             return {
