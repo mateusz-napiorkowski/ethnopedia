@@ -80,6 +80,52 @@ describe('getArtwork tests', () =>{
 })
 
 describe('createArtwork tests', () =>{
+	test("Response has status 400 (incorrect payload)", async () => {
+		jwt.verify.mockImplementationOnce(() => {return {
+			username: 'testowy',
+			firstName: 'testowy',
+			userId: '12b2343fbb64df643e8a9ce6',
+			iat: 1725211851,
+			exp: 1726211851
+		}})
+		let payload = { }
+		let res = await request(app.use(ArtworksRouter))
+		.post('/create')
+		.send(payload)
+		.set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
+		.set('Content-Type', 'application/json')
+		.set('Accept', 'application/json')
+
+		expect(res.status).toMatchInlineSnapshot(`400`)
+
+		payload = {
+			categories: [
+				{ name: 'Tytuł', values: [ 'Tytuł testowy' ], subcategories: [] },
+				{ name: 'Artyści', values: [ 'Jan Testowy' ], subcategories: [] },
+				{ name: 'Rok', values: [ '2024' ], subcategories: [] }
+			]
+		}
+		res = await request(app.use(ArtworksRouter))
+		.post('/create')
+		.send(payload)
+		.set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
+		.set('Content-Type', 'application/json')
+		.set('Accept', 'application/json')
+
+		expect(res.status).toMatchInlineSnapshot(`400`)
+
+		payload = {
+			collectionName: 'testowa'
+		}
+		res = await request(app.use(ArtworksRouter))
+		.post('/create')
+		.send(payload)
+		.set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
+		.set('Content-Type', 'application/json')
+		.set('Accept', 'application/json')
+
+		expect(res.status).toMatchInlineSnapshot(`400`)
+	})
 	test("Response has status 201 (artwork creation successful)", async () => {
 		jwt.verify.mockImplementationOnce(() => {return {
 			username: 'testowy',
@@ -191,6 +237,56 @@ describe('createArtwork tests', () =>{
 })
 
 describe('editArtwork tests', () =>{
+	test("Response has status 400 (incorrect payload)", async () => {
+		jwt.verify.mockImplementationOnce(() => {return {
+			username: 'testowy',
+			firstName: 'testowy',
+			userId: '12b2343fbb64df643e8a9ce6',
+			iat: 1725211851,
+			exp: 1726211851
+		}})
+		let payload = { }
+		let res = await request(app.use(ArtworksRouter))
+		.put('/edit/66ce0bf156199c1b8df5db7d')
+		.send(payload)
+		.set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
+		.set('Content-Type', 'application/json')
+		.set('Accept', 'application/json')
+
+		expect(res.status).toMatchInlineSnapshot(`400`)
+		
+		payload = {
+			categories: [
+				{ name: 'Tytuł', values: [ 'Tytuł zamieniony' ], subcategories: [] },
+				{
+					name: 'Artyści',
+					values: [ 'Jan Zamieniony' ],
+					subcategories: [ ]
+				},
+				{ name: 'Rok', values: [ '2024' ], subcategories: [] }
+			]
+		}
+		res = await request(app.use(ArtworksRouter))
+		.put('/edit/66ce0bf156199c1b8df5db7d')
+		.send(payload)
+		.set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
+		.set('Content-Type', 'application/json')
+		.set('Accept', 'application/json')
+
+		expect(res.status).toMatchInlineSnapshot(`400`)
+
+		payload = {
+			collectionName: 'testowa'
+		}
+		res = await request(app.use(ArtworksRouter))
+		.put('/edit/66ce0bf156199c1b8df5db7d')
+		.send(payload)
+		.set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
+		.set('Content-Type', 'application/json')
+		.set('Accept', 'application/json')
+
+		expect(res.status).toMatchInlineSnapshot(`400`)
+	})
 	test("Response has status 201 (request successful)", async () => {
 		jwt.verify.mockImplementationOnce(() => {return {
 			username: 'testowy',
@@ -361,6 +457,25 @@ describe('editArtwork tests', () =>{
 })
 
 describe('deleteArtworks tests', () => {
+	test("Response has status 400 (incorrect payload)", async () => {
+		jwt.verify.mockImplementationOnce(() => {return {
+			username: 'testowy',
+			firstName: 'testowy',
+			userId: '12b2343fbb64df643e8a9ce6',
+			iat: 1725211851,
+			exp: 1726211851
+		}})
+		const payload = { }
+		const res = await request(app.use(ArtworksRouter))
+		.delete('/delete')
+		.send(payload)
+		.set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
+		.set('Content-Type', 'application/json')
+		.set('Accept', 'application/json')
+
+		expect(res.status).toMatchInlineSnapshot(`400`)
+	})
+
 	test("Response has status 200 (artwork deletion successful)", async () => {
 		jwt.verify.mockImplementationOnce(() => {return {
 			username: 'testowy',
