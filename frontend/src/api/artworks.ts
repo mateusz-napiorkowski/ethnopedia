@@ -28,8 +28,7 @@ export const editArtwork = async (artworkData: any, artworkId: string, jwtToken:
 
 // deletes selected records (used on collection page)
 export const useBatchDeleteArtworkMutation = () => {
-    return useMutation(async (data: Array<any>) => {
-        const artworkIds = data[0].join(",")
+    return useMutation(async (data: Array<any>) => {        
         const config = {
             headers: { Authorization: `Bearer ${data[1]}` },
             data: { ids: data[0]}
