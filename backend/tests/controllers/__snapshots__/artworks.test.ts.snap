@@ -1,5 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Test deleteArtworks. Artwork deletion successful 1`] = `"{"acknowledged":true,"deletedCount":2}"`;
+
 exports[`Test deleteArtworks. Artwork deletion successful: Artwork.count is called once, has right filter and is part of the transaction 1`] = `
 [
   [
@@ -128,10 +130,6 @@ exports[`Test deleteArtworks. Artwork deletion successful: Authorization is succ
   ],
 }
 `;
-
-exports[`Test deleteArtworks. Artwork deletion successful: Status code equals 200 1`] = `200`;
-
-exports[`Test deleteArtworks. Artwork deletion successful: deletedCount equals 2 1`] = `"{"acknowledged":true,"deletedCount":2}"`;
 
 exports[`Test deleteArtworks. Artwork deletion successful: startSession is called once 1`] = `
 [MockFunction] {

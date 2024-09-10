@@ -77,19 +77,17 @@ const deleteArtworks = authAsyncWrapper(async (req: Request, res: Response, next
             try {
                 const artworksToDelete = req.body.ids
                 if (Array.isArray(artworksToDelete) && artworksToDelete.length === 0) {
-                    const err = new Error("Artworks not specified")
-                    res.status(400)
                     session.endSession();
-                    return next(err)
+                    res.status(400)
+                    return next(Error("Artworks not specified"))
                 }
                 session.startTransaction()
                 const databaseArtworksToDeleteCounted = await Artwork.count({ _id: { $in: artworksToDelete } }, { session }).exec()
-                if (databaseArtworksToDeleteCounted !== artworksToDelete.length) {   
-                    const err = new Error("Artworks not found")
-                    res.status(404)
+                if (databaseArtworksToDeleteCounted !== artworksToDelete.length) {
                     await session.abortTransaction();
                     session.endSession();
-                    return next(err)
+                    res.status(404).json("Artworks not found")
+                    return next(Error("Artworks not found"))
                 }
         
                 const result = await Artwork.deleteMany({ _id: { $in: artworksToDelete } }, { session }).exec()
@@ -99,19 +97,16 @@ const deleteArtworks = authAsyncWrapper(async (req: Request, res: Response, next
             } catch {
                 await session.abortTransaction();
                 session.endSession();
-                const err = new Error(`Couldn't complete database transaction`)
                 res.status(503)
-                return next(err)
+                return next(Error(`Couldn't complete database transaction`))
             }
         } catch {
-            const err = new Error(`Couldn't establish session for database transaction`)
             res.status(503)
-            return next(err)
+            return next(Error(`Couldn't establish session for database transaction`))
         } 
     } else {
-        const err = new Error(`Incorrect request body provided`)
         res.status(400)
-        return next(err)
+        return next(Error(`Incorrect request body provided`))
     }
     
 })
