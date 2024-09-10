@@ -45,7 +45,7 @@ export const createCollection = async (name: any, description: any, jwtToken: an
         headers: { Authorization: `Bearer ${jwtToken}` }
     };
     return await axios
-        .post(`${API_URL}v1/collection/add`, {name, description}, config)
+        .post(`${API_URL}v1/collection/create`, {name, description}, config)
         .then(res => res.data)
 }
 

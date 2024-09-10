@@ -1,11 +1,12 @@
 import { NextFunction, Request, Response } from "express"
 import mongoose from "mongoose"
 import { ObjectId } from "mongodb"
+import { findSearchText, findMatch, sortRecordsByTitle } from "../utils/controllers-utils/collections"
 const Collection = require("../models/collection")
 const Category = require("../models/collection")
 const Artwork = require("../models/artwork")
-const asyncWrapper = require("../middleware/async")
 const jwt = require("jsonwebtoken")
+import { authAsyncWrapper } from "../middleware/auth"
 
 const getAllCollections = async (req: Request, res: Response, next: any) => {
     const page = parseInt(req.query.page as string) || 1
@@ -61,88 +62,19 @@ const getAllCollections = async (req: Request, res: Response, next: any) => {
     })
 }
 
-const getCollection = async (req: Request, res: Response, next: any) => {
+const getCollection = async (req: Request, res: Response, next: NextFunction) => {
     const collectionName = req.params.name
-
     try {
-        // if (!mongoose.isValidObjectId(collectionId)) {
-        //     return res.status(400).json(`Invalid collection id: ${collectionId}`)
-        // }
-
-        const collection = await Collection.find({ name: collectionName }).exec()
-
+        const collection = await Collection.findOne({ name: collectionName }).exec()
         if (!collection) {
             return res.status(404).json("Collection not found")
         } else {
             return res.status(200).json(collection[0])
         }
-
-    } catch (error) {
-        next(error)
-    }
-}
-
-const findSearchText = (searchText: any, subcategories: any) => {
-    if(subcategories !== undefined) {
-        for(const category of subcategories){
-            for(const value of category.values) {
-                if(value.toString().includes(searchText)) {
-                    return true
-                }
-            }
-            if(findSearchText(searchText, category.subcategories)) {
-                return true
-            }
-        }
-    }
-    return false
-}
-
-const findMatch = (subcategories: any, nameArray: Array<string>, ruleValue: string) => {
-    let matched: boolean = false
-    const categoryDepth = nameArray.length
-    if(categoryDepth > 1) {
-        const categoryPrefix = nameArray[0]
-        for(const subcategory of subcategories) {
-            if(subcategory.name == categoryPrefix) {
-                matched = findMatch(subcategory.subcategories, nameArray.slice(1), ruleValue)
-                if(matched) return true
-            }
-        }
-    } else if (categoryDepth == 1) {
-        for(const subcategory of subcategories) {
-            if(subcategory.name == nameArray[0]) {   
-                for(const subcategoryValue of subcategory.values) {
-                    if(subcategoryValue == ruleValue) {
-                        return true
-                    }
-                }
-            }
-        }
-    }
-    return false
-}
-
-const sortRecordsByTitle = (records: any, order: any) => {
-    if(order == "title-asc" || order == "title-desc") {
-        let tempArray: any = []
-        records.forEach((record:any) => {
-            for(const category of record.categories){
-                if(category.name == "Tytuł") {
-                    tempArray.push([record, category.values.join(", ")])
-                }
-            }
-        })
-        tempArray.sort((a: any,b: any) => a[1].toUpperCase().localeCompare(b[1].toUpperCase()));
-        let sortedRecords: any = []
-        tempArray.forEach((pair:any) => {
-            sortedRecords.push(pair[0])
-        })
-        if(order == "title-asc") {
-            return sortedRecords
-        } else {
-            return sortedRecords.reverse()
-        }
+    } catch {
+        const err = new Error(`Database unavailable`)
+        res.status(503)
+        return next(err)
     }
 }
 
@@ -227,27 +159,31 @@ const getArtworksInCollection = async (req: Request, res: Response, next: NextFu
     }
 }
 
-const createCollection = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const token = req.headers.authorization?.split(" ")[1]
-        if (!token) return res.status(401).json({ error: 'Access denied' });
+const createCollection = authAsyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+    const collectionName = req.body.name
+    const collectionDescription = req.body.description
+    if(collectionName !== undefined && collectionDescription !== undefined) {
         try {
-            const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string)
-            const duplicate = await Collection.findOne({name: req.body.name})
-            if(duplicate) {
-                return res.status(400).json({error: `Kolekcja o nazwie ${req.body.name} już istnieje.`})
+            const duplicateCollection = await Collection.findOne({name: collectionName}).exec()
+            if(duplicateCollection) {
+                const err = new Error(`Collection with provided name already exists`)
+                res.status(409)
+                return next(err)
             } else {
                 const newCollection = await Collection.create({name: req.body.name, description: req.body.description})
-                return res.status(201).json({newCollection: newCollection})
+                return res.status(201).json(newCollection)
             }
-        } catch (error) {
-            return res.status(401).json({ error: 'Access denied' });
+        } catch {
+            const err = new Error(`Database unavailable`)
+            res.status(503)
+            return next(err)
         }
-        
-    } catch (error) {
-        next(error)
+    } else {
+        const err = new Error(`Incorrect request body provided`)
+        res.status(400)
+        return next(err)
     }
-}
+})
 
 const batchDeleteCollections = async (req: Request, res: Response, next: NextFunction) => {
     try {

@@ -5,7 +5,7 @@ const router = express.Router()
 const {
     getXlsxWithArtworksData,
     getXlsxWithCollectionData
-} = require("../controllers/dataExport")
+} = require("../controllers/data-export")
 
 router.route("/:collectionName").get(getXlsxWithArtworksData)
 router.route("/collection/:collectionName").get(getXlsxWithCollectionData)

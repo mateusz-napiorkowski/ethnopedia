@@ -1,6 +1,6 @@
 import mongoose from "mongoose"
 
-const asyncWrapper = require("../middleware/async")
+import { authAsyncWrapper } from "../middleware/auth"
 
 const User = require("../models/user")
 const bcrypt = require("bcrypt")
@@ -8,75 +8,121 @@ const jwt = require("jsonwebtoken")
 require("dotenv").config()
 import { NextFunction, Request, Response } from "express"
 
-const registerUser = async (req: Request, res: Response): Promise<Response> => {
-    try {
-        const existingUser = await User.findOne({ username: req.body.username })
-        if (existingUser) {
-            return res.status(409).json({ message: "User already exists" })
+const registerUser = async (req: Request, res: Response, next: NextFunction) => {
+    const newUsername = req.body.username
+    const newFirstName = req.body.firstName
+    const newPassword = req.body.password
+    if(newUsername !== undefined && newFirstName !== undefined && newPassword !== undefined) {
+        try {
+            const existingUser = await User.findOne({ username: newUsername }).exec()
+            if (existingUser) {
+                const err = new Error("User already exists")
+                res.status(409)
+                return next(err)
+            }
+        } catch {
+            const err = new Error("Database unavailable")
+            res.status(503)
+            return next(err)
         }
+    
+        const hashCallback = async (err: Error, hashedPassword: string) => {
+            if(err) {
+                const err = new Error("Password encryption error")
+                res.status(500)
+                return next(err)
+            }
+            try {
+                const user = await User.create({
+                    username: newUsername,
+                    password: hashedPassword,
+                    firstName: newFirstName,
+                })
+                const token = jwt.sign(
+                    { username: user.username, firstName: user.firstName, userId: user._id },
+                    process.env.ACCESS_TOKEN_SECRET,
+                    { expiresIn: process.env.EXPIRATION_TIME }
+                )
+                return res.status(201).json({ token })
+            } catch {
+                const err = new Error("Database unavailable")
+                res.status(503)
+                return next(err)
+            }
+        }
+    
+        const saltRounds = 10
+        bcrypt.hash(newPassword, saltRounds, hashCallback)
+    } else {
+        const err = new Error(`Incorrect request body provided`)
+        res.status(400)
+        return next(err)
+    }
+            
+}
 
-        const salt = await bcrypt.genSalt(10)
-        const hashedPassword = await bcrypt.hash(req.body.password, salt)
-
-        const newUser = new User({
-            username: req.body.username,
-            password: hashedPassword,
-            firstName: req.body.firstName,
-        })
-
-        const user = await newUser.save()
-
-        const token = jwt.sign({ username: user.username, firstName: user.firstName, userId: user._id },
-            process.env.ACCESS_TOKEN_SECRET,
-            { expiresIn: process.env.EXPIRATION_TIME })
-
-        return res.status(200).json({ token })
-    } catch (err) {
-        return res.status(500).json(err)
+const loginUser = async (req: Request, res: Response, next: NextFunction) => {
+    const loginUsername = req.body.username
+    const loginPassword = req.body.password
+    if(loginUsername !== undefined && loginPassword !== undefined) {
+        try {
+            const user = await User.findOne({ username: loginUsername }).exec()
+            if (!user) {
+                const err = new Error("Invalid username or password")
+                res.status(404)
+                return next(err)
+            }
+    
+            const compareCallback = (err: Error, validPassword: string) => {
+                if(err) {
+                    const err = new Error("Internal server error")
+                    res.status(500)
+                    return next(err)
+                }
+                if (!validPassword) {
+                    const err = new Error("Invalid username or password")
+                    res.status(404)
+                    return next(err)
+                } 
+                const token = jwt.sign(
+                    { username: user.username, firstName: user.firstName, userId: user._id },
+                    process.env.ACCESS_TOKEN_SECRET,
+                    { expiresIn: process.env.EXPIRATION_TIME })
+                return res.status(200).json({ token })
+            }
+    
+            bcrypt.compare(loginPassword, user.password, compareCallback)      
+        } catch {
+            const err = new Error("Database unavailable")
+            res.status(503)
+            return next(err)
+        }
+    } else {
+        const err = new Error(`Incorrect request body provided`)
+        res.status(400)
+        return next(err)        
     }
 }
 
-const loginUser = async (req: Request, res: Response): Promise<Response> => {
-    try {
-        const user = await User.findOne({ username: req.body.username })
-
-        if (!user) {
-            return res.status(404).send("Invalid username or password")
-        }
-
-        const validPassword = await bcrypt.compare(req.body.password, user.password)
-
-        if (!validPassword) {
-            return res.status(404).json("Invalid username or password")
-        }
-
-        const token = jwt.sign({ username: user.username, firstName: user.firstName, userId: user._id },
-            process.env.ACCESS_TOKEN_SECRET,
-            { expiresIn: process.env.EXPIRATION_TIME })
-        return res.status(200).json({ token })
-
-    } catch (err) {
-        return res.status(500).json(err)
-    }
-}
-
-const deleteUser = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+const deleteUser = authAsyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.params.userId
-
+    if (!mongoose.isValidObjectId(userId)) {
+        const err = new Error(`Invalid user id: ${userId}`)
+        res.status(400)
+        return next(err)
+    }
     try {
-        if (!mongoose.isValidObjectId(userId)) {
-            return res.status(400).json(`Invalid user id: ${userId}`)
+        const deletedUserData = await User.findByIdAndRemove(userId).exec()
+        if (!deletedUserData) {
+            const err = new Error(`User not found`)
+            res.status(404)
+            return next(err)
         }
-
-        const isSuccess = await User.findByIdAndRemove(userId).exec()
-
-        if (!isSuccess) {
-            return res.status(404).json("User not found")
-        }
-
-        return res.sendStatus(204)
+        return res.status(200).json(deletedUserData)
     } catch (error) {
-        next(error)
+        const err = new Error("Database unavailable")
+        res.status(503)
+        return next(err)
     }
 })
 
