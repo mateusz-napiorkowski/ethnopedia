@@ -8,21 +8,21 @@ export const getArtwork = async (req: Request, res: Response, next: NextFunction
     const artworkId = req.params.artworkId
     if (!mongoose.isValidObjectId(artworkId)) {
         const err = new Error(`Invalid artwork id: ${artworkId}`)
-        res.status(400)
+        res.status(400).json({ error: err.message })
         return next(err)
     } else {
         try {
             const artwork = await Artwork.findById(artworkId).exec()
             if (!artwork) {
-                const err = new Error(`Artwork ${artworkId} not found`)
-                res.status(404)
+                const err = new Error(`Artwork with id ${artworkId} not found`)      
+                res.status(404).json({ error: err.message })
                 return next(err)
             } else {
                 return res.status(200).json({ artwork })
             }
         } catch {
             const err = new Error(`Database unavailable`)
-            res.status(503)
+            res.status(503).json({ error: err.message })
             return next(err)
         }
     }   
