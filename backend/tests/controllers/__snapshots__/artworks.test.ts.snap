@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`artworks controller get endpoints should return status code 200 1`] = `
+exports[`Artworks controller GET endpoints getArtworks should respond with status code 200 and correct body 1`] = `
 {
   "artwork": {
     "__v": Any<Number>,

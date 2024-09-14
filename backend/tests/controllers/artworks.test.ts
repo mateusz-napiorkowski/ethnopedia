@@ -1,5 +1,4 @@
-import { describe, expect, test, jest, afterEach } from "@jest/globals"
-import { create } from "domain";
+import { describe, expect, test, jest, beforeEach } from "@jest/globals"
 const express = require("express")
 const bodyParser = require("body-parser");
 const app = express()
@@ -28,9 +27,12 @@ jest.mock("jsonwebtoken", () => ({
 	verify: jest.fn()
 }))
 
-describe('artworks controller', () =>{
-	describe('get endpoints', () => {
-		test("should return status code 200", async () => {
+describe('Artworks controller', () =>{
+	describe('GET endpoints', () => {
+		beforeEach(() => {
+			jest.resetAllMocks()
+		})
+		test("getArtworks should respond with status code 200 and correct body", async () => {
 			mongoose.isValidObjectId.mockReturnValue(true)
 			Artwork.findById.mockReturnValue({
 				exec: jest.fn().mockReturnValue( Promise.resolve({
@@ -42,7 +44,7 @@ describe('artworks controller', () =>{
 					createdAt: new Date("2024-09-10T12:17:12.821Z"),
 						updatedAt: new Date("2024-09-10T12:17:12.821Z"),
 					__v: 0
-				}))	
+				}))
 			})
 		
 			const res = await request(app.use(ArtworksRouter))
@@ -59,57 +61,27 @@ describe('artworks controller', () =>{
 				__v: expect.any(Number)
 			}})
 		})
-
-		test("should return status code 400", async () => {
-			mongoose.isValidObjectId.mockReturnValue(false)
+		test.each([
+			{isValidObjectId: false, findById: undefined, artworkId: '123',
+				statusCode: 400, error: 'Invalid artwork id: 123'},
+			{isValidObjectId: true, findById: { exec: () => Promise.resolve(null) }, artworkId: 'aaaaaaaad628570afa5357c3',
+				statusCode: 404, error: "Artwork with id aaaaaaaad628570afa5357c3 not found"},
+			{isValidObjectId: true, findById: { exec: () => Promise.reject() }, artworkId: 'aaaaaaaad628570afa5357c3',
+				statusCode: 503, error: "Database unavailable"}, 
+		])(`getArtworks should respond with status $statusCode and correct error message`, async ({isValidObjectId, findById, artworkId, statusCode, error}) => {
+			mongoose.isValidObjectId.mockReturnValue(isValidObjectId)
+			Artwork.findById.mockReturnValue(findById)
 
 			const res = await request(app.use(ArtworksRouter))
-			.get('/123')
+			.get(`/${artworkId}`)
 			.set('Accept', 'application/json')
 
-			expect(res.status).toBe(400)
-			expect(res.body.error).toBe("Invalid artwork id: 123")
+			expect(res.status).toBe(statusCode)
+			expect(res.body.error).toBe(error)
 		})
-
-		test("Response has status 404", async () => {
-			mongoose.isValidObjectId.mockReturnValue(true)
-			Artwork.findById.mockReturnValue(
-				{
-					exec: jest.fn().mockReturnValue(Promise.resolve(null))
-				}
-			)
-			let res = await request(app.use(ArtworksRouter))
-			.get('/aaaaaaaad628570afa5357c3')
-			.set('Accept', 'application/json')
-
-			expect(res.status).toBe(404)
-			expect(res.body.error).toBe("Artwork with id aaaaaaaad628570afa5357c3 not found")
-    	})
-
-		test("Response has status 503", async () => {
-			mongoose.isValidObjectId.mockReturnValue(true)
-			Artwork.findById.mockReturnValue(
-				{
-					exec: jest.fn().mockImplementationOnce(() => Promise.reject())
-				}
-			)
-			const res = await request(app.use(ArtworksRouter))
-			.get('/662e92b5d628570afa5357c3')
-			.set('Accept', 'application/json')
-
-			expect(res.status).toBe(503)
-			expect(res.body.error).toBe("Database unavailable")
-    	})
 	})
-    
-
-    
-
-    
-
-    
-	afterEach(() => {
-		jest.resetAllMocks()
+	describe('POST endpoints', () => {
+		
 	})
 })
 
