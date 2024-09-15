@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express"
 import mongoose from "mongoose"
 const Artwork = require("../models/artwork")
+const Collection = require("../models/collection")
 
 import { authAsyncWrapper } from "../middleware/auth"
 
@@ -29,10 +30,18 @@ export const getArtwork = async (req: Request, res: Response, next: NextFunction
 }
 
 const createArtwork = authAsyncWrapper((async (req: Request, res: Response, next: NextFunction) => {
-    if(req.body.categories !== undefined && req.body.collectionName !== undefined) {
+    const collectionName = req.body.collectionName
+    if(req.body.categories !== undefined && collectionName !== undefined) {
         try {
-            const newArtwork = await Artwork.create(req.body)
-            return res.status(201).json(newArtwork)
+            const foundCollections = await Collection.find({name: collectionName}).exec()
+            if (foundCollections.length !== 1) {
+                const err = new Error(`Collection with name ${collectionName} not found`)
+                res.status(404).json({ error: err.message })
+                return next(err)
+            } else {
+                const newArtwork = await Artwork.create(req.body)
+                return res.status(201).json(newArtwork)
+            }
         } catch {
             const err = new Error(`Database unavailable`)
             res.status(503).json({ error: err.message })

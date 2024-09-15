@@ -22,6 +22,11 @@ jest.mock("../../models/artwork", () => ({
 	deleteMany: jest.fn()
 }))
 
+const Collection = require("../../models/collection")
+jest.mock("../../models/collection", () => ({
+	find: jest.fn()
+}))
+
 const jwt = require("jsonwebtoken")
 jest.mock("jsonwebtoken", () => ({
 	verify: jest.fn()
@@ -87,8 +92,10 @@ describe('Artworks controller', () =>{
 				expect(res.body.error).toBe(error)
 			})
 	})
+
 	describe('POST endpoints', () => {
 		const artworkId = "66ce0bf156199c1b8df5db7d"
+		const collectionId = "66c4e516d6303ed5ac5a8e55"
 		test("createArtwork should respond with status 201 and correct body", async () => {
 			jwt.verify.mockReturnValue({
 				username: 'testowy',
@@ -102,17 +109,26 @@ describe('Artworks controller', () =>{
 				categories: [
 					{ name: 'Tytuł', values: [ 'Tytuł' ], subcategories: [] }
 				],
-				collectionName: 'testowa',
+				collectionName: 'collection',
 				createdAt: '2024-08-27T17:25:05.352Z',
 				updatedAt: '2024-08-27T17:25:05.352Z',
 				__v: 0
 			}))
+			Collection.find.mockReturnValue({
+				exec: () => Promise.resolve([{
+					_id: `${collectionId}`,
+					name: 'collection',
+					description: 'collection description',
+					__v: 0
+				}])
+			})
 			const payload = {
 				categories: [
 					{ name: 'Tytuł', values: [ 'Tytuł' ], subcategories: [] }
 				],
-				collectionName: 'testowa'
+				collectionName: 'collection'
 			}
+
 			const res = await request(app.use(ArtworksRouter))
 				.post('/create')
 				.send(payload)
@@ -133,28 +149,34 @@ describe('Artworks controller', () =>{
 
 		test.each([
 			{payload: {},
-				verify: true, create: undefined, statusCode: 400, error: 'Incorrect request body provided'},
+				verify: true, create: undefined, find: undefined, statusCode: 400, error: 'Incorrect request body provided'},
 			{payload: { categories: [ { name: 'Tytuł', values: [ 'Tytuł testowy' ], subcategories: [] } ]},
-				verify: true, create: undefined, statusCode: 400, error: 'Incorrect request body provided'},
-			{payload: { collectionName: 'testowa' },
-				verify: true, create: undefined, statusCode: 400, error: 'Incorrect request body provided'},
-			{payload: { categories: [{ name: 'Tytuł', values: [ 'Tytuł' ], subcategories: [] }], collectionName: 'testowa'},
-				verify: true, create: () => Promise.reject(), statusCode: 503, error: 'Database unavailable'}
+				verify: true, create: undefined, find: undefined, statusCode: 400, error: 'Incorrect request body provided'},
+			{payload: { collectionName: 'collection' },
+				verify: true, create: undefined, find: undefined, statusCode: 400, error: 'Incorrect request body provided'},
+			{payload: { categories: [{ name: 'Tytuł', values: [ 'Tytuł' ], subcategories: [] }], collectionName: 'collection'},
+				verify: true, create: undefined, find: {exec: () => Promise.reject()}, statusCode: 503, error: 'Database unavailable'},
+			{payload: { categories: [{ name: 'Tytuł', values: [ 'Tytuł' ], subcategories: [] }], collectionName: 'collection'},
+				verify: true, create: () => Promise.reject(), find: undefined, statusCode: 503, error: 'Database unavailable'},
+			{payload: { categories: [{ name: 'Tytuł', values: [ 'Tytuł' ], subcategories: [] }], collectionName: 'collection'},
+				verify: true, create: undefined, find: {exec: () => Promise.resolve([])}, statusCode: 404, error: "Collection with name collection not found"}
 		])(`createArtwork should respond with status $statusCode and correct error message`, async ({
-			payload, verify, create, statusCode, error}) => {
-			jwt.verify.mockReturnValue(verify)
-			Artwork.create.mockImplementationOnce(create)
+			payload, verify, create, find, statusCode, error}) => {
+				jwt.verify.mockReturnValue(verify)
+				Artwork.create.mockReturnValue(create)
+				Collection.find.mockReturnValue(find)
 
-			const res = await request(app.use(ArtworksRouter))
-				.post('/create')
-				.send(payload)
-				.set('Authorization', `Bearer ${jwtToken}`)
-				.set('Content-Type', 'application/json')
-				.set('Accept', 'application/json')
+				const res = await request(app.use(ArtworksRouter))
+					.post('/create')
+					.send(payload)
+					.set('Authorization', `Bearer ${jwtToken}`)
+					.set('Content-Type', 'application/json')
+					.set('Accept', 'application/json')
 
-			expect(res.status).toBe(statusCode)
-			expect(res.body.error).toBe(error)
-		})
+				expect(res.status).toBe(statusCode)
+				expect(res.body.error).toBe(error)
+			}
+		)
 	})
 })
 
