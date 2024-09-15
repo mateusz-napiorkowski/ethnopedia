@@ -1,4 +1,5 @@
 import { describe, expect, test, jest, beforeEach } from "@jest/globals"
+import { startSession } from "mongoose";
 const express = require("express")
 const bodyParser = require("body-parser");
 const app = express()
@@ -88,7 +89,8 @@ describe('Artworks controller', () =>{
 
 				expect(res.status).toBe(statusCode)
 				expect(res.body.error).toBe(error)
-			})
+			}
+		)
 	})
 
 	describe('POST endpoints', () => {
@@ -234,74 +236,74 @@ describe('Artworks controller', () =>{
 			}
 		)
 	})
+
+	describe('DELETE endpoints', () => {
+		test("deleteArtworks should respond with status 200 and correct body", async () => {
+			mongoose.startSession.mockReturnValue(Promise.resolve({
+				startTransaction: jest.fn(),
+				commitTransaction: jest.fn(),
+				abortTransaction: jest.fn(),
+				endSession: jest.fn()
+			}))
+			Artwork.count.mockReturnValue({
+				exec: () => Promise.resolve(2)
+			})
+			Artwork.deleteMany.mockReturnValue({
+				exec: () => Promise.resolve({ acknowledged: true, deletedCount: 2 })
+			})
+			const payload = { ids: [ '662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc' ] }
+
+			const res = await request(app.use(ArtworksRouter))
+			.delete('/delete')
+			.send(payload)
+			.set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
+			.set('Content-Type', 'application/json')
+			.set('Accept', 'application/json')
+	
+			expect(res.status).toBe(200)
+			expect(res.body).toMatchSnapshot({
+				"acknowledged": true,
+				"deletedCount": 2,
+			})
+		})
+
+		const startSessionDefault = () => Promise.resolve({
+			startTransaction: jest.fn(),
+			commitTransaction: jest.fn(),
+			abortTransaction: jest.fn(),
+			endSession: jest.fn()
+		})
+		test.each([
+			{payload: {}, startSession: undefined, count: undefined, deleteMany: undefined, statusCode: 400, error: 'Incorrect request body provided'},
+			{payload: { ids: [ '662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc' ] },
+			startSession: () => Promise.reject(), count: undefined, deleteMany: undefined, statusCode: 503, error: `Couldn't establish session for database transaction`},
+			{payload: { ids: [] },
+			startSession: startSessionDefault, count: undefined, deleteMany: undefined, statusCode: 400, error: "Artworks not specified"},
+			{payload: { ids: [ '662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc' ] },
+			startSession: startSessionDefault, count: {exec: () => Promise.reject()}, deleteMany: undefined, statusCode: 503, error: "Couldn't complete database transaction"},
+			{payload: { ids: [ '662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc' ] },
+			startSession: startSessionDefault, count: {exec: () => Promise.resolve(2)}, deleteMany: {exec: () => Promise.reject()}, statusCode: 503, error: "Couldn't complete database transaction"},
+			{payload: { ids: [ '662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc' ] },
+			startSession: startSessionDefault, count: {exec: () => Promise.resolve(1)}, deleteMany: undefined, statusCode: 404, error: "Artworks not specified"},
+		])(`deleteArtworks should respond with status $statusCode and correct error message`,
+			async ({ payload, startSession, count, deleteMany, statusCode, error}) => {
+				mongoose.startSession.mockImplementationOnce(startSession)
+				Artwork.count.mockReturnValue(count)
+				Artwork.deleteMany.mockReturnValue(deleteMany)
+
+				const res = await request(app.use(ArtworksRouter))
+				.delete('/delete')
+				.send(payload)
+				.set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
+				.set('Content-Type', 'application/json')
+				.set('Accept', 'application/json')
+		
+				expect(res.status).toBe(statusCode)
+				expect(res.body.error).toBe(error)
+			}
+		)
+	})
 })
-
-
-// describe('Test deleteArtworks.', () => {
-// 	test("Incorrect payload", async () => {
-// 		jwt.verify.mockImplementationOnce(() => {return {
-// 			username: 'testowy',
-// 			firstName: 'testowy',
-// 			userId: '12b2343fbb64df643e8a9ce6',
-// 			iat: 1725211851,
-// 			exp: 1726211851
-// 		}})
-// 		const payload: any = { }
-// 		const res = await request(app.use(ArtworksRouter))
-// 		.delete('/delete')
-// 		.send(payload)
-// 		.set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
-// 		.set('Content-Type', 'application/json')
-// 		.set('Accept', 'application/json')
-
-// 		expect(jwt.verify).toMatchSnapshot("Authorization is successful (jwt.verify is called and returns decoded user data)")
-// 		expect(res.status).toMatchSnapshot("Status code equals 400")
-// 		expect(payload.ids).toMatchSnapshot("Payload is incorrect (req.body.ids is undefined)")
-// 		// expect(mongoose.startSession.mock.calls).toMatchSnapshot("startSession is not called")
-// 		// expect(Artwork.count.mock.calls).toMatchSnapshot("Artwork.count is not called")
-// 		// expect(Artwork.deleteMany.mock.calls).toMatchSnapshot("Artwork.deleteMany is not called")
-// 	})
-
-// 	test("Artwork deletion successful", async () => {
-// 		mongoose.startSession.mockImplementationOnce(() => {return Promise.resolve({
-// 			startTransaction: jest.fn(),
-// 			commitTransaction: jest.fn(),
-// 			abortTransaction: jest.fn(),
-// 			endSession: jest.fn()
-// 		})})
-// 		jwt.verify.mockImplementationOnce(() => {return {
-// 			username: 'testowy',
-// 			firstName: 'testowy',
-// 			userId: '12b2343fbb64df643e8a9ce6',
-// 			iat: 1725211851,
-// 			exp: 1726211851
-// 		}})
-// 		Artwork.count.mockImplementationOnce(() => {
-// 			return {
-// 				exec: jest.fn().mockImplementationOnce(() => {return Promise.resolve(2)})
-// 			}
-// 		})
-// 		Artwork.deleteMany.mockImplementationOnce(() => {
-// 			return {
-// 				exec: jest.fn().mockImplementationOnce(() => {return Promise.resolve({ acknowledged: true, deletedCount: 2 })})
-// 			}
-// 		})
-// 		const payload = { ids: [ '662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc' ] }
-// 		const res = await request(app.use(ArtworksRouter))
-// 		.delete('/delete')
-// 		.send(payload)
-// 		.set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
-// 		.set('Content-Type', 'application/json')
-// 		.set('Accept', 'application/json')
-
-// 		expect(jwt.verify).toMatchSnapshot("Authorization is successful (jwt.verify is called and returns decoded user data)")
-// 		// expect(res.status).toMatchSnapshot("Status code equals 200")
-// 		expect(res.text).toMatchSnapshot()
-// 		expect(mongoose.startSession).toMatchSnapshot("startSession is called once")
-// 		expect(await mongoose.startSession.mock.results[0].value).toMatchSnapshot("startTransaction, commitTransaction, endSession are called once")
-// 		expect(Artwork.count.mock.calls).toMatchSnapshot("Artwork.count is called once, has right filter and is part of the transaction")
-// 		expect(Artwork.deleteMany.mock.calls).toMatchSnapshot("Artwork.deleteMany is called once, has right filter and is part of the transaction")
-// 	})
 
 // 	test("No jwt provided", async () => {
 // 		jwt.verify.mockImplementationOnce(() => {throw new Error()})
@@ -340,162 +342,3 @@ describe('Artworks controller', () =>{
 // 		// expect(Artwork.count.mock.calls).toMatchSnapshot("Artwork.count is not called")
 // 		// expect(Artwork.deleteMany.mock.calls).toMatchSnapshot("Artwork.deleteMany is not called")
 // 	})
-
-// 	test("Couldn't establish session for database transaction", async () => {
-// 		mongoose.startSession.mockRejectedValue(new Error("example mongoose.startSession Error"))
-// 		jwt.verify.mockImplementationOnce(() => {return {
-// 			username: 'testowy',
-// 			firstName: 'testowy',
-// 			userId: '12b2343fbb64df643e8a9ce6',
-// 			iat: 1725211851,
-// 			exp: 1726211851
-// 		}})
-// 		const payload = { 
-// 		ids: [ '662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc' ] 
-// 		}
-// 		const res = await request(app.use(ArtworksRouter))
-// 		.delete('/delete')
-// 		.send(payload)
-// 		.set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
-// 		.set('Content-Type', 'application/json')
-// 		.set('Accept', 'application/json')
-// 		expect(jwt.verify).toMatchSnapshot("Authorization is successful (jwt.verify is called and returns decoded user data)")
-// 		expect(res.status).toMatchSnapshot(`Status code equals 503`)
-// 		expect(await mongoose.startSession).rejects.toMatchSnapshot("Session for database transaction is not established (mongoose.startSession throws an error)")
-// 	})
-
-// 	// test("Response has status 503 (can't count artworks to be deleted in the database)", async () => {
-// 	// 	mongoose.startSession.mockImplementationOnce(() => {return Promise.resolve({
-// 	// 		startTransaction: jest.fn(),
-// 	// 		commitTransaction: jest.fn(),
-// 	// 		abortTransaction: jest.fn(),
-// 	// 		endSession: jest.fn()
-// 	// 	})})
-// 	// 	jwt.verify.mockImplementationOnce(() => {return {
-// 	// 		username: 'testowy',
-// 	// 		firstName: 'testowy',
-// 	// 		userId: '12b2343fbb64df643e8a9ce6',
-// 	// 		iat: 1725211851,
-// 	// 		exp: 1726211851
-// 	// 	}})
-// 	// 	Artwork.count.mockImplementationOnce(() => {
-// 	// 		return {
-// 	// 			exec: jest.fn().mockImplementationOnce(() => {return Promise.reject()})
-// 	// 		}
-// 	// 	})
-// 	// 	const payload = { 
-// 	// 	ids: [ '662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc' ] 
-// 	// 	}
-// 	// 	const res = await request(app.use(ArtworksRouter))
-// 	// 	.delete('/delete')
-// 	// 	.send(payload)
-// 	// 	.set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
-// 	// 	.set('Content-Type', 'application/json')
-// 	// 	.set('Accept', 'application/json')
-
-// 	// 	expect(jwt.verify).toMatchSnapshot("Authorization is successful (jwt.verify is called and returns decoded user data)")
-// 	// 	expect(res.status).toMatchInlineSnapshot(`503`)
-// 	// 	expect(res.status).toMatchSnapshot(`Status code equals 503`)
-// 	// })
-
-// 	// test("Response has status 503 (can't delete artworks from the database)", async () => {
-// 	// 	jwt.verify.mockImplementationOnce(() => {return {
-// 	// 		username: 'testowy',
-// 	// 		firstName: 'testowy',
-// 	// 		userId: '12b2343fbb64df643e8a9ce6',
-// 	// 		iat: 1725211851,
-// 	// 		exp: 1726211851
-// 	// 	}})
-// 	// 	Artwork.count.mockImplementationOnce(() => {
-// 	// 		return {
-// 	// 			exec: jest.fn().mockImplementationOnce(() => {return Promise.resolve(2)})
-// 	// 		}
-// 	// 	})
-// 	// 	Artwork.deleteMany.mockImplementationOnce(() => {
-// 	// 		return {
-// 	// 			exec: jest.fn().mockImplementationOnce(() => {return Promise.reject()})
-// 	// 		}
-// 	// 	})
-// 	// 	const payload = { 
-// 	// 	ids: [ '662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc' ] 
-// 	// 	}
-// 	// 	const res = await request(app.use(ArtworksRouter))
-// 	// 	.delete('/delete')
-// 	// 	.send(payload)
-// 	// 	.set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
-// 	// 	.set('Content-Type', 'application/json')
-// 	// 	.set('Accept', 'application/json')
-
-// 	// 	expect(res.status).toMatchInlineSnapshot(`503`)
-// 	// })
-	
-// 	// test("Response has status 400 (artworks to be deleted not specified)", async () => {
-// 	// 	jwt.verify.mockImplementationOnce(() => {return {
-// 	// 		username: 'testowy',
-// 	// 		firstName: 'testowy',
-// 	// 		userId: '12b2343fbb64df643e8a9ce6',
-// 	// 		iat: 1725211851,
-// 	// 		exp: 1726211851
-// 	// 	}})
-// 	// 	const payload = { ids: [ ] }
-// 	// 	const res = await request(app.use(ArtworksRouter))
-// 	// 	.delete('/delete')
-// 	// 	.send(payload)
-// 	// 	.set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
-// 	// 	.set('Content-Type', 'application/json')
-// 	// 	.set('Accept', 'application/json')
-
-// 	// 	expect(res.status).toMatchInlineSnapshot(`400`)
-// 	// })
-
-// 	// test("Response has status 404 (artworks with provided ids don't exist)", async () => {
-// 	// 	jwt.verify.mockImplementationOnce(() => {return {
-// 	// 		username: 'testowy',
-// 	// 		firstName: 'testowy',
-// 	// 		userId: '12b2343fbb64df643e8a9ce6',
-// 	// 		iat: 1725211851,
-// 	// 		exp: 1726211851
-// 	// 	}})
-// 	// 	Artwork.count.mockImplementationOnce(() => {
-// 	// 		return {
-// 	// 			exec: jest.fn().mockImplementationOnce(() => {return Promise.resolve(2)})
-// 	// 		}
-// 	// 	})
-// 	// 	const payload = { ids: ["662e92a5d628570afa5357bc"] }
-// 	// 	const res = await request(app.use(ArtworksRouter))
-// 	// 	.delete('/delete')
-// 	// 	.send(payload)
-// 	// 	.set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
-// 	// 	.set('Content-Type', 'application/json')
-// 	// 	.set('Accept', 'application/json')
-
-// 	// 	expect(res.status).toMatchInlineSnapshot(`404`)
-// 	// })
-
-// 	// test("Response has status 404 (didn't find all artworks to be deleted in the database)", async () => {
-// 	// 	jwt.verify.mockImplementationOnce(() => {return {
-// 	// 		username: 'testowy',
-// 	// 		firstName: 'testowy',
-// 	// 		userId: '12b2343fbb64df643e8a9ce6',
-// 	// 		iat: 1725211851,
-// 	// 		exp: 1726211851
-// 	// 	}})
-// 	// 	Artwork.count.mockImplementationOnce(() => {
-// 	// 		return {
-// 	// 			exec: jest.fn().mockImplementationOnce(() => {return Promise.resolve(1)})
-// 	// 		}
-// 	// 	})
-// 	// 	const payload = { ids: [ '662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc' ]  }
-// 	// 	const res = await request(app.use(ArtworksRouter))
-// 	// 	.delete('/delete')
-// 	// 	.send(payload)
-// 	// 	.set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
-// 	// 	.set('Content-Type', 'application/json')
-// 	// 	.set('Accept', 'application/json')
-
-// 	// 	expect(res.status).toMatchInlineSnapshot(`404`)
-// 	// })
-// 	afterEach(() => {
-// 		jest.resetAllMocks()
-// 	})
-// })

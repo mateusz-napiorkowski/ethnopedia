@@ -1,5 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Artworks controller DELETE endpoints deleteArtworks should respond with status 200 and correct body 1`] = `
+{
+  "acknowledged": true,
+  "deletedCount": 2,
+}
+`;
+
 exports[`Artworks controller GET endpoints getArtwork should respond with status 200 and correct body 1`] = `
 {
   "artwork": {
