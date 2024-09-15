@@ -197,181 +197,45 @@ describe('Artworks controller', () =>{
 				matchedCount: 1
 			})
 		})
+
+		test.each([
+			{payload: {},
+				replaceOne: undefined, statusCode: 400, error: 'Incorrect request body provided'},
+			{payload: {categories: [{ name: 'Title', values: [ 'New Title' ], subcategories: [] }]},
+				replaceOne: undefined, statusCode: 400, error: 'Incorrect request body provided'},
+			{payload: {collectionName: 'collection'},
+				replaceOne: undefined, statusCode: 400, error: 'Incorrect request body provided'},
+			{payload: {categories: [{ name: 'Title', values: [ 'New Title' ], subcategories: [] }], collectionName: 'collection'},
+				replaceOne: {exec: () => Promise.reject()}, statusCode: 503, error: 'Database unavailable'},
+			{payload: {categories: [{ name: 'Title', values: [ 'New Title' ], subcategories: [] }], collectionName: 'collection'},
+				replaceOne: {exec: () => Promise.resolve({
+					acknowledged: true,
+					modifiedCount: 0,
+					upsertedId: null,
+					upsertedCount: 0,
+					matchedCount: 0
+				})}, 
+				statusCode: 404, error: 'Artwork not found'},
+
+				
+		])(`editArtwork should respond with status $statusCode and correct error message`, async ({
+			payload, replaceOne, statusCode, error}) => {
+				Artwork.replaceOne.mockReturnValue(replaceOne)
+
+				const res = await request(app.use(ArtworksRouter))
+				.put('/edit/66ce0bf156199c1b8df5db7d')
+				.send(payload)
+				.set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
+				.set('Content-Type', 'application/json')
+				.set('Accept', 'application/json')
+
+				expect(res.status).toBe(statusCode)
+				expect(res.body.error).toBe(error)
+			}
+		)
 	})
 })
 
-// describe('editArtwork tests', () =>{
-// 	test("Response has status 400 (incorrect payload)", async () => {
-// 		jwt.verify.mockImplementationOnce(() => {return {
-// 			username: 'testowy',
-// 			firstName: 'testowy',
-// 			userId: '12b2343fbb64df643e8a9ce6',
-// 			iat: 1725211851,
-// 			exp: 1726211851
-// 		}})
-// 		let payload = { }
-// 		let res = await request(app.use(ArtworksRouter))
-// 		.put('/edit/66ce0bf156199c1b8df5db7d')
-// 		.send(payload)
-// 		.set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
-// 		.set('Content-Type', 'application/json')
-// 		.set('Accept', 'application/json')
-
-// 		expect(res.status).toMatchInlineSnapshot(`400`)
-		
-// 		payload = {
-// 			categories: [
-// 				{ name: 'Tytuł', values: [ 'Tytuł zamieniony' ], subcategories: [] },
-// 				{
-// 					name: 'Artyści',
-// 					values: [ 'Jan Zamieniony' ],
-// 					subcategories: [ ]
-// 				},
-// 				{ name: 'Rok', values: [ '2024' ], subcategories: [] }
-// 			]
-// 		}
-// 		res = await request(app.use(ArtworksRouter))
-// 		.put('/edit/66ce0bf156199c1b8df5db7d')
-// 		.send(payload)
-// 		.set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
-// 		.set('Content-Type', 'application/json')
-// 		.set('Accept', 'application/json')
-
-// 		expect(res.status).toMatchInlineSnapshot(`400`)
-
-// 		payload = {
-// 			collectionName: 'testowa'
-// 		}
-// 		res = await request(app.use(ArtworksRouter))
-// 		.put('/edit/66ce0bf156199c1b8df5db7d')
-// 		.send(payload)
-// 		.set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
-// 		.set('Content-Type', 'application/json')
-// 		.set('Accept', 'application/json')
-
-// 		expect(res.status).toMatchInlineSnapshot(`400`)
-// 	})
-// 	test("Response has status 201 (request successful)", async () => {
-// 		jwt.verify.mockImplementationOnce(() => {return {
-// 			username: 'testowy',
-// 			firstName: 'testowy',
-// 			userId: '12b2343fbb64df643e8a9ce6',
-// 			iat: 1725211851,
-// 			exp: 1726211851
-// 		}})
-// 		Artwork.replaceOne.mockImplementationOnce(() => {
-// 			return {
-// 				exec: jest.fn().mockImplementationOnce(() => {return Promise.resolve({
-// 					acknowledged: true,
-// 					modifiedCount: 1,
-// 					upsertedId: null,
-// 					upsertedCount: 0,
-// 					matchedCount: 1
-// 				})})
-// 			}
-// 		})
-// 		const payload = {
-// 			categories: [
-// 			{ name: 'Tytuł', values: [ 'Tytuł zamieniony' ], subcategories: [] },
-// 			{
-// 				name: 'Artyści',
-// 				values: [ 'Jan Zamieniony' ],
-// 				subcategories: [ ]
-// 			},
-// 			{ name: 'Rok', values: [ '2024' ], subcategories: [] }
-// 			],
-// 			collectionName: 'testowa'
-// 		}
-// 		const res = await request(app.use(ArtworksRouter))
-// 		.put('/edit/66ce0bf156199c1b8df5db7d')
-// 		.send(payload)
-// 		.set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
-// 		.set('Content-Type', 'application/json')
-// 		.set('Accept', 'application/json')
-
-// 		expect(res.status).toMatchInlineSnapshot(`201`)
-// 		expect(res.text).toMatchInlineSnapshot(`"{"acknowledged":true,"modifiedCount":1,"upsertedId":null,"upsertedCount":0,"matchedCount":1}"`)
-// 	})
-
-// 	test("Response has status 404 (artwork with given ID doesn't exist)", async () => {
-// 		jwt.verify.mockImplementationOnce(() => {return {
-// 			username: 'testowy',
-// 			firstName: 'testowy',
-// 			userId: '12b2343fbb64df643e8a9ce6',
-// 			iat: 1725211851,
-// 			exp: 1726211851
-// 		}})
-// 		Artwork.replaceOne.mockImplementationOnce(() => {
-// 			return {
-// 				exec: jest.fn().mockImplementationOnce(() => {return Promise.resolve({
-// 					acknowledged: true,
-// 					modifiedCount: 0,
-// 					upsertedId: null,
-// 					upsertedCount: 0,
-// 					matchedCount: 0
-// 				})})
-// 			}
-// 		})
-// 		const payload = {
-// 			categories: [
-// 			{ name: 'Tytuł', values: [ 'Tytuł zamieniony' ], subcategories: [] },
-// 			{
-// 				name: 'Artyści',
-// 				values: [ 'Jan Zamieniony' ],
-// 				subcategories: [ ]
-// 			},
-// 			{ name: 'Rok', values: [ '2024' ], subcategories: [] }
-// 			],
-// 			collectionName: 'testowa'
-// 		}
-// 		const res = await request(app.use(ArtworksRouter))
-// 		.put('/edit/66ce0bf156199c1b8df5db7d')
-// 		.send(payload)
-// 		.set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
-// 		.set('Content-Type', 'application/json')
-// 		.set('Accept', 'application/json')
-
-// 		expect(res.status).toMatchInlineSnapshot(`404`)
-// 	})
-
-// 	test("Response has status 503 (can't access database to edit artwork)", async () => {
-// 		jwt.verify.mockImplementationOnce(() => {return {
-// 			username: 'testowy',
-// 			firstName: 'testowy',
-// 			userId: '12b2343fbb64df643e8a9ce6',
-// 			iat: 1725211851,
-// 			exp: 1726211851
-// 		}})
-// 		Artwork.replaceOne.mockImplementationOnce(() => {
-// 		return {
-// 			exec: jest.fn().mockImplementationOnce(() => {return Promise.reject()})
-// 		}
-// 		})
-// 		const payload = {
-// 		categories: [
-// 			{ name: 'Tytuł', values: [ 'Tytuł zamieniony' ], subcategories: [] },
-// 			{
-// 			name: 'Artyści',
-// 			values: [ 'Jan Zamieniony' ],
-// 			subcategories: [ ]
-// 			},
-// 			{ name: 'Rok', values: [ '2024' ], subcategories: [] }
-// 		],
-// 		collectionName: 'testowa'
-// 	}
-// 		const res = await request(app.use(ArtworksRouter))
-// 		.put('/edit/66ce0bf156199c1b8df5db7d')
-// 		.send(payload)
-// 		.set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
-// 		.set('Content-Type', 'application/json')
-// 		.set('Accept', 'application/json')
-
-// 		expect(res.status).toMatchInlineSnapshot(`503`)
-// 	})
-// 	afterEach(() => {
-// 		jest.resetAllMocks()
-// 	})
-// })
 
 // describe('Test deleteArtworks.', () => {
 // 	test("Incorrect payload", async () => {
