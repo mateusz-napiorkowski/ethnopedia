@@ -26,21 +26,26 @@ const jwt = require("jsonwebtoken")
 jest.mock("jsonwebtoken", () => ({
 	verify: jest.fn()
 }))
+const jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXN"
+	+ "lcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaecc"
+	+ "N-rDSjRS3kApqlA"
 
 describe('Artworks controller', () =>{
-	describe('GET endpoints', () => {
-		beforeEach(() => {
-			jest.resetAllMocks()
-		})
-		test("getArtworks should respond with status code 200 and correct body", async () => {
+	beforeEach(() => {
+		jest.resetAllMocks()
+	})
+	
+	describe('GET endpoints', () => {	
+		test("getArtwork should respond with status 200 and correct body", async () => {
+			const artworkId = "662e92b5d628570afa5357c3"
 			mongoose.isValidObjectId.mockReturnValue(true)
 			Artwork.findById.mockReturnValue({
 				exec: jest.fn().mockReturnValue( Promise.resolve({
-					_id: "662e92b5d628570afa5357c3",
+					_id: `${artworkId}`,
 					categories: [
-						{ name: 'Tytuł', values: ["Tytuł"], subcategories: [] }
+						{ name: 'Title', values: ["Title"], subcategories: [] }
 					],
-					collectionName: '123',
+					collectionName: 'collection',
 					createdAt: new Date("2024-09-10T12:17:12.821Z"),
 						updatedAt: new Date("2024-09-10T12:17:12.821Z"),
 					__v: 0
@@ -48,12 +53,12 @@ describe('Artworks controller', () =>{
 			})
 		
 			const res = await request(app.use(ArtworksRouter))
-			.get('/662e92b5d628570afa5357c3')
-			.set('Accept', 'application/json')
+				.get(`/${artworkId}`)
+				.set('Accept', 'application/json')
 	
 			expect(res.status).toBe(200)
 			expect(res.body).toMatchSnapshot({artwork: {
-				_id: "662e92b5d628570afa5357c3",
+				_id: `${artworkId}`,
 				categories: expect.any(Array),
 				createdAt: expect.any(String),
 				updatedAt: expect.any(String),
@@ -61,6 +66,7 @@ describe('Artworks controller', () =>{
 				__v: expect.any(Number)
 			}})
 		})
+
 		test.each([
 			{isValidObjectId: false, findById: undefined, artworkId: '123',
 				statusCode: 400, error: 'Invalid artwork id: 123'},
@@ -68,179 +74,89 @@ describe('Artworks controller', () =>{
 				statusCode: 404, error: "Artwork with id aaaaaaaad628570afa5357c3 not found"},
 			{isValidObjectId: true, findById: { exec: () => Promise.reject() }, artworkId: 'aaaaaaaad628570afa5357c3',
 				statusCode: 503, error: "Database unavailable"}, 
-		])(`getArtworks should respond with status $statusCode and correct error message`, async ({isValidObjectId, findById, artworkId, statusCode, error}) => {
-			mongoose.isValidObjectId.mockReturnValue(isValidObjectId)
-			Artwork.findById.mockReturnValue(findById)
+		])(`getArtwork should respond with status $statusCode and correct error message`,
+			async ({ isValidObjectId, findById, artworkId, statusCode, error}) => {
+				mongoose.isValidObjectId.mockReturnValue(isValidObjectId)
+				Artwork.findById.mockReturnValue(findById)
+
+				const res = await request(app.use(ArtworksRouter))
+					.get(`/${artworkId}`)
+					.set('Accept', 'application/json')
+
+				expect(res.status).toBe(statusCode)
+				expect(res.body.error).toBe(error)
+			})
+	})
+	describe('POST endpoints', () => {
+		const artworkId = "66ce0bf156199c1b8df5db7d"
+		test("createArtwork should respond with status 201 and correct body", async () => {
+			jwt.verify.mockReturnValue({
+				username: 'testowy',
+				firstName: 'testowy',
+				userId: '12b2343fbb64df643e8a9ce6',
+				iat: 1725211851,
+				exp: 1726211851
+			})
+			Artwork.create.mockReturnValue(Promise.resolve({
+				_id: `${artworkId}`,
+				categories: [
+					{ name: 'Tytuł', values: [ 'Tytuł' ], subcategories: [] }
+				],
+				collectionName: 'testowa',
+				createdAt: '2024-08-27T17:25:05.352Z',
+				updatedAt: '2024-08-27T17:25:05.352Z',
+				__v: 0
+			}))
+			const payload = {
+				categories: [
+					{ name: 'Tytuł', values: [ 'Tytuł' ], subcategories: [] }
+				],
+				collectionName: 'testowa'
+			}
+			const res = await request(app.use(ArtworksRouter))
+				.post('/create')
+				.send(payload)
+				.set('Authorization', `Bearer ${jwtToken}`)
+				.set('Content-Type', 'application/json')
+				.set('Accept', 'application/json')
+	
+			expect(res.status).toBe(201)
+			expect(res.body).toMatchSnapshot({
+				_id: `${artworkId}`,
+				categories: expect.any(Array),
+				createdAt: expect.any(String),
+				updatedAt: expect.any(String),
+				collectionName: expect.any(String),
+				__v: expect.any(Number)
+			})
+		})
+
+		test.each([
+			{payload: {},
+				verify: true, create: undefined, statusCode: 400, error: 'Incorrect request body provided'},
+			{payload: { categories: [ { name: 'Tytuł', values: [ 'Tytuł testowy' ], subcategories: [] } ]},
+				verify: true, create: undefined, statusCode: 400, error: 'Incorrect request body provided'},
+			{payload: { collectionName: 'testowa' },
+				verify: true, create: undefined, statusCode: 400, error: 'Incorrect request body provided'},
+			{payload: { categories: [{ name: 'Tytuł', values: [ 'Tytuł' ], subcategories: [] }], collectionName: 'testowa'},
+				verify: true, create: () => Promise.reject(), statusCode: 503, error: 'Database unavailable'}
+		])(`createArtwork should respond with status $statusCode and correct error message`, async ({
+			payload, verify, create, statusCode, error}) => {
+			jwt.verify.mockReturnValue(verify)
+			Artwork.create.mockImplementationOnce(create)
 
 			const res = await request(app.use(ArtworksRouter))
-			.get(`/${artworkId}`)
-			.set('Accept', 'application/json')
+				.post('/create')
+				.send(payload)
+				.set('Authorization', `Bearer ${jwtToken}`)
+				.set('Content-Type', 'application/json')
+				.set('Accept', 'application/json')
 
 			expect(res.status).toBe(statusCode)
 			expect(res.body.error).toBe(error)
 		})
 	})
-	describe('POST endpoints', () => {
-		
-	})
 })
-
-// describe('createArtwork tests', () =>{
-// 	test("Response has status 400 (incorrect payload)", async () => {
-// 		jwt.verify.mockImplementationOnce(() => {return {
-// 			username: 'testowy',
-// 			firstName: 'testowy',
-// 			userId: '12b2343fbb64df643e8a9ce6',
-// 			iat: 1725211851,
-// 			exp: 1726211851
-// 		}})
-// 		let payload = { }
-// 		let res = await request(app.use(ArtworksRouter))
-// 		.post('/create')
-// 		.send(payload)
-// 		.set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
-// 		.set('Content-Type', 'application/json')
-// 		.set('Accept', 'application/json')
-
-// 		expect(res.status).toMatchInlineSnapshot(`400`)
-
-// 		payload = {
-// 			categories: [
-// 				{ name: 'Tytuł', values: [ 'Tytuł testowy' ], subcategories: [] },
-// 				{ name: 'Artyści', values: [ 'Jan Testowy' ], subcategories: [] },
-// 				{ name: 'Rok', values: [ '2024' ], subcategories: [] }
-// 			]
-// 		}
-// 		res = await request(app.use(ArtworksRouter))
-// 		.post('/create')
-// 		.send(payload)
-// 		.set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
-// 		.set('Content-Type', 'application/json')
-// 		.set('Accept', 'application/json')
-
-// 		expect(res.status).toMatchInlineSnapshot(`400`)
-
-// 		payload = {
-// 			collectionName: 'testowa'
-// 		}
-// 		res = await request(app.use(ArtworksRouter))
-// 		.post('/create')
-// 		.send(payload)
-// 		.set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
-// 		.set('Content-Type', 'application/json')
-// 		.set('Accept', 'application/json')
-
-// 		expect(res.status).toMatchInlineSnapshot(`400`)
-// 	})
-// 	test("Response has status 201 (artwork creation successful)", async () => {
-// 		jwt.verify.mockImplementationOnce(() => {return {
-// 			username: 'testowy',
-// 			firstName: 'testowy',
-// 			userId: '12b2343fbb64df643e8a9ce6',
-// 			iat: 1725211851,
-// 			exp: 1726211851
-// 		}})
-// 		Artwork.create.mockImplementationOnce(() => {
-// 			return Promise.resolve({
-// 					_id: "66ce0bf156199c1b8df5db7d",
-// 					categories: [
-// 						{ name: 'Tytuł', values: [ 'Tytuł testowy' ], subcategories: [] },
-// 						{ name: 'Artyści', values: [ 'Jan Testowy' ], subcategories: [] },
-// 						{ name: 'Rok', values: [ '2024' ], subcategories: [] }
-// 					],
-// 					collectionName: 'testowa',
-// 					createdAt: '2024-08-27T17:25:05.352Z',
-// 					updatedAt: '2024-08-27T17:25:05.352Z',
-// 					__v: 0
-// 			})
-// 		})
-// 		const payload = {
-// 			categories: [
-// 				{ name: 'Tytuł', values: [ 'Tytuł testowy' ], subcategories: [] },
-// 				{ name: 'Artyści', values: [ 'Jan Testowy' ], subcategories: [] },
-// 				{ name: 'Rok', values: [ '2024' ], subcategories: [] }
-// 			],
-// 			collectionName: 'testowa'
-// 		}
-// 		const res = await request(app.use(ArtworksRouter))
-// 		.post('/create')
-// 		.send(payload)
-// 		.set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
-// 		.set('Content-Type', 'application/json')
-// 		.set('Accept', 'application/json')
-
-// 		expect(res.status).toMatchInlineSnapshot(`201`)
-// 	})
-
-// 	test("Response has status 400 (no jwt provided)", async () => {
-// 		const payload = {
-// 			categories: [
-// 			{ name: 'Tytuł', values: [ 'Tytuł testowy' ], subcategories: [] },
-// 			{ name: 'Artyści', values: [ 'Jan Testowy' ], subcategories: [ ] },
-// 			{ name: 'Rok', values: [ '2024' ], subcategories: [] }
-// 			],
-// 			collectionName: 'testowa'
-// 		}
-// 		let res = await request(app.use(ArtworksRouter))
-// 		.post('/create')
-// 		.send(payload)
-// 		.set('Authorization', 'Bearer ')
-// 		.set('Content-Type', 'application/json')
-// 		.set('Accept', 'application/json')
-
-// 		expect(res.status).toMatchInlineSnapshot(`400`)
-// 	})
-
-// 	test("Response has status 401 (jwt invalid)", async () => {
-// 		jwt.verify.mockImplementationOnce(() => {throw new Error()})
-// 		const payload = {
-// 			categories: [
-// 			{ name: 'Tytuł', values: [ 'Tytuł testowy' ], subcategories: [] },
-// 			{ name: 'Artyści', values: [ 'Jan Testowy' ], subcategories: [ ] },
-// 			{ name: 'Rok', values: [ '2024' ], subcategories: [] }
-// 			],
-// 			collectionName: 'testowa'
-// 		}
-// 		let res = await request(app.use(ArtworksRouter))
-// 		.post('/create')
-// 		.send(payload)
-// 		.set('Authorization', 'Bearer invalidtoken')
-// 		.set('Content-Type', 'application/json')
-// 		.set('Accept', 'application/json')
-
-// 		expect(res.status).toMatchInlineSnapshot(`401`)
-// 	})
-
-// 	test("Response has status 503 (can't access database to add new artwork)", async () => {
-// 		jwt.verify.mockImplementationOnce(() => {return {
-// 			username: 'testowy',
-// 			firstName: 'testowy',
-// 			userId: '12b2343fbb64df643e8a9ce6',
-// 			iat: 1725211851,
-// 			exp: 1726211851
-// 		}})
-// 		Artwork.create.mockImplementationOnce(() => { return Promise.reject() })
-// 		const payload = {
-// 		categories: [
-// 			{ name: 'Tytuł', values: [ 'Tytuł testowy' ], subcategories: [] },
-// 			{ name: 'Artyści', values: [ 'Jan Testowy' ], subcategories: [ ] },
-// 			{ name: 'Rok', values: [ '2024' ], subcategories: [] }
-// 		],
-// 		collectionName: 'testowa'
-// 		}
-// 		const res = await request(app.use(ArtworksRouter))
-// 		.post('/create')
-// 		.send(payload)
-// 		.set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
-// 		.set('Content-Type', 'application/json')
-// 		.set('Accept', 'application/json')
-		
-// 		expect(res.status).toMatchInlineSnapshot(`503`)
-// 	})
-// 	afterEach(() => {
-// 		jest.resetAllMocks()
-// 	})
-// })
 
 // describe('editArtwork tests', () =>{
 // 	test("Response has status 400 (incorrect payload)", async () => {

@@ -35,12 +35,12 @@ const createArtwork = authAsyncWrapper((async (req: Request, res: Response, next
             return res.status(201).json(newArtwork)
         } catch {
             const err = new Error(`Database unavailable`)
-            res.status(503)
+            res.status(503).json({ error: err.message })
             return next(err)
         }
     } else {
         const err = new Error(`Incorrect request body provided`)
-        res.status(400)
+        res.status(400).json({ error: err.message })
         return next(err)
     }
     
