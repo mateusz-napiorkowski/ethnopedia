@@ -1,5 +1,4 @@
 import { describe, expect, test, jest, beforeEach } from "@jest/globals"
-import { startSession } from "mongoose";
 const express = require("express")
 const bodyParser = require("body-parser");
 const app = express()
@@ -8,27 +7,31 @@ app.use(bodyParser.urlencoded({extended: true}));
 const ArtworksRouter = require("../../routes/artwork")
 const request = require("supertest")
 
-const mongoose = require('mongoose')
+const mockIsValidObjectId = jest.fn()
+const mockStartSession = jest.fn()
 jest.mock('mongoose', () => ({
-	isValidObjectId: jest.fn(),
-	startSession: jest.fn()
+	isValidObjectId: () => mockIsValidObjectId(),
+	startSession: () => mockStartSession()
 }))
 
-const Artwork = require("../../models/artwork")
+const mockFindById = jest.fn()
+const mockCreate = jest.fn()
+const mockReplaceOne = jest.fn()
+const mockCount = jest.fn()
+const mockDeleteMany = jest.fn()
 jest.mock("../../models/artwork", () => ({
-	findById: jest.fn(),
-	create: jest.fn(),
-	replaceOne: jest.fn(),
-	count: jest.fn(),
-	deleteMany: jest.fn()
+	findById: () => mockFindById(),
+	create: () => mockCreate(),
+	replaceOne: () => mockReplaceOne(),
+	count: () => mockCount(),
+	deleteMany: () => mockDeleteMany()
 }))
 
-const Collection = require("../../models/collection")
+const mockFind = jest.fn()
 jest.mock("../../models/collection", () => ({
-	find: jest.fn()
+	find: () => mockFind()
 }))
 
-const jwt = require("jsonwebtoken")
 jest.mock("jsonwebtoken", () => ({
 	verify: jest.fn()
 }))
@@ -44,8 +47,8 @@ describe('Artworks controller', () =>{
 	describe('GET endpoints', () => {	
 		test("getArtwork should respond with status 200 and correct body", async () => {
 			const artworkId = "662e92b5d628570afa5357c3"
-			mongoose.isValidObjectId.mockReturnValue(true)
-			Artwork.findById.mockReturnValue({
+			mockIsValidObjectId.mockReturnValue(true)
+			mockFindById.mockReturnValue({
 				exec: jest.fn().mockReturnValue( Promise.resolve({
 					_id: `${artworkId}`,
 					categories: [{ name: 'Title', values: ["Title"], subcategories: [] }],
@@ -80,8 +83,8 @@ describe('Artworks controller', () =>{
 				statusCode: 503, error: "Database unavailable"}, 
 		])(`getArtwork should respond with status $statusCode and correct error message`,
 			async ({ isValidObjectId, findById, artworkId, statusCode, error}) => {
-				mongoose.isValidObjectId.mockReturnValue(isValidObjectId)
-				Artwork.findById.mockReturnValue(findById)
+				mockIsValidObjectId.mockReturnValue(isValidObjectId)
+				mockFindById.mockReturnValue(findById)
 
 				const res = await request(app.use(ArtworksRouter))
 					.get(`/${artworkId}`)
@@ -97,7 +100,7 @@ describe('Artworks controller', () =>{
 		const artworkId = "66ce0bf156199c1b8df5db7d"
 		const collectionId = "66c4e516d6303ed5ac5a8e55"
 		test("createArtwork should respond with status 201 and correct body", async () => {
-			Artwork.create.mockReturnValue(Promise.resolve({
+			mockCreate.mockReturnValue(Promise.resolve({
 				_id: `${artworkId}`,
 				categories: [{ name: 'Title', values: [ 'Title' ], subcategories: [] }],
 				collectionName: 'collection',
@@ -105,7 +108,7 @@ describe('Artworks controller', () =>{
 				updatedAt: '2024-08-27T17:25:05.352Z',
 				__v: 0
 			}))
-			Collection.find.mockReturnValue({
+			mockFind.mockReturnValue({
 				exec: () => Promise.resolve([{
 					_id: `${collectionId}`,
 					name: 'collection',
@@ -151,8 +154,8 @@ describe('Artworks controller', () =>{
 				create: undefined, find: {exec: () => Promise.resolve([])}, statusCode: 404, error: "Collection with name collection not found"}
 		])(`createArtwork should respond with status $statusCode and correct error message`, async ({
 			payload, create, find, statusCode, error}) => {
-				Artwork.create.mockReturnValue(create)
-				Collection.find.mockReturnValue(find)
+				mockCreate.mockReturnValue(create)
+				mockFind.mockReturnValue(find)
 
 				const res = await request(app.use(ArtworksRouter))
 					.post('/create')
@@ -169,7 +172,7 @@ describe('Artworks controller', () =>{
 
 	describe('PUT endpoints', () => {
 		test("editArtwork should respond with status 201 and correct body", async () => {
-			Artwork.replaceOne.mockReturnValue({
+			mockReplaceOne.mockReturnValue({
 				exec: () => Promise.resolve({
 					acknowledged: true,
 					modifiedCount: 1,
@@ -222,7 +225,7 @@ describe('Artworks controller', () =>{
 				
 		])(`editArtwork should respond with status $statusCode and correct error message`, async ({
 			payload, replaceOne, statusCode, error}) => {
-				Artwork.replaceOne.mockReturnValue(replaceOne)
+				mockReplaceOne.mockReturnValue(replaceOne)
 
 				const res = await request(app.use(ArtworksRouter))
 				.put('/edit/66ce0bf156199c1b8df5db7d')
@@ -239,16 +242,16 @@ describe('Artworks controller', () =>{
 
 	describe('DELETE endpoints', () => {
 		test("deleteArtworks should respond with status 200 and correct body", async () => {
-			mongoose.startSession.mockReturnValue(Promise.resolve({
+			mockStartSession.mockReturnValue(Promise.resolve({
 				startTransaction: jest.fn(),
 				commitTransaction: jest.fn(),
 				abortTransaction: jest.fn(),
 				endSession: jest.fn()
 			}))
-			Artwork.count.mockReturnValue({
+			mockCount.mockReturnValue({
 				exec: () => Promise.resolve(2)
 			})
-			Artwork.deleteMany.mockReturnValue({
+			mockDeleteMany.mockReturnValue({
 				exec: () => Promise.resolve({ acknowledged: true, deletedCount: 2 })
 			})
 			const payload = { ids: [ '662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc' ] }
@@ -267,29 +270,29 @@ describe('Artworks controller', () =>{
 			})
 		})
 
-		const startSessionDefault = () => Promise.resolve({
+		const startSessionDefaultImplementation = () => Promise.resolve({
 			startTransaction: jest.fn(),
 			commitTransaction: jest.fn(),
 			abortTransaction: jest.fn(),
 			endSession: jest.fn()
 		})
 		test.each([
-			{payload: {}, startSession: undefined, count: undefined, deleteMany: undefined, statusCode: 400, error: 'Incorrect request body provided'},
+			{payload: {}, startSession: () => {}, count: undefined, deleteMany: undefined, statusCode: 400, error: 'Incorrect request body provided'},
 			{payload: { ids: [ '662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc' ] },
 			startSession: () => Promise.reject(), count: undefined, deleteMany: undefined, statusCode: 503, error: `Couldn't establish session for database transaction`},
 			{payload: { ids: [] },
-			startSession: startSessionDefault, count: undefined, deleteMany: undefined, statusCode: 400, error: "Artworks not specified"},
+			startSession: startSessionDefaultImplementation, count: undefined, deleteMany: undefined, statusCode: 400, error: "Artworks not specified"},
 			{payload: { ids: [ '662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc' ] },
-			startSession: startSessionDefault, count: {exec: () => Promise.reject()}, deleteMany: undefined, statusCode: 503, error: "Couldn't complete database transaction"},
+			startSession: startSessionDefaultImplementation, count: {exec: () => Promise.reject()}, deleteMany: undefined, statusCode: 503, error: "Couldn't complete database transaction"},
 			{payload: { ids: [ '662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc' ] },
-			startSession: startSessionDefault, count: {exec: () => Promise.resolve(2)}, deleteMany: {exec: () => Promise.reject()}, statusCode: 503, error: "Couldn't complete database transaction"},
+			startSession: startSessionDefaultImplementation, count: {exec: () => Promise.resolve(2)}, deleteMany: {exec: () => Promise.reject()}, statusCode: 503, error: "Couldn't complete database transaction"},
 			{payload: { ids: [ '662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc' ] },
-			startSession: startSessionDefault, count: {exec: () => Promise.resolve(1)}, deleteMany: undefined, statusCode: 404, error: "Artworks not specified"},
+			startSession: startSessionDefaultImplementation, count: {exec: () => Promise.resolve(1)}, deleteMany: undefined, statusCode: 404, error: "Artworks not specified"},
 		])(`deleteArtworks should respond with status $statusCode and correct error message`,
 			async ({ payload, startSession, count, deleteMany, statusCode, error}) => {
-				mongoose.startSession.mockImplementationOnce(startSession)
-				Artwork.count.mockReturnValue(count)
-				Artwork.deleteMany.mockReturnValue(deleteMany)
+				mockStartSession.mockImplementation(startSession)
+				mockCount.mockReturnValue(count)
+				mockDeleteMany.mockReturnValue(deleteMany)
 
 				const res = await request(app.use(ArtworksRouter))
 				.delete('/delete')
