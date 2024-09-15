@@ -47,9 +47,7 @@ describe('Artworks controller', () =>{
 			Artwork.findById.mockReturnValue({
 				exec: jest.fn().mockReturnValue( Promise.resolve({
 					_id: `${artworkId}`,
-					categories: [
-						{ name: 'Title', values: ["Title"], subcategories: [] }
-					],
+					categories: [{ name: 'Title', values: ["Title"], subcategories: [] }],
 					collectionName: 'collection',
 					createdAt: new Date("2024-09-10T12:17:12.821Z"),
 						updatedAt: new Date("2024-09-10T12:17:12.821Z"),
@@ -97,18 +95,9 @@ describe('Artworks controller', () =>{
 		const artworkId = "66ce0bf156199c1b8df5db7d"
 		const collectionId = "66c4e516d6303ed5ac5a8e55"
 		test("createArtwork should respond with status 201 and correct body", async () => {
-			jwt.verify.mockReturnValue({
-				username: 'testowy',
-				firstName: 'testowy',
-				userId: '12b2343fbb64df643e8a9ce6',
-				iat: 1725211851,
-				exp: 1726211851
-			})
 			Artwork.create.mockReturnValue(Promise.resolve({
 				_id: `${artworkId}`,
-				categories: [
-					{ name: 'Tytuł', values: [ 'Tytuł' ], subcategories: [] }
-				],
+				categories: [{ name: 'Title', values: [ 'Title' ], subcategories: [] }],
 				collectionName: 'collection',
 				createdAt: '2024-08-27T17:25:05.352Z',
 				updatedAt: '2024-08-27T17:25:05.352Z',
@@ -123,9 +112,7 @@ describe('Artworks controller', () =>{
 				}])
 			})
 			const payload = {
-				categories: [
-					{ name: 'Tytuł', values: [ 'Tytuł' ], subcategories: [] }
-				],
+				categories: [{ name: 'Title', values: [ 'Title' ], subcategories: []}],
 				collectionName: 'collection'
 			}
 
@@ -149,20 +136,19 @@ describe('Artworks controller', () =>{
 
 		test.each([
 			{payload: {},
-				verify: true, create: undefined, find: undefined, statusCode: 400, error: 'Incorrect request body provided'},
-			{payload: { categories: [ { name: 'Tytuł', values: [ 'Tytuł testowy' ], subcategories: [] } ]},
-				verify: true, create: undefined, find: undefined, statusCode: 400, error: 'Incorrect request body provided'},
+				create: undefined, find: undefined, statusCode: 400, error: 'Incorrect request body provided'},
+			{payload: { categories: [ { name: 'Title', values: [ 'Title' ], subcategories: [] } ]},
+				create: undefined, find: undefined, statusCode: 400, error: 'Incorrect request body provided'},
 			{payload: { collectionName: 'collection' },
-				verify: true, create: undefined, find: undefined, statusCode: 400, error: 'Incorrect request body provided'},
-			{payload: { categories: [{ name: 'Tytuł', values: [ 'Tytuł' ], subcategories: [] }], collectionName: 'collection'},
-				verify: true, create: undefined, find: {exec: () => Promise.reject()}, statusCode: 503, error: 'Database unavailable'},
-			{payload: { categories: [{ name: 'Tytuł', values: [ 'Tytuł' ], subcategories: [] }], collectionName: 'collection'},
-				verify: true, create: () => Promise.reject(), find: undefined, statusCode: 503, error: 'Database unavailable'},
-			{payload: { categories: [{ name: 'Tytuł', values: [ 'Tytuł' ], subcategories: [] }], collectionName: 'collection'},
-				verify: true, create: undefined, find: {exec: () => Promise.resolve([])}, statusCode: 404, error: "Collection with name collection not found"}
+				create: undefined, find: undefined, statusCode: 400, error: 'Incorrect request body provided'},
+			{payload: { categories: [{ name: 'Title', values: [ 'Title' ], subcategories: [] }], collectionName: 'collection'},
+				create: undefined, find: {exec: () => Promise.reject()}, statusCode: 503, error: 'Database unavailable'},
+			{payload: { categories: [{ name: 'Title', values: [ 'Title' ], subcategories: [] }], collectionName: 'collection'},
+				create: () => Promise.reject(), find: undefined, statusCode: 503, error: 'Database unavailable'},
+			{payload: { categories: [{ name: 'Title', values: [ 'Title' ], subcategories: [] }], collectionName: 'collection'},
+				create: undefined, find: {exec: () => Promise.resolve([])}, statusCode: 404, error: "Collection with name collection not found"}
 		])(`createArtwork should respond with status $statusCode and correct error message`, async ({
-			payload, verify, create, find, statusCode, error}) => {
-				jwt.verify.mockReturnValue(verify)
+			payload, create, find, statusCode, error}) => {
 				Artwork.create.mockReturnValue(create)
 				Collection.find.mockReturnValue(find)
 
@@ -177,6 +163,40 @@ describe('Artworks controller', () =>{
 				expect(res.body.error).toBe(error)
 			}
 		)
+	})
+
+	describe('PUT endpoints', () => {
+		test("editArtwork should respond with status 201 and correct body", async () => {
+			Artwork.replaceOne.mockReturnValue({
+				exec: () => Promise.resolve({
+					acknowledged: true,
+					modifiedCount: 1,
+					upsertedId: null,
+					upsertedCount: 0,
+					matchedCount: 1
+				})
+			})
+			const payload = {
+				categories: [{ name: 'Title', values: [ 'New Title' ], subcategories: [] }],
+				collectionName: 'collection'
+			}
+
+			const res = await request(app.use(ArtworksRouter))
+				.put('/edit/66ce0bf156199c1b8df5db7d')
+				.send(payload)
+				.set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
+				.set('Content-Type', 'application/json')
+				.set('Accept', 'application/json')
+	
+			expect(res.status).toBe(201)
+			expect(res.body).toMatchSnapshot({
+				acknowledged: true,
+				modifiedCount: 1,
+				upsertedId: null,
+				upsertedCount: 0,
+				matchedCount: 1
+			})
+		})
 	})
 })
 
@@ -312,53 +332,6 @@ describe('Artworks controller', () =>{
 // 		.set('Accept', 'application/json')
 
 // 		expect(res.status).toMatchInlineSnapshot(`404`)
-// 	})
-
-// 	test("Response has status 400 (no jwt provided)", async () => {
-// 		const payload = {
-// 			categories: [
-// 			{ name: 'Tytuł', values: [ 'Tytuł zamieniony' ], subcategories: [] },
-// 			{
-// 				name: 'Artyści',
-// 				values: [ 'Jan Zamieniony' ],
-// 				subcategories: [ ]
-// 			},
-// 			{ name: 'Rok', values: [ '2024' ], subcategories: [] }
-// 			],
-// 			collectionName: 'testowa'
-// 		}
-// 		let res = await request(app.use(ArtworksRouter))
-// 		.put('/edit/66ce0bf156199c1b8df5db7d')
-// 		.send(payload)
-// 		.set('Authorization', 'Bearer ')
-// 		.set('Content-Type', 'application/json')
-// 		.set('Accept', 'application/json')
-
-// 		expect(res.status).toMatchInlineSnapshot(`400`)
-// 	})
-
-// 	test("Response has status 401 (invalid jwt)", async () => {
-// 		jwt.verify.mockImplementationOnce(() => {throw new Error()})
-// 		const payload = {
-// 			categories: [
-// 			{ name: 'Tytuł', values: [ 'Tytuł zamieniony' ], subcategories: [] },
-// 			{
-// 				name: 'Artyści',
-// 				values: [ 'Jan Zamieniony' ],
-// 				subcategories: [ ]
-// 			},
-// 			{ name: 'Rok', values: [ '2024' ], subcategories: [] }
-// 			],
-// 			collectionName: 'testowa'
-// 		}
-// 		let res = await request(app.use(ArtworksRouter))
-// 		.put('/edit/66ce0bf156199c1b8df5db7d')
-// 		.send(payload)
-// 		.set('Authorization', 'Bearer invalidtoken')
-// 		.set('Content-Type', 'application/json')
-// 		.set('Accept', 'application/json')
-
-// 		expect(res.status).toMatchInlineSnapshot(`401`)
 // 	})
 
 // 	test("Response has status 503 (can't access database to edit artwork)", async () => {

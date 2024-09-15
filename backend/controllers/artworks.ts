@@ -51,30 +51,29 @@ const createArtwork = authAsyncWrapper((async (req: Request, res: Response, next
         const err = new Error(`Incorrect request body provided`)
         res.status(400).json({ error: err.message })
         return next(err)
-    }
-    
+    }   
 }))
 
 const editArtwork = authAsyncWrapper((async (req: Request, res: Response, next: NextFunction) => {
     const artworkId = req.params.artworkId
     if(req.body.categories !== undefined && req.body.collectionName !== undefined) {
         try {
-            const editedArtwork = await Artwork.replaceOne({_id: artworkId}, req.body).exec()
+            const editedArtwork = await Artwork.replaceOne({_id: artworkId, collectionName: req.body.collectionName}, req.body).exec()
             if(editedArtwork.modifiedCount === 0) {
                 const err = new Error(`Artwork not found`)
-                res.status(404)
+                res.status(404).json({ error: err.message })
                 return next(err)
             } else {
                 return res.status(201).json(editedArtwork)
             }
         } catch {
             const err = new Error(`Database unavailable`)
-            res.status(503)
+            res.status(503).json({ error: err.message })
             return next(err)
         }
     } else {
         const err = new Error(`Incorrect request body provided`)
-        res.status(400)
+        res.status(400).json({ error: err.message })
         return next(err)
     }
 }))

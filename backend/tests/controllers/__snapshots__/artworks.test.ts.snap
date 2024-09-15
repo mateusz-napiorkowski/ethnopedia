@@ -23,3 +23,13 @@ exports[`Artworks controller POST endpoints createArtwork should respond with st
   "updatedAt": Any<String>,
 }
 `;
+
+exports[`Artworks controller PUT endpoints editArtwork should respond with status 201 and correct body 1`] = `
+{
+  "acknowledged": true,
+  "matchedCount": 1,
+  "modifiedCount": 1,
+  "upsertedCount": 0,
+  "upsertedId": null,
+}
+`;
