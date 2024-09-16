@@ -11,22 +11,21 @@ export const getArtwork = async (req: Request, res: Response, next: NextFunction
         const err = new Error(`Invalid artwork id: ${artworkId}`)
         res.status(400).json({ error: err.message })
         return next(err)
-    } else {
-        try {
-            const artwork = await Artwork.findById(artworkId).exec()
-            if (!artwork) {
-                const err = new Error(`Artwork with id ${artworkId} not found`)      
-                res.status(404).json({ error: err.message })
-                return next(err)
-            } else {
-                return res.status(200).json({ artwork })
-            }
-        } catch {
-            const err = new Error(`Database unavailable`)
-            res.status(503).json({ error: err.message })
+    }
+    try {
+        const artwork = await Artwork.findById(artworkId).exec()
+        if (!artwork) {
+            const err = new Error(`Artwork with id ${artworkId} not found`)      
+            res.status(404).json({ error: err.message })
             return next(err)
         }
-    }   
+        return res.status(200).json({ artwork })
+    } catch {
+        const err = new Error(`Database unavailable`)
+        res.status(503).json({ error: err.message })
+        return next(err)
+    }
+     
 }
 
 const createArtwork = authAsyncWrapper((async (req: Request, res: Response, next: NextFunction) => {
@@ -38,20 +37,18 @@ const createArtwork = authAsyncWrapper((async (req: Request, res: Response, next
                 const err = new Error(`Collection with name ${collectionName} not found`)
                 res.status(404).json({ error: err.message })
                 return next(err)
-            } else {
-                const newArtwork = await Artwork.create(req.body)
-                return res.status(201).json(newArtwork)
             }
+            const newArtwork = await Artwork.create(req.body)
+            return res.status(201).json(newArtwork)
         } catch {
             const err = new Error(`Database unavailable`)
             res.status(503).json({ error: err.message })
             return next(err)
         }
-    } else {
-        const err = new Error(`Incorrect request body provided`)
-        res.status(400).json({ error: err.message })
-        return next(err)
-    }   
+    }
+    const err = new Error(`Incorrect request body provided`)
+    res.status(400).json({ error: err.message })
+    return next(err)  
 }))
 
 const editArtwork = authAsyncWrapper((async (req: Request, res: Response, next: NextFunction) => {
@@ -63,24 +60,22 @@ const editArtwork = authAsyncWrapper((async (req: Request, res: Response, next: 
                 const err = new Error(`Artwork not found`)
                 res.status(404).json({ error: err.message })
                 return next(err)
-            } else {
-                return res.status(201).json(editedArtwork)
             }
+            return res.status(201).json(editedArtwork)
         } catch {
             const err = new Error(`Database unavailable`)
             res.status(503).json({ error: err.message })
             return next(err)
         }
-    } else {
-        const err = new Error(`Incorrect request body provided`)
-        res.status(400).json({ error: err.message })
-        return next(err)
     }
+    const err = new Error(`Incorrect request body provided`)
+    res.status(400).json({ error: err.message })
+    return next(err)
 }))
 
 const deleteArtworks = authAsyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     if(req.body.ids !== undefined) {
-        try{
+        try {
             const session = await mongoose.startSession()
             try {
                 const artworksToDelete = req.body.ids
@@ -90,7 +85,9 @@ const deleteArtworks = authAsyncWrapper(async (req: Request, res: Response, next
                     res.status(400).json({ error: err.message })
                     return next(err)
                 }
+
                 session.startTransaction()
+
                 const databaseArtworksToDeleteCounted = await Artwork.count({ _id: { $in: artworksToDelete } }, { session }).exec()
                 if (databaseArtworksToDeleteCounted !== artworksToDelete.length) {
                     await session.abortTransaction();
@@ -99,8 +96,9 @@ const deleteArtworks = authAsyncWrapper(async (req: Request, res: Response, next
                     res.status(404).json({ error: err.message })
                     return next(err)
                 }
-        
+                
                 const result = await Artwork.deleteMany({ _id: { $in: artworksToDelete } }, { session }).exec()
+
                 await session.commitTransaction();
                 session.endSession();
                 return res.status(200).json(result)
@@ -116,12 +114,10 @@ const deleteArtworks = authAsyncWrapper(async (req: Request, res: Response, next
             res.status(503).json({ error: err.message })
             return next(err)
         } 
-    } else {
-        const err = new Error(`Incorrect request body provided`)
-        res.status(400).json({ error: err.message })
-        return next(err)
     }
-    
+    const err = new Error(`Incorrect request body provided`)
+    res.status(400).json({ error: err.message })
+    return next(err)  
 })
 
 module.exports = {

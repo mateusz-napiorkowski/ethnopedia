@@ -50,15 +50,12 @@ const registerUser = async (req: Request, res: Response, next: NextFunction) => 
                 return next(err)
             }
         }
-    
         const saltRounds = 10
-        bcrypt.hash(newPassword, saltRounds, hashCallback)
-    } else {
-        const err = new Error(`Incorrect request body provided`)
-        res.status(400).json({ error: err.message })
-        return next(err)
-    }
-            
+        return bcrypt.hash(newPassword, saltRounds, hashCallback)
+    } 
+    const err = new Error(`Incorrect request body provided`)
+    res.status(400).json({ error: err.message })
+    return next(err)         
 }
 
 const loginUser = async (req: Request, res: Response, next: NextFunction) => {
@@ -90,18 +87,16 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
                     { expiresIn: process.env.EXPIRATION_TIME })
                 return res.status(200).json({ token })
             }
-    
-            bcrypt.compare(loginPassword, user.password, compareCallback)      
+            return bcrypt.compare(loginPassword, user.password, compareCallback)      
         } catch {
             const err = new Error("Database unavailable")
             res.status(503).json({ error: err.message })
             return next(err)
         }
-    } else {
-        const err = new Error("Incorrect request body provided")
-        res.status(400).json({ error: err.message })
-        return next(err)        
     }
+    const err = new Error("Incorrect request body provided")
+    res.status(400).json({ error: err.message })
+    return next(err)        
 }
 
 const deleteUser = authAsyncWrapper(async (req: Request, res: Response, next: NextFunction) => {

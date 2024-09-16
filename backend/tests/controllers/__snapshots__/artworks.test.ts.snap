@@ -1,13 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Artworks controller DELETE endpoints deleteArtworks should respond with status 200 and correct body 1`] = `
+exports[`artworks controller DELETE endpoints deleteArtworks should respond with status 200 and correct body 1`] = `
 {
   "acknowledged": true,
   "deletedCount": 2,
 }
 `;
 
-exports[`Artworks controller GET endpoints getArtwork should respond with status 200 and correct body 1`] = `
+exports[`artworks controller GET endpoints getArtwork should respond with status 200 and correct body 1`] = `
 {
   "artwork": {
     "__v": Any<Number>,
@@ -20,7 +20,7 @@ exports[`Artworks controller GET endpoints getArtwork should respond with status
 }
 `;
 
-exports[`Artworks controller POST endpoints createArtwork should respond with status 201 and correct body 1`] = `
+exports[`artworks controller POST endpoints createArtwork should respond with status 201 and correct body 1`] = `
 {
   "__v": Any<Number>,
   "_id": "66ce0bf156199c1b8df5db7d",
@@ -31,7 +31,7 @@ exports[`Artworks controller POST endpoints createArtwork should respond with st
 }
 `;
 
-exports[`Artworks controller PUT endpoints editArtwork should respond with status 201 and correct body 1`] = `
+exports[`artworks controller PUT endpoints editArtwork should respond with status 201 and correct body 1`] = `
 {
   "acknowledged": true,
   "matchedCount": 1,
