@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`auth controller POST endpoints registerUser should respond with status 201 and correct body 1`] = `
+{
+  "token": "eyJhbGciOiJIAzI1NiIsXnR5cCI6IkpXVCJ4.eyJ1c2VybmFtZSI6ImQiLCJmaXJzdE5hbWUiOiJkIiwidXNlcklkIjoiNjZkNzQ5MDNjN2YxYjNiYTJmM2UyMjk3IiwiaWF0IjoxNzI1Mzg0OTYzLCJleHAiOjE3MjYzODQ5NjN9.I6rX0LpWoEyg-TLZEZ4gNW6VgG3OT9nyOq9NeqUnFx8",
+}
+`;

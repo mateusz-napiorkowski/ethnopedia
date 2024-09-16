@@ -39,7 +39,7 @@ const jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd
 	+ "lcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaecc"
 	+ "N-rDSjRS3kApqlA"
 
-describe('Artworks controller', () =>{
+describe('artworks controller', () =>{
 	beforeEach(() => {
 		jest.resetAllMocks()
 	})
@@ -307,41 +307,3 @@ describe('Artworks controller', () =>{
 		)
 	})
 })
-
-// 	test("No jwt provided", async () => {
-// 		jwt.verify.mockImplementationOnce(() => {throw new Error()})
-// 		const payload = { 
-// 		ids: [ '662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc' ] 
-// 		}
-// 		const res = await request(app.use(ArtworksRouter))
-// 		.delete('/delete')
-// 		.send(payload)
-// 		.set('Authorization', 'Bearer ')
-// 		.set('Content-Type', 'application/json')
-// 		.set('Accept', 'application/json')
-
-// 		expect(jwt.verify.mock.calls).toMatchSnapshot("Authorization is unsuccessful (jwt.verify is not called)")
-// 		expect(res.status).toMatchSnapshot(`Status code equals 400`)
-// 		// expect(mongoose.startSession.mock.calls).toMatchSnapshot("startSession is not called")
-// 		// expect(Artwork.count.mock.calls).toMatchSnapshot("Artwork.count is not called")
-// 		// expect(Artwork.deleteMany.mock.calls).toMatchSnapshot("Artwork.deleteMany is not called")
-// 	})
-
-// 	test("Invalid jwt", async () => {
-// 		jwt.verify.mockImplementationOnce(() => {throw new Error()})
-// 		const payload = { 
-// 		ids: [ '662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc' ] 
-// 		}
-// 		const res = await request(app.use(ArtworksRouter))
-// 		.delete('/delete')
-// 		.send(payload)
-// 		.set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
-// 		.set('Content-Type', 'application/json')
-// 		.set('Accept', 'application/json')
-
-// 		expect(jwt.verify).toMatchSnapshot("Authorization is unsuccessful (jwt.verify is called with wrong token and throws an error)")
-// 		expect(res.status).toMatchSnapshot(`Status code equals 401`)
-// 		// expect(mongoose.startSession.mock.calls).toMatchSnapshot("startSession is not called")
-// 		// expect(Artwork.count.mock.calls).toMatchSnapshot("Artwork.count is not called")
-// 		// expect(Artwork.deleteMany.mock.calls).toMatchSnapshot("Artwork.deleteMany is not called")
-// 	})

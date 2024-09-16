@@ -17,19 +17,19 @@ const registerUser = async (req: Request, res: Response, next: NextFunction) => 
             const existingUser = await User.findOne({ username: newUsername }).exec()
             if (existingUser) {
                 const err = new Error("User already exists")
-                res.status(409)
+                res.status(409).json({ error: err.message })
                 return next(err)
             }
         } catch {
             const err = new Error("Database unavailable")
-            res.status(503)
+            res.status(503).json({ error: err.message })
             return next(err)
         }
     
         const hashCallback = async (err: Error, hashedPassword: string) => {
             if(err) {
                 const err = new Error("Password encryption error")
-                res.status(500)
+                res.status(500).json({ error: err.message })
                 return next(err)
             }
             try {
@@ -46,7 +46,7 @@ const registerUser = async (req: Request, res: Response, next: NextFunction) => 
                 return res.status(201).json({ token })
             } catch {
                 const err = new Error("Database unavailable")
-                res.status(503)
+                res.status(503).json({ error: err.message })
                 return next(err)
             }
         }
@@ -55,7 +55,7 @@ const registerUser = async (req: Request, res: Response, next: NextFunction) => 
         bcrypt.hash(newPassword, saltRounds, hashCallback)
     } else {
         const err = new Error(`Incorrect request body provided`)
-        res.status(400)
+        res.status(400).json({ error: err.message })
         return next(err)
     }
             
