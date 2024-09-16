@@ -28,6 +28,9 @@ jest.mock("jsonwebtoken", () => ({
 	sign: () => mockSign(),
     verify: jest.fn()
 }))
+const jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXN"
+	+ "lcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaecc"
+	+ "N-rDSjRS3kApqlA"
 
 const mongoose = require('mongoose')
 jest.mock('mongoose', () => ({
@@ -39,6 +42,15 @@ describe('auth controller', () =>{
         jest.resetAllMocks()
     })
     describe('POST endpoints', () => {
+        const existingUser = { exec: () => Promise.resolve({
+            _id: "66d71fd54c148fb8f827c2c3",
+            username: 'existing user',
+            password: '$2b$10$FJQhAc.TOCBIhp0uO4v7VeECPXBDd.hd63jhYBswNAkFvUp5BK1TK',
+            firstName: 'existing user',
+            accountCreationDate: '2024-09-01T23:20:24.293Z',
+            __v: 0
+        })}
+
         test("registerUser should respond with status 201 and correct body", async () => {
             mockFindOne.mockReturnValue({
                 exec: () => Promise.resolve(null)
@@ -54,7 +66,7 @@ describe('auth controller', () =>{
                 accountCreationDate: "2024-09-03T15:33:04.290Z",
                 __v: 0
             }))
-            mockSign.mockReturnValue("eyJhbGciOiJIAzI1NiIsXnR5cCI6IkpXVCJ4.eyJ1c2VybmFtZSI6ImQiLCJmaXJzdE5hbWUiOiJkIiwidXNlcklkIjoiNjZkNzQ5MDNjN2YxYjNiYTJmM2UyMjk3IiwiaWF0IjoxNzI1Mzg0OTYzLCJleHAiOjE3MjYzODQ5NjN9.I6rX0LpWoEyg-TLZEZ4gNW6VgG3OT9nyOq9NeqUnFx8")
+            mockSign.mockReturnValue(jwtToken)
             const payload = { username: 'user', firstName: 'user', password: 'hasl1242o2' }
             const res = await request(app.use(AuthRouter))
             .post('/register')
@@ -65,17 +77,7 @@ describe('auth controller', () =>{
             expect(res.status).toBe(201)
             expect(res.body).toMatchSnapshot()
         })
-
-        const existingUser = {
-            exec: () => Promise.resolve({
-                    _id: "66d71fd54c148fb8f827c2c3",
-                    username: 'existing user',
-                    password: '$2b$10$FJQhAc.TOCBIhp0uO4v7VeECPXBDd.hd63jhYBswNAkFvUp5BK1TK',
-                    firstName: 'existing user',
-                    accountCreationDate: '2024-09-01T23:20:24.293Z',
-                    __v: 0
-                    })
-        }
+        
         test.each([
             {payload: { }, statusCode: 400, error: "Incorrect request body provided",
                 findOne: undefined, callbackError: undefined},
@@ -88,7 +90,7 @@ describe('auth controller', () =>{
             {payload: { username: 'istniejaca', firstName: 'istniejaca', password: 'hasl1242o2' }, statusCode: 409, error: "User already exists",
                 findOne: existingUser, callbackError: undefined},
             {payload: { username: 'user', firstName: 'user', password: 'hasl1242o2' }, statusCode: 500, error: "Password encryption error",
-                findOne: { exec: () => {return Promise.resolve(null)}}, callbackError: Error("some error")},
+                findOne: { exec: () => {return Promise.resolve(null)}}, callbackError: Error()},
             {payload: { username: 'user', firstName: 'user', password: 'hasl1242o2' }, statusCode: 503, error: "Database unavailable",
                 findOne: { exec: () => { return Promise.reject() } }, callbackError: undefined},
             {payload: { username: 'user', firstName: 'user', password: 'hasl1242o2' }, statusCode: 503, error: "Database unavailable",
@@ -107,155 +109,57 @@ describe('auth controller', () =>{
 
             expect(res.status).toBe(statusCode)
             expect(res.body.error).toBe(error)
-          });
+        })
+
+        test("loginUser should respond with status 200 and correct body", async () => {
+            mockFindOne.mockReturnValue(existingUser)
+            bcrypt.compare.mockImplementationOnce((data: String, encrypted: String, callback: Function) => {
+                callback(undefined, true)    
+            })
+            mockSign.mockReturnValue(jwtToken)
+            const payload = { username: 'user', password: 'hasl1242o2' }
+            const res = await request(app.use(AuthRouter))
+            .post('/login')
+            .send(payload)
+            .set('Content-Type', 'application/json')
+            .set('Accept', 'application/json')
+
+            expect(res.status).toBe(200)
+            expect(res.body).toMatchSnapshot()
+        })
+
+        test.each([
+            {payload: { }, statusCode: 400, error: "Incorrect request body provided",
+                findOne: undefined, callbackError: undefined, passwordCorrect: undefined},
+            {payload: { username: 'user' }, statusCode: 400, error: "Incorrect request body provided",
+                findOne: undefined, callbackError: undefined, passwordCorrect: undefined},
+            {payload: { password: 'hasl1242o2' }, statusCode: 400, error: "Incorrect request body provided",
+                findOne: undefined, callbackError: undefined, passwordCorrect: undefined},
+            {payload: { username: 'user', password: 'hasl1242o2' }, statusCode: 503, error: "Database unavailable",
+                findOne: { exec: () => Promise.reject() }, callbackError: undefined, passwordCorrect: undefined},
+            {payload: { username: 'user', password: 'hasl1242o2' }, statusCode: 500, error: "Internal server error",
+                findOne: existingUser, callbackError: Error(), passwordCorrect: true},
+            {payload: { username: 'user', password: 'hasl1242o2' }, statusCode: 404, error: "Invalid username or password",
+                findOne: { exec: () => {return Promise.resolve(null)}}, callbackError: undefined, passwordCorrect: undefined},
+            {payload: { username: 'user', password: 'hasl1242o2' }, statusCode: 404, error: "Invalid username or password",
+                findOne: existingUser, callbackError: undefined, passwordCorrect: false} 
+        ])('loginUser should respond with status $statusCode and correct error message', async ({payload, statusCode, error, findOne, callbackError, passwordCorrect}) => {
+            mockFindOne.mockReturnValue(findOne)
+            bcrypt.compare.mockImplementationOnce((data: String, encrypted: String, callback: Function) => {
+                callback(callbackError, passwordCorrect)    
+            })
+            const res = await request(app.use(AuthRouter))
+            .post('/login')
+            .send(payload)
+            .set('Content-Type', 'application/json')
+            .set('Accept', 'application/json')
+
+            expect(res.status).toBe(statusCode)
+            expect(res.body.error).toBe(error)
+        })
     })
 })
 
-// describe('loginUser tests', () =>{
-//     test("Response has status 400 (incorrect payload)", async () => {
-//         let payload = { }
-//         let res = await request(app.use(AuthRouter))
-//         .post('/login')
-//         .send(payload)
-// 		.set('Content-Type', 'application/json')
-// 		.set('Accept', 'application/json')
-//         expect(res.status).toMatchInlineSnapshot(`400`)
-
-//         payload = { username: 'user' }
-//         res = await request(app.use(AuthRouter))
-//         .post('/login')
-//         .send(payload)
-// 		.set('Content-Type', 'application/json')
-// 		.set('Accept', 'application/json')
-//         expect(res.status).toMatchInlineSnapshot(`400`)
-
-//         payload = { password: 'hasl1242o2' }
-//         res = await request(app.use(AuthRouter))
-//         .post('/login')
-//         .send(payload)
-// 		.set('Content-Type', 'application/json')
-// 		.set('Accept', 'application/json')
-//         expect(res.status).toMatchInlineSnapshot(`400`)
-//     })
-//     test("Response has status 503 (can't check if provided username is already in the database)", async () => {
-//         User.findOne.mockImplementationOnce(() => {
-//             return {
-//             	exec: jest.fn().mockImplementationOnce(() => {
-//                     return Promise.reject()
-//                 })
-//           	}    
-//         })
-//         const payload = { username: 'user', password: 'hasl1242o2' }
-//         const res = await request(app.use(AuthRouter))
-//         .post('/login')
-//         .send(payload)
-// 		.set('Content-Type', 'application/json')
-// 		.set('Accept', 'application/json')
-
-//         expect(res.status).toMatchInlineSnapshot(`503`)
-//     })
-//     test("Response has status 404 (user with provided username doesn't exist)", async () => {
-//         User.findOne.mockImplementationOnce(() => {
-//             return {
-//             	exec: jest.fn().mockImplementationOnce(() => {
-//                     return Promise.resolve(null)
-//                 })
-//           	}    
-//         })
-//         const payload = { username: 'user', password: 'hasl1242o2' }
-//         const res = await request(app.use(AuthRouter))
-//         .post('/login')
-//         .send(payload)
-// 		.set('Content-Type', 'application/json')
-// 		.set('Accept', 'application/json')
-
-//         expect(res.status).toMatchInlineSnapshot(`404`)
-//     })
-//     test("Response has status 500 (password comparison unsuccessful)", async () => {
-//         User.findOne.mockImplementationOnce(() => {
-//             return {
-//                 exec: jest.fn().mockImplementationOnce(() => {
-//                     return Promise.resolve({
-//                         _id: "66d71fd54c148fb8f827c2c3",
-//                         username: 'istniejaca',
-//                         password: '$2b$10$FJQhAc.TOCBIhp0uO4v7VeECPXBDd.hd63jhYBswNAkFvUp5BK1TK',
-//                         firstName: 'istniejaca',
-//                         accountCreationDate: '2024-09-01T23:20:24.293Z',
-//                         __v: 0
-//                       })
-//                 })
-//               }    
-//         })
-//         bcrypt.compare.mockImplementationOnce((data: String, encrypted: String, callback: Function) => {
-//             callback(Error("some error"), true)    
-//         })
-//         const payload = { username: 'user', password: 'hasl1242o2' }
-//         const res = await request(app.use(AuthRouter))
-//         .post('/login')
-//         .send(payload)
-// 		.set('Content-Type', 'application/json')
-// 		.set('Accept', 'application/json')
-
-//         expect(res.status).toMatchInlineSnapshot(`500`)
-//     })
-//     test("Response has status 404 (user with provided username exists but password is incorrect)", async () => {
-//         User.findOne.mockImplementationOnce(() => {
-//             return {
-//                 exec: jest.fn().mockImplementationOnce(() => {
-//                     return Promise.resolve({
-//                         _id: "66d71fd54c148fb8f827c2c3",
-//                         username: 'istniejaca',
-//                         password: '$2b$10$FJQhAc.TOCBIhp0uO4v7VeECPXBDd.hd63jhYBswNAkFvUp5BK1TK',
-//                         firstName: 'istniejaca',
-//                         accountCreationDate: '2024-09-01T23:20:24.293Z',
-//                         __v: 0
-//                       })
-//                 })
-//               }    
-//         })
-//         bcrypt.compare.mockImplementationOnce((data: String, encrypted: String, callback: Function) => {
-//             callback(undefined, false)    
-//         })
-//         const payload = { username: 'user', password: 'wrongpassword' }
-//         const res = await request(app.use(AuthRouter))
-//         .post('/login')
-//         .send(payload)
-// 		.set('Content-Type', 'application/json')
-// 		.set('Accept', 'application/json')
-
-//         expect(res.status).toMatchInlineSnapshot(`404`)
-//     })
-//     test("Response has status 200 (login successful)", async () => {
-//         User.findOne.mockImplementationOnce(() => {
-//             return {
-//                 exec: jest.fn().mockImplementationOnce(() => {
-//                     return Promise.resolve({
-//                         _id: "66d71fd54c148fb8f827c2c3",
-//                         username: 'istniejaca',
-//                         password: '$2b$10$FJQhAc.TOCBIhp0uO4v7VeECPXBDd.hd63jhYBswNAkFvUp5BK1TK',
-//                         firstName: 'istniejaca',
-//                         accountCreationDate: '2024-09-01T23:20:24.293Z',
-//                         __v: 0
-//                       })
-//                 })
-//               }    
-//         })
-//         bcrypt.compare.mockImplementationOnce((data: String, encrypted: String, callback: Function) => {
-//             callback(undefined, true)    
-//         })
-//         const payload = { username: 'user', password: 'wrongpassword' }
-//         const res = await request(app.use(AuthRouter))
-//         .post('/login')
-//         .send(payload)
-// 		.set('Content-Type', 'application/json')
-// 		.set('Accept', 'application/json')
-
-//         expect(res.status).toMatchInlineSnapshot(`200`)
-//     })
-//     afterEach(() => {
-// 		jest.resetAllMocks()
-// 	})
-// })
 
 // describe('deleteUser tests', () =>{
 //     test("Response has status 400 (no jwt provided)", async () => {

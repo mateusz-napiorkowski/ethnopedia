@@ -69,19 +69,19 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
             const user = await User.findOne({ username: loginUsername }).exec()
             if (!user) {
                 const err = new Error("Invalid username or password")
-                res.status(404)
+                res.status(404).json({ error: err.message })
                 return next(err)
             }
     
             const compareCallback = (err: Error, validPassword: string) => {
                 if(err) {
                     const err = new Error("Internal server error")
-                    res.status(500)
+                    res.status(500).json({ error: err.message })
                     return next(err)
                 }
                 if (!validPassword) {
                     const err = new Error("Invalid username or password")
-                    res.status(404)
+                    res.status(404).json({ error: err.message })
                     return next(err)
                 } 
                 const token = jwt.sign(
@@ -94,12 +94,12 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
             bcrypt.compare(loginPassword, user.password, compareCallback)      
         } catch {
             const err = new Error("Database unavailable")
-            res.status(503)
+            res.status(503).json({ error: err.message })
             return next(err)
         }
     } else {
-        const err = new Error(`Incorrect request body provided`)
-        res.status(400)
+        const err = new Error("Incorrect request body provided")
+        res.status(400).json({ error: err.message })
         return next(err)        
     }
 }
