@@ -108,20 +108,20 @@ const deleteUser = authAsyncWrapper(async (req: Request, res: Response, next: Ne
     const userId = req.params.userId
     if (!mongoose.isValidObjectId(userId)) {
         const err = new Error(`Invalid user id: ${userId}`)
-        res.status(400)
+        res.status(400).json({ error: err.message })
         return next(err)
     }
     try {
         const deletedUserData = await User.findByIdAndRemove(userId).exec()
         if (!deletedUserData) {
             const err = new Error(`User not found`)
-            res.status(404)
+            res.status(404).json({ error: err.message })
             return next(err)
         }
         return res.status(200).json(deletedUserData)
     } catch (error) {
         const err = new Error("Database unavailable")
-        res.status(503)
+        res.status(503).json({ error: err.message })
         return next(err)
     }
 })
