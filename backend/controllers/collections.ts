@@ -168,22 +168,20 @@ const createCollection = authAsyncWrapper(async (req: Request, res: Response, ne
             const duplicateCollection = await Collection.findOne({name: collectionName}).exec()
             if(duplicateCollection) {
                 const err = new Error(`Collection with provided name already exists`)
-                res.status(409)
+                res.status(409).json({ error: err.message })
                 return next(err)
-            } else {
-                const newCollection = await Collection.create({name: req.body.name, description: req.body.description})
-                return res.status(201).json(newCollection)
             }
+            const newCollection = await Collection.create({name: req.body.name, description: req.body.description})
+            return res.status(201).json(newCollection)
         } catch {
             const err = new Error(`Database unavailable`)
-            res.status(503)
+            res.status(503).json({ error: err.message })
             return next(err)
         }
-    } else {
-        const err = new Error(`Incorrect request body provided`)
-        res.status(400)
-        return next(err)
-    }
+    } 
+    const err = new Error(`Incorrect request body provided`)
+    res.status(400).json({ error: err.message })
+    return next(err)
 })
 
 const batchDeleteCollections = async (req: Request, res: Response, next: NextFunction) => {
