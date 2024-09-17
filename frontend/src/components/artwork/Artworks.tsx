@@ -26,7 +26,6 @@ const Artworks = () => {
     const [showDeleteRecordsWarning, setShowDeleteRecordsWarning] = useState(false)
     const [showDeleteCollectionWarning, setShowDeleteCollectionWarning] = useState(false)
     const [sortOrder, setSortOrder] = useState<string>("newest-first")
-    const [showEditCollection, setShowEditCollection] = useState<boolean>(false)
     const { jwtToken } = useUser();
     const location = useLocation()
     useEffect(() => {
