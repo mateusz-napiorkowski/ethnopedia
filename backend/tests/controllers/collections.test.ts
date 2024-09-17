@@ -7,11 +7,20 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 const CollectionsRouter = require("../../routes/collection")
 
+const mockStartSession = jest.fn()
+jest.mock('mongoose', () => ({
+	startSession: () => mockStartSession()
+}))
+
 const mockFindOne = jest.fn()
 const mockCreate = jest.fn()
 jest.mock("../../models/collection", () => ({
 	findOne: () => mockFindOne(),
     create: () => mockCreate()
+}))
+
+jest.mock("../../models/artwork", () => ({
+
 }))
 
 jest.mock("jsonwebtoken", () => ({
@@ -25,6 +34,12 @@ describe('collections controller', () =>{
     beforeEach(() => {
 		jest.resetAllMocks()
 	})
+    const startSessionDefaultImplementation = () => Promise.resolve({
+        startTransaction: jest.fn(),
+        commitTransaction: jest.fn(),
+        abortTransaction: jest.fn(),
+        endSession: jest.fn()
+    })
     describe('GET endpoints', () =>{
         test("getCollection should respond with status 200 and correct body", async () => {
             mockFindOne.mockReturnValue({
@@ -65,6 +80,7 @@ describe('collections controller', () =>{
             __v: 0
         })
         test("createCollection should respond with status 201 and correct body", async () => {
+            mockStartSession.mockImplementation(startSessionDefaultImplementation)
             mockFindOne.mockReturnValue({ exec: () => Promise.resolve(null) })
             mockCreate.mockReturnValue(collectionPromise)
             const payload = { name: 'collection', description: 'collection description' }
@@ -82,18 +98,21 @@ describe('collections controller', () =>{
 
         test.each([
             {payload: {}, statusCode: 400,
-                error: 'Incorrect request body provided'},
-            {payload: { name: 'testowa' }, statusCode: 400,
-                error: 'Incorrect request body provided'},
-            {payload: { description: 'testowa kolekcja' }, statusCode: 400,
-                error: 'Incorrect request body provided'},
-            {payload: { name: 'testowa', description: 'testowa kolekcja' }, statusCode: 503,
-                error: 'Database unavailable', findOne: { exec: () => Promise.reject() }},
-            {payload: { name: 'testowa', description: 'testowa kolekcja' }, statusCode: 409,
-                error: 'Collection with provided name already exists', findOne: { exec: () => collectionPromise }},
-            {payload: { name: 'testowa', description: 'testowa kolekcja' }, statusCode: 503,
-                error: 'Database unavailable', findOne: { exec: () => Promise.resolve(null) }}
-        ])('createCollection should respond with status $statusCode and correct error message', async ({payload, statusCode, error, findOne}) => {
+                error: 'Incorrect request body provided', findOne: undefined, startSession: startSessionDefaultImplementation}, 
+            {payload: { name: 'collection' }, statusCode: 400,
+                error: 'Incorrect request body provided', findOne: undefined, startSession: startSessionDefaultImplementation},
+            {payload: { description: 'collection description' }, statusCode: 400,
+                error: 'Incorrect request body provided', findOne: undefined, startSession: startSessionDefaultImplementation},
+            {payload: { name: 'collection', description: 'collection description' }, statusCode: 503,
+                error: "Couldn't establish session for database transaction", findOne: undefined, startSession: () => Promise.reject()},
+            {payload: { name: 'collection', description: 'collection description' }, statusCode: 503,
+                error: 'Database unavailable', findOne: { exec: () => Promise.reject() }, startSession: startSessionDefaultImplementation},
+            {payload: { name: 'collection', description: 'collection description' }, statusCode: 409,
+                error: 'Collection with provided name already exists', findOne: { exec: () => collectionPromise }, startSession: startSessionDefaultImplementation},
+            {payload: { name: 'collection', description: 'collection description' }, statusCode: 503,
+                error: 'Database unavailable', findOne: { exec: () => Promise.resolve(null) }, startSession: startSessionDefaultImplementation}
+        ])('createCollection should respond with status $statusCode and correct error message', async ({payload, statusCode, error, findOne, startSession}) => {
+            mockStartSession.mockImplementation(startSession)
             mockFindOne.mockReturnValue(findOne)
             mockCreate.mockImplementation(() => {throw Error()})
 

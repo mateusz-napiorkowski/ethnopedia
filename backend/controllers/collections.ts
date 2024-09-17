@@ -165,16 +165,30 @@ const createCollection = authAsyncWrapper(async (req: Request, res: Response, ne
     const collectionDescription = req.body.description
     if(collectionName !== undefined && collectionDescription !== undefined) {
         try {
-            const duplicateCollection = await Collection.findOne({name: collectionName}).exec()
-            if(duplicateCollection) {
-                const err = new Error(`Collection with provided name already exists`)
-                res.status(409).json({ error: err.message })
+            const session = await mongoose.startSession()
+            try {
+                session.startTransaction()
+                const duplicateCollection = await Collection.findOne({name: collectionName}).exec()
+                if(duplicateCollection) {
+                    await session.abortTransaction();
+                    session.endSession();
+                    const err = new Error(`Collection with provided name already exists`)
+                    res.status(409).json({ error: err.message })
+                    return next(err)
+                }
+                const newCollection = await Collection.create({name: req.body.name, description: req.body.description})
+                await session.commitTransaction();
+                session.endSession();
+                return res.status(201).json(newCollection)
+            } catch {
+                await session.abortTransaction();
+                session.endSession();
+                const err = new Error(`Database unavailable`)
+                res.status(503).json({ error: err.message })
                 return next(err)
             }
-            const newCollection = await Collection.create({name: req.body.name, description: req.body.description})
-            return res.status(201).json(newCollection)
         } catch {
-            const err = new Error(`Database unavailable`)
+            const err = new Error(`Couldn't establish session for database transaction`)
             res.status(503).json({ error: err.message })
             return next(err)
         }
