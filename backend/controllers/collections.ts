@@ -211,21 +211,23 @@ const deleteCollections = authAsyncWrapper(async (req: Request, res: Response, n
             try {
                 session.startTransaction()
                 const existingCollections = await Collection.find({ _id: { $in: collectionsToDelete }}, null, { session }).exec()
-                if (existingCollections.length === 0) {
+                if (existingCollections.length !== collectionsToDelete.length) {
                     await session.abortTransaction();
                     session.endSession();
                     const err = new Error("Collections not found")
                     res.status(404).json({ error: err.message })
                     return next(err)
                 }
+                let deletedArtworksCount = 0
                 for(const existingCollection of existingCollections) {
-                    await Artwork.deleteMany({collectionName: existingCollection.name}, { session })
+                    const deletedArtworks = await Artwork.deleteMany({collectionName: existingCollection.name}, { session }).exec()
+                    deletedArtworksCount += deletedArtworks.deletedCount
                 }
-                const result = await Collection.deleteMany({ _id: { $in: collectionsToDelete } }, { session })
+                const result = await Collection.deleteMany({ _id: { $in: collectionsToDelete } }, { session }).exec()
                 
-                await session.commitTransaction();
-                session.endSession();
-                return res.status(200).json({ message: req.params.collection, deletedCount: result.deletedCount })
+                await session.commitTransaction()
+                session.endSession()
+                return res.status(200).json({ message: req.params.collection, deletedCount: result.deletedCount, deletedArtworksCount: deletedArtworksCount })
             } catch {
                 await session.abortTransaction();
                 session.endSession();
