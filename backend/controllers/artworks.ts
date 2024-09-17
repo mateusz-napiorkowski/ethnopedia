@@ -28,7 +28,7 @@ export const getArtwork = async (req: Request, res: Response, next: NextFunction
      
 }
 
-const createArtwork = authAsyncWrapper((async (req: Request, res: Response, next: NextFunction) => {
+export const createArtwork = authAsyncWrapper((async (req: Request, res: Response, next: NextFunction) => {
     const collectionName = req.body.collectionName
     if(req.body.categories !== undefined && collectionName !== undefined) {
         try {
@@ -51,7 +51,7 @@ const createArtwork = authAsyncWrapper((async (req: Request, res: Response, next
     return next(err)  
 }))
 
-const editArtwork = authAsyncWrapper((async (req: Request, res: Response, next: NextFunction) => {
+export const editArtwork = authAsyncWrapper((async (req: Request, res: Response, next: NextFunction) => {
     const artworkId = req.params.artworkId
     if(req.body.categories !== undefined && req.body.collectionName !== undefined) {
         try {
@@ -73,7 +73,7 @@ const editArtwork = authAsyncWrapper((async (req: Request, res: Response, next: 
     return next(err)
 }))
 
-const deleteArtworks = authAsyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+export const deleteArtworks = authAsyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     if(req.body.ids !== undefined) {
         try {
             const session = await mongoose.startSession()
@@ -119,10 +119,3 @@ const deleteArtworks = authAsyncWrapper(async (req: Request, res: Response, next
     res.status(400).json({ error: err.message })
     return next(err)  
 })
-
-module.exports = {
-    getArtwork,
-    createArtwork,
-    editArtwork,
-    deleteArtworks
-}

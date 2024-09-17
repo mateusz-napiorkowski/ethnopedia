@@ -1,15 +1,17 @@
 import { NextFunction, Request, Response } from "express"
-import { authAsyncWrapper } from "../../middleware/auth"
-const request = require("supertest")
-const express = require("express")
-const bodyParser = require("body-parser");
+import { authAsyncWrapper } from "../auth"
+import request from "supertest";
+import express from "express";
+import bodyParser from "body-parser";
+
 const app = express()
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-app.post('/', authAsyncWrapper(async function(req: Request, res: Response, next: NextFunction) {
+app.post('/', authAsyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     res.status(200).json({message: "Callback function has been called"});
 }));
+
 
 const mockVerify = jest.fn()
 jest.mock("jsonwebtoken", () => ({

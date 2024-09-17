@@ -5,7 +5,6 @@ require("dotenv").config()
 const app = express()
 const cors = require("cors")
 
-
 const auth = require("./routes/auth")
 const artworks = require("./routes/artwork")
 const collections = require("./routes/collection")
