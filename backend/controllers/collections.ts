@@ -67,13 +67,14 @@ const getCollection = async (req: Request, res: Response, next: NextFunction) =>
     try {
         const collection = await Collection.findOne({ name: collectionName }).exec()
         if (!collection) {
-            return res.status(404).json("Collection not found")
-        } else {
-            return res.status(200).json(collection[0])
+            const err = new Error("Collection not found")
+            res.status(404).json({ error: err.message })
+            return next(err)
         }
+        return res.status(200).json(collection) 
     } catch {
         const err = new Error(`Database unavailable`)
-        res.status(503)
+        res.status(503).json({ error: err.message })
         return next(err)
     }
 }
