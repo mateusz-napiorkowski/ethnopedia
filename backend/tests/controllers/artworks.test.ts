@@ -64,14 +64,7 @@ describe('artworks controller', () =>{
 				.set('Accept', 'application/json')
 	
 			expect(res.status).toBe(200)
-			expect(res.body).toMatchSnapshot({artwork: {
-				_id: `${artworkId}`,
-				categories: expect.any(Array),
-				createdAt: expect.any(String),
-				updatedAt: expect.any(String),
-				collectionName: expect.any(String),
-				__v: expect.any(Number)
-			}})
+			expect(res.body).toMatchSnapshot()
 		})
 
 		test.each([
@@ -129,14 +122,7 @@ describe('artworks controller', () =>{
 				.set('Accept', 'application/json')
 	
 			expect(res.status).toBe(201)
-			expect(res.body).toMatchSnapshot({
-				_id: `${artworkId}`,
-				categories: expect.any(Array),
-				createdAt: expect.any(String),
-				updatedAt: expect.any(String),
-				collectionName: expect.any(String),
-				__v: expect.any(Number)
-			})
+			expect(res.body).toMatchSnapshot()
 		})
 
 		test.each([
@@ -194,15 +180,16 @@ describe('artworks controller', () =>{
 				.set('Accept', 'application/json')
 	
 			expect(res.status).toBe(201)
-			expect(res.body).toMatchSnapshot({
-				acknowledged: true,
-				modifiedCount: 1,
-				upsertedId: null,
-				upsertedCount: 0,
-				matchedCount: 1
-			})
+			expect(res.body).toMatchSnapshot()
 		})
 
+		const replaceOneNoMatchResponse = {exec: () => Promise.resolve({
+			acknowledged: true,
+			modifiedCount: 0,
+			upsertedId: null,
+			upsertedCount: 0,
+			matchedCount: 0
+		})}
 		test.each([
 			{payload: {},
 				replaceOne: undefined, statusCode: 400, error: 'Incorrect request body provided'},
@@ -213,16 +200,7 @@ describe('artworks controller', () =>{
 			{payload: {categories: [{ name: 'Title', values: [ 'New Title' ], subcategories: [] }], collectionName: 'collection'},
 				replaceOne: {exec: () => Promise.reject()}, statusCode: 503, error: 'Database unavailable'},
 			{payload: {categories: [{ name: 'Title', values: [ 'New Title' ], subcategories: [] }], collectionName: 'collection'},
-				replaceOne: {exec: () => Promise.resolve({
-					acknowledged: true,
-					modifiedCount: 0,
-					upsertedId: null,
-					upsertedCount: 0,
-					matchedCount: 0
-				})}, 
-				statusCode: 404, error: 'Artwork not found'},
-
-				
+				replaceOne: replaceOneNoMatchResponse, statusCode: 404, error: 'Artwork not found'}	
 		])(`editArtwork should respond with status $statusCode and correct error message`, async ({
 			payload, replaceOne, statusCode, error}) => {
 				mockReplaceOne.mockReturnValue(replaceOne)
@@ -241,13 +219,14 @@ describe('artworks controller', () =>{
 	})
 
 	describe('DELETE endpoints', () => {
+		const startSessionDefaultImplementation = () => Promise.resolve({
+			startTransaction: jest.fn(),
+			commitTransaction: jest.fn(),
+			abortTransaction: jest.fn(),
+			endSession: jest.fn()
+		})
 		test("deleteArtworks should respond with status 200 and correct body", async () => {
-			mockStartSession.mockReturnValue(Promise.resolve({
-				startTransaction: jest.fn(),
-				commitTransaction: jest.fn(),
-				abortTransaction: jest.fn(),
-				endSession: jest.fn()
-			}))
+			mockStartSession.mockImplementation(startSessionDefaultImplementation)
 			mockCount.mockReturnValue({
 				exec: () => Promise.resolve(2)
 			})
@@ -264,30 +243,35 @@ describe('artworks controller', () =>{
 			.set('Accept', 'application/json')
 	
 			expect(res.status).toBe(200)
-			expect(res.body).toMatchSnapshot({
-				"acknowledged": true,
-				"deletedCount": 2,
-			})
+			expect(res.body).toMatchSnapshot()
 		})
 
-		const startSessionDefaultImplementation = () => Promise.resolve({
-			startTransaction: jest.fn(),
-			commitTransaction: jest.fn(),
-			abortTransaction: jest.fn(),
-			endSession: jest.fn()
-		})
+		
 		test.each([
-			{payload: {}, startSession: () => {}, count: undefined, deleteMany: undefined, statusCode: 400, error: 'Incorrect request body provided'},
+			{payload: {},
+				startSession: () => {},
+				count: undefined, deleteMany: undefined,
+				statusCode: 400, error: 'Incorrect request body provided'},
 			{payload: { ids: [ '662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc' ] },
-			startSession: () => Promise.reject(), count: undefined, deleteMany: undefined, statusCode: 503, error: `Couldn't establish session for database transaction`},
+				startSession: () => Promise.reject(),
+				count: undefined, deleteMany: undefined,
+				statusCode: 503, error: `Couldn't establish session for database transaction`},
 			{payload: { ids: [] },
-			startSession: startSessionDefaultImplementation, count: undefined, deleteMany: undefined, statusCode: 400, error: "Artworks not specified"},
+				startSession: startSessionDefaultImplementation,
+				count: undefined, deleteMany: undefined,
+				statusCode: 400, error: "Artworks not specified"},
 			{payload: { ids: [ '662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc' ] },
-			startSession: startSessionDefaultImplementation, count: {exec: () => Promise.reject()}, deleteMany: undefined, statusCode: 503, error: "Couldn't complete database transaction"},
+				startSession: startSessionDefaultImplementation,
+				count: {exec: () => Promise.reject()}, deleteMany: undefined,
+				statusCode: 503, error: "Couldn't complete database transaction"},
 			{payload: { ids: [ '662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc' ] },
-			startSession: startSessionDefaultImplementation, count: {exec: () => Promise.resolve(2)}, deleteMany: {exec: () => Promise.reject()}, statusCode: 503, error: "Couldn't complete database transaction"},
+				startSession: startSessionDefaultImplementation,
+				count: {exec: () => Promise.resolve(2)}, deleteMany: {exec: () => Promise.reject()},
+				statusCode: 503, error: "Couldn't complete database transaction"},
 			{payload: { ids: [ '662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc' ] },
-			startSession: startSessionDefaultImplementation, count: {exec: () => Promise.resolve(1)}, deleteMany: undefined, statusCode: 404, error: "Artworks not specified"},
+				startSession: startSessionDefaultImplementation,
+				count: {exec: () => Promise.resolve(1)}, deleteMany: undefined,
+				statusCode: 404, error: "Artworks not specified"},
 		])(`deleteArtworks should respond with status $statusCode and correct error message`,
 			async ({ payload, startSession, count, deleteMany, statusCode, error}) => {
 				mockStartSession.mockImplementation(startSession)
