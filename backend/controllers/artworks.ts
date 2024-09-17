@@ -92,7 +92,7 @@ const deleteArtworks = authAsyncWrapper(async (req: Request, res: Response, next
                 if (databaseArtworksToDeleteCounted !== artworksToDelete.length) {
                     await session.abortTransaction();
                     session.endSession();
-                    const err = new Error("Artworks not specified")
+                    const err = new Error("Artworks not found")
                     res.status(404).json({ error: err.message })
                     return next(err)
                 }

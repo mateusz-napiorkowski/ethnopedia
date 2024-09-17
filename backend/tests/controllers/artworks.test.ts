@@ -271,7 +271,7 @@ describe('artworks controller', () =>{
 			{payload: { ids: [ '662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc' ] },
 				startSession: startSessionDefaultImplementation,
 				count: {exec: () => Promise.resolve(1)}, deleteMany: undefined,
-				statusCode: 404, error: "Artworks not specified"},
+				statusCode: 404, error: "Artworks not found"},
 		])(`deleteArtworks should respond with status $statusCode and correct error message`,
 			async ({ payload, startSession, count, deleteMany, statusCode, error}) => {
 				mockStartSession.mockImplementation(startSession)

@@ -198,43 +198,56 @@ const createCollection = authAsyncWrapper(async (req: Request, res: Response, ne
     return next(err)
 })
 
-const batchDeleteCollections = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const token = req.headers.authorization?.split(" ")[1]
-        if (!token) return res.status(401).json({ error: 'Access denied' });
+const deleteCollections = authAsyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+    const collectionsToDelete = req.body.ids
+    if(collectionsToDelete !== undefined) {
+        if (Array.isArray(collectionsToDelete) && collectionsToDelete.length === 0) {
+            const err = new Error("Collections not specified")
+            res.status(400).json({ error: err.message })
+            return next(err)
+        }
         try {
-            const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string)
-            const collectionsToDelete = req.params.collection
-
-            if (!collectionsToDelete) {
-                return res.status(400).send({ message: "Collections not found" })
-            }
-            const collectionsToDeleteList = collectionsToDelete.split(",")
-            const existingCollections = await Collection.find({ _id: { $in: collectionsToDeleteList } })
-
-            if (existingCollections.length === 0) {
-                return res.status(404).send({ message: `Collection with id ${collectionsToDelete} not found` })
-            }
-
-            for(const id of collectionsToDeleteList) {
-                const collection = await Collection.find({_id: id})
-                await Artwork.deleteMany({collectionName: collection[0].name.toString()})
-            }
-            const result = await Collection.deleteMany({ _id: { $in: collectionsToDeleteList } })
-
-            res.status(200).json({ message: req.params.collection, deletedCount: result.deletedCount })
-        } catch (error) {
-            return res.status(401).json({ error: 'Access denied' });
-        } 
-    } catch (error) {
-        next(error)
+            const session = await mongoose.startSession()
+            try {
+                session.startTransaction()
+                const existingCollections = await Collection.find({ _id: { $in: collectionsToDelete }}, null, { session }).exec()
+                if (existingCollections.length === 0) {
+                    await session.abortTransaction();
+                    session.endSession();
+                    const err = new Error("Collections not found")
+                    res.status(404).json({ error: err.message })
+                    return next(err)
+                }
+                for(const existingCollection of existingCollections) {
+                    await Artwork.deleteMany({collectionName: existingCollection.name}, { session })
+                }
+                const result = await Collection.deleteMany({ _id: { $in: collectionsToDelete } }, { session })
+                
+                await session.commitTransaction();
+                session.endSession();
+                return res.status(200).json({ message: req.params.collection, deletedCount: result.deletedCount })
+            } catch {
+                await session.abortTransaction();
+                session.endSession();
+                const err = new Error(`Couldn't complete database transaction`)
+                res.status(503).json({ error: err.message })
+                return next(err)
+            }  
+        } catch {
+            const err = new Error(`Couldn't establish session for database transaction`)
+            res.status(503).json({ error: err.message })
+            return next(err)
+        }   
     }
-}
+    const err = new Error(`Incorrect request body provided`)
+    res.status(400).json({ error: err.message })
+    return next(err)
+})
 
 module.exports = {
     getAllCollections,
     getCollection,
     getArtworksInCollection,
     createCollection,
-    batchDeleteCollections
+    deleteCollections
 }
