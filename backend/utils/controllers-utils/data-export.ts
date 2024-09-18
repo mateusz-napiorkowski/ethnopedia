@@ -1,7 +1,7 @@
-const Artwork = require("../../models/artwork")
+import Artwork from "../../models/artwork";
 
 export const fillRow: any = (keys: any, categories: any) => {
-    let rowdata: any = {}
+    const rowdata: any = {}
     keys.forEach((key: any) => {
         rowdata[key] = findValue(categories, key.split("."))
     });
@@ -23,7 +23,7 @@ const findValue: any = (subcategories: any, keySplit: any) => {
         if(subcategories !== undefined) {
             for(const subcategory of subcategories) {
                 if(subcategory.name == keySplit[0]) {
-                    let v_temp: Array<string> = []
+                    const v_temp: Array<string> = []
                     for(const subcategoryValue of subcategory.values) {
                         v_temp.push(subcategoryValue)
                     }
@@ -36,7 +36,7 @@ const findValue: any = (subcategories: any, keySplit: any) => {
 }
 
 const getNestedKeys = ((prefix: string, subcategories: any) => {
-    let nestedCategories: Array<string> = []
+    const nestedCategories: Array<string> = []
     if(subcategories !== undefined) {
         for(const subcategory of subcategories){
             nestedCategories.push(`${prefix}${subcategory.name}`)
@@ -48,7 +48,7 @@ const getNestedKeys = ((prefix: string, subcategories: any) => {
 
 export const getAllKeys = async (collectionName: any) => {
     const records = await Artwork.find({ collectionName: collectionName })
-    let allCategories: Array<string> = []
+    const allCategories: Array<string> = []
     records.forEach((record:any) => {
         for(const category of record.categories){
             allCategories.push(category.name)
@@ -60,5 +60,3 @@ export const getAllKeys = async (collectionName: any) => {
     })
     return allCategoriesUnique
 }
-
-module.exports = { fillRow, getAllKeys}

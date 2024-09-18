@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express"
-const jwt = require("jsonwebtoken")
+import jwt from "jsonwebtoken";
 
 export const authAsyncWrapper = (
     handler: (req: Request, res: Response, next: NextFunction) => any,
@@ -21,5 +21,3 @@ export const authAsyncWrapper = (
         }
     }
 }
-
-module.exports = { authAsyncWrapper } 

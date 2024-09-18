@@ -1,12 +1,12 @@
 import { describe, expect, test, jest, beforeEach } from "@jest/globals"
-const express = require("express")
-const request = require("supertest")
-const bodyParser = require("body-parser");
+import express from "express";
+import request from "supertest";
+import bodyParser from "body-parser";
+import AuthRouter from "../../routes/auth";
+
 const app = express()
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-const AuthRouter = require("../../routes/auth")
-
 const mockFindOne = jest.fn()
 const mockFindByIdAndRemove = jest.fn()
 const mockCreate = jest.fn()
@@ -56,8 +56,8 @@ describe('auth controller', () =>{
             mockFindOne.mockReturnValue({
                 exec: () => Promise.resolve(null)
             })
-            bcrypt.hash.mockImplementation((password: String, saltRounds: number, callback: Function) => {
-                callback(undefined, 'hasl1242o2')    
+            bcrypt.hash.mockImplementation((password: string, saltRounds: number, callback: any) => {
+                callback(undefined, 'hasl1242o2')
             })
             mockCreate.mockReturnValue(Promise.resolve({
                 username: 'user',
@@ -74,11 +74,11 @@ describe('auth controller', () =>{
             .send(payload)
             .set('Content-Type', 'application/json')
             .set('Accept', 'application/json')
-    
+
             expect(res.status).toBe(201)
             expect(res.body).toMatchSnapshot()
         })
-        
+
         test.each([
             {payload: { }, statusCode: 400, error: "Incorrect request body provided",
                 findOne: undefined, callbackError: undefined},
@@ -98,8 +98,8 @@ describe('auth controller', () =>{
                 findOne: { exec: () => {return Promise.resolve(null)}}, callbackError: undefined}
         ])('registerUser should respond with status $statusCode and correct error message', async ({payload, statusCode, error, findOne, callbackError}) => {
             mockFindOne.mockReturnValue(findOne)
-            bcrypt.hash.mockImplementation((password: String, saltRounds: number, callback: Function) => {
-                callback(callbackError, 'hasl1242o2') 
+            bcrypt.hash.mockImplementation((password: string, saltRounds: number, callback: any) => {
+                callback(callbackError, 'hasl1242o2')
             })
             mockCreate.mockImplementation(() => {throw Error()})
             const res = await request(app.use(AuthRouter))
@@ -114,8 +114,8 @@ describe('auth controller', () =>{
 
         test("loginUser should respond with status 200 and correct body", async () => {
             mockFindOne.mockReturnValue(existingUser)
-            bcrypt.compare.mockImplementationOnce((data: String, encrypted: String, callback: Function) => {
-                callback(undefined, true)    
+            bcrypt.compare.mockImplementationOnce((data: string, encrypted: string, callback: any) => {
+                callback(undefined, true)
             })
             mockSign.mockReturnValue(jwtToken)
             const payload = { username: 'user', password: 'hasl1242o2' }
@@ -143,11 +143,11 @@ describe('auth controller', () =>{
             {payload: { username: 'user', password: 'hasl1242o2' }, statusCode: 404, error: "Invalid username or password",
                 findOne: { exec: () => {return Promise.resolve(null)}}, callbackError: undefined, passwordCorrect: undefined},
             {payload: { username: 'user', password: 'hasl1242o2' }, statusCode: 404, error: "Invalid username or password",
-                findOne: existingUser, callbackError: undefined, passwordCorrect: false} 
+                findOne: existingUser, callbackError: undefined, passwordCorrect: false}
         ])('loginUser should respond with status $statusCode and correct error message', async ({payload, statusCode, error, findOne, callbackError, passwordCorrect}) => {
             mockFindOne.mockReturnValue(findOne)
-            bcrypt.compare.mockImplementationOnce((data: String, encrypted: String, callback: Function) => {
-                callback(callbackError, passwordCorrect)    
+            bcrypt.compare.mockImplementationOnce((data: string, encrypted: string, callback: any) => {
+                callback(callbackError, passwordCorrect)
             })
             const res = await request(app.use(AuthRouter))
             .post('/login')
@@ -181,7 +181,7 @@ describe('auth controller', () =>{
             .set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
             .set('Content-Type', 'application/json')
             .set('Accept', 'application/json')
-    
+
             expect(res.status).toBe(200)
             expect(res.body).toMatchSnapshot()
         })

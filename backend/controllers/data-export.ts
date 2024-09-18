@@ -1,10 +1,9 @@
 import { Request, Response } from "express"
 import excelJS from "exceljs"
+import Artwork from "../models/artwork";
 import { fillRow, getAllKeys } from "../utils/controllers-utils/data-export"
 
-const Artwork = require("../models/artwork")
-
-const getXlsxWithArtworksData = async (req: Request, res: Response, next: any) => {
+export const getXlsxWithArtworksData = async (req: Request, res: Response, next: any) => {
     try {
         const collectionName = decodeURIComponent(req.params.collectionName)
         const filename = req.query.exportFilename
@@ -15,12 +14,12 @@ const getXlsxWithArtworksData = async (req: Request, res: Response, next: any) =
             selectedArtworks = Object.values(req.query.selectedArtworks)
         }
 
-        let workbook = new excelJS.Workbook()
+        const workbook = new excelJS.Workbook()
         const sheet = workbook.addWorksheet("test")
 
         const records = await Artwork.find({collectionName: collectionName})
         
-        let columnNames: Array<any> = []
+        const columnNames: Array<any> = []
         
         if(keysToInclude !== undefined) {
             Object.keys(keysToInclude).forEach((k: any) => {
@@ -43,10 +42,10 @@ const getXlsxWithArtworksData = async (req: Request, res: Response, next: any) =
         }        
         
         //cell formatting
-        sheet.columns.forEach(function (column, i) {
+        sheet.columns.forEach((column) => {
             let maxLength = 0;
             column["eachCell"]!({ includeEmpty: true }, function (cell) {
-                var columnLength = cell.value ? cell.value.toString().length : 10;
+                const columnLength = cell.value ? cell.value.toString().length : 10;
                 if (columnLength > maxLength ) {
                     maxLength = columnLength;
                 }
@@ -65,16 +64,16 @@ const getXlsxWithArtworksData = async (req: Request, res: Response, next: any) =
     }
 }
 
-const getXlsxWithCollectionData = async (req: Request, res: Response, next: any) => {
+export const getXlsxWithCollectionData = async (req: Request, res: Response, next: any) => {
     try {
-        const collectionName = await decodeURIComponent(req.params.collectionName)
-        let workbook = new excelJS.Workbook()
+        const collectionName = decodeURIComponent(req.params.collectionName)
+        const workbook = new excelJS.Workbook()
         const sheet = workbook.addWorksheet("test")
 
         const records = await Artwork.find({collectionName: collectionName})
 
-        let columnNames: Array<any> = []      
-        let keysUnique = await getAllKeys(collectionName)
+        const columnNames: Array<any> = []      
+        const keysUnique = await getAllKeys(collectionName)
         keysUnique.forEach((k: any) => {
             columnNames.push({header: k, key: k})
         })
@@ -85,10 +84,10 @@ const getXlsxWithCollectionData = async (req: Request, res: Response, next: any)
         })
         
         // //cell formatting
-        sheet.columns.forEach(function (column, i) {
+        sheet.columns.forEach((column)=>  {
             let maxLength = 0;
             column["eachCell"]!({ includeEmpty: true }, function (cell) {
-                var columnLength = cell.value ? cell.value.toString().length : 10;
+                const columnLength = cell.value ? cell.value.toString().length : 10;
                 if (columnLength > maxLength ) {
                     maxLength = columnLength;
                 }
@@ -105,9 +104,4 @@ const getXlsxWithCollectionData = async (req: Request, res: Response, next: any)
     } catch (error) {
         next(error)
     }
-}
-
-module.exports = {
-    getXlsxWithArtworksData,
-    getXlsxWithCollectionData
 }

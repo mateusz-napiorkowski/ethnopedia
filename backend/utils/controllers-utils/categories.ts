@@ -1,5 +1,5 @@
 export const getNestedCategories = ((prefix: string, subcategories: any) => {
-    let nestedCategories: Array<string> = []
+    const nestedCategories: Array<string> = []
     if(subcategories !== undefined) {
         for(const subcategory of subcategories){
             nestedCategories.push(`${prefix}${subcategory.name}`)
@@ -8,5 +8,3 @@ export const getNestedCategories = ((prefix: string, subcategories: any) => {
     }
     return nestedCategories
 })
-
-module.exports = { getNestedCategories }

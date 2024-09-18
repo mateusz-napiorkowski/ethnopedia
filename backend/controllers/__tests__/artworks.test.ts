@@ -2,11 +2,11 @@ import {describe, expect, test, jest, beforeEach} from "@jest/globals"
 import express from "express";
 import bodyParser from "body-parser";
 import request from "supertest";
+import ArtworksRouter from "../../routes/artwork";
 
 const app = express()
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-const ArtworksRouter = require("../../routes/artwork")
 const mockIsValidObjectId = jest.fn()
 const mockStartSession = jest.fn()
 jest.mock('mongoose', () => ({

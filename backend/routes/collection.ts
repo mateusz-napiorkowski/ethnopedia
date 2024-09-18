@@ -1,14 +1,14 @@
 import express from "express"
 
-const router = express.Router()
-
-const {
-    getAllCollections,
-    getCollection,
-    getArtworksInCollection,
+import {
     createCollection,
-    deleteCollections
-} = require("../controllers/collections")
+    deleteCollections,
+    getAllCollections,
+    getArtworksInCollection,
+    getCollection
+} from "../controllers/collections";
+
+const router = express.Router()
 
 router.route("/").get(getAllCollections)
 router.route("/:name").get(getCollection)
@@ -16,4 +16,4 @@ router.route("/:name/artworks").get(getArtworksInCollection)
 router.route("/create").post(createCollection)
 router.route("/delete").delete(deleteCollections)
 
-module.exports = router
+export default router;

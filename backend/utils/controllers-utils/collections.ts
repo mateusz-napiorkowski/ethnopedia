@@ -41,7 +41,7 @@ export const findMatch = (subcategories: any, nameArray: Array<string>, ruleValu
 
 export const sortRecordsByTitle = (records: any, order: any) => {
     if(order == "title-asc" || order == "title-desc") {
-        let tempArray: any = []
+        const tempArray: any = []
         records.forEach((record:any) => {
             for(const category of record.categories){
                 if(category.name == "Tytuł") {
@@ -50,7 +50,7 @@ export const sortRecordsByTitle = (records: any, order: any) => {
             }
         })
         tempArray.sort((a: any,b: any) => a[1].toUpperCase().localeCompare(b[1].toUpperCase()));
-        let sortedRecords: any = []
+        const sortedRecords: any = []
         tempArray.forEach((pair:any) => {
             sortedRecords.push(pair[0])
         })
@@ -61,5 +61,3 @@ export const sortRecordsByTitle = (records: any, order: any) => {
         }
     }
 }
-
-module.exports = { findSearchText, findMatch, sortRecordsByTitle }

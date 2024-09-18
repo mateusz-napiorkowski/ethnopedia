@@ -1,12 +1,12 @@
 import { describe, expect, test, jest, beforeEach } from "@jest/globals"
-const express = require("express")
-const request = require("supertest")
-const bodyParser = require("body-parser");
+import express from "express";
+import request from "supertest";
+import bodyParser from "body-parser";
+import CollectionsRouter from "../../routes/collection";
+
 const app = express()
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-const CollectionsRouter = require("../../routes/collection")
-
 const mockStartSession = jest.fn()
 jest.mock('mongoose', () => ({
 	startSession: () => mockStartSession()

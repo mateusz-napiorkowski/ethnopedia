@@ -1,11 +1,9 @@
 import express from "express"
 
-const router = express.Router()
+import {importData} from "../controllers/data-import";
 
-const {
-    importData
-} = require("../controllers/data-import")
+const router = express.Router()
 
 router.route("/").post(importData)
 
-module.exports = router
+export default router;

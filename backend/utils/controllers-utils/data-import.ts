@@ -6,16 +6,16 @@ export interface subData {
 }
 
 export const fillSubcategories: any = (depth: number, fields: any, allAttrs: any, header: any, recordsData: any, recordIndex: number) => {
-    let subs: any = []
+    const subs: any = []
     let deeperFields: any = []
     fields.forEach((field: any) => {
         deeperFields = []
-        header.forEach((attrName: string, elementIndex: number) => {
+        header.forEach((attrName: string) => {
             if(attrName.startsWith(field) && attrName.split(".").length === depth + 1) {
                 deeperFields.push(attrName)
             }
         });
-        let newSub: subData = {name: field.split(".").slice(-1)[0],
+        const newSub: subData = {name: field.split(".").slice(-1)[0],
             values: recordsData[recordIndex][header.indexOf(field)].toString().split(";").filter((i: any) => i !== ""),
             subcategories: [],
             isSelectable: false
@@ -27,5 +27,3 @@ export const fillSubcategories: any = (depth: number, fields: any, allAttrs: any
     });
     return subs
 }
-
-module.exports = { fillSubcategories }

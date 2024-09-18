@@ -1,30 +1,31 @@
 import { NextFunction, Request, Response } from "express"
-const Artwork = require("../models/artwork")
-const jwt = require("jsonwebtoken")
 import { subData, fillSubcategories } from "../utils/controllers-utils/data-import"
+// import jwt from "jsonwebtoken";
+import Artwork from "../models/artwork";
 
-const importData = async (req: Request, res: Response, next: NextFunction) => {
+export const importData = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const token = req.headers.authorization?.split(" ")[1]
         if (!token) return res.status(401).json({ error: 'Access denied' });
         try {
-            const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string)
+            // TODO: variable below was not used should it be removed?
+            // const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string)
             const header = req.body.importData[0]
-            let headerAttrsInArrays: any = []
-            header.forEach((attr:string, index:String) => {
+            const headerAttrsInArrays: any = []
+            header.forEach((attr:string) => {
                 headerAttrsInArrays.push(attr.split("."))
             });
             const recordsData = req.body.importData.slice(1)
             const records: Array<[]> = []
             for(const recordIndex in recordsData) {
                 const recordAttrs = recordsData[recordIndex]
-                let newRecord: any = {categories: []}
-                let depth = 1
+                const newRecord: any = {categories: []}
+                const depth = 1
                 const categories: any = newRecord.categories
                 recordAttrs.forEach((cellVal: any, attrIndex: number) => {
                     if(header[attrIndex].split(".").length === depth) {
-                        let fields: any = []
-                        header.forEach((element: any, elementIndex: number) => {
+                        const fields: any = []
+                        header.forEach((element: any) => {
                             if(element.startsWith(header[attrIndex]) && element.split(".").length === depth + 1) {
                                 fields.push(element)
                             }
@@ -44,17 +45,13 @@ const importData = async (req: Request, res: Response, next: NextFunction) => {
                 newRecord.collectionName = req.body.collectionName
                 records.push(newRecord)
             }
-            const newRecords = await Artwork.insertMany(records)
+            await Artwork.insertMany(records)
             return res.status(201)
-            } catch (error) {
+            } catch {
                 return res.status(401).json({ error: 'Access denied' });
             }
         
     } catch (error) {
         next(error)
     }
-}
-
-module.exports = {
-    importData,
 }

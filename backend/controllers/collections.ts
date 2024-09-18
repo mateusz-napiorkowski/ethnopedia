@@ -1,25 +1,23 @@
 import { NextFunction, Request, Response } from "express"
 import mongoose from "mongoose"
-import { ObjectId } from "mongodb"
 import { findSearchText, findMatch, sortRecordsByTitle } from "../utils/controllers-utils/collections"
-const Collection = require("../models/collection")
-const Category = require("../models/collection")
-const Artwork = require("../models/artwork")
-const jwt = require("jsonwebtoken")
 import { authAsyncWrapper } from "../middleware/auth"
+import Artwork from "../models/artwork";
+import CollectionCollection from "../models/collection";
 
-const getAllCollections = async (req: Request, res: Response, next: any) => {
+export const getAllCollections = async (req: Request, res: Response) => {
     const page = parseInt(req.query.page as string) || 1
     const pageSize = parseInt(req.query.pageSize as string) || 10
-    const collections = await Collection.find({})
+    const collections = await CollectionCollection.find({})
         .skip((page - 1) * pageSize)
         .limit(pageSize)
 
-    const categories = await Category.find({})
-        .skip((page - 1) * pageSize)
-        .limit(pageSize)
+    // TODO: code below was not used, should it be removed?
+    // const categories = await Category.find({})
+    //     .skip((page - 1) * pageSize)
+    //     .limit(pageSize)
 
-    const totalCollections = await Collection.countDocuments({})
+    const totalCollections = await CollectionCollection.countDocuments({})
 
     const pipeline = [
         {
@@ -34,13 +32,13 @@ const getAllCollections = async (req: Request, res: Response, next: any) => {
     ]
 
     const artworks = await Artwork.aggregate(pipeline)
-    let artworkMap = new Map()
+    const artworkMap = new Map()
 
     artworks.forEach((artwork: any) => {
         artworkMap.set(artwork._id, artwork.count)
     })
 
-    let combinedData = new Map()
+    const combinedData = new Map()
 
     collections.forEach((collection: any) => {
         combinedData.set(collection._id, {
@@ -52,7 +50,7 @@ const getAllCollections = async (req: Request, res: Response, next: any) => {
         })
     })
 
-    let combinedArray = Array.from(combinedData.values())
+    const combinedArray = Array.from(combinedData.values())
 
     res.status(200).json({
         collections: combinedArray,
@@ -62,10 +60,10 @@ const getAllCollections = async (req: Request, res: Response, next: any) => {
     })
 }
 
-const getCollection = async (req: Request, res: Response, next: NextFunction) => {
+export const getCollection = async (req: Request, res: Response, next: NextFunction) => {
     const collectionName = req.params.name
     try {
-        const collection = await Collection.findOne({ name: collectionName }).exec()
+        const collection = await CollectionCollection.findOne({ name: collectionName }).exec()
         if (!collection) {
             const err = new Error("Collection not found")
             res.status(404).json({ error: err.message })
@@ -79,7 +77,7 @@ const getCollection = async (req: Request, res: Response, next: NextFunction) =>
     }
 }
 
-const getArtworksInCollection = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+export const getArtworksInCollection = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
         const page = parseInt(req.query.page as string) || 1
         const pageSize = parseInt(req.query.pageSize as string) || 10
@@ -119,9 +117,9 @@ const getArtworksInCollection = async (req: Request, res: Response, next: NextFu
             })
         } else if(req.query.advSearch == "true") {
             /*advanced search*/
-            let rules: any = {}
+            const rules: any = {}
             for(const ruleField in req.query) {
-                if(req.query.hasOwnProperty(ruleField) && !["page", "pageSize", "sortOrder", "advSearch"].includes(ruleField)) {
+                if(req.query?.ruleField && !["page", "pageSize", "sortOrder", "advSearch"].includes(ruleField)) {
                     rules[ruleField] = req.query[ruleField]
                 }
             }
@@ -160,7 +158,7 @@ const getArtworksInCollection = async (req: Request, res: Response, next: NextFu
     }
 }
 
-const createCollection = authAsyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+export const createCollection = authAsyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     const collectionName = req.body.name
     const collectionDescription = req.body.description
     if(collectionName !== undefined && collectionDescription !== undefined) {
@@ -168,7 +166,7 @@ const createCollection = authAsyncWrapper(async (req: Request, res: Response, ne
             const session = await mongoose.startSession()
             try {
                 session.startTransaction()
-                const duplicateCollection = await Collection.findOne({name: collectionName}).exec()
+                const duplicateCollection = await CollectionCollection.findOne({name: collectionName}).exec()
                 if(duplicateCollection) {
                     await session.abortTransaction();
                     session.endSession();
@@ -176,7 +174,7 @@ const createCollection = authAsyncWrapper(async (req: Request, res: Response, ne
                     res.status(409).json({ error: err.message })
                     return next(err)
                 }
-                const newCollection = await Collection.create({name: req.body.name, description: req.body.description})
+                const newCollection = await CollectionCollection.create({name: req.body.name, description: req.body.description})
                 await session.commitTransaction();
                 session.endSession();
                 return res.status(201).json(newCollection)
@@ -198,7 +196,7 @@ const createCollection = authAsyncWrapper(async (req: Request, res: Response, ne
     return next(err)
 })
 
-const deleteCollections = authAsyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+export const deleteCollections = authAsyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     const collectionsToDelete = req.body.ids
     if(collectionsToDelete !== undefined) {
         if (Array.isArray(collectionsToDelete) && collectionsToDelete.length === 0) {
@@ -210,7 +208,7 @@ const deleteCollections = authAsyncWrapper(async (req: Request, res: Response, n
             const session = await mongoose.startSession()
             try {
                 session.startTransaction()
-                const existingCollections = await Collection.find({ _id: { $in: collectionsToDelete }}, null, { session }).exec()
+                const existingCollections = await CollectionCollection.find({ _id: { $in: collectionsToDelete }}, null, { session }).exec()
                 if (existingCollections.length !== collectionsToDelete.length) {
                     await session.abortTransaction();
                     session.endSession();
@@ -223,7 +221,7 @@ const deleteCollections = authAsyncWrapper(async (req: Request, res: Response, n
                     const deletedArtworks = await Artwork.deleteMany({collectionName: existingCollection.name}, { session }).exec()
                     deletedArtworksCount += deletedArtworks.deletedCount
                 }
-                const result = await Collection.deleteMany({ _id: { $in: collectionsToDelete } }, { session }).exec()
+                const result = await CollectionCollection.deleteMany({ _id: { $in: collectionsToDelete } }, { session }).exec()
                 
                 await session.commitTransaction()
                 session.endSession()
@@ -245,11 +243,3 @@ const deleteCollections = authAsyncWrapper(async (req: Request, res: Response, n
     res.status(400).json({ error: err.message })
     return next(err)
 })
-
-module.exports = {
-    getAllCollections,
-    getCollection,
-    getArtworksInCollection,
-    createCollection,
-    deleteCollections
-}

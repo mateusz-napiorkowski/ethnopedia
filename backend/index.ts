@@ -3,17 +3,16 @@ import express from "express"
 require("dotenv").config()
 
 const app = express()
-const cors = require("cors")
-
-const auth = require("./routes/auth")
-const artworks = require("./routes/artwork")
-const collections = require("./routes/collection")
-const categories = require("./routes/category")
-const dataExport = require("./routes/dataExport")
-const dataImport = require("./routes/dataImport")
-const errorHandler = require("./middleware/errorHandler")
-
 import connectDB from "./db/connect"
+
+import cors from "cors";
+import errorHandler from "./middleware/errorHandler";
+import auth from "./routes/auth";
+import dataImport from "./routes/dataImport";
+import artworks from "./routes/artwork";
+import collections from "./routes/collection";
+import categories from "./routes/category";
+import dataExport from "./routes/dataExport";
 
 app.use(cors())
 app.use(express.json())

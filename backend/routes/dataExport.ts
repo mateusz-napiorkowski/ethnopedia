@@ -1,13 +1,10 @@
 import express from "express"
 
-const router = express.Router()
+import {getXlsxWithArtworksData, getXlsxWithCollectionData} from "../controllers/data-export";
 
-const {
-    getXlsxWithArtworksData,
-    getXlsxWithCollectionData
-} = require("../controllers/data-export")
+const router = express.Router()
 
 router.route("/:collectionName").get(getXlsxWithArtworksData)
 router.route("/collection/:collectionName").get(getXlsxWithCollectionData)
 
-module.exports = router
+export default router;

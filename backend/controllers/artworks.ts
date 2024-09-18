@@ -1,9 +1,8 @@
 import { NextFunction, Request, Response } from "express"
 import mongoose from "mongoose"
-const Artwork = require("../models/artwork")
-const Collection = require("../models/collection")
-
 import { authAsyncWrapper } from "../middleware/auth"
+import Artwork from "../models/artwork";
+import CollectionCollection from "../models/collection";
 
 export const getArtwork = async (req: Request, res: Response, next: NextFunction) => {
     const artworkId = req.params.artworkId
@@ -32,7 +31,7 @@ export const createArtwork = authAsyncWrapper((async (req: Request, res: Respons
     const collectionName = req.body.collectionName
     if(req.body.categories !== undefined && collectionName !== undefined) {
         try {
-            const foundCollections = await Collection.find({name: collectionName}).exec()
+            const foundCollections = await CollectionCollection.find({name: collectionName}).exec()
             if (foundCollections.length !== 1) {
                 const err = new Error(`Collection with name ${collectionName} not found`)
                 res.status(404).json({ error: err.message })
@@ -88,7 +87,7 @@ export const deleteArtworks = authAsyncWrapper(async (req: Request, res: Respons
 
                 session.startTransaction()
 
-                const databaseArtworksToDeleteCounted = await Artwork.count({ _id: { $in: artworksToDelete } }, { session }).exec()
+                const databaseArtworksToDeleteCounted = await Artwork.count({ _id: { $in: artworksToDelete } }).exec()
                 if (databaseArtworksToDeleteCounted !== artworksToDelete.length) {
                     await session.abortTransaction();
                     session.endSession();

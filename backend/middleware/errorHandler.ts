@@ -1,7 +1,5 @@
-import { NextFunction, Request, Response } from "express";
-
-function errorHandler(err: Error, req: Request, res: Response, next: NextFunction) {
-    console.log(err)
+const errorHandler = (err: Error) => {
+    console.error(err)
 }
   
-module.exports = errorHandler;
+export default errorHandler
