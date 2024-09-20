@@ -160,6 +160,25 @@ describe('collections controller', () =>{
                 }
             ])
         }
+
+        test("deleteCollections should respond with status 200 and correct body", async () => {
+            mockStartSession.mockImplementation(startSessionDefaultImplementation)
+            mockCollectionFind.mockReturnValue(collectionFindDefault)
+            mockArtworkDeleteMany.mockReturnValueOnce({ exec: () => Promise.resolve({ acknowledged: true, deletedCount: 6 })})
+            mockArtworkDeleteMany.mockReturnValueOnce({ exec: () => Promise.resolve({ acknowledged: true, deletedCount: 3 })})
+            mockCollectionDeleteMany.mockReturnValue({ exec: () => Promise.resolve({ acknowledged: true, deletedCount: 2 })})
+            const payload = { ids: [ '662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc' ] }
+            const res = await request(app.use(CollectionsRouter))
+            .delete('/delete')
+            .send(payload)
+            .set('Authorization', `Bearer ${jwtToken}`)
+            .set('Content-Type', 'application/json')
+            .set('Accept', 'application/json')
+
+            expect(res.status).toBe(200)
+            expect(res.body).toMatchSnapshot()
+        })
+
         test.each([
             {
                 statusCode: 400, error: 'Incorrect request body provided', 

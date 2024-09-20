@@ -1,5 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`collections controller DELETE endpoints deleteCollections should respond with status 200 and correct body 1`] = `
+{
+  "deletedArtworksCount": 9,
+  "deletedCount": 2,
+}
+`;
+
 exports[`collections controller GET endpoints getCollection should respond with status 200 and correct body 1`] = `
 {
   "__v": 0,
