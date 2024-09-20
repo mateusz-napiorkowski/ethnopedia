@@ -29,7 +29,7 @@ export const getArtwork = async (req: Request, res: Response, next: NextFunction
 
 export const createArtwork = authAsyncWrapper((async (req: Request, res: Response, next: NextFunction) => {
     const collectionName = req.body.collectionName
-    if(req.body.categories !== undefined && collectionName !== undefined) {
+    if(req.body.categories && collectionName) {
         try {
             const foundCollections = await CollectionCollection.find({name: collectionName}).exec()
             if (foundCollections.length !== 1) {
@@ -52,7 +52,7 @@ export const createArtwork = authAsyncWrapper((async (req: Request, res: Respons
 
 export const editArtwork = authAsyncWrapper((async (req: Request, res: Response, next: NextFunction) => {
     const artworkId = req.params.artworkId
-    if(req.body.categories !== undefined && req.body.collectionName !== undefined) {
+    if(req.body.categories && req.body.collectionName) {
         try {
             const editedArtwork = await Artwork.replaceOne({_id: artworkId, collectionName: req.body.collectionName}, req.body).exec()
             if(editedArtwork.modifiedCount === 0) {
@@ -73,7 +73,7 @@ export const editArtwork = authAsyncWrapper((async (req: Request, res: Response,
 }))
 
 export const deleteArtworks = authAsyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
-    if(req.body.ids !== undefined) {
+    if(req.body.ids) {
         try {
             const session = await mongoose.startSession()
             try {

@@ -161,7 +161,7 @@ export const getArtworksInCollection = async (req: Request, res: Response, next:
 export const createCollection = authAsyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     const collectionName = req.body.name
     const collectionDescription = req.body.description
-    if(collectionName !== undefined && collectionDescription !== undefined) {
+    if(collectionName && collectionDescription) {
         try {
             const session = await mongoose.startSession()
             try {
@@ -198,7 +198,7 @@ export const createCollection = authAsyncWrapper(async (req: Request, res: Respo
 
 export const deleteCollections = authAsyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     const collectionsToDelete = req.body.ids
-    if(collectionsToDelete !== undefined) {
+    if(collectionsToDelete) {
         if (Array.isArray(collectionsToDelete) && collectionsToDelete.length === 0) {
             const err = new Error("Collections not specified")
             res.status(400).json({ error: err.message })

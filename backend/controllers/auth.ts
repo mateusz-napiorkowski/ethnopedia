@@ -12,7 +12,7 @@ export const registerUser = async (req: Request, res: Response, next: NextFuncti
     const newUsername = req.body.username
     const newFirstName = req.body.firstName
     const newPassword = req.body.password
-    if (newUsername !== undefined && newFirstName !== undefined && newPassword !== undefined) {
+    if (newUsername && newFirstName && newPassword) {
         try {
             const existingUser = await User.findOne({username: newUsername}).exec()
             if (existingUser) {
@@ -61,7 +61,7 @@ export const registerUser = async (req: Request, res: Response, next: NextFuncti
 export const loginUser = async (req: Request, res: Response, next: NextFunction) => {
     const loginUsername = req.body.username
     const loginPassword = req.body.password
-    if (loginUsername !== undefined && loginPassword !== undefined) {
+    if (loginUsername && loginPassword) {
         try {
             const user = await User.findOne({username: loginUsername}).exec()
             if (!user) {
