@@ -73,17 +73,17 @@ describe('artworks controller', () => {
         test.each([
             {
                 isValidObjectId: false, findById: undefined, artworkId: '123',
-                statusCode: 400, error: 'Invalid artwork id: 123'
+                statusCode: 400, error: 'Invalid artwork id'
             },
             {
                 isValidObjectId: true,
                 findById: {exec: () => Promise.resolve(null)},
                 artworkId: 'aaaaaaaad628570afa5357c3',
                 statusCode: 404,
-                error: "Artwork with id aaaaaaaad628570afa5357c3 not found"
+                error: "Artwork not found"
             },
             {
-                isValidObjectId: true, findById: {exec: () => Promise.reject()}, artworkId: 'aaaaaaaad628570afa5357c3',
+                isValidObjectId: true, findById: {exec: () => {throw Error()}}, artworkId: 'aaaaaaaad628570afa5357c3',
                 statusCode: 503, error: "Database unavailable"
             },
         ])(`getArtwork should respond with status $statusCode and correct error message`,
@@ -155,7 +155,7 @@ describe('artworks controller', () => {
                     categories: [{name: 'Title', values: ['Title'], subcategories: []}],
                     collectionName: 'collection'
                 },
-                create: undefined, find: {exec: () => Promise.reject()}, statusCode: 503, error: 'Database unavailable'
+                create: undefined, find: {exec: () => {throw Error()}}, statusCode: 503, error: 'Database unavailable'
             },
             {
                 payload: {
@@ -172,7 +172,7 @@ describe('artworks controller', () => {
                 create: undefined,
                 find: {exec: () => Promise.resolve([])},
                 statusCode: 404,
-                error: "Collection with name collection not found"
+                error: "Collection not found"
             }
         ])(`createArtwork should respond with status $statusCode and correct error message`,
             async ({
@@ -253,7 +253,7 @@ describe('artworks controller', () => {
                     categories: [{name: 'Title', values: ['New Title'], subcategories: []}],
                     collectionName: 'collection'
                 },
-                replaceOne: {exec: () => Promise.reject()}, statusCode: 503, error: 'Database unavailable'
+                replaceOne: {exec: () => {throw Error()}}, statusCode: 503, error: 'Database unavailable'
             },
             {
                 payload: {
