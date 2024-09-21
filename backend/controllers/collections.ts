@@ -61,19 +61,20 @@ export const getAllCollections = async (req: Request, res: Response) => {
 }
 
 export const getCollection = async (req: Request, res: Response, next: NextFunction) => {
-    const collectionName = req.params.name
     try {
+        const collectionName = req.params.name
         const collection = await CollectionCollection.findOne({ name: collectionName }).exec()
         if (!collection) {
-            const err = new Error("Collection not found")
-            res.status(404).json({ error: err.message })
-            return next(err)
+            throw new Error("Collection not found")
         }
-        return res.status(200).json(collection) 
-    } catch {
-        const err = new Error(`Database unavailable`)
-        res.status(503).json({ error: err.message })
-        return next(err)
+        res.status(200).json(collection) 
+    } catch (error) {
+        const err = error as Error
+        console.error(error)
+        if (err.message === 'Collection not found')
+            res.status(404).json({ error: err.message })
+        else
+            res.status(503).json({ error: 'Database unavailable' })
     }
 }
 
