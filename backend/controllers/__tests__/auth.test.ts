@@ -93,7 +93,7 @@ describe('auth controller', () =>{
             {payload: { username: 'user', firstName: 'user', password: 'hasl1242o2' }, statusCode: 500, error: "Password encryption error",
                 findOne: { exec: () => {return Promise.resolve(null)}}, callbackError: Error()},
             {payload: { username: 'user', firstName: 'user', password: 'hasl1242o2' }, statusCode: 503, error: "Database unavailable",
-                findOne: { exec: () => { return Promise.reject() } }, callbackError: undefined},
+                findOne: { exec: () => { throw new Error() } }, callbackError: undefined},
             {payload: { username: 'user', firstName: 'user', password: 'hasl1242o2' }, statusCode: 503, error: "Database unavailable",
                 findOne: { exec: () => {return Promise.resolve(null)}}, callbackError: undefined}
         ])('registerUser should respond with status $statusCode and correct error message', async ({payload, statusCode, error, findOne, callbackError}) => {
@@ -137,7 +137,7 @@ describe('auth controller', () =>{
             {payload: { password: 'hasl1242o2' }, statusCode: 400, error: "Incorrect request body provided",
                 findOne: undefined, callbackError: undefined, passwordCorrect: undefined},
             {payload: { username: 'user', password: 'hasl1242o2' }, statusCode: 503, error: "Database unavailable",
-                findOne: { exec: () => Promise.reject() }, callbackError: undefined, passwordCorrect: undefined},
+                findOne: { exec: () => { throw new Error() } }, callbackError: undefined, passwordCorrect: undefined},
             {payload: { username: 'user', password: 'hasl1242o2' }, statusCode: 500, error: "Internal server error",
                 findOne: existingUser, callbackError: Error(), passwordCorrect: true},
             {payload: { username: 'user', password: 'hasl1242o2' }, statusCode: 404, error: "Invalid username or password",
@@ -187,10 +187,10 @@ describe('auth controller', () =>{
         })
 
         test.each([
-            {statusCode: 400, error: `Invalid user id: ${userId}`,
+            {statusCode: 400, error: `Invalid user id`,
                 isValidObjectId: false, findByIdAndRemove: undefined},
             {statusCode: 503, error: 'Database unavailable',
-                isValidObjectId: true, findByIdAndRemove: { exec: () => Promise.reject() }},
+                isValidObjectId: true, findByIdAndRemove: { exec: () => { throw new Error() } }},
             {statusCode: 404, error: 'User not found',
                 isValidObjectId: true, findByIdAndRemove: { exec: () => Promise.resolve(null) }}
         ])('deleteUser should respond with status $statusCode and correct error message', async ({statusCode, error, isValidObjectId, findByIdAndRemove}) => {

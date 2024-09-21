@@ -47,7 +47,7 @@ export const createArtwork = authAsyncWrapper((async (req: Request, res: Respons
     }
 }))
 
-export const editArtwork = authAsyncWrapper((async (req: Request, res: Response, next: NextFunction) => {
+export const editArtwork = authAsyncWrapper((async (req: Request, res: Response) => {
     try {
         const artworkId = req.params.artworkId
         if(!req.body.categories || !req.body.collectionName)
