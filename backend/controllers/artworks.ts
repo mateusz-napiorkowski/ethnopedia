@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express"
-import mongoose from "mongoose"
+import mongoose, { ClientSession } from "mongoose"
 import { authAsyncWrapper } from "../middleware/auth"
 import Artwork from "../models/artwork";
 import CollectionCollection from "../models/collection";
@@ -71,54 +71,31 @@ export const editArtwork = authAsyncWrapper((async (req: Request, res: Response)
 
 export const deleteArtworks = authAsyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const ids = req.body.ids
-        if (!ids) {
-            throw new Error("Incorrect request body provided")        
-        }
-    } catch (error: any) {
-        console.error(error)
-        if (error.message === "Incorrect request body provided") {
-            return res.status(400).json({ error: "Incorrect request body provided" });
-        }    
-    }
-    
-    try {
+        const artworksToDeleteIds = req.body.ids
+        if (!artworksToDeleteIds)
+            throw new Error("Incorrect request body provided") 
+        if (Array.isArray(artworksToDeleteIds) && artworksToDeleteIds.length === 0)
+            throw new Error("Artworks not specified")
         const session = await mongoose.startSession()
-        try {
-            const artworksToDelete = req.body.ids
-            if (Array.isArray(artworksToDelete) && artworksToDelete.length === 0) {
-                session.endSession();
-                const err = new Error("Artworks not specified")
-                res.status(400).json({ error: err.message })
-                return next(err)
-            }
-
-            session.startTransaction()
-
-            const databaseArtworksToDeleteCounted = await Artwork.count({ _id: { $in: artworksToDelete } }).exec()
-            if (databaseArtworksToDeleteCounted !== artworksToDelete.length) {
-                await session.abortTransaction();
-                session.endSession();
-                const err = new Error("Artworks not found")
-                res.status(404).json({ error: err.message })
-                return next(err)
-            }
-            
-            const result = await Artwork.deleteMany({ _id: { $in: artworksToDelete } }, { session }).exec()
-
-            await session.commitTransaction();
-            session.endSession();
-            return res.status(200).json(result)
-        } catch {
-            await session.abortTransaction();
-            session.endSession();
-            const err = new Error(`Couldn't complete database transaction`)
-            res.status(503).json({ error: err.message })
-            return next(err)
+        const transactionFunc = async (session: ClientSession) => {
+            const databaseArtworksToDeleteCounted = await Artwork.countDocuments({ _id: { $in: artworksToDeleteIds }}, { session }).exec()
+            if (databaseArtworksToDeleteCounted !== artworksToDeleteIds.length)
+                throw new Error("Artworks not found")
+            const result = await Artwork.deleteMany({ _id: { $in: artworksToDeleteIds } }, { session }).exec()
+            res.status(200).json(result)
         }
-    } catch {
-        const err = new Error(`Couldn't establish session for database transaction`)
-        res.status(503).json({ error: err.message })
-        return next(err)
-    } 
+        await session.withTransaction(transactionFunc);
+        session.endSession()
+    } catch (error) {
+        const err = error as Error
+        console.error(error)
+        if (err.message === "Incorrect request body provided")
+            res.status(400).json({ error: err.message })
+        else if (err.message === "Artworks not specified")
+            res.status(400).json({ error: err.message }) 
+        else if (err.message === "Artworks not found")
+            res.status(404).json({ error: err.message })
+        else 
+            res.status(503).json( { error: "Database unavailable" })    
+    }  
 })

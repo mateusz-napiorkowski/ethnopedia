@@ -3,6 +3,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import request from "supertest";
 import ArtworksRouter from "../../routes/artwork";
+import { startSession } from "mongoose";
 
 const app = express()
 app.use(bodyParser.json());
@@ -17,14 +18,14 @@ jest.mock('mongoose', () => ({
 const mockFindById = jest.fn()
 const mockCreate = jest.fn()
 const mockReplaceOne = jest.fn()
-const mockCount = jest.fn()
+const mockCountDocuments = jest.fn()
 const mockDeleteMany = jest.fn()
 
 jest.mock("../../models/artwork", () => ({
     findById: () => mockFindById(),
     create: () => mockCreate(),
     replaceOne: () => mockReplaceOne(),
-    count: () => mockCount(),
+    countDocuments: () => mockCountDocuments(),
     deleteMany: () => mockDeleteMany()
 }))
 
@@ -285,16 +286,17 @@ describe('artworks controller', () => {
     })
 
     describe('DELETE endpoints', () => {
-        const startSessionDefaultImplementation = () => Promise.resolve({
-            startTransaction: jest.fn(),
-            commitTransaction: jest.fn(),
-            abortTransaction: jest.fn(),
-            endSession: jest.fn()
+
+        const startSessionDefaultReturnValue = Promise.resolve({
+            withTransaction: (async (transactionFunc: Function) => {
+                await transactionFunc()
+            }),
+            endSession: jest.fn()      
         })
 
         test("deleteArtworks should respond with status 200 and correct body", async () => {
-            mockStartSession.mockImplementation(startSessionDefaultImplementation)
-            mockCount.mockReturnValue({
+            mockStartSession.mockImplementation(() => startSessionDefaultReturnValue)
+            mockCountDocuments.mockReturnValue({
                 exec: () => Promise.resolve(2)
             })
             mockDeleteMany.mockReturnValue({
@@ -313,49 +315,47 @@ describe('artworks controller', () => {
             expect(res.body).toMatchSnapshot()
         })
 
-
         test.each([
             {
                 payload: {},
-                startSession: () => {
-                },
-                count: undefined, deleteMany: undefined,
+                startSession: () => startSessionDefaultReturnValue,
+                countDocuments: undefined, deleteMany: undefined,
                 statusCode: 400, error: 'Incorrect request body provided'
             },
             {
                 payload: {ids: ['662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc']},
-                startSession: () => Promise.reject(),
-                count: undefined, deleteMany: undefined,
-                statusCode: 503, error: `Couldn't establish session for database transaction`
+                startSession: () => {throw Error()},
+                countDocuments: undefined, deleteMany: undefined,
+                statusCode: 503, error: `Database unavailable`
             },
             {
                 payload: {ids: []},
-                startSession: startSessionDefaultImplementation,
-                count: undefined, deleteMany: undefined,
+                startSession: () => startSessionDefaultReturnValue,
+                countDocuments: undefined, deleteMany: undefined,
                 statusCode: 400, error: "Artworks not specified"
             },
             {
                 payload: {ids: ['662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc']},
-                startSession: startSessionDefaultImplementation,
-                count: {exec: () => Promise.reject()}, deleteMany: undefined,
-                statusCode: 503, error: "Couldn't complete database transaction"
+                startSession: () => startSessionDefaultReturnValue,
+                countDocuments: {exec: () => {throw Error()}}, deleteMany: undefined,
+                statusCode: 503, error: "Database unavailable"
             },
             {
                 payload: {ids: ['662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc']},
-                startSession: startSessionDefaultImplementation,
-                count: {exec: () => Promise.resolve(2)}, deleteMany: {exec: () => Promise.reject()},
-                statusCode: 503, error: "Couldn't complete database transaction"
+                startSession: () => startSessionDefaultReturnValue,
+                countDocuments: {exec: () => Promise.resolve(2)}, deleteMany: {exec: () => {throw Error()}},
+                statusCode: 503, error: "Database unavailable"
             },
             {
                 payload: {ids: ['662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc']},
-                startSession: startSessionDefaultImplementation,
-                count: {exec: () => Promise.resolve(1)}, deleteMany: undefined,
+                startSession: () => startSessionDefaultReturnValue,
+                countDocuments: {exec: () => Promise.resolve(1)}, deleteMany: undefined,
                 statusCode: 404, error: "Artworks not found"
             },
         ])(`deleteArtworks should respond with status $statusCode and correct error message`,
-            async ({payload, startSession, count, deleteMany, statusCode, error}) => {
-                mockStartSession.mockImplementation(startSession)
-                mockCount.mockReturnValue(count)
+            async ({payload, startSession, countDocuments, deleteMany, statusCode, error}) => {
+                mockStartSession.mockImplementation(startSession)       
+                mockCountDocuments.mockReturnValue(countDocuments)
                 mockDeleteMany.mockReturnValue(deleteMany)
 
                 const res = await request(app)
