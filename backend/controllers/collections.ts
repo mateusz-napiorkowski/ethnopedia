@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express"
-import mongoose from "mongoose"
+import mongoose, { ClientSession } from "mongoose"
 import { findSearchText, findMatch, sortRecordsByTitle } from "../utils/controllers-utils/collections"
 import { authAsyncWrapper } from "../middleware/auth"
 import Artwork from "../models/artwork";
@@ -162,39 +162,28 @@ export const getArtworksInCollection = async (req: Request, res: Response, next:
 export const createCollection = authAsyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     const collectionName = req.body.name
     const collectionDescription = req.body.description
-    if(collectionName && collectionDescription) {
-        try {
-            const session = await mongoose.startSession()
-            try {
-                session.startTransaction()
-                const duplicateCollection = await CollectionCollection.findOne({name: collectionName}).exec()
-                if(duplicateCollection) {
-                    await session.abortTransaction();
-                    session.endSession();
-                    const err = new Error(`Collection with provided name already exists`)
-                    res.status(409).json({ error: err.message })
-                    return next(err)
-                }
-                const newCollection = await CollectionCollection.create({name: req.body.name, description: req.body.description})
-                await session.commitTransaction();
-                session.endSession();
-                return res.status(201).json(newCollection)
-            } catch {
-                await session.abortTransaction();
-                session.endSession();
-                const err = new Error(`Database unavailable`)
-                res.status(503).json({ error: err.message })
-                return next(err)
-            }
-        } catch {
-            const err = new Error(`Couldn't establish session for database transaction`)
-            res.status(503).json({ error: err.message })
-            return next(err)
-        }
-    } 
-    const err = new Error(`Incorrect request body provided`)
-    res.status(400).json({ error: err.message })
-    return next(err)
+    try {
+        if(!collectionName || !collectionDescription)
+            throw new Error("Incorrect request body provided")
+        const session = await mongoose.startSession()
+        await session.withTransaction(async (session: ClientSession) => {
+            const duplicateCollection = await CollectionCollection.findOne({name: collectionName}, null, {session}).exec()
+            if(duplicateCollection)
+                throw new Error("Collection with provided name already exists")
+            const newCollection = await CollectionCollection.create({name: req.body.name, description: req.body.description}, {session})
+            res.status(201).json(newCollection)
+        })
+        session.endSession()
+    } catch(error) {
+        const err = error as Error
+        console.error(error)
+        if (err.message === "Incorrect request body provided")
+            res.status(400).json({ error: err.message })
+        else if (err.message === "Collection with provided name already exists")
+            res.status(409).json({ error: err.message })
+        else 
+            res.status(503).json( { error: "Database unavailable" })
+    }
 })
 
 export const deleteCollections = authAsyncWrapper(async (req: Request, res: Response, next: NextFunction) => {

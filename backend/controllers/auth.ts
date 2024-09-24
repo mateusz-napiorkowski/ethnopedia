@@ -18,8 +18,9 @@ export const registerUser = async (req: Request, res: Response) => {
         const existingUser = await User.findOne({username: newUsername}).exec()
         if (existingUser)
             throw new Error("User already exists")
-
-        const hashCallback = async (err: Error, hashedPassword: string) => {   
+        
+        const saltRounds = 10
+        return bcrypt.hash(newPassword, saltRounds, async (err: Error, hashedPassword: string) => {   
             if (err) {
                 // throw new Error("Password encryption error")
                 console.error(err)
@@ -41,9 +42,7 @@ export const registerUser = async (req: Request, res: Response) => {
                 console.error(error)
                 res.status(503).json({ error: `Database unavailable` })       
             }
-        }
-        const saltRounds = 10
-        return bcrypt.hash(newPassword, saltRounds, hashCallback)
+        })
     } catch (error) {
         const err = error as Error
         console.error(error)
@@ -69,7 +68,7 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
         if (!user)
             throw new Error("Invalid username or password")
 
-        const compareCallback = (err: Error, validPassword: string) => {
+        return bcrypt.compare(loginPassword, user.password, (err: Error, validPassword: string) => {
             if (err) {
                 throw new Error("Internal server error")
             }
@@ -80,8 +79,7 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
                 process.env.ACCESS_TOKEN_SECRET,
                 {expiresIn: process.env.EXPIRATION_TIME})
             return res.status(200).json({token})
-        }
-        return bcrypt.compare(loginPassword, user.password, compareCallback)
+        })
     } catch (error) {
         const err = error as Error
         console.error(error)

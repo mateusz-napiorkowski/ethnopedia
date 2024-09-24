@@ -45,6 +45,12 @@ describe('collections controller', () =>{
         abortTransaction: jest.fn(),
         endSession: jest.fn()
     })
+    const startSessionDefaultReturnValue = Promise.resolve({
+        withTransaction: (async (transactionFunc: Function) => {
+            await transactionFunc()
+        }),
+        endSession: jest.fn()      
+    })
     describe('GET endpoints', () =>{
         test("getCollection should respond with status 200 and correct body", async () => {
             mockCollectionFindOne.mockReturnValue({
@@ -85,7 +91,7 @@ describe('collections controller', () =>{
             __v: 0
         })
         test("createCollection should respond with status 201 and correct body", async () => {
-            mockStartSession.mockImplementation(startSessionDefaultImplementation)
+            mockStartSession.mockImplementation(() => startSessionDefaultReturnValue)
             mockCollectionFindOne.mockReturnValue({ exec: () => Promise.resolve(null) })
             mockCollectionCreate.mockReturnValue(collectionPromise)
             const payload = { name: 'collection', description: 'collection description' }
@@ -103,19 +109,19 @@ describe('collections controller', () =>{
 
         test.each([
             {payload: {}, statusCode: 400,
-                error: 'Incorrect request body provided', findOne: undefined, startSession: startSessionDefaultImplementation}, 
+                error: 'Incorrect request body provided', findOne: undefined, startSession: () => startSessionDefaultReturnValue}, 
             {payload: { name: 'collection' }, statusCode: 400,
-                error: 'Incorrect request body provided', findOne: undefined, startSession: startSessionDefaultImplementation},
+                error: 'Incorrect request body provided', findOne: undefined, startSession: () => startSessionDefaultReturnValue},
             {payload: { description: 'collection description' }, statusCode: 400,
-                error: 'Incorrect request body provided', findOne: undefined, startSession: startSessionDefaultImplementation},
+                error: 'Incorrect request body provided', findOne: undefined, startSession: () => startSessionDefaultReturnValue},
             {payload: { name: 'collection', description: 'collection description' }, statusCode: 503,
-                error: "Couldn't establish session for database transaction", findOne: undefined, startSession: () => {throw Error()}},
+                error: "Database unavailable", findOne: undefined, startSession: () => {throw Error()}},
             {payload: { name: 'collection', description: 'collection description' }, statusCode: 503,
-                error: 'Database unavailable', findOne: { exec: () => {throw Error()} }, startSession: startSessionDefaultImplementation},
+                error: 'Database unavailable', findOne: { exec: () => {throw Error()} }, startSession: () => startSessionDefaultReturnValue},
             {payload: { name: 'collection', description: 'collection description' }, statusCode: 409,
-                error: 'Collection with provided name already exists', findOne: { exec: () => collectionPromise }, startSession: startSessionDefaultImplementation},
+                error: 'Collection with provided name already exists', findOne: { exec: () => collectionPromise }, startSession: () => startSessionDefaultReturnValue},
             {payload: { name: 'collection', description: 'collection description' }, statusCode: 503,
-                error: 'Database unavailable', findOne: { exec: () => Promise.resolve(null) }, startSession: startSessionDefaultImplementation}
+                error: 'Database unavailable', findOne: { exec: () => Promise.resolve(null) }, startSession: () => startSessionDefaultReturnValue}
         ])('createCollection should respond with status $statusCode and correct error message', async ({payload, statusCode, error, findOne, startSession}) => {
             mockStartSession.mockImplementation(startSession)
             mockCollectionFindOne.mockReturnValue(findOne)

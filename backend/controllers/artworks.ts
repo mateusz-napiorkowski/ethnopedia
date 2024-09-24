@@ -77,14 +77,13 @@ export const deleteArtworks = authAsyncWrapper(async (req: Request, res: Respons
         if (Array.isArray(artworksToDeleteIds) && artworksToDeleteIds.length === 0)
             throw new Error("Artworks not specified")
         const session = await mongoose.startSession()
-        const transactionFunc = async (session: ClientSession) => {
+        await session.withTransaction(async (session: ClientSession) => {
             const databaseArtworksToDeleteCounted = await Artwork.countDocuments({ _id: { $in: artworksToDeleteIds }}, { session }).exec()
             if (databaseArtworksToDeleteCounted !== artworksToDeleteIds.length)
                 throw new Error("Artworks not found")
             const result = await Artwork.deleteMany({ _id: { $in: artworksToDeleteIds } }, { session }).exec()
             res.status(200).json(result)
-        }
-        await session.withTransaction(transactionFunc);
+        });
         session.endSession()
     } catch (error) {
         const err = error as Error
