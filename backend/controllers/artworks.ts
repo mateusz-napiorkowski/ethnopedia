@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express"
+import { Request, Response } from "express"
 import mongoose, { ClientSession } from "mongoose"
 import { authAsyncWrapper } from "../middleware/auth"
 import Artwork from "../models/artwork";
@@ -69,7 +69,7 @@ export const editArtwork = authAsyncWrapper((async (req: Request, res: Response)
     }
 }))
 
-export const deleteArtworks = authAsyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+export const deleteArtworks = authAsyncWrapper(async (req: Request, res: Response) => {
     try {
         const artworksToDeleteIds = req.body.ids
         if (!artworksToDeleteIds)

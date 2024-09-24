@@ -2,7 +2,7 @@ import mongoose from "mongoose"
 
 import {authAsyncWrapper} from "../middleware/auth"
 
-import {NextFunction, Request, Response} from "express"
+import { Request, Response} from "express"
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcrypt")
 import User from "../models/user";
@@ -57,7 +57,7 @@ export const registerUser = async (req: Request, res: Response) => {
     }  
 }
 
-export const loginUser = async (req: Request, res: Response, next: NextFunction) => {
+export const loginUser = async (req: Request, res: Response) => {
     const loginUsername = req.body.username
     const loginPassword = req.body.password
     try {
@@ -94,7 +94,7 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
     }   
 }
 
-export const deleteUser = authAsyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+export const deleteUser = authAsyncWrapper(async (req: Request, res: Response) => {
     try {
         const userId = req.params.userId
         if (!mongoose.isValidObjectId(userId))

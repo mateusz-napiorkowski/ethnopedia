@@ -39,12 +39,6 @@ describe('collections controller', () =>{
     beforeEach(() => {
 		jest.resetAllMocks()
 	})
-    const startSessionDefaultImplementation = () => Promise.resolve({
-        startTransaction: jest.fn(),
-        commitTransaction: jest.fn(),
-        abortTransaction: jest.fn(),
-        endSession: jest.fn()
-    })
     const startSessionDefaultReturnValue = Promise.resolve({
         withTransaction: (async (transactionFunc: Function) => {
             await transactionFunc()
@@ -168,7 +162,7 @@ describe('collections controller', () =>{
         }
 
         test("deleteCollections should respond with status 200 and correct body", async () => {
-            mockStartSession.mockImplementation(startSessionDefaultImplementation)
+            mockStartSession.mockImplementation(() => startSessionDefaultReturnValue)
             mockCollectionFind.mockReturnValue(collectionFindDefault)
             mockArtworkDeleteMany.mockReturnValueOnce({ exec: () => Promise.resolve({ acknowledged: true, deletedCount: 6 })})
             mockArtworkDeleteMany.mockReturnValueOnce({ exec: () => Promise.resolve({ acknowledged: true, deletedCount: 3 })})
@@ -189,7 +183,7 @@ describe('collections controller', () =>{
             {
                 statusCode: 400, error: 'Incorrect request body provided', 
                 payload: {},
-                startSession: startSessionDefaultImplementation,
+                startSession: () => startSessionDefaultReturnValue,
                 collectionFind: collectionFindDefault,
                 artworkDeleteMany: { exec: () => Promise.resolve({ acknowledged: true, deletedCount: 6 })},
                 collectionDeleteMany: { exec: () => Promise.resolve({ acknowledged: true, deletedCount: 2 })}
@@ -197,13 +191,13 @@ describe('collections controller', () =>{
             {   
                 statusCode: 400, error: "Collections not specified",
                 payload: { ids: [] },
-                startSession: startSessionDefaultImplementation,
+                startSession: () => startSessionDefaultReturnValue,
                 collectionFind: collectionFindDefault,
                 artworkDeleteMany: { exec: () => Promise.resolve({ acknowledged: true, deletedCount: 6 })},
                 collectionDeleteMany: { exec: () => Promise.resolve({ acknowledged: true, deletedCount: 2 })}
             },
             {
-                statusCode: 503, error: "Couldn't establish session for database transaction",
+                statusCode: 503, error: "Database unavailable",
                 payload: { ids: [ '662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc' ] },
                 startSession: () => {throw Error()}, collectionFind: collectionFindDefault,
                 artworkDeleteMany: { exec: () => Promise.resolve({ acknowledged: true, deletedCount: 6 })},
@@ -212,22 +206,22 @@ describe('collections controller', () =>{
             {   
                 payload: { ids: [ '662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc' ] },
                 statusCode: 404, error: "Collections not found",
-                startSession: startSessionDefaultImplementation, collectionFind: collectionFindIncomplete,
+                startSession: () => startSessionDefaultReturnValue, collectionFind: collectionFindIncomplete,
                 artworkDeleteMany: { exec: () => Promise.resolve({ acknowledged: true, deletedCount: 6 })},
                 collectionDeleteMany: { exec: () => Promise.resolve({ acknowledged: true, deletedCount: 2 })}},
             {payload: { ids: [ '662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc' ] }, statusCode: 503,
-                error: `Couldn't complete database transaction`,
-                startSession: startSessionDefaultImplementation, collectionFind: () => {throw Error()},
+                error: `Database unavailable`,
+                startSession: () => startSessionDefaultReturnValue, collectionFind: () => {throw Error()},
                 artworkDeleteMany: { exec: () => Promise.resolve({ acknowledged: true, deletedCount: 6 })},
                 collectionDeleteMany: { exec: () => Promise.resolve({ acknowledged: true, deletedCount: 2 })}},
             {payload: { ids: [ '662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc' ] }, statusCode: 503,
-                error: `Couldn't complete database transaction`,
-                startSession: startSessionDefaultImplementation, collectionFind: collectionFindDefault,
+                error: `Database unavailable`,
+                startSession: () => startSessionDefaultReturnValue, collectionFind: collectionFindDefault,
                 artworkDeleteMany: {exec: () => {throw Error()}},
                 collectionDeleteMany: { exec: () => Promise.resolve({ acknowledged: true, deletedCount: 2 })}},
             {payload: { ids: [ '662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc' ] }, statusCode: 503,
-                error: `Couldn't complete database transaction`,
-                startSession: startSessionDefaultImplementation, collectionFind: collectionFindDefault,
+                error: `Database unavailable`,
+                startSession: () => startSessionDefaultReturnValue, collectionFind: collectionFindDefault,
                 artworkDeleteMany: { exec: () => Promise.resolve({ acknowledged: true, deletedCount: 6 })},
                 collectionDeleteMany: { exec: () => {throw Error()}}},
         ])('deleteCollections should respond with status $statusCode and correct error message', async ({statusCode, error, payload, startSession, collectionFind, artworkDeleteMany, collectionDeleteMany}) => {
@@ -235,6 +229,7 @@ describe('collections controller', () =>{
             mockCollectionFind.mockReturnValue(collectionFind)
             mockArtworkDeleteMany.mockReturnValue(artworkDeleteMany)
             mockCollectionDeleteMany.mockReturnValue(collectionDeleteMany)
+
             const res = await request(app.use(CollectionsRouter))
             .delete('/delete')
             .send(payload)
