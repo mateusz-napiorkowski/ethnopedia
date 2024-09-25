@@ -30,6 +30,6 @@ export const importData = authAsyncWrapper(async (req: Request, res: Response) =
         else if (err.message === `Error preparing data for database insertion`)
             res.status(500).json({ error: err.message })
         else
-            res.status(503).json({ error: `Database unavailable` });
+            res.status(503).json({ error: `Database unavailable` })
     }
 })
