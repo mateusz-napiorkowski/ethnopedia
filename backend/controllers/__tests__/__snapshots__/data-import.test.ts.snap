@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`artworks controller POST endpoints importData should respond with status 201 and correct body 1`] = `
+exports[`data-import controller POST endpoints importData should respond with status 201 and correct body 1`] = `
 [
   {
     "__v": 0,

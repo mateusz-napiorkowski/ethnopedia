@@ -35,24 +35,24 @@ const findValue: any = (subcategories: any, keySplit: any) => {
     return ""
 }
 
-const getNestedKeys = ((prefix: string, subcategories: any) => {
+const getNestedCategories = ((prefix: string, subcategories: any) => {
     const nestedCategories: Array<string> = []
     if(subcategories !== undefined) {
         for(const subcategory of subcategories){
             nestedCategories.push(`${prefix}${subcategory.name}`)
-            nestedCategories.push(...getNestedKeys(`${prefix}${subcategory.name}.`, subcategory.subcategories))
+            nestedCategories.push(...getNestedCategories(`${prefix}${subcategory.name}.`, subcategory.subcategories))
         }
     }  
     return nestedCategories
 })
 
-export const getAllKeys = async (collectionName: any) => {
+export const getAllCategories = async (collectionName: any) => {
     const records = await Artwork.find({ collectionName: collectionName })
     const allCategories: Array<string> = []
     records.forEach((record:any) => {
         for(const category of record.categories){
             allCategories.push(category.name)
-            allCategories.push(...getNestedKeys(`${category.name}.`, category.subcategories))
+            allCategories.push(...getNestedCategories(`${category.name}.`, category.subcategories))
         }
     });
     const allCategoriesUnique = allCategories.filter((value, index, array) => {

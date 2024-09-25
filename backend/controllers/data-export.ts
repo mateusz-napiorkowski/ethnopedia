@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
-import excelJS from "exceljs"
+import excelJS, { ValueType } from "exceljs"
 import Artwork from "../models/artwork";
-import { fillRow, getAllKeys } from "../utils/controllers-utils/data-export"
+import { fillRow, getAllCategories } from "../utils/controllers-utils/data-export"
 
 export const getXlsxWithArtworksData = async (req: Request, res: Response, next: any) => {
     try {
@@ -58,7 +58,7 @@ export const getXlsxWithArtworksData = async (req: Request, res: Response, next:
 
         await workbook.xlsx.write(res)
         
-        res.end()
+        res.status(200).end()
     } catch (error) {
         next(error)
     }
@@ -66,21 +66,16 @@ export const getXlsxWithArtworksData = async (req: Request, res: Response, next:
 
 export const getXlsxWithCollectionData = async (req: Request, res: Response, next: any) => {
     try {
-        const collectionName = decodeURIComponent(req.params.collectionName)
+        const collectionName = req.params.collectionName
         const workbook = new excelJS.Workbook()
-        const sheet = workbook.addWorksheet("test")
+        const sheet = workbook.addWorksheet(collectionName)
 
-        const records = await Artwork.find({collectionName: collectionName})
+        const columnNames = await getAllCategories(collectionName)     
+        sheet.columns = columnNames.map((name :string) => {return {header: name, key: name}})
 
-        const columnNames: Array<any> = []      
-        const keysUnique = await getAllKeys(collectionName)
-        keysUnique.forEach((k: any) => {
-            columnNames.push({header: k, key: k})
-        })
-        sheet.columns = columnNames
-
+        const records = await Artwork.find({collectionName: collectionName}).exec()
         records.forEach((record: any) => {
-            sheet.addRow(fillRow(keysUnique, record.categories))         
+            sheet.addRow(fillRow(columnNames, record.categories))         
         })
         
         // //cell formatting
@@ -96,11 +91,11 @@ export const getXlsxWithCollectionData = async (req: Request, res: Response, nex
         });
         
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        res.setHeader("Content-Disposition", "attachment; filename=" + "test.xlsx");
+        res.setHeader("Content-Disposition", "attachment");
 
         await workbook.xlsx.write(res)
         
-        res.end()
+        res.status(200).end()
     } catch (error) {
         next(error)
     }
