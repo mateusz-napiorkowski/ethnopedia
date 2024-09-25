@@ -8,6 +8,11 @@ const app = express()
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
+const mockStartSession = jest.fn()
+jest.mock('mongoose', () => ({
+    startSession: () => mockStartSession()
+}))
+
 const mockPrepRecords = jest.fn()
 jest.mock("../../utils/controllers-utils/data-import", () => ({
     prepRecords: () => mockPrepRecords()
@@ -37,9 +42,19 @@ describe('artworks controller', () => {
         app.use(DataImportRouter)
     })
 
+
     describe('POST endpoints', () => {
         const artworkId = "66ce0bf156199c1b8df5db7d"
+        const startSessionDefaultReturnValue = Promise.resolve({
+            withTransaction: (async (transactionFunc: Function) => {
+                await transactionFunc()
+            }),
+            endSession: jest.fn()      
+        })
+
+        
         test("importData should respond with status 201 and correct body", async () => {
+            mockStartSession.mockImplementation(() => startSessionDefaultReturnValue)
             mockPrepRecords.mockImplementation(() => {})
             mockFind.mockReturnValue({exec: () => Promise.resolve([
                 {
@@ -79,35 +94,55 @@ describe('artworks controller', () => {
             {
                 payload: {},
                 statusCode: 400, error: 'Incorrect request body provided',
+                startSession: () => startSessionDefaultReturnValue,
                 find: undefined,
                 prepRecords: () => []
             },
             {
                 payload: {collectionName: 'collection'},
                 statusCode: 400, error: 'Incorrect request body provided',
+                startSession: () => startSessionDefaultReturnValue,
                 find: undefined,
                 prepRecords: () => []
             },
             {
                 payload: {importData: [["Title"], ["An artwork title"]]},
                 statusCode: 400, error: 'Incorrect request body provided',
+                startSession: () => startSessionDefaultReturnValue,
                 find: undefined,
                 prepRecords: () => []
             },
             {
                 payload: {importData: [["Title"]], collectionName: 'collection'},
                 statusCode: 400, error: 'Incorrect request body provided',
+                startSession: () => startSessionDefaultReturnValue,
                 find: undefined,
                 prepRecords: () => []
             },
             {
                 payload: {importData: [["Title"], ["An artwork title"]],collectionName: 'collection'},
+                statusCode: 503, error: 'Database unavailable',
+                startSession: () => startSessionDefaultReturnValue,
+                find: () => {throw Error()},
+                prepRecords: () => [] 
+            },
+            {
+                payload: {importData: [["Title"], ["An artwork title"]],collectionName: 'collection'},
+                statusCode: 503, error: 'Database unavailable',
+                startSession: () => {throw Error()},
+                find: undefined,
+                prepRecords: () => [] 
+            },
+            {
+                payload: {importData: [["Title"], ["An artwork title"]],collectionName: 'collection'},
                 statusCode: 404, error: 'Collection not found',
+                startSession: () => startSessionDefaultReturnValue,
                 find: {exec: () => Promise.resolve([])},
                 prepRecords: () => [ { categories: [ { name: 'Title', values: [ 'An artwork title' ], subcategories: [] } ], collectionName: 'collection' } ] 
             },
             {
                 payload: {importData: [["Title"], ["An artwork title"]],collectionName: 'collection'},
+                startSession: () => startSessionDefaultReturnValue,
                 statusCode: 500, error: 'Error preparing data for database insertion',
                 find: {exec: () => Promise.resolve([
                     {
@@ -121,6 +156,7 @@ describe('artworks controller', () => {
             },
             {
                 payload: {importData: [["Title"], ["An artwork title"]],collectionName: 'collection'},
+                startSession: () => startSessionDefaultReturnValue,
                 statusCode: 503, error: 'Database unavailable',
                 find: {exec: () => Promise.resolve([
                     {
@@ -133,7 +169,8 @@ describe('artworks controller', () => {
                 prepRecords: () => [ { categories: [ { name: 'Title', values: [ 'An artwork title' ], subcategories: [] } ], collectionName: 'collection' } ] 
             },
         ])(`importData should respond with status $statusCode and correct error message`,
-            async ({ payload, statusCode, error, find, prepRecords }) => {
+            async ({ payload, statusCode, error, startSession, find, prepRecords }) => {
+                mockStartSession.mockImplementation(startSession)
                 mockPrepRecords.mockImplementation(prepRecords)
                 mockFind.mockReturnValue(find)
                 mockInsertMany.mockImplementation(() => {throw Error()})
