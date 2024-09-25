@@ -3,7 +3,6 @@ import express from "express";
 import bodyParser from "body-parser";
 import request from "supertest";
 import ArtworksRouter from "../../routes/artwork";
-import { startSession } from "mongoose";
 
 const app = express()
 app.use(bodyParser.json());

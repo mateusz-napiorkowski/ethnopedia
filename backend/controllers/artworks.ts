@@ -43,7 +43,7 @@ export const createArtwork = authAsyncWrapper((async (req: Request, res: Respons
         else if(err.message === `Collection not found`)
             res.status(404).json({ error: err.message })
         else
-            res.status(503).json({ error: `Database unavailable` });
+            res.status(503).json({ error: `Database unavailable` })
     }
 }))
 

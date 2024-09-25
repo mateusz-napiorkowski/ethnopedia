@@ -1,57 +1,30 @@
-import { NextFunction, Request, Response } from "express"
-import { subData, fillSubcategories } from "../utils/controllers-utils/data-import"
-// import jwt from "jsonwebtoken";
+import { Request, Response } from "express"
 import Artwork from "../models/artwork";
+import { authAsyncWrapper } from "../middleware/auth"
+import { prepRecords } from "../utils/controllers-utils/data-import";
+import CollectionCollection from "../models/collection";
 
-export const importData = async (req: Request, res: Response, next: NextFunction) => {
+export const importData = authAsyncWrapper(async (req: Request, res: Response) => {
     try {
-        const token = req.headers.authorization?.split(" ")[1]
-        if (!token) return res.status(401).json({ error: 'Access denied' });
-        try {
-            // TODO: variable below was not used should it be removed?
-            // const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string)
-            const header = req.body.importData[0]
-            const headerAttrsInArrays: any = []
-            header.forEach((attr:string) => {
-                headerAttrsInArrays.push(attr.split("."))
-            });
-            const recordsData = req.body.importData.slice(1)
-            const records: Array<[]> = []
-            for(const recordIndex in recordsData) {
-                const recordAttrs = recordsData[recordIndex]
-                const newRecord: any = {categories: []}
-                const depth = 1
-                const categories: any = newRecord.categories
-                recordAttrs.forEach((cellVal: any, attrIndex: number) => {
-                    if(header[attrIndex].split(".").length === depth) {
-                        const fields: any = []
-                        header.forEach((element: any) => {
-                            if(element.startsWith(header[attrIndex]) && element.split(".").length === depth + 1) {
-                                fields.push(element)
-                            }
-                        });
-                        const newCaterory: subData = {
-                            name: header[attrIndex], 
-                            values: recordAttrs[attrIndex].toString().split(";").filter((i: any) => i !== ""),
-                            subcategories: [],
-                            isSelectable: false
-                        }
-                        if(fields.length !== 0) {
-                            newCaterory.subcategories = fillSubcategories(depth + 1, fields, recordAttrs, header, recordsData, recordIndex)
-                        }
-                        categories.push(newCaterory)
-                    }
-                });
-                newRecord.collectionName = req.body.collectionName
-                records.push(newRecord)
-            }
-            await Artwork.insertMany(records)
-            return res.status(201)
-            } catch {
-                return res.status(401).json({ error: 'Access denied' });
-            }
-        
+        if(!req.body.importData || req.body.importData.length < 2 || !req.body.collectionName )
+            throw new Error("Incorrect request body provided")
+        const collectionName = req.body.collectionName
+        const foundCollections = await CollectionCollection.find({name: collectionName}).exec()
+        if (foundCollections.length !== 1)
+            throw new Error(`Collection not found`)
+        const records = prepRecords(req.body.importData, collectionName)
+        const result = await Artwork.insertMany(records)
+        return res.status(201).json(result)
     } catch (error) {
-        next(error)
+        const err = error as Error
+        console.error(error)
+        if (err.message === `Incorrect request body provided`)
+            res.status(400).json({ error: err.message })
+        else if (err.message === `Collection not found`)
+            res.status(404).json({ error: err.message })
+        else if (err.message === `Error preparing data for database insertion`)
+            res.status(500).json({ error: err.message })
+        else
+            res.status(503).json({ error: `Database unavailable` });
     }
-}
+})

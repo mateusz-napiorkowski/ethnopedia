@@ -12,11 +12,6 @@ export const getAllCollections = async (req: Request, res: Response) => {
         .skip((page - 1) * pageSize)
         .limit(pageSize)
 
-    // TODO: code below was not used, should it be removed?
-    // const categories = await Category.find({})
-    //     .skip((page - 1) * pageSize)
-    //     .limit(pageSize)
-
     const totalCollections = await CollectionCollection.countDocuments({})
 
     const pipeline = [
@@ -204,7 +199,7 @@ export const deleteCollections = authAsyncWrapper(async (req: Request, res: Resp
                 deletedArtworksCount += deletedArtworks.deletedCount
             }
             const result = await CollectionCollection.deleteMany({ _id: { $in: collectionsToDelete } }, { session }).exec()
-            return res.status(200).json({ message: req.params.collection, deletedCount: result.deletedCount, deletedArtworksCount: deletedArtworksCount })
+            res.status(200).json({ message: req.params.collection, deletedCount: result.deletedCount, deletedArtworksCount: deletedArtworksCount })
         })
         session.endSession()
     } catch (error) {
