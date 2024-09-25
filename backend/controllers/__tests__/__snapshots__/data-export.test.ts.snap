@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`data-import controller GET endpoints getXlsxWithCollectionData should respond with status 201 and correct body 1`] = `{}`;

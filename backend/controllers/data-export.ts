@@ -1,11 +1,11 @@
 import { Request, Response } from "express"
-import excelJS, { ValueType } from "exceljs"
+import excelJS from "exceljs"
 import Artwork from "../models/artwork";
 import { fillRow, getAllCategories } from "../utils/controllers-utils/data-export"
 
 export const getXlsxWithArtworksData = async (req: Request, res: Response, next: any) => {
     try {
-        const collectionName = decodeURIComponent(req.params.collectionName)
+        const collectionName = req.params.collectionName
         const filename = req.query.exportFilename
         const keysToInclude: any = req.query.keysToInclude
         const exportSelectedRecords: any = req.query.exportSelectedRecords
@@ -57,7 +57,6 @@ export const getXlsxWithArtworksData = async (req: Request, res: Response, next:
         res.setHeader("Content-Disposition", "attachment; filename=" + filename);
 
         await workbook.xlsx.write(res)
-        
         res.status(200).end()
     } catch (error) {
         next(error)
@@ -70,14 +69,12 @@ export const getXlsxWithCollectionData = async (req: Request, res: Response, nex
         const workbook = new excelJS.Workbook()
         const sheet = workbook.addWorksheet(collectionName)
 
-        const columnNames = await getAllCategories(collectionName)     
+        const columnNames = await getAllCategories(collectionName)
         sheet.columns = columnNames.map((name :string) => {return {header: name, key: name}})
-
-        const records = await Artwork.find({collectionName: collectionName}).exec()
-        records.forEach((record: any) => {
-            sheet.addRow(fillRow(columnNames, record.categories))         
-        })
         
+        const records = await Artwork.find({collectionName: collectionName}).exec()
+        records.forEach((record: any) => sheet.addRow(fillRow(columnNames, record.categories)))
+
         // //cell formatting
         sheet.columns.forEach((column)=>  {
             let maxLength = 0;
@@ -97,6 +94,11 @@ export const getXlsxWithCollectionData = async (req: Request, res: Response, nex
         
         res.status(200).end()
     } catch (error) {
-        next(error)
+        const err = error as Error
+        console.error(error)
+        if (err.message === `Error preparing data for xlsx file`)
+            res.status(500).json({ error: err.message })
+        else
+            res.status(503).json({ error: `Database unavailable` })
     }
 }
