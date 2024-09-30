@@ -91,5 +91,22 @@ describe('data-import controller', () => {
                     expect(res.body.error).toBe(error)
                 }
             )
+
+            test.each([
+                {
+                    statusCode: 400, error: 'Request is missing query params',
+                },
+            ])(`getXlsxWithArtworksData should respond with status $statusCode and correct error message`,
+                    async ({ statusCode, error}) => {
+    
+                        const res = await request(app)
+                        .get(`/collection`)
+                        .set('Accept', 'application/json')
+    
+                        expect(res.status).toBe(statusCode)
+                        expect(res.body.error).toBe(error)
+                    }
+                )
     })
+    
 })

@@ -2,15 +2,14 @@ import axios from "axios"
 import { API_URL } from "../config"
 
 export const getXlsxWithArtworksData = async (collectionName: string, keysToInclude: Array<string>, selectedArtworksIds: { [key: string]: boolean }, exportSelectedRecords: boolean, filename: string) => {
-    const params = new URLSearchParams(); 
+    const params = new URLSearchParams();
     keysToInclude.forEach((value, index) => { 
-        params.append(`keysToInclude[${index}]`, value); 
+        params.append(`columnNames[${index}]`, value); 
     });
     for(const v in selectedArtworksIds) {
-        params.append(`selectedArtworks[${v}]`, v);
+        params.append(`selectedArtworks`, v);
     }
     params.append(`exportSelectedRecords`, exportSelectedRecords.toString())
-    params.append(`exportFilename`, filename)
     return await axios({
         url: `${API_URL}v1/dataExport/${collectionName}`,
         method: 'GET',
