@@ -6,8 +6,9 @@ import { fillRow, getAllCategories } from "../utils/controllers-utils/data-expor
 export const getXlsxWithArtworksData = async (req: Request, res: Response) => {
     try {
         const collectionName = req.params.collectionName
-        const columnNames = req.query.columnNames as Array<string>
+        const columnNames = typeof req.query.columnNames === "string" ? Array(req.query.columnNames) : req.query.columnNames as Array<string>
         const exportSelectedRecords = req.query.exportSelectedRecords
+        
         if(!columnNames || !exportSelectedRecords)
             throw new Error("Request is missing query params")
 

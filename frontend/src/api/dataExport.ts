@@ -4,7 +4,7 @@ import { API_URL } from "../config"
 export const getXlsxWithArtworksData = async (collectionName: string, keysToInclude: Array<string>, selectedArtworksIds: { [key: string]: boolean }, exportSelectedRecords: boolean, filename: string) => {
     const params = new URLSearchParams();
     keysToInclude.forEach((value, index) => { 
-        params.append(`columnNames[${index}]`, value); 
+        params.append(`columnNames`, value); 
     });
     for(const v in selectedArtworksIds) {
         params.append(`selectedArtworks`, v);
