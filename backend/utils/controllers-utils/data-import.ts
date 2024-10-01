@@ -13,17 +13,18 @@ export const prepRecords = (data: Array<Array<string>>, collectionName: string) 
     const header = data[0]
     const recordsData = data.slice(1)
     const records: Array<record> = []
-    for(const rowIndex in recordsData) {
-        const rowValuesArray = recordsData[rowIndex]
+    for(const rowValues of recordsData) {
         const newRecord: record = {categories: [], collectionName: collectionName}
-        rowValuesArray.forEach((rowValue: string, columnIndex: number) => {
+        rowValues.forEach((rowValue: string, columnIndex: number) => {
             const isNotSubcategoryColumn = header[columnIndex].split(".").length === 1
             if(isNotSubcategoryColumn) {
-                const directSubcategoriesNames = header.filter((columnName: string) => columnName.startsWith(header[columnIndex]) && columnName.split(".").length === 2)
+                const directSubcategoriesNames = header.filter((columnName: string) => 
+                    columnName.startsWith(header[columnIndex]) && columnName.split(".").length === 2
+                )
                 newRecord.categories.push({
                     name: header[columnIndex],
                     values: rowValue.toString().split(";").filter((value: string) => value !== ""),
-                    subcategories: fillSubcategories(2, directSubcategoriesNames, rowValuesArray, header, recordsData, rowIndex)
+                    subcategories: fillSubcategories(directSubcategoriesNames, 2, header, rowValues)
                 })
             }
         });
@@ -32,24 +33,14 @@ export const prepRecords = (data: Array<Array<string>>, collectionName: string) 
     return records
 }
 
-export const fillSubcategories: any = (depth: number, fields: any, allAttrs: any, header: any, recordsData: any, recordIndex: number) => {
-    const subs: any = []
-    let deeperFields: any = []
-    fields.forEach((field: any) => {
-        deeperFields = []
-        header.forEach((attrName: string) => {
-            if(attrName.startsWith(field) && attrName.split(".").length === depth + 1) {
-                deeperFields.push(attrName)
-            }
-        });
-        const newSub: subcategoryData = {name: field.split(".").slice(-1)[0],
-            values: recordsData[recordIndex][header.indexOf(field)].toString().split(";").filter((i: any) => i !== ""),
-            subcategories: []
-        }
-        if(deeperFields.length !== 0) {
-            newSub.subcategories = fillSubcategories(depth + 1, deeperFields, allAttrs, header, recordsData, recordIndex)
-        }
-        subs.push(newSub)
+export const fillSubcategories = (fields: Array<string>, depth: number, header: Array<string>, rowValues: Array<string>) => {
+    const subcategories: Array<subcategoryData> = []
+    fields.forEach((field: string) => {
+        const directSubcategoriesNames = header.filter((columnName: string) => columnName.startsWith(field) && columnName.split(".").length === depth + 1)
+        subcategories.push({name: field.split(".").slice(-1)[0],
+            values: rowValues[header.indexOf(field)].toString().split(";").filter((value: string) => value !== ""),
+            subcategories: fillSubcategories(directSubcategoriesNames, depth + 1, header, rowValues)
+        })
     });
-    return subs
+    return subcategories
 }
