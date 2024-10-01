@@ -13,33 +13,22 @@ export const prepRecords = (data: Array<Array<string>>, collectionName: string) 
     const header = data[0]
     const recordsData = data.slice(1)
     const records: Array<record> = []
-    for(const recordIndex in recordsData) {
-        const recordAttrs = recordsData[recordIndex]
+    for(const rowIndex in recordsData) {
+        const rowValuesArray = recordsData[rowIndex]
         const newRecord: record = {categories: [], collectionName: collectionName}
-        const depth = 1
-        const categories: any = newRecord.categories
-        recordAttrs.forEach((cellVal: any, attrIndex: number) => {
-            if(header[attrIndex].split(".").length === depth) {
-                const fields: any = []
-                header.forEach((element: any) => {
-                    if(element.startsWith(header[attrIndex]) && element.split(".").length === depth + 1) {
-                        fields.push(element)
-                    }
-                });
-                const newCaterory: subcategoryData = {
-                    name: header[attrIndex], 
-                    values: recordAttrs[attrIndex].toString().split(";").filter((i: any) => i !== ""),
-                    subcategories: []
-                }
-                if(fields.length !== 0) {
-                    newCaterory.subcategories = fillSubcategories(depth + 1, fields, recordAttrs, header, recordsData, recordIndex)
-                }
-                categories.push(newCaterory)
+        rowValuesArray.forEach((rowValue: string, columnIndex: number) => {
+            const isNotSubcategoryColumn = header[columnIndex].split(".").length === 1
+            if(isNotSubcategoryColumn) {
+                const directSubcategoriesNames = header.filter((columnName: string) => columnName.startsWith(header[columnIndex]) && columnName.split(".").length === 2)
+                newRecord.categories.push({
+                    name: header[columnIndex],
+                    values: rowValue.toString().split(";").filter((value: string) => value !== ""),
+                    subcategories: fillSubcategories(2, directSubcategoriesNames, rowValuesArray, header, recordsData, rowIndex)
+                })
             }
         });
         records.push(newRecord)
     }
-    console.log(records)
     return records
 }
 
