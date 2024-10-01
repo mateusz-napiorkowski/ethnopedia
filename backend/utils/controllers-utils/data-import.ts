@@ -1,21 +1,21 @@
-export interface subData {
+interface subcategoryData {
     name: string
-    values: string
-    subcategories: Array<any>
+    values: Array<string>
+    subcategories: Array<subcategoryData>
 }
 
-export const prepRecords: any = (data: any, collectionName: any) => {
+interface record {
+    categories: Array<subcategoryData>,
+    collectionName: string
+}
+
+export const prepRecords = (data: Array<Array<string>>, collectionName: string) => {
     const header = data[0]
     const recordsData = data.slice(1)
-    const headerAttrsInArrays: any = []
-    header.forEach((attr:string) => {
-        headerAttrsInArrays.push(attr.split("."))
-    })
-
-    const records: Array<[]> = []
+    const records: Array<record> = []
     for(const recordIndex in recordsData) {
         const recordAttrs = recordsData[recordIndex]
-        const newRecord: any = {categories: []}
+        const newRecord: record = {categories: [], collectionName: collectionName}
         const depth = 1
         const categories: any = newRecord.categories
         recordAttrs.forEach((cellVal: any, attrIndex: number) => {
@@ -26,7 +26,7 @@ export const prepRecords: any = (data: any, collectionName: any) => {
                         fields.push(element)
                     }
                 });
-                const newCaterory: subData = {
+                const newCaterory: subcategoryData = {
                     name: header[attrIndex], 
                     values: recordAttrs[attrIndex].toString().split(";").filter((i: any) => i !== ""),
                     subcategories: []
@@ -37,9 +37,9 @@ export const prepRecords: any = (data: any, collectionName: any) => {
                 categories.push(newCaterory)
             }
         });
-        newRecord.collectionName = collectionName
         records.push(newRecord)
     }
+    console.log(records)
     return records
 }
 
@@ -53,7 +53,7 @@ export const fillSubcategories: any = (depth: number, fields: any, allAttrs: any
                 deeperFields.push(attrName)
             }
         });
-        const newSub: subData = {name: field.split(".").slice(-1)[0],
+        const newSub: subcategoryData = {name: field.split(".").slice(-1)[0],
             values: recordsData[recordIndex][header.indexOf(field)].toString().split(";").filter((i: any) => i !== ""),
             subcategories: []
         }
