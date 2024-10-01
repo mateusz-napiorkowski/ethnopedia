@@ -1,14 +1,10 @@
-const express = require("express")
-const router = express.Router()
+import express from "express";
+import {deleteUser, loginUser, registerUser} from "../controllers/auth";
 
-const {
-    registerUser,
-    loginUser,
-    deleteUser
-} = require("../controllers/auth")
+const router = express.Router()
 
 router.route("/register").post(registerUser)
 router.route("/login").post(loginUser)
 router.route("/:userId").delete(deleteUser)
 
-module.exports = router
+export default router;

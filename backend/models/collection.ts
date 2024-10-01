@@ -9,4 +9,6 @@ const CollectionSchema = new mongoose.Schema({
     },
 })
 
-module.exports = mongoose.model("Collection", CollectionSchema)
+const CollectionCollection = mongoose.model("Collection", CollectionSchema)
+
+export default CollectionCollection

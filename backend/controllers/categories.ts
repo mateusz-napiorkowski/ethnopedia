@@ -1,57 +1,20 @@
-import { NextFunction, Request, Response } from "express"
+import { Request, Response } from "express"
+import { getCollectionCategoriesArray } from "../utils/controllers-utils/categories"
+import Artwork from "../models/artwork"
 
-const Artwork = require("../models/artwork")
-const Category = require("../models/category")
-
-const getNestedCategories = ((prefix: string, subcategories: any) => {
-    let nestedCategories: Array<string> = []
-    if(subcategories !== undefined) {
-        for(const subcategory of subcategories){
-            nestedCategories.push(`${prefix}${subcategory.name}`)
-            nestedCategories.push(...getNestedCategories(`${prefix}${subcategory.name}.`, subcategory.subcategories))
-        }
-    }
-    return nestedCategories
-})
-
-export const getCollectionCategories = async (req: Request, res: Response, next: NextFunction) => {
-    const records = await Artwork.find({ collectionName: req.params.collectionName })
-    let allCategories: Array<string> = []
-    records.forEach((record:any) => {
-        for(const category of record.categories){
-            allCategories.push(category.name)
-            allCategories.push(...getNestedCategories(`${category.name}.`, category.subcategories))
-        }
-    });
-    const allCategoriesUnique = allCategories.filter((value, index, array) => {
-        return array.indexOf(value) === index;
-    })
-    res.status(200).json({categories: allCategoriesUnique})
-}
-
-const getArtworkCategories = async (req: Request, res: Response, next: NextFunction) => {
-    const page = typeof req.query.page === "string" ? parseInt(req.query.page) : 1
-    const limit = typeof req.query.limit === "string" ? parseInt(req.query.limit) : 5
-
-    const skip = (page - 1) * limit
-
-    // const total = await Category.countDocuments()
-    // const totalPages = Math.ceil(total / limit)
-
-    // const categories = await Category.find({}).skip(skip).limit(limit)
+export const getCollectionCategories = async (req: Request, res: Response) => {
     try {
-        const id = req.params.name
-
-        const categories = await Category.find({ collectionName: id })
-
-        res.status(200).json(categories)
+        const collectionName = req.params.collectionName
+        const records = await Artwork.find({ collectionName: collectionName }).exec()
+        const categories = getCollectionCategoriesArray(records)
+        res.status(200).json({categories: categories})
     } catch (error) {
-        console.error("Error finding categories:", error)
-        res.status(500).json({ message: "Error fetching categories." })
+        const err = error as Error
+        console.error(error)
+        if (err.message === `Collection not found`)
+            res.status(404).json({ error: err.message })
+        else
+            res.status(503).json({ error: `Database unavailable` })
     }
-}
-
-module.exports = {
-    getCollectionCategories,
-    getArtworkCategories,
+    
 }

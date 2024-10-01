@@ -1,17 +1,12 @@
 import express from "express"
 
-const router = express.Router()
+import {createArtwork, deleteArtworks, editArtwork, getArtwork} from "../controllers/artworks";
 
-const {
-    getArtwork,
-    createArtwork,
-    editArtwork,
-    deleteArtworks
-} = require("../controllers/artworks")
+const router = express.Router()
 
 router.route("/:artworkId").get(getArtwork)
 router.route("/create").post(createArtwork)
-router.route("/edit/:artworkId").post(editArtwork)
-router.route("/:artwork").delete(deleteArtworks)
+router.route("/edit/:artworkId").put(editArtwork)
+router.route("/delete").delete(deleteArtworks)
 
-module.exports = router
+export default router;

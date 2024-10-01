@@ -1,17 +1,10 @@
 import mongoose from "mongoose"
 
-const artworkSchema = new mongoose.Schema({
-    collectionId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Collection",
-    },
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-    }
-},{
+const artworkSchema = new mongoose.Schema({},{
     strict: false,
     timestamps: true,
 })
 
-module.exports = mongoose.model("Artworks", artworkSchema)
+const artworkCollection = mongoose.model("Artworks", artworkSchema);
+
+export default artworkCollection;
