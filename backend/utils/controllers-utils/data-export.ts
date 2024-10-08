@@ -25,28 +25,23 @@ export const fillRow = (keys: Array<string>, categories: Array<subcategoryData>)
     return rowdata
 }
 
-const getNestedCategories = ((prefix: string, subcategories: any) => {
+const getNestedCategories = ((prefix: string, subcategories: Array<subcategoryData>) => {
     const nestedCategories: Array<string> = []
-    if(subcategories !== undefined) {
-        for(const subcategory of subcategories){
-            nestedCategories.push(`${prefix}${subcategory.name}`)
-            nestedCategories.push(...getNestedCategories(`${prefix}${subcategory.name}.`, subcategory.subcategories))
-        }
-    }  
+    for(const subcategory of subcategories){
+        nestedCategories.push(`${prefix}.${subcategory.name}`)
+        nestedCategories.push(...getNestedCategories(`${prefix}.${subcategory.name}`, subcategory.subcategories))
+    }
     return nestedCategories
 })
 
-export const getAllCategories = async (collectionName: any) => {
+export const getAllCategories = async (collectionName: string) => {
     const records = await Artwork.find({ collectionName: collectionName }).exec()
     const allCategories: Array<string> = []
     records.forEach((record:any) => {
         for(const category of record.categories){
             allCategories.push(category.name)
-            allCategories.push(...getNestedCategories(`${category.name}.`, category.subcategories))
+            allCategories.push(...getNestedCategories(`${category.name}`, category.subcategories))
         }
-    });
-    const allCategoriesUnique = allCategories.filter((value, index, array) => {
-        return array.indexOf(value) === index;
     })
-    return allCategoriesUnique
+    return [...new Set(allCategories)]
 }
