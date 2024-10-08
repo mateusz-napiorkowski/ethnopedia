@@ -1,38 +1,28 @@
 import Artwork from "../../models/artwork";
 
-export const fillRow: any = (keys: any, categories: any) => {
+interface subcategoryData {
+    name: string
+    values: Array<string>
+    subcategories: Array<subcategoryData>
+}
+
+const findValue: any = (subcategories: Array<subcategoryData>, categoryNameSplitByDot: Array<string>) => {
+    const categoryDepth = categoryNameSplitByDot.length
+    const [topmostParentCategoryName, ...categoryNameWithoutTopmostPart] = categoryNameSplitByDot;
+    if(categoryDepth > 1) {
+        const matchingSubcategory = subcategories.find(subcategory => subcategory.name === topmostParentCategoryName);
+        return matchingSubcategory ? findValue(matchingSubcategory.subcategories, categoryNameWithoutTopmostPart) : '';
+    }
+    const matchingCategory = subcategories.find(category => category.name === topmostParentCategoryName);
+    return matchingCategory ? matchingCategory.values.join(';') : '';
+}
+
+export const fillRow = (keys: Array<string>, categories: Array<subcategoryData>) => {
     const rowdata: any = {}
-    keys.forEach((key: any) => {
+    keys.forEach(key => {
         rowdata[key] = findValue(categories, key.split("."))
     });
     return rowdata
-}
-
-const findValue: any = (subcategories: any, keySplit: any) => {
-    let v: string | undefined = undefined
-    const categoryDepth = keySplit.length
-    if(categoryDepth > 1) {
-        const categoryPrefix = keySplit[0]
-        for(const subcategory of subcategories) {
-            if(subcategory.name == categoryPrefix) {
-                v = findValue(subcategory.subcategories, keySplit.slice(1))
-                if(v !== undefined) return v
-            }
-        }
-    } else if (categoryDepth == 1) {
-        if(subcategories !== undefined) {
-            for(const subcategory of subcategories) {
-                if(subcategory.name == keySplit[0]) {
-                    const v_temp: Array<string> = []
-                    for(const subcategoryValue of subcategory.values) {
-                        v_temp.push(subcategoryValue)
-                    }
-                    return v_temp.join(";")
-                }
-            }
-        }  
-    }
-    return ""
 }
 
 const getNestedCategories = ((prefix: string, subcategories: any) => {
@@ -47,7 +37,7 @@ const getNestedCategories = ((prefix: string, subcategories: any) => {
 })
 
 export const getAllCategories = async (collectionName: any) => {
-    const records = await Artwork.find({ collectionName: collectionName })
+    const records = await Artwork.find({ collectionName: collectionName }).exec()
     const allCategories: Array<string> = []
     records.forEach((record:any) => {
         for(const category of record.categories){
