@@ -1,58 +1,62 @@
 import { NextFunction, Request, Response } from "express"
-import mongoose, { ClientSession } from "mongoose"
+import mongoose, { ClientSession, SortOrder } from "mongoose"
 import { findSearchText, findMatch, sortRecordsByTitle } from "../utils/controllers-utils/collections"
 import { authAsyncWrapper } from "../middleware/auth"
 import Artwork from "../models/artwork";
 import CollectionCollection from "../models/collection";
 
 export const getAllCollections = async (req: Request, res: Response) => {
-    const page = parseInt(req.query.page as string) || 1
-    const pageSize = parseInt(req.query.pageSize as string) || 10
-    const collections = await CollectionCollection.find({})
-        .skip((page - 1) * pageSize)
-        .limit(pageSize)
+    try {
+        const page = parseInt(req.query.page as string)
+        const pageSize = parseInt(req.query.pageSize as string)
+        const sortOrder = req.query.sortOrder
+        
+        if(!page || !pageSize || !sortOrder)
+            throw new Error("Request is missing query params")
 
-    const totalCollections = await CollectionCollection.countDocuments({})
-
-    const pipeline = [
-        {
-            $match: { "collectionName": { $exists: true } },
-        },
-        {
-            $group: {
-                _id: "$collectionName",
-                count: { $sum: 1 },
+        const collections = await CollectionCollection.find()
+            .sort({name: sortOrder as SortOrder})
+            .skip((page - 1) * pageSize)
+            .limit(pageSize)
+            .exec()
+        
+        const totalCollections = await CollectionCollection.countDocuments()
+        
+        const pipeline = [
+            {
+                $match: { "collectionName": { $exists: true } },
             },
-        },
-    ]
-
-    const artworks = await Artwork.aggregate(pipeline)
-    const artworkMap = new Map()
-
-    artworks.forEach((artwork: any) => {
-        artworkMap.set(artwork._id, artwork.count)
-    })
-
-    const combinedData = new Map()
-
-    collections.forEach((collection: any) => {
-        combinedData.set(collection._id, {
+            {
+                $group: {
+                    _id: "$collectionName",
+                    count: { $sum: 1 },
+                },
+            },
+        ]
+        const artworkCounts = await Artwork.aggregate(pipeline).exec()
+        
+        const collectionsData = collections.map((collection: any) => ({
             id: collection._id,
             name: collection.name,
             description: collection.description,
-            artworksCount: artworkMap.get(collection.name) || 0,
-            categoriesCount: 17,
-        })
-    })
+            artworksCount: artworkCounts.find((element) => element._id == collection.name)?.count ?? 0
+        }))
 
-    const combinedArray = Array.from(combinedData.values())
-
-    res.status(200).json({
-        collections: combinedArray,
-        total: totalCollections,
-        currentPage: page,
-        pageSize: pageSize,
-    })
+        res.status(200).json({
+            collections: collectionsData,
+            total: totalCollections,
+            currentPage: page,
+            pageSize: pageSize,
+        })    
+    } catch (error) {
+        const err = error as Error
+        console.error(error)
+        if (err.message === "Request is missing query params")
+            res.status(400).json({ error: err.message })
+        else
+            res.status(503).json({ error: `Database unavailable` })
+    }
+    
 }
 
 export const getCollection = async (req: Request, res: Response) => {

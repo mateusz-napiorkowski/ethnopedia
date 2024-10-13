@@ -7,6 +7,34 @@ exports[`collections controller DELETE endpoints deleteCollections should respon
 }
 `;
 
+exports[`collections controller GET endpoints getAllCollections should respond with status 200 and correct body 1`] = `
+{
+  "collections": [
+    {
+      "artworksCount": 33,
+      "description": "description 1",
+      "id": "66f2194a6123d7f50558cd8f",
+      "name": "collection 1",
+    },
+    {
+      "artworksCount": 17,
+      "description": "description 2",
+      "id": "66f2194a6214d7f50558cd7e",
+      "name": "collection 2",
+    },
+    {
+      "artworksCount": 50,
+      "description": "description 3",
+      "id": "66f2194a6214d7f50558ac1b",
+      "name": "collection 3",
+    },
+  ],
+  "currentPage": 1,
+  "pageSize": 3,
+  "total": 3,
+}
+`;
+
 exports[`collections controller GET endpoints getCollection should respond with status 200 and correct body 1`] = `
 {
   "__v": 0,

@@ -15,6 +15,7 @@ export const getAllCollections = async (page: number = 1, pageSize: number = 10)
         params: {
             page: page,
             pageSize: pageSize,
+            sortOrder: 'asc'
         },
     })
     return response.data as CollectionsResponse
