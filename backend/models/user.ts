@@ -7,4 +7,6 @@ const UserSchema = new mongoose.Schema({
     accountCreationDate: { type: Date, default: Date.now },
 })
 
-module.exports = mongoose.model("User", UserSchema)
+const UserCollection = mongoose.model("User", UserSchema)
+
+export default UserCollection;

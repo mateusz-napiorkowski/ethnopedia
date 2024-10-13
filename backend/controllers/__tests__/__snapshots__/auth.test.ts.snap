@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`auth controller DELETE endpoints deleteUser should respond with status 200 and correct body 1`] = `
+{
+  "__v": 0,
+  "_id": "66d71fd54c148fb8f827c2c3",
+  "accountCreationDate": "2024-09-03T14:39:25.536Z",
+  "firstName": "user",
+  "password": "$2b$10$zv3up3rZKzJv9bY3n8Hvh.dR1UcEoC.bH5obaPm/mxPSDGqZ9vlrO",
+  "username": "user",
+}
+`;
+
+exports[`auth controller POST endpoints loginUser should respond with status 200 and correct body 1`] = `
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA",
+}
+`;
+
+exports[`auth controller POST endpoints registerUser should respond with status 201 and correct body 1`] = `
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA",
+}
+`;

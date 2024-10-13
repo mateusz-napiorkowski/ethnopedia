@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`categories controller GET endpoints getCollectionCategories should respond with status 200 and correct body 1`] = `
+{
+  "categories": [
+    "Title",
+  ],
+}
+`;

@@ -2,7 +2,6 @@ import axios from "axios"
 import { Collection } from "../@types/Collection"
 import { useMutation } from "react-query"
 import { API_URL } from "../config"
-import {SelectedDetail} from "../components/artwork/types/ArtworkTypes";
 
 interface CollectionsResponse {
     collections: Collection[];
@@ -45,19 +44,18 @@ export const createCollection = async (name: any, description: any, jwtToken: an
         headers: { Authorization: `Bearer ${jwtToken}` }
     };
     return await axios
-        .post(`${API_URL}v1/collection/add`, {name, description}, config)
+        .post(`${API_URL}v1/collection/create`, {name, description}, config)
         .then(res => res.data)
 }
 
 export const useBatchDeleteCollectionMutation = () => {
     return useMutation(async (data: Array<any>) => {
-        const collectionIds = data[0].join(",")
-        const url = `${API_URL}v1/collection/${collectionIds}`
+        const url = `${API_URL}v1/collection/delete`
         const config = {
-            headers: { Authorization: `Bearer ${data[1]}` }
+            headers: { Authorization: `Bearer ${data[1]}` },
+            data: { ids: data[0]}
         };
         const res = await axios.delete(url, config)
         return res.data
     })
 }
-
