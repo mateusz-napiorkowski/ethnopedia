@@ -4,7 +4,7 @@ import { findSearchText, findMatch, sortRecordsByTitle } from "../utils/controll
 import { authAsyncWrapper } from "../middleware/auth"
 import Artwork from "../models/artwork";
 import CollectionCollection from "../models/collection";
-import { constructAdvSearchFilter } from "../utils/controllers-utils/collections";
+import { constructQuickSearchFilter, constructAdvSearchFilter } from "../utils/controllers-utils/collections";
 
 export const getAllCollections = async (req: Request, res: Response) => {
     try {
@@ -91,12 +91,11 @@ export const getArtworksInCollection = async (req: Request, res: Response, next:
         let records: Array<any> = []
         if(req.query.searchText!==undefined) {
             // quicksearch
-            
+            records = await Artwork.find(await constructQuickSearchFilter(req.query.searchText, req.params.name))
         } else if(req.query.advSearch == "true") {
             /*advanced search*/
             records = await Artwork.find(constructAdvSearchFilter(req.query, req.params.name))
-        } 
-        else {
+        } else {
             // without search criteria
             records = await Artwork.find({ collectionName: req.params.name })
                 .sort({ "$natural": 1 })

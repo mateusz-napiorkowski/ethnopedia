@@ -27,10 +27,11 @@ export const fillRow = (keys: Array<string>, categories: Array<subcategoryData>)
 
 const getNestedCategories = ((prefix: string, subcategories: Array<subcategoryData>) => {
     const nestedCategories: Array<string> = []
-    for(const subcategory of subcategories){
-        nestedCategories.push(`${prefix}.${subcategory.name}`)
-        nestedCategories.push(...getNestedCategories(`${prefix}.${subcategory.name}`, subcategory.subcategories))
-    }
+    if(subcategories)
+        for(const subcategory of subcategories){
+            nestedCategories.push(`${prefix}.${subcategory.name}`)
+            nestedCategories.push(...getNestedCategories(`${prefix}.${subcategory.name}`, subcategory.subcategories))
+        }
     return nestedCategories
 })
 

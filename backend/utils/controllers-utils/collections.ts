@@ -1,4 +1,44 @@
+import { getAllCategories } from "./data-export";
+
 const util = require('util');
+
+export const constructQuickSearchFilter = async (searchText: any, collectionName: string) => {
+    const allCategories = await getAllCategories(collectionName)
+    const maxDepth = Math.max.apply(Math, allCategories.map((cat) => cat.split('.').length))
+
+    const queryFilter = {
+        collectionName: collectionName,
+        categories: {
+            $elemMatch: {
+                "$or": [
+                    {
+                        values: [searchText]
+                    },
+                    {
+                        subcategories: {
+                            $elemMatch: {
+                                "$or": [
+                                    {
+                                        values: [searchText]
+                                    },
+                                    {
+                                        subcategories: {
+                                            $elemMatch: {
+                                                values: [searchText]
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+        
+    }
+    return queryFilter
+}
 
 const constructSubcategoriesFilter = (subcategories: string, depth: number) => {
     let subcategoryFilter: any = {$all: []}
