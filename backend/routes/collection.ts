@@ -12,7 +12,7 @@ const router = express.Router()
 
 router.route("/").get(getAllCollections)
 router.route("/:name").get(getCollection)
-router.route("/:name/artworks").get(getArtworksInCollection)
+router.route("/:collectionName/artworks").get(getArtworksInCollection)
 router.route("/create").post(createCollection)
 router.route("/delete").delete(deleteCollections)
 

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express"
 import mongoose, { ClientSession, SortOrder } from "mongoose"
-import { findSearchText, findMatch, sortRecordsByTitle } from "../utils/controllers-utils/collections"
+import { sortRecordsByTitle } from "../utils/controllers-utils/collections"
 import { authAsyncWrapper } from "../middleware/auth"
 import Artwork from "../models/artwork";
 import CollectionCollection from "../models/collection";
@@ -83,6 +83,10 @@ export const getArtworksInCollection = async (req: Request, res: Response, next:
         const page = parseInt(req.query.page as string)
         const pageSize = parseInt(req.query.pageSize as string)
         
+        if(!page || !pageSize)
+            throw new Error("Request is missing query params")
+
+        const collectionName = req.params.collectionName
         const searchText = req.query.searchText
         const sortOrder = req.query.sortOrder
         
@@ -90,24 +94,29 @@ export const getArtworksInCollection = async (req: Request, res: Response, next:
 
         let queryFilter;
         if(!search) {
-            queryFilter = { collectionName: req.params.name }
+            queryFilter = { collectionName: collectionName }
+            
         } else if(searchText) {
-            queryFilter = await constructQuickSearchFilter(req.query.searchText, req.params.name)
+            queryFilter = await constructQuickSearchFilter(searchText, collectionName)
         } else {
-            queryFilter = await constructAdvSearchFilter(req.query, req.params.name)
+            queryFilter = await constructAdvSearchFilter(req.query, collectionName)
         }
-
-        const artworks = await Artwork.find(queryFilter).exec()
-        const artworksForPage = artworks.slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize)  
         
-        return res.json({
-            artworks: artworksForPage,
+        const artworks = await Artwork.find(queryFilter).exec()
+
+        return res.status(200).json({
+            artworks: artworks.slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize),
             total: artworks.length,
             currentPage: page,
             pageSize: pageSize,
         })
-    } catch (error: any) {
-        next(error)
+    } catch (error) {
+        const err = error as Error
+        console.error(error)
+        if (err.message === "Request is missing query params")
+            res.status(400).json({ error: err.message })
+        else
+            res.status(503).json({ error: `Database unavailable` })
     }
 }
 
