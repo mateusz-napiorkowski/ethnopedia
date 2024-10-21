@@ -2,51 +2,34 @@ import { getAllCategories } from "./data-export";
 
 export const constructQuickSearchFilter = async (searchText: any, collectionName: string) => {
     const allCategories = await getAllCategories(collectionName)
-    const maxDepth = Math.max.apply(Math, allCategories.map((cat) => cat.split('.').length))
+    const maxDepth = Math.max.apply(Math, allCategories.map((category) => category.split('.').length))
+
+    const fillSubcategoryFilterPart: any = (currentDepth: number, maxDepth: number) => ({
+        $elemMatch: {
+            $or: currentDepth === maxDepth 
+                ? [{ values: [searchText] }] 
+                : [
+                    { values: [searchText] },
+                    { subcategories: fillSubcategoryFilterPart(currentDepth + 1, maxDepth) }
+                ]
+        }
+    })
 
     const queryFilter = {
         collectionName: collectionName,
-        categories: {
-            $elemMatch: {
-                "$or": [
-                    {
-                        values: [searchText]
-                    },
-                    {
-                        subcategories: {
-                            $elemMatch: {
-                                "$or": [
-                                    {
-                                        values: [searchText]
-                                    },
-                                    {
-                                        subcategories: {
-                                            $elemMatch: {
-                                                values: [searchText]
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    }
-                ]
-            }
-        }
-        
+        categories: fillSubcategoryFilterPart(1, maxDepth)
     }
+    
     return queryFilter
 }
 
-const constructSubcategoriesFilter = (subcategories: string, depth: number) => {
+const constructSubcategoriesFilter = (subcategories: Array<Array<string>>, depth: number) => {
     let subcategoryFilter: any = {$all: []}
     for(const [subcategoryName, subValue] of subcategories) {
-        let deeperSubcategories: any = []
-        for(const [deeperSubcategoryName, deeperSubValue] of subcategories) {
-            if(deeperSubcategoryName.startsWith(`${subcategoryName}.`)) {
-                deeperSubcategories.push([deeperSubcategoryName, deeperSubValue])
-            }
-        }
+        const deeperSubcategories = subcategories.filter(([deeperSubcategoryName]) => 
+            deeperSubcategoryName.startsWith(`${subcategoryName}.`)
+        );
+
         const isCurrentDepthSubcategory = subcategoryName.split('.').length === depth
         if(isCurrentDepthSubcategory && deeperSubcategories.length === 0 && subValue !== undefined) {
             subcategoryFilter.$all.push({
@@ -85,7 +68,7 @@ export const constructAdvSearchFilter = (reqQuery: any, collectionName: string) 
             while(categoryNameSplitByDot.length !== 1) {
                 categoryNameSplitByDot.pop()
                 if(!reqQuery.hasOwnProperty(categoryNameSplitByDot.join('.'))) {
-                        rulesArray.push([categoryNameSplitByDot.join('.'), undefined])
+                    rulesArray.push([categoryNameSplitByDot.join('.'), undefined])
                 }
             }
         }
@@ -98,12 +81,9 @@ export const constructAdvSearchFilter = (reqQuery: any, collectionName: string) 
     for(const [categoryName, value] of rulesArray) {
         const isNotSubcategoryName = categoryName.split('.').length === 1
         if(isNotSubcategoryName) {
-            let subcategories: any = []
-            for(const [subcategoryName, subValue] of rulesArray) {
-                if(subcategoryName.startsWith(`${categoryName}.`)) {
-                    subcategories.push([subcategoryName, subValue])
-                }
-            }
+            const subcategories = rulesArray.filter(([subcategoryName]: [string, any]) => 
+                subcategoryName.startsWith(`${categoryName}.`)
+            );
             if(!value) {
                 categoriesFilter.$all.push({
                     $elemMatch: {
@@ -131,7 +111,6 @@ export const constructAdvSearchFilter = (reqQuery: any, collectionName: string) 
         }
     }
     queryFilter.categories = categoriesFilter
-    // console.log(util.inspect(queryFilter, {showHidden: false, depth: null, colors: true}))
     return queryFilter
 }
 
