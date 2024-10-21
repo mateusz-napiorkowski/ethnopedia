@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express"
 import mongoose, { ClientSession, SortOrder } from "mongoose"
-import { sortRecordsByTitle } from "../utils/controllers-utils/collections"
+import { sortRecordsByCategory } from "../utils/controllers-utils/collections"
 import { authAsyncWrapper } from "../middleware/auth"
 import Artwork from "../models/artwork";
 import CollectionCollection from "../models/collection";
@@ -88,7 +88,7 @@ export const getArtworksInCollection = async (req: Request, res: Response, next:
 
         const collectionName = req.params.collectionName
         const searchText = req.query.searchText
-        const sortOrder = req.query.sortOrder
+        const sortOrder = req.params.sortOrder
         
         const search = req.query.search === "true" ? true : false
 
@@ -102,11 +102,13 @@ export const getArtworksInCollection = async (req: Request, res: Response, next:
             queryFilter = await constructAdvSearchFilter(req.query, collectionName)
         }
         
-        const artworks = await Artwork.find(queryFilter).exec()
+        const artworksFiltered = await Artwork.find(queryFilter).exec()
+        const artworksSorted = sortRecordsByCategory(artworksFiltered, sortOrder)
+        const artworksForPage = artworksSorted.slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize)
 
         return res.status(200).json({
-            artworks: artworks.slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize),
-            total: artworks.length,
+            artworks: artworksForPage,
+            total: artworksFiltered.length,
             currentPage: page,
             pageSize: pageSize,
         })

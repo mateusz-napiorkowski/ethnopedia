@@ -27,11 +27,10 @@ export const getCollection = async (id: string) => {
 }
 
 export const getArtworksInCollection = async (collection: string, page: number, pageSize: number, sortOrder: string, searchText: string | null, queryParams: any) => {
-    return await axios.get(`${API_URL}v1/collection/${collection}/artworks/`, {
+    return await axios.get(`${API_URL}v1/collection/${collection}/artworks/Tytuł-asc`, {
         params: {
             page: page,
             pageSize: pageSize,
-            sortOrder: sortOrder,
             searchText: searchText,
             search: Object.entries(queryParams).length !== 0 ? true : false,
             ...queryParams

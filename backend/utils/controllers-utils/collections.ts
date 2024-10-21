@@ -135,25 +135,19 @@ export const constructAdvSearchFilter = (reqQuery: any, collectionName: string) 
     return queryFilter
 }
 
-export const sortRecordsByTitle = (records: any, order: any) => {
-    if(order == "title-asc" || order == "title-desc") {
-        const tempArray: any = []
-        records.forEach((record:any) => {
-            for(const category of record.categories){
-                if(category.name == "Tytuł") {
-                    tempArray.push([record, category.values.join(", ")])
-                }
-            }
-        })
-        tempArray.sort((a: any,b: any) => a[1].toUpperCase().localeCompare(b[1].toUpperCase()));
-        const sortedRecords: any = []
-        tempArray.forEach((pair:any) => {
-            sortedRecords.push(pair[0])
-        })
-        if(order == "title-asc") {
-            return sortedRecords
-        } else {
-            return sortedRecords.reverse()
-        }
-    }
+export const sortRecordsByCategory = (records: any, order: string) => {
+    const [categoryToSortBy, ascOrDesc] = order.split('-')
+
+    const recordAndCategoryValuePairs = records
+    .flatMap((record: any) => 
+        record.categories
+            .filter((category: any) => category.name === categoryToSortBy)
+            .map((category: any) => [record, category.values.join(", ")])
+    )
+    .sort((a: any, b: any) => a[1].toUpperCase().localeCompare(b[1].toUpperCase()));
+    const sortedRecords = recordAndCategoryValuePairs.map((pair: any) => pair[0]);
+
+    if(ascOrDesc == "desc")
+        return sortedRecords.reverse()
+    return sortedRecords
 }
