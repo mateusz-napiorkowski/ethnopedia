@@ -33,7 +33,7 @@ export const getArtworksInCollection = async (collection: string, page: number, 
             pageSize: pageSize,
             sortOrder: sortOrder,
             searchText: searchText,
-            advSearch: Object.entries(queryParams).length !== 0 ? true : false,
+            search: Object.entries(queryParams).length !== 0 ? true : false,
             ...queryParams
         }
     })

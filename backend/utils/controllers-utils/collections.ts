@@ -1,7 +1,5 @@
 import { getAllCategories } from "./data-export";
 
-const util = require('util');
-
 export const constructQuickSearchFilter = async (searchText: any, collectionName: string) => {
     const allCategories = await getAllCategories(collectionName)
     const maxDepth = Math.max.apply(Math, allCategories.map((cat) => cat.split('.').length))
@@ -81,7 +79,7 @@ const constructSubcategoriesFilter = (subcategories: string, depth: number) => {
 export const constructAdvSearchFilter = (reqQuery: any, collectionName: string) => {
     let rulesArray: any = []
     for(const categoryName in reqQuery) {
-        if(!["page", "pageSize", "sortOrder", "advSearch"].includes(categoryName)) {
+        if(!["page", "pageSize", "sortOrder", "search"].includes(categoryName)) {
             rulesArray.push([categoryName, reqQuery[categoryName]])
             const categoryNameSplitByDot = categoryName.split('.')
             while(categoryNameSplitByDot.length !== 1) {

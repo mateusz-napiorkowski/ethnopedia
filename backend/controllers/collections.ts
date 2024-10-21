@@ -5,7 +5,7 @@ import { authAsyncWrapper } from "../middleware/auth"
 import Artwork from "../models/artwork";
 import CollectionCollection from "../models/collection";
 import { constructQuickSearchFilter, constructAdvSearchFilter } from "../utils/controllers-utils/collections";
-
+const util = require("util")
 export const getAllCollections = async (req: Request, res: Response) => {
     try {
         const page = parseInt(req.query.page as string)
@@ -80,33 +80,29 @@ export const getCollection = async (req: Request, res: Response) => {
 
 export const getArtworksInCollection = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
-        const page = parseInt(req.query.page as string) || 1
-        const pageSize = parseInt(req.query.pageSize as string) || 10
-
-        let totalArtworks = await Artwork.countDocuments({ collectionName: req.params.name })
+        const page = parseInt(req.query.page as string)
+        const pageSize = parseInt(req.query.pageSize as string)
         
         const searchText = req.query.searchText
         const sortOrder = req.query.sortOrder
+        
+        const search = req.query.search === "true" ? true : false
 
-        let records: Array<any> = []
-        if(req.query.searchText!==undefined) {
-            // quicksearch
-            records = await Artwork.find(await constructQuickSearchFilter(req.query.searchText, req.params.name))
-        } else if(req.query.advSearch == "true") {
-            /*advanced search*/
-            records = await Artwork.find(constructAdvSearchFilter(req.query, req.params.name))
+        let queryFilter;
+        if(!search) {
+            queryFilter = { collectionName: req.params.name }
+        } else if(searchText) {
+            queryFilter = await constructQuickSearchFilter(req.query.searchText, req.params.name)
         } else {
-            // without search criteria
-            records = await Artwork.find({ collectionName: req.params.name })
-                .sort({ "$natural": 1 })
-                .skip((page - 1) * pageSize)
-                .limit(pageSize)
-                .exec()
+            queryFilter = await constructAdvSearchFilter(req.query, req.params.name)
         }
 
+        const artworks = await Artwork.find(queryFilter).exec()
+        const artworksForPage = artworks.slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize)  
+        
         return res.json({
-            artworks: records,
-            total: totalArtworks,
+            artworks: artworksForPage,
+            total: artworks.length,
             currentPage: page,
             pageSize: pageSize,
         })
