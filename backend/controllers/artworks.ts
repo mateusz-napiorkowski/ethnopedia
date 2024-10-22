@@ -2,9 +2,8 @@ import { Request, Response } from "express"
 import mongoose, { ClientSession } from "mongoose"
 import { authAsyncWrapper } from "../middleware/auth"
 import Artwork from "../models/artwork";
-import CollectionCollection from "../models/collection";
-import { constructQuickSearchFilter, constructAdvSearchFilter } from "../utils/collections";
-import { sortRecordsByCategory } from "../utils/collections"
+import CollectionCollection from "../models/collection"
+import { constructQuickSearchFilter, constructAdvSearchFilter, sortRecordsByCategory } from "../utils/artworks"
 
 export const getArtwork = async (req: Request, res: Response) => {
     try {
