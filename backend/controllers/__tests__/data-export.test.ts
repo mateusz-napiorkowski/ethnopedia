@@ -97,6 +97,7 @@ describe('data-export controller', () => {
 
             test.each([
                 {
+                    testName: "export all artworks from collection",
                     columnNamesQuery: '&columnNames=Title&columnNames=Year',
                     selectedArtworksQuery: undefined,
                     exportSelectedRecordsQuery: '&exportSelectedRecords=false',
@@ -113,6 +114,7 @@ describe('data-export controller', () => {
                         ])}}
                 },
                 {
+                    testName: "export selected artworks from collection",
                     columnNamesQuery: '&columnNames=Title&columnNames=Year',
                     selectedArtworksQuery: '&selectedArtworks=66faa0e88b8813759f44caf4&selectedArtworks=66fbb0e88b8813759f44cae3',
                     exportSelectedRecordsQuery: '&exportSelectedRecords=true',
@@ -137,7 +139,33 @@ describe('data-export controller', () => {
                         },
                         ])}}
                 },
-            ])(`getXlsxWithArtworksData should respond with status 200 and correct body`,
+                {
+                    testName: "req.query.columnNames is of type string (not Array<string>)",
+                    columnNamesQuery: '&columnNames=Title',
+                    selectedArtworksQuery: '&selectedArtworks=66faa0e88b8813759f44caf4&selectedArtworks=66fbb0e88b8813759f44cae3',
+                    exportSelectedRecordsQuery: '&exportSelectedRecords=true',
+                    find: () => {return {exec: () => Promise.resolve([
+                        {
+                            _id: "66faa0e88b8813759f44caf4",
+                            categories: [ { name: 'Title', values: [ 'An artwork title' ], subcategories: [] },
+                                ],
+                            collectionName: 'collection',
+                            __v: 0,
+                            createdAt: '2024-09-25T03:25:16.376Z',
+                            updatedAt: '2024-09-25T03:25:16.376Z'
+                        },
+                        {
+                            _id: "66fbb0e88b8813759f44cae3",
+                            categories: [ { name: 'Title2', values: [ 'An artwork title2' ], subcategories: [] },
+                                ],
+                            collectionName: 'collection',
+                            __v: 0,
+                            createdAt: '2024-09-25T03:25:16.376Z',
+                            updatedAt: '2024-09-25T03:25:16.376Z'
+                        },
+                        ])}}
+                },
+            ])(`getXlsxWithArtworksData should respond with status 200 and correct body - $testName`,
                     async ({ columnNamesQuery, selectedArtworksQuery, exportSelectedRecordsQuery, find}) => {
                         mockFind.mockImplementation(find)
                         mockFillRow.mockImplementation(() => {})

@@ -23,7 +23,7 @@ exports[`collections controller GET endpoints getAllCollections should respond w
       "name": "collection 2",
     },
     {
-      "artworksCount": 50,
+      "artworksCount": 0,
       "description": "description 3",
       "id": "66f2194a6214d7f50558ac1b",
       "name": "collection 3",

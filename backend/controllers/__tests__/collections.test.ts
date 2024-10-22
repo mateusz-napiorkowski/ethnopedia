@@ -75,8 +75,7 @@ describe('collections controller', () =>{
             mockCollectionCountDocuments.mockReturnValue(Promise.resolve(3))
             mockArtworkAggregate.mockReturnValue({exec: () => Promise.resolve([
                 { _id: 'collection 1', count: 33 },
-                { _id: 'collection 2', count: 17 },
-                { _id: 'collection 3', count: 50 }
+                { _id: 'collection 2', count: 17 }
             ])})
 
             const res = await request(app.use(CollectionsRouter))
