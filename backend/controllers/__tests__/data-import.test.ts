@@ -14,7 +14,7 @@ jest.mock('mongoose', () => ({
 }))
 
 const mockPrepRecords = jest.fn()
-jest.mock("../../utils/controllers-utils/data-import", () => ({
+jest.mock("../../utils/data-import", () => ({
     prepRecords: () => mockPrepRecords()
 }))
 

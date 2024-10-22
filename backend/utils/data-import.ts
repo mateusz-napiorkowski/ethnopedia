@@ -1,13 +1,4 @@
-interface subcategoryData {
-    name: string
-    values: Array<string>
-    subcategories: Array<subcategoryData>
-}
-
-interface record {
-    categories: Array<subcategoryData>,
-    collectionName: string
-}
+import { subcategoryData, record } from "./interfaces"
 
 export const prepRecords = (data: Array<Array<string>>, collectionName: string) => {
     try {

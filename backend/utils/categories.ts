@@ -1,10 +1,5 @@
-import Artwork from "../../models/artwork";
-
-interface subcategoryData {
-    name: string
-    values: Array<string>
-    subcategories: Array<subcategoryData>
-}
+import Artwork from "../models/artwork";
+import { subcategoryData } from "./interfaces"
 
 const getNestedCategories = ((prefix: string, subcategories: Array<subcategoryData>) => {
     const nestedCategories: Array<string> = []

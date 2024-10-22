@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express"
 import mongoose, { ClientSession, SortOrder } from "mongoose"
-import { sortRecordsByCategory } from "../utils/controllers-utils/collections"
+import { sortRecordsByCategory } from "../utils/collections"
 import { authAsyncWrapper } from "../middleware/auth"
 import Artwork from "../models/artwork";
 import CollectionCollection from "../models/collection";
-import { constructQuickSearchFilter, constructAdvSearchFilter } from "../utils/controllers-utils/collections";
+import { constructQuickSearchFilter, constructAdvSearchFilter } from "../utils/collections";
 const util = require("util")
 export const getAllCollections = async (req: Request, res: Response) => {
     try {

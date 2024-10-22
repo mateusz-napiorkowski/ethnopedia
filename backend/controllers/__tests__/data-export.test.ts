@@ -9,12 +9,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
 const mockGetAllCategories = jest.fn()
-jest.mock("../../utils/controllers-utils/categories", () => ({
+jest.mock("../../utils/categories", () => ({
     getAllCategories: () => mockGetAllCategories(),
 }))
 
 const mockFillRow = jest.fn()
-jest.mock("../../utils/controllers-utils/data-export", () => ({
+jest.mock("../../utils/data-export", () => ({
     fillRow: () => mockFillRow()
 }))
 

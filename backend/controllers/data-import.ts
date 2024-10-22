@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
 import Artwork from "../models/artwork";
 import { authAsyncWrapper } from "../middleware/auth"
-import { prepRecords } from "../utils/controllers-utils/data-import";
+import { prepRecords } from "../utils/data-import";
 import CollectionCollection from "../models/collection";
 import mongoose, { ClientSession } from "mongoose";
 

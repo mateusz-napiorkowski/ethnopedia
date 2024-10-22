@@ -14,7 +14,7 @@ jest.mock("../../models/artwork", () => ({
 }))
 
 const mockgetAllCategories = jest.fn()
-jest.mock("../../utils/controllers-utils/categories", () => ({
+jest.mock("../../utils/categories", () => ({
     getAllCategories: () => mockgetAllCategories()
 }))
 

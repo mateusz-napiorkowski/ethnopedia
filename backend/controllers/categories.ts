@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { getAllCategories } from "../utils/controllers-utils/categories"
+import { getAllCategories } from "../utils/categories"
 
 export const getCollectionCategories = async (req: Request, res: Response) => {
     try {

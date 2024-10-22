@@ -1,8 +1,4 @@
-interface subcategoryData {
-    name: string
-    values: Array<string>
-    subcategories: Array<subcategoryData>
-}
+import { subcategoryData } from "./interfaces"
 
 const findValue: any = (subcategories: Array<subcategoryData>, categoryNameSplitByDot: Array<string>) => {
     const categoryDepth = categoryNameSplitByDot.length
