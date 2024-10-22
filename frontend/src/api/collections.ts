@@ -26,19 +26,6 @@ export const getCollection = async (id: string) => {
     return response.data as Collection
 }
 
-export const getArtworksInCollection = async (collection: string, page: number, pageSize: number, sortOrder: string, searchText: string | null, queryParams: any) => {
-    return await axios.get(`${API_URL}v1/collection/${collection}/artworks/Tytuł-asc`, {
-        params: {
-            page: page,
-            pageSize: pageSize,
-            searchText: searchText,
-            search: Object.entries(queryParams).length !== 0 ? true : false,
-            ...queryParams
-        }
-    })
-        .then(res => res.data)
-}
-
 export const createCollection = async (name: any, description: any, jwtToken: any) => {
     const config = {
         headers: { Authorization: `Bearer ${jwtToken}` }
