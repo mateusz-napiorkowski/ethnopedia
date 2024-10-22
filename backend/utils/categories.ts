@@ -1,4 +1,5 @@
 import Artwork from "../models/artwork";
+import CollectionCollection from "../models/collection";
 import { subcategoryData } from "./interfaces"
 
 const getNestedCategories = ((prefix: string, subcategories: Array<subcategoryData>) => {
@@ -13,9 +14,11 @@ const getNestedCategories = ((prefix: string, subcategories: Array<subcategoryDa
 
 export const getAllCategories = async (collectionName: string) => {
     try {
+        const collection = await CollectionCollection.find({name: collectionName}).exec()
+        if(collection.length !== 1)
+            throw new Error("Collection not found")            
         const records = await Artwork.find({ collectionName: collectionName }).exec()
-        if(!records)
-            throw new Error("Collection not found")
+        
         const allCategories: Array<string> = []
         records.forEach((record:any) => {
             for(const category of record.categories){
@@ -32,5 +35,4 @@ export const getAllCategories = async (collectionName: string) => {
         else
             throw new Error("Database unavailable")
     }
-    
 }
