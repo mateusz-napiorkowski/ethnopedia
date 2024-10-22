@@ -1,4 +1,4 @@
-import { getAllCategories } from "./data-export";
+import { getAllCategories } from "./categories";
 
 export const constructQuickSearchFilter = async (searchText: any, collectionName: string) => {
     const allCategories = await getAllCategories(collectionName)

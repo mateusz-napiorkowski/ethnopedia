@@ -1,12 +1,10 @@
 import { Request, Response } from "express"
-import { getCollectionCategoriesArray } from "../utils/controllers-utils/categories"
-import Artwork from "../models/artwork"
+import { getAllCategories } from "../utils/controllers-utils/categories"
 
 export const getCollectionCategories = async (req: Request, res: Response) => {
     try {
         const collectionName = req.params.collectionName
-        const records = await Artwork.find({ collectionName: collectionName }).exec()
-        const categories = getCollectionCategoriesArray(records)
+        const categories = await getAllCategories(collectionName)
         res.status(200).json({categories: categories})
     } catch (error) {
         const err = error as Error

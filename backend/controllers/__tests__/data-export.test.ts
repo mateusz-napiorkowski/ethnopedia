@@ -9,9 +9,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
 const mockGetAllCategories = jest.fn()
+jest.mock("../../utils/controllers-utils/categories", () => ({
+    getAllCategories: () => mockGetAllCategories(),
+}))
+
 const mockFillRow = jest.fn()
 jest.mock("../../utils/controllers-utils/data-export", () => ({
-    getAllCategories: () => mockGetAllCategories(),
     fillRow: () => mockFillRow()
 }))
 
@@ -20,7 +23,7 @@ jest.mock("../../models/artwork", () => ({
     find: () => mockFind()
 }))
 
-describe('data-import controller', () => {
+describe('data-export controller', () => {
     beforeEach(() => {
         jest.resetAllMocks()
         app.use(DataExportRouter)
