@@ -22,7 +22,6 @@ export const registerUser = async (req: Request, res: Response) => {
         const saltRounds = 10
         return bcrypt.hash(newPassword, saltRounds, async (err: Error, hashedPassword: string) => {   
             if (err) {
-                // throw new Error("Password encryption error")
                 console.error(err)
                 return res.status(500).json({ error: "Password encryption error" })
             }            
@@ -50,8 +49,6 @@ export const registerUser = async (req: Request, res: Response) => {
             res.status(400).json({ error: err.message })
         else if(err.message === 'User already exists')
             res.status(409).json({ error: err.message })
-        else if(err.message === 'Password encryption error')
-            res.status(500).json({ error: err.message })
         else
             res.status(503).json({ error: `Database unavailable` })       
     }  
