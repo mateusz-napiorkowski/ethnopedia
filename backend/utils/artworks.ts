@@ -60,8 +60,7 @@ const constructSubcategoriesFilter = (subcategories: Array<Array<string>>, depth
     return subcategoryFilter
 }
 
-
-export const constructAdvSearchFilter = (reqQuery: any, collectionName: string) => {
+const getOnlySearchRulesArray = (reqQuery: any) => {
     let rulesArray: any = []
     for(const categoryName in reqQuery) {
         if(!["page", "pageSize", "sortOrder", "search"].includes(categoryName)) {
@@ -75,44 +74,38 @@ export const constructAdvSearchFilter = (reqQuery: any, collectionName: string) 
             }
         }
     }
+    return rulesArray
+}
+
+export const constructAdvSearchFilter = (requestQuery: any, collectionName: string) => {
+    const searchRules = getOnlySearchRulesArray(requestQuery)
 
     const queryFilter: any = {
-        collectionName: collectionName
+        collectionName: collectionName,
+        categories: {$all: []}
     }
-    const categoriesFilter: any = {$all: []}
-    for(const [categoryName, value] of rulesArray) {
-        const isNotSubcategoryName = categoryName.split('.').length === 1
-        if(isNotSubcategoryName) {
-            const subcategories = rulesArray.filter(([subcategoryName]: [string, any]) => 
-                subcategoryName.startsWith(`${categoryName}.`)
-            );
-            if(!value) {
-                categoriesFilter.$all.push({
-                    $elemMatch: {
-                        name: categoryName,
-                        subcategories: constructSubcategoriesFilter(subcategories, 2)
-                    }
-                })
+
+    searchRules.forEach(([categoryName, categoryValue]: [string, any]) => {
+        if(categoryName.includes('.')) return //skip subcategory search rules
+
+        const currentCategorySubcategoriesSearchRules = searchRules.filter(([subcategoryName]: [string, any]) => 
+            subcategoryName.startsWith(`${categoryName}.`)
+        );
+
+        const categoryFilter: any = { 
+            $elemMatch: { 
+                name: categoryName 
             }
-            else if(subcategories.length === 0) {
-                categoriesFilter.$all.push({
-                    $elemMatch: {
-                        name: categoryName,
-                        values: [value]
-                    }
-                })
-            } else {
-                categoriesFilter.$all.push({
-                    $elemMatch: {
-                        name: categoryName,
-                        values: [value],
-                        subcategories: constructSubcategoriesFilter(subcategories, 2)
-                    }
-                })
-            }
-        }
-    }
-    queryFilter.categories = categoriesFilter
+        };
+
+        if(categoryValue)
+            categoryFilter.$elemMatch.values = [categoryValue];
+        
+        if(currentCategorySubcategoriesSearchRules.length > 0)
+            categoryFilter.$elemMatch.subcategories = constructSubcategoriesFilter(currentCategorySubcategoriesSearchRules, 2);
+
+        queryFilter.categories.$all.push(categoryFilter);
+    })
     return queryFilter
 }
 

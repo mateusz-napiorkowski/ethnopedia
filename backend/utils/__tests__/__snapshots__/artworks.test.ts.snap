@@ -1,5 +1,53 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`artworks util functions tests constructAdvSearchFilter test 1`] = `
+{
+  "categories": {
+    "$all": [
+      {
+        "$elemMatch": {
+          "name": "Tytuł",
+          "subcategories": {
+            "$all": [
+              {
+                "$elemMatch": {
+                  "name": "Podtytuł",
+                  "subcategories": {
+                    "$all": [
+                      {
+                        "$elemMatch": {
+                          "name": "Podpodtytuł",
+                          "values": [
+                            "podpodtytuł",
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+            ],
+          },
+          "values": [
+            "tytuł",
+          ],
+        },
+      },
+    ],
+  },
+  "collectionName": "collection",
+}
+`;
+
+exports[`artworks util functions tests constructAdvSearchFilter test 2`] = `
+{
+  "categories": {
+    "$all": [],
+  },
+  "collectionName": "collection",
+}
+`;
+
 exports[`artworks util functions tests constructQuickSearchFilter test - maxDepth=0 1`] = `
 {
   "categories": [],

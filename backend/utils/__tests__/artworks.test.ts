@@ -43,4 +43,27 @@ describe('artworks util functions tests', () => {
             expect(await constructQuickSearchFilter("text to find", "collection")).toMatchSnapshot()
         }
     )
+
+    test.each([
+        {
+            query: {
+                page: '1',
+                pageSize: '10',
+                search: 'true',
+                'Tytuł.Podtytuł.Podpodtytuł': 'podpodtytuł',
+                'Tytuł': 'tytuł'
+              }
+        },
+        {
+            query: {
+                page: '1',
+                pageSize: '10',
+                search: 'true',
+              }
+        },
+    ])(`constructAdvSearchFilter test`,
+        async ({query}) => {
+            expect(await constructAdvSearchFilter(query, "collection")).toMatchSnapshot()
+        }
+    )
 })
