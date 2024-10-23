@@ -41,14 +41,12 @@ export const getArtworksForCollectionPage = async (req: Request, res: Response) 
         const search = req.query.search === "true" ? true : false
 
         let queryFilter;
-        if(!search) {
+        if(!search)
             queryFilter = { collectionName: collectionName }
-            
-        } else if(searchText) {
+        else if(searchText)
             queryFilter = await constructQuickSearchFilter(searchText, collectionName)
-        } else {
+        else
             queryFilter = await constructAdvSearchFilter(req.query, collectionName)
-        }
         
         const artworksFiltered = await Artwork.find(queryFilter).exec()
         const artworksSorted = sortRecordsByCategory(artworksFiltered, sortOrder)

@@ -1,0 +1,81 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`artworks util functions tests constructQuickSearchFilter test - maxDepth=0 1`] = `
+{
+  "categories": [],
+  "collectionName": "collection",
+}
+`;
+
+exports[`artworks util functions tests constructQuickSearchFilter test - maxDepth=1 1`] = `
+{
+  "categories": {
+    "$elemMatch": {
+      "$or": [
+        {
+          "values": [
+            "text to find",
+          ],
+        },
+      ],
+    },
+  },
+  "collectionName": "collection",
+}
+`;
+
+exports[`artworks util functions tests constructQuickSearchFilter test - maxDepth=4 1`] = `
+{
+  "categories": {
+    "$elemMatch": {
+      "$or": [
+        {
+          "values": [
+            "text to find",
+          ],
+        },
+        {
+          "subcategories": {
+            "$elemMatch": {
+              "$or": [
+                {
+                  "values": [
+                    "text to find",
+                  ],
+                },
+                {
+                  "subcategories": {
+                    "$elemMatch": {
+                      "$or": [
+                        {
+                          "values": [
+                            "text to find",
+                          ],
+                        },
+                        {
+                          "subcategories": {
+                            "$elemMatch": {
+                              "$or": [
+                                {
+                                  "values": [
+                                    "text to find",
+                                  ],
+                                },
+                              ],
+                            },
+                          },
+                        },
+                      ],
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        },
+      ],
+    },
+  },
+  "collectionName": "collection",
+}
+`;

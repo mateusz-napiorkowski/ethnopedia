@@ -1,25 +1,27 @@
 import { getAllCategories } from "./categories";
 
-export const constructQuickSearchFilter = async (searchText: any, collectionName: string) => {
-    const allCategories = await getAllCategories(collectionName)
-    const maxDepth = Math.max.apply(Math, allCategories.map((category) => category.split('.').length))
-
-    const fillSubcategoryFilterPart: any = (currentDepth: number, maxDepth: number) => ({
+const fillSubcategoriesFilterPart: any = (searchText: string, currentDepth: number, maxDepth: number) => {
+    if (maxDepth === 0) return []
+    return {
         $elemMatch: {
             $or: currentDepth === maxDepth 
                 ? [{ values: [searchText] }] 
                 : [
                     { values: [searchText] },
-                    { subcategories: fillSubcategoryFilterPart(currentDepth + 1, maxDepth) }
+                    { subcategories: fillSubcategoriesFilterPart(searchText, currentDepth + 1, maxDepth) }
                 ]
         }
-    })
+    }
+}
 
+export const constructQuickSearchFilter = async (searchText: any, collectionName: string) => {
+    const allCategories = await getAllCategories(collectionName)
+    const maxDepth = allCategories.length > 0 ?
+        Math.max.apply(Math, allCategories.map((category) => category.split('.').length)) : 0
     const queryFilter = {
         collectionName: collectionName,
-        categories: fillSubcategoryFilterPart(1, maxDepth)
+        categories: fillSubcategoriesFilterPart(searchText, 1, maxDepth)
     }
-    
     return queryFilter
 }
 
