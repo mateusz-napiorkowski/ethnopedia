@@ -25,38 +25,31 @@ export const constructQuickSearchFilter = async (searchText: any, collectionName
     return queryFilter
 }
 
-const constructSubcategoriesFilter = (subcategories: Array<Array<string>>, depth: number) => {
+const constructAdvSearchSubcategoriesFilter = (searchRules: Array<Array<string>>, depth: number) => {
     let subcategoryFilter: any = {$all: []}
-    for(const [subcategoryName, subValue] of subcategories) {
-        const deeperSubcategories = subcategories.filter(([deeperSubcategoryName]) => 
+    searchRules.forEach(([subcategoryName, subcategoryValue]) => {
+        const subcategoryNameSplitByDot = subcategoryName.split('.');
+        const isCurrentDepthSubcategory = subcategoryNameSplitByDot.length === depth;
+        if (!isCurrentDepthSubcategory) return
+
+        const deeperSubcategoriesSearchRules = searchRules.filter(([deeperSubcategoryName]) => 
             deeperSubcategoryName.startsWith(`${subcategoryName}.`)
         );
 
-        const isCurrentDepthSubcategory = subcategoryName.split('.').length === depth
-        if(isCurrentDepthSubcategory && deeperSubcategories.length === 0 && subValue !== undefined) {
-            subcategoryFilter.$all.push({
-                $elemMatch: {
-                    name: subcategoryName.split('.').slice(depth - 1).join('.'),
-                    values: [subValue]
-                }
-            })
-        } else if(isCurrentDepthSubcategory && subValue === undefined) {
-            subcategoryFilter.$all.push({
-                $elemMatch: {
-                    name: subcategoryName.split('.').slice(depth - 1).join('.'),
-                    subcategories: constructSubcategoriesFilter(deeperSubcategories, depth + 1)
-                }
-            })
-        } else if(isCurrentDepthSubcategory) {
-            subcategoryFilter.$all.push({
-                $elemMatch: {
-                    name: subcategoryName.split('.').slice(depth - 1).join('.'),
-                    values: [subValue],
-                    subcategories: constructSubcategoriesFilter(deeperSubcategories, depth + 1)
-                }
-            })
-        }
-    }
+        let newFilterPart: any = {
+            $elemMatch: {
+                name: subcategoryNameSplitByDot.slice(depth - 1).join('.'),
+            }
+        };
+
+        if(subcategoryValue)
+            newFilterPart.$elemMatch.values = [subcategoryValue]
+
+        if(deeperSubcategoriesSearchRules.length != 0)
+            newFilterPart.$elemMatch.subcategories = constructAdvSearchSubcategoriesFilter(deeperSubcategoriesSearchRules, depth + 1)
+
+        subcategoryFilter.$all.push(newFilterPart)
+    })
     return subcategoryFilter
 }
 
@@ -102,7 +95,7 @@ export const constructAdvSearchFilter = (requestQuery: any, collectionName: stri
             categoryFilter.$elemMatch.values = [categoryValue];
         
         if(currentCategorySubcategoriesSearchRules.length > 0)
-            categoryFilter.$elemMatch.subcategories = constructSubcategoriesFilter(currentCategorySubcategoriesSearchRules, 2);
+            categoryFilter.$elemMatch.subcategories = constructAdvSearchSubcategoriesFilter(currentCategorySubcategoriesSearchRules, 2);
 
         queryFilter.categories.$all.push(categoryFilter);
     })

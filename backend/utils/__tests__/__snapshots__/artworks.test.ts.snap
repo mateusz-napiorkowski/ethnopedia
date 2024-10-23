@@ -17,19 +17,59 @@ exports[`artworks util functions tests constructAdvSearchFilter test 1`] = `
                       {
                         "$elemMatch": {
                           "name": "Podpodtytuł",
-                          "values": [
-                            "podpodtytuł",
-                          ],
+                          "subcategories": {
+                            "$all": [
+                              {
+                                "$elemMatch": {
+                                  "name": "Podpodpodtytuł",
+                                  "values": [
+                                    "testowy podpodpodtytuł",
+                                  ],
+                                },
+                              },
+                            ],
+                          },
                         },
                       },
                     ],
                   },
+                  "values": [
+                    "testowy podtytuł",
+                  ],
                 },
               },
             ],
           },
           "values": [
-            "tytuł",
+            "testowy",
+          ],
+        },
+      },
+      {
+        "$elemMatch": {
+          "name": "Artyści",
+          "values": [
+            "testowi",
+          ],
+        },
+      },
+      {
+        "$elemMatch": {
+          "name": "Rok",
+          "subcategories": {
+            "$all": [
+              {
+                "$elemMatch": {
+                  "name": "Miesiąc",
+                  "values": [
+                    "Luty",
+                  ],
+                },
+              },
+            ],
+          },
+          "values": [
+            "966",
           ],
         },
       },

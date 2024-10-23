@@ -50,8 +50,12 @@ describe('artworks util functions tests', () => {
                 page: '1',
                 pageSize: '10',
                 search: 'true',
-                'Tytuł.Podtytuł.Podpodtytuł': 'podpodtytuł',
-                'Tytuł': 'tytuł'
+                'Tytuł': 'testowy',
+                'Tytuł.Podtytuł': 'testowy podtytuł',
+                'Tytuł.Podtytuł.Podpodtytuł.Podpodpodtytuł': 'testowy podpodpodtytuł',
+                'Artyści': 'testowi',
+                'Rok.Miesiąc': 'Luty',
+                Rok: '966'
               }
         },
         {
