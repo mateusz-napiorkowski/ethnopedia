@@ -1,6 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`artworks util functions tests constructAdvSearchFilter test 1`] = `
+exports[`artworks util functions tests constructAdvSearchFilter test - no search rules 1`] = `
+{
+  "categories": {
+    "$all": [],
+  },
+  "collectionName": "collection",
+}
+`;
+
+exports[`artworks util functions tests constructAdvSearchFilter test - standard input 1`] = `
 {
   "categories": {
     "$all": [
@@ -74,15 +83,6 @@ exports[`artworks util functions tests constructAdvSearchFilter test 1`] = `
         },
       },
     ],
-  },
-  "collectionName": "collection",
-}
-`;
-
-exports[`artworks util functions tests constructAdvSearchFilter test 2`] = `
-{
-  "categories": {
-    "$all": [],
   },
   "collectionName": "collection",
 }
@@ -166,4 +166,558 @@ exports[`artworks util functions tests constructQuickSearchFilter test - maxDept
   },
   "collectionName": "collection",
 }
+`;
+
+exports[`artworks util functions tests sortRecordsByCategory test - category to sort records by doesn't exist on some records 1`] = `
+[
+  {
+    "__v": 0,
+    "_id": "6718f28bc89e4d053eebb5df",
+    "categories": [
+      {
+        "name": "Tytuł",
+        "subcategories": [],
+        "values": [
+          "Inny tytuł",
+        ],
+      },
+      {
+        "name": "Artyści",
+        "subcategories": [],
+        "values": [
+          "Inny artysta",
+        ],
+      },
+      {
+        "name": "Rok",
+        "subcategories": [],
+        "values": [
+          "1410",
+        ],
+      },
+    ],
+    "collectionName": "nowa",
+    "createdAt": "2024-10-23T12:56:43.182Z",
+    "updatedAt": "2024-10-23T12:56:43.182Z",
+  },
+  {
+    "__v": 0,
+    "_id": "6718f272c89e4d053eebb5d8",
+    "categories": [
+      {
+        "name": "Tytuł",
+        "subcategories": [
+          {
+            "name": "Podtytuł",
+            "values": [
+              "podtytuł",
+            ],
+          },
+        ],
+        "values": [
+          "Tytułowy",
+        ],
+      },
+      {
+        "name": "Artyści",
+        "subcategories": [],
+        "values": [
+          "Jan Nowak",
+        ],
+      },
+      {
+        "name": "Rok",
+        "subcategories": [],
+        "values": [
+          "567",
+        ],
+      },
+    ],
+    "collectionName": "nowa",
+    "createdAt": "2024-10-23T12:56:18.209Z",
+    "updatedAt": "2024-10-23T12:56:18.209Z",
+  },
+  {
+    "__v": 0,
+    "_id": "6718f2bfc89e4d053eebb5e6",
+    "categories": [
+      {
+        "name": "Artyści",
+        "subcategories": [],
+        "values": [
+          "Pierwsi",
+        ],
+      },
+      {
+        "name": "Rok",
+        "subcategories": [],
+        "values": [
+          "444",
+        ],
+      },
+    ],
+    "collectionName": "nowa",
+    "createdAt": "2024-10-23T12:57:35.366Z",
+    "updatedAt": "2024-10-23T12:57:35.366Z",
+  },
+  {
+    "__v": 0,
+    "_id": "6718f2bfc89e4d053eebb5e6",
+    "categories": [
+      {
+        "name": "Artyści",
+        "subcategories": [],
+        "values": [
+          "Pierwsi",
+        ],
+      },
+      {
+        "name": "Rok",
+        "subcategories": [],
+        "values": [
+          "444",
+        ],
+      },
+    ],
+    "collectionName": "nowa",
+    "createdAt": "2024-10-23T12:57:35.366Z",
+    "updatedAt": "2024-10-23T12:57:35.366Z",
+  },
+]
+`;
+
+exports[`artworks util functions tests sortRecordsByCategory test - nonexistent category to sort by 1`] = `
+[
+  {
+    "__v": 0,
+    "_id": "6718f272c89e4d053eebb5d8",
+    "categories": [
+      {
+        "name": "Tytuł",
+        "subcategories": [
+          {
+            "name": "Podtytuł",
+            "values": [
+              "podtytuł",
+            ],
+          },
+        ],
+        "values": [
+          "Tytułowy",
+        ],
+      },
+      {
+        "name": "Artyści",
+        "subcategories": [],
+        "values": [
+          "Jan Nowak",
+        ],
+      },
+      {
+        "name": "Rok",
+        "subcategories": [],
+        "values": [
+          "567",
+        ],
+      },
+    ],
+    "collectionName": "nowa",
+    "createdAt": "2024-10-23T12:56:18.209Z",
+    "updatedAt": "2024-10-23T12:56:18.209Z",
+  },
+  {
+    "__v": 0,
+    "_id": "6718f28bc89e4d053eebb5df",
+    "categories": [
+      {
+        "name": "Tytuł",
+        "subcategories": [],
+        "values": [
+          "Inny tytuł",
+        ],
+      },
+      {
+        "name": "Artyści",
+        "subcategories": [],
+        "values": [
+          "Inny artysta",
+        ],
+      },
+      {
+        "name": "Rok",
+        "subcategories": [],
+        "values": [
+          "1410",
+        ],
+      },
+    ],
+    "collectionName": "nowa",
+    "createdAt": "2024-10-23T12:56:43.182Z",
+    "updatedAt": "2024-10-23T12:56:43.182Z",
+  },
+  {
+    "__v": 0,
+    "_id": "6718f2bfc89e4d053eebb5e6",
+    "categories": [
+      {
+        "name": "Tytuł",
+        "subcategories": [
+          {
+            "name": "Podtytuł",
+            "values": [
+              "Jakiś podtytuł",
+            ],
+          },
+        ],
+        "values": [
+          "Kolejny tytuł",
+        ],
+      },
+      {
+        "name": "Artyści",
+        "subcategories": [],
+        "values": [
+          "Pierwsi",
+        ],
+      },
+      {
+        "name": "Rok",
+        "subcategories": [],
+        "values": [
+          "444",
+        ],
+      },
+    ],
+    "collectionName": "nowa",
+    "createdAt": "2024-10-23T12:57:35.366Z",
+    "updatedAt": "2024-10-23T12:57:35.366Z",
+  },
+]
+`;
+
+exports[`artworks util functions tests sortRecordsByCategory test - sort by Artyści asc 1`] = `
+[
+  {
+    "__v": 0,
+    "_id": "6718f28bc89e4d053eebb5df",
+    "categories": [
+      {
+        "name": "Tytuł",
+        "subcategories": [],
+        "values": [
+          "Inny tytuł",
+        ],
+      },
+      {
+        "name": "Artyści",
+        "subcategories": [],
+        "values": [
+          "Inny artysta",
+        ],
+      },
+      {
+        "name": "Rok",
+        "subcategories": [],
+        "values": [
+          "1410",
+        ],
+      },
+    ],
+    "collectionName": "nowa",
+    "createdAt": "2024-10-23T12:56:43.182Z",
+    "updatedAt": "2024-10-23T12:56:43.182Z",
+  },
+  {
+    "__v": 0,
+    "_id": "6718f272c89e4d053eebb5d8",
+    "categories": [
+      {
+        "name": "Tytuł",
+        "subcategories": [
+          {
+            "name": "Podtytuł",
+            "values": [
+              "podtytuł",
+            ],
+          },
+        ],
+        "values": [
+          "Tytułowy",
+        ],
+      },
+      {
+        "name": "Artyści",
+        "subcategories": [],
+        "values": [
+          "Jan Nowak",
+        ],
+      },
+      {
+        "name": "Rok",
+        "subcategories": [],
+        "values": [
+          "567",
+        ],
+      },
+    ],
+    "collectionName": "nowa",
+    "createdAt": "2024-10-23T12:56:18.209Z",
+    "updatedAt": "2024-10-23T12:56:18.209Z",
+  },
+  {
+    "__v": 0,
+    "_id": "6718f2bfc89e4d053eebb5e6",
+    "categories": [
+      {
+        "name": "Tytuł",
+        "subcategories": [
+          {
+            "name": "Podtytuł",
+            "values": [
+              "Jakiś podtytuł",
+            ],
+          },
+        ],
+        "values": [
+          "Kolejny tytuł",
+        ],
+      },
+      {
+        "name": "Artyści",
+        "subcategories": [],
+        "values": [
+          "Pierwsi",
+        ],
+      },
+      {
+        "name": "Rok",
+        "subcategories": [],
+        "values": [
+          "444",
+        ],
+      },
+    ],
+    "collectionName": "nowa",
+    "createdAt": "2024-10-23T12:57:35.366Z",
+    "updatedAt": "2024-10-23T12:57:35.366Z",
+  },
+]
+`;
+
+exports[`artworks util functions tests sortRecordsByCategory test - sort by Tytuł asc 1`] = `
+[
+  {
+    "__v": 0,
+    "_id": "6718f28bc89e4d053eebb5df",
+    "categories": [
+      {
+        "name": "Tytuł",
+        "subcategories": [],
+        "values": [
+          "Inny tytuł",
+        ],
+      },
+      {
+        "name": "Artyści",
+        "subcategories": [],
+        "values": [
+          "Inny artysta",
+        ],
+      },
+      {
+        "name": "Rok",
+        "subcategories": [],
+        "values": [
+          "1410",
+        ],
+      },
+    ],
+    "collectionName": "nowa",
+    "createdAt": "2024-10-23T12:56:43.182Z",
+    "updatedAt": "2024-10-23T12:56:43.182Z",
+  },
+  {
+    "__v": 0,
+    "_id": "6718f2bfc89e4d053eebb5e6",
+    "categories": [
+      {
+        "name": "Tytuł",
+        "subcategories": [
+          {
+            "name": "Podtytuł",
+            "values": [
+              "Jakiś podtytuł",
+            ],
+          },
+        ],
+        "values": [
+          "Kolejny tytuł",
+        ],
+      },
+      {
+        "name": "Artyści",
+        "subcategories": [],
+        "values": [
+          "Pierwsi",
+        ],
+      },
+      {
+        "name": "Rok",
+        "subcategories": [],
+        "values": [
+          "444",
+        ],
+      },
+    ],
+    "collectionName": "nowa",
+    "createdAt": "2024-10-23T12:57:35.366Z",
+    "updatedAt": "2024-10-23T12:57:35.366Z",
+  },
+  {
+    "__v": 0,
+    "_id": "6718f272c89e4d053eebb5d8",
+    "categories": [
+      {
+        "name": "Tytuł",
+        "subcategories": [
+          {
+            "name": "Podtytuł",
+            "values": [
+              "podtytuł",
+            ],
+          },
+        ],
+        "values": [
+          "Tytułowy",
+        ],
+      },
+      {
+        "name": "Artyści",
+        "subcategories": [],
+        "values": [
+          "Jan Nowak",
+        ],
+      },
+      {
+        "name": "Rok",
+        "subcategories": [],
+        "values": [
+          "567",
+        ],
+      },
+    ],
+    "collectionName": "nowa",
+    "createdAt": "2024-10-23T12:56:18.209Z",
+    "updatedAt": "2024-10-23T12:56:18.209Z",
+  },
+]
+`;
+
+exports[`artworks util functions tests sortRecordsByCategory test - sort by Tytuł desc 1`] = `
+[
+  {
+    "__v": 0,
+    "_id": "6718f272c89e4d053eebb5d8",
+    "categories": [
+      {
+        "name": "Tytuł",
+        "subcategories": [
+          {
+            "name": "Podtytuł",
+            "values": [
+              "podtytuł",
+            ],
+          },
+        ],
+        "values": [
+          "Tytułowy",
+        ],
+      },
+      {
+        "name": "Artyści",
+        "subcategories": [],
+        "values": [
+          "Jan Nowak",
+        ],
+      },
+      {
+        "name": "Rok",
+        "subcategories": [],
+        "values": [
+          "567",
+        ],
+      },
+    ],
+    "collectionName": "nowa",
+    "createdAt": "2024-10-23T12:56:18.209Z",
+    "updatedAt": "2024-10-23T12:56:18.209Z",
+  },
+  {
+    "__v": 0,
+    "_id": "6718f2bfc89e4d053eebb5e6",
+    "categories": [
+      {
+        "name": "Tytuł",
+        "subcategories": [
+          {
+            "name": "Podtytuł",
+            "values": [
+              "Jakiś podtytuł",
+            ],
+          },
+        ],
+        "values": [
+          "Kolejny tytuł",
+        ],
+      },
+      {
+        "name": "Artyści",
+        "subcategories": [],
+        "values": [
+          "Pierwsi",
+        ],
+      },
+      {
+        "name": "Rok",
+        "subcategories": [],
+        "values": [
+          "444",
+        ],
+      },
+    ],
+    "collectionName": "nowa",
+    "createdAt": "2024-10-23T12:57:35.366Z",
+    "updatedAt": "2024-10-23T12:57:35.366Z",
+  },
+  {
+    "__v": 0,
+    "_id": "6718f28bc89e4d053eebb5df",
+    "categories": [
+      {
+        "name": "Tytuł",
+        "subcategories": [],
+        "values": [
+          "Inny tytuł",
+        ],
+      },
+      {
+        "name": "Artyści",
+        "subcategories": [],
+        "values": [
+          "Inny artysta",
+        ],
+      },
+      {
+        "name": "Rok",
+        "subcategories": [],
+        "values": [
+          "1410",
+        ],
+      },
+    ],
+    "collectionName": "nowa",
+    "createdAt": "2024-10-23T12:56:43.182Z",
+    "updatedAt": "2024-10-23T12:56:43.182Z",
+  },
+]
 `;

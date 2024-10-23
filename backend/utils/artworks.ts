@@ -105,15 +105,21 @@ export const constructAdvSearchFilter = (requestQuery: any, collectionName: stri
 export const sortRecordsByCategory = (records: any, order: string) => {
     const [categoryToSortBy, ascOrDesc] = order.split('-')
 
-    const recordAndCategoryValuePairs = records
-    .flatMap((record: any) => 
-        record.categories
-            .filter((category: any) => category.name === categoryToSortBy)
-            .map((category: any) => [record, category.values.join(", ")])
-    )
-    .sort((a: any, b: any) => a[1].toUpperCase().localeCompare(b[1].toUpperCase()));
+    const recordAndCategoryValuePairs = records.map((record: any) => {
+        const matchingCategory = record.categories.find((category: any) => category.name === categoryToSortBy);
+        const categoryValue = matchingCategory ? matchingCategory.values.join(", ") : null;
+        return [record, categoryValue];
+    })
+    .sort((a: any, b: any) => {
+        if (a[1] && b[1])
+            return a[1].toUpperCase().localeCompare(b[1].toUpperCase())
+        
+        //records which have the category to sort by come first
+        if (a[1]) return -1;
+        if (b[1]) return 1;
+    });    
+    
     const sortedRecords = recordAndCategoryValuePairs.map((pair: any) => pair[0]);
-
     if(ascOrDesc == "desc")
         return sortedRecords.reverse()
     return sortedRecords
