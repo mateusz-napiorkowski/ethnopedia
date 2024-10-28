@@ -11,7 +11,6 @@ import { jwtDecode } from "jwt-decode"
 const LoginPage = () => {
     const loginMutation = useLoginMutation()
     const { setUserData } = useUser()
-    const [test, setTest] = React.useState("hi")
 
     const [showErrorToast, setShowErrorToast] = React.useState(false)
     const validationSchema = Yup.object().shape({
@@ -35,7 +34,7 @@ const LoginPage = () => {
 
     return <section className="bg-gray-50 dark:bg-gray-900">
         {showErrorToast && (
-            <div data-testid="errorDiv" className={`fixed bottom-5 right-5 z-50 ${showErrorToast ? "animate-slide-in" : "animate-fade-out"}`}>
+            <div className={`fixed bottom-5 right-5 z-50 ${showErrorToast ? "animate-slide-in" : "animate-fade-out"}`}>
                 <Toast>
                     <div
                         className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-red-100 text-red-500 dark:bg-red-700 dark:text-red-200">
@@ -53,7 +52,6 @@ const LoginPage = () => {
             <div
                 className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800
                     dark:border-gray-600 border border-gray-200">
-                <button data-testid="testowy" value={test} onClick={() => setTest("Blabla")}></button>
                 <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
                     <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
                         Zaloguj się
@@ -112,7 +110,7 @@ const LoginPage = () => {
                                     <ErrorMessage name="password" component="div"
                                                   className="text-red-600 text-sm" />
                                 </div>
-                                <button type="submit" data-testid="loginButton"
+                                <button type="submit" data-testid="login-button"
                                         className="color-button w-full">
                                     Zaloguj się
                                 </button>

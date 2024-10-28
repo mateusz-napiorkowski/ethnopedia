@@ -6,8 +6,9 @@
       "dom.iterable",
       "esnext"
     ],
-    "types": ["@testing-library/jest-dom"],
-    "typeRoots": ["./src/@types"],
+    "baseUrl": ".",
+    "types": ["node", "jest", "@testing-library/jest-dom"],
+    // "typeRoots": ["./node_modules/@types"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
