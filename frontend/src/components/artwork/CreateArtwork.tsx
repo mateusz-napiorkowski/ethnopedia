@@ -7,9 +7,9 @@ import { useUser } from "../../providers/UserProvider";
 import Navigation from "../Navigation";
 import FetchDataWrapper from "../TreeWrapper";
 
-import { Category } from "./types/ArtworkTypes";
+import { Category } from '../../@types/Category';
 import { createArtwork, editArtwork } from "../../api/artworks";
-import NewArtworkStructure from "./NewArtworkStructure";
+import MetadataForm from "./MetadataForm";
 
 
 let example_data: Category[] = [
@@ -30,11 +30,11 @@ let example_data: Category[] = [
 // function transformToJson(data: Category[]): { categories: Category[]; collectionName: string } {
 //     return { categories: data, collectionName: window.location.href.split("/")[window.location.href.split("/").length-2] };
 // }
-  
+
 
 
 const CreateArtwork: React.FC = () => {
-    const location = useLocation();    
+    const location = useLocation();
     const queryClient = useQueryClient();
     const { jwtToken } = useUser();
     const navigate = useNavigate();
@@ -45,7 +45,7 @@ const CreateArtwork: React.FC = () => {
     if(location.state && location.state.categories) {
         initialFormData = location.state.categories
     }
-    
+
 
     const handleSubmit = async (formDataList: Category[]) => {
         console.log("Submit");
@@ -57,7 +57,7 @@ const CreateArtwork: React.FC = () => {
             } else {
                 // edycja rekordu
                 const artworkID = window.location.href.split("/")[window.location.href.split("/").length-2]
-                await editArtwork(dataToInsert, artworkID, jwtToken)   
+                await editArtwork(dataToInsert, artworkID, jwtToken)
             }
             queryClient.invalidateQueries(["collection"]);
             navigate(-1); // Powrót do poprzedniej strony
@@ -92,7 +92,7 @@ const CreateArtwork: React.FC = () => {
                                                 </h3>
                                             </div>
                                             <div className="flex-grow">
-                                                <NewArtworkStructure 
+                                                <MetadataForm
                                                     initialFormData={initialFormData}
                                                     setDataToInsert={(dataToInsert: any) => setDataToInsert(dataToInsert)} />
                                             </div>
