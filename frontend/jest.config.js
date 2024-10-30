@@ -11,4 +11,8 @@ module.exports = {
     "@testing-library/jest-dom"
   ],
   roots: ["./src"],
+  moduleNameMapper: {
+    '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
+    '\\.(svg)$': '<rootDir>/__mocks__/svgMock.js',
+  },
 };
