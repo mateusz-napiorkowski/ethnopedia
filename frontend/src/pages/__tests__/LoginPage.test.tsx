@@ -1,6 +1,5 @@
-import React from "react"
 import '@testing-library/jest-dom';
-import { fireEvent, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import LoginPage from "../LoginPage"
 import { QueryClient, QueryClientProvider } from "react-query";
 import { MemoryRouter as Router } from "react-router-dom";
