@@ -15,7 +15,7 @@ const WarningPopup = ({ onClose, deleteSelected, warningMessage }: Props) => {
         <div className="relative p-4 w-full max-w-md max-h-full ">
             <div className="relative bg-white rounded-lg shadow-md dark:bg-gray-700 border-gray-200 border">
                 <div className="flex justify-end">
-                    <button type="button" className="items-end content-end border-none"
+                    <button type="button" className="items-end content-end border-none" data-testid="exitButton"
                             onClick={onClose}>
                         <CloseIcon />
                     </button>
