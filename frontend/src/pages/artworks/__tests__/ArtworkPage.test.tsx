@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { render, waitFor } from '@testing-library/react'
+import { render, waitFor, screen } from '@testing-library/react'
 import ArtworkPage from "../ArtworkPage"
 import { QueryClient, QueryClientProvider } from "react-query";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
@@ -86,6 +86,84 @@ describe("ArtworkPage tests", () => {
 
         await waitFor(() => expect(getByTestId('loaded-artwork-page-container')).toMatchSnapshot())
         expect(queryByTestId("loading-page-container")).not.toBeInTheDocument()
+    })
+
+    test("edit disabled", async () => {
+        const user = userEvent.setup()
+        mockGetArtwork.mockReturnValue(artworkData)
+        const artworkId = "670c2aecc29b79e5aaef1b9b"
+        const collection = "example collection"
+        const {getByTestId, getByRole, findByText} = render(
+            <QueryClientProvider client={queryClient}>
+                <MemoryRouter initialEntries={[`/collections/${collection}/artworks/${artworkId}`]}>
+                    <Routes>
+                        <Route path="/collections/:collection/artworks/:artworkId" element={<ArtworkPage />}/>
+                    </Routes>  
+                </MemoryRouter>
+            </QueryClientProvider>
+        )
+
+        await waitFor(() => getByTestId('loaded-artwork-page-container'))
+        expect(getByRole("button", {
+            name: /edytuj/i
+        })).toBeDisabled();
+    })
+
+    test("edit button navigation works correctly ???????", async () => {
+        const user = userEvent.setup()
+        mockGetArtwork.mockReturnValue(artworkData)
+        const artworkId = "670c2aecc29b79e5aaef1b9b"
+        const collection = "example collection"
+        
+        const UserContextProps = {
+            isUserLoggedIn: true,
+            firstName: "123",
+            userId: "123",
+            jwtToken: "123",
+            setUserData: jest.fn()
+        };
+
+        const {getByTestId, getByRole, getByText} = render(
+            <UserContext.Provider value={ UserContextProps }>
+                <QueryClientProvider client={queryClient}>
+                    <MemoryRouter initialEntries={[`/collections/${collection}/artworks/${artworkId}`]}>
+                        <Routes>
+                            <Route path="/collections/:collection/artworks/:artworkId" element={<ArtworkPage />}/>
+                        </Routes>  
+                    </MemoryRouter>
+                </QueryClientProvider>    
+            </UserContext.Provider>
+            
+        )
+
+        await waitFor(() => getByTestId('loaded-artwork-page-container'))
+        await user.click(getByRole("button", {
+            name: /edytuj/i
+        }))
+
+        // await expect(getByTestId('loaded-artwork-page-container')).toMatchSnapshot()
+        // await expect(screen.findByText(/edytuj rekord/i)).toBeInTheDocument()
+    })
+
+    test("del disabled", async () => {
+        const user = userEvent.setup()
+        mockGetArtwork.mockReturnValue(artworkData)
+        const artworkId = "670c2aecc29b79e5aaef1b9b"
+        const collection = "example collection"
+        const {getByTestId, getByRole, findByText} = render(
+            <QueryClientProvider client={queryClient}>
+                <MemoryRouter initialEntries={[`/collections/${collection}/artworks/${artworkId}`]}>
+                    <Routes>
+                        <Route path="/collections/:collection/artworks/:artworkId" element={<ArtworkPage />}/>
+                    </Routes>  
+                </MemoryRouter>
+            </QueryClientProvider>
+        )
+
+        await waitFor(() => getByTestId('loaded-artwork-page-container'))
+        expect(getByRole("button", {
+            name: /usuń/i
+        })).toBeDisabled();
     })
 
     test("component renders delete warning popup correctly", async () => {
