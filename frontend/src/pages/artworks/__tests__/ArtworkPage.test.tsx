@@ -1,10 +1,53 @@
 import '@testing-library/jest-dom';
-import { render, waitFor, screen } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import ArtworkPage from "../ArtworkPage"
 import { QueryClient, QueryClientProvider } from "react-query";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import { UserContext } from '../../../providers/UserProvider';
+
+const mockGetArtwork = jest.fn()
+const mockDeleteArtwork = jest.fn()
+jest.mock('../../../api/artworks', () => ({
+    getArtwork: () => mockGetArtwork(),
+    deleteArtwork: () => mockDeleteArtwork()
+}))
+
+const queryClient = new QueryClient();
+const user = userEvent.setup()
+
+const renderPage = (
+    queryClient: QueryClient, 
+    userContextProps: any = {
+        isUserLoggedIn: false,
+        firstName: "",
+        userId: "",
+        jwtToken: undefined,
+        setUserData: jest.fn()
+    },
+    collection: string = "example collection",
+    artworkId: string = "670c2aecc29b79e5aaef1b9b"
+    ) => {
+        return render(
+            <UserContext.Provider value={ userContextProps }>
+                <QueryClientProvider client={queryClient}>
+                    <MemoryRouter initialEntries={[`/collections/${collection}/artworks/${artworkId}`]}>
+                        <Routes>
+                            <Route path="/collections/:collection/artworks/:artworkId" element={<ArtworkPage />}/>
+                        </Routes>  
+                    </MemoryRouter>
+                </QueryClientProvider>    
+            </UserContext.Provider>
+        );
+};
+
+const loggedInUserContextProps = {
+    isUserLoggedIn: true,
+    firstName: "123",
+    userId: "123",
+    jwtToken: "123",
+    setUserData: jest.fn()
+};
 
 const artworkData = {
     "artwork": {
@@ -39,69 +82,30 @@ const artworkData = {
     }
 }
 
-jest.mock('../../../api/artworks');
-
-const mockGetArtwork = jest.fn()
-jest.mock('../../../api/artworks', () => ({
-    getArtwork: () => mockGetArtwork()
-}))
-
-const queryClient = new QueryClient();
-
 describe("ArtworkPage tests", () => {
     beforeEach(() => {
         jest.clearAllMocks();
         queryClient.clear();
     });
 
-    test("component renders correctly", async () => {
-        const artworkId = "670c2aecc29b79e5aaef1b9b"
-        const collection = "example collection"
-        const {getByTestId, queryByTestId} = render(
-            <QueryClientProvider client={queryClient}>
-                <MemoryRouter initialEntries={[`/collections/${collection}/artworks/${artworkId}`]}>
-                    <Routes>
-                        <Route path="/collections/:collection/artworks/:artworkId" element={<ArtworkPage />}/>
-                    </Routes>  
-                </MemoryRouter>
-            </QueryClientProvider>
-        )
+    test("component renders correctly", async () => {        
+        const {getByTestId, queryByTestId} = renderPage(queryClient)
+        
         expect(getByTestId('loading-page-container')).toMatchSnapshot()
         expect(queryByTestId("loaded-artwork-page-container")).not.toBeInTheDocument()
     })
 
     test("component rerenders correctly when data is fetched from API", async () => {
         mockGetArtwork.mockReturnValue(artworkData)
-        const artworkId = "670c2aecc29b79e5aaef1b9b"
-        const collection = "example collection"
-        const {getByTestId, queryByTestId} = render(
-            <QueryClientProvider client={queryClient}>
-                <MemoryRouter initialEntries={[`/collections/${collection}/artworks/${artworkId}`]}>
-                    <Routes>
-                        <Route path="/collections/:collection/artworks/:artworkId" element={<ArtworkPage />}/>
-                    </Routes>  
-                </MemoryRouter>
-            </QueryClientProvider>
-        )
+        const {getByTestId, queryByTestId} = renderPage(queryClient)
 
         await waitFor(() => expect(getByTestId('loaded-artwork-page-container')).toMatchSnapshot())
         expect(queryByTestId("loading-page-container")).not.toBeInTheDocument()
     })
 
     test("edit disabled", async () => {
-        const user = userEvent.setup()
         mockGetArtwork.mockReturnValue(artworkData)
-        const artworkId = "670c2aecc29b79e5aaef1b9b"
-        const collection = "example collection"
-        const {getByTestId, getByRole, findByText} = render(
-            <QueryClientProvider client={queryClient}>
-                <MemoryRouter initialEntries={[`/collections/${collection}/artworks/${artworkId}`]}>
-                    <Routes>
-                        <Route path="/collections/:collection/artworks/:artworkId" element={<ArtworkPage />}/>
-                    </Routes>  
-                </MemoryRouter>
-            </QueryClientProvider>
-        )
+        const {getByTestId, getByRole, findByText} = renderPage(queryClient)
 
         await waitFor(() => getByTestId('loaded-artwork-page-container'))
         expect(getByRole("button", {
@@ -110,31 +114,9 @@ describe("ArtworkPage tests", () => {
     })
 
     test("edit button navigation works correctly ???????", async () => {
-        const user = userEvent.setup()
         mockGetArtwork.mockReturnValue(artworkData)
-        const artworkId = "670c2aecc29b79e5aaef1b9b"
-        const collection = "example collection"
-        
-        const UserContextProps = {
-            isUserLoggedIn: true,
-            firstName: "123",
-            userId: "123",
-            jwtToken: "123",
-            setUserData: jest.fn()
-        };
 
-        const {getByTestId, getByRole, getByText} = render(
-            <UserContext.Provider value={ UserContextProps }>
-                <QueryClientProvider client={queryClient}>
-                    <MemoryRouter initialEntries={[`/collections/${collection}/artworks/${artworkId}`]}>
-                        <Routes>
-                            <Route path="/collections/:collection/artworks/:artworkId" element={<ArtworkPage />}/>
-                        </Routes>  
-                    </MemoryRouter>
-                </QueryClientProvider>    
-            </UserContext.Provider>
-            
-        )
+        const {getByTestId, getByRole, getByText} = renderPage(queryClient, loggedInUserContextProps)
 
         await waitFor(() => getByTestId('loaded-artwork-page-container'))
         await user.click(getByRole("button", {
@@ -146,19 +128,8 @@ describe("ArtworkPage tests", () => {
     })
 
     test("del disabled", async () => {
-        const user = userEvent.setup()
         mockGetArtwork.mockReturnValue(artworkData)
-        const artworkId = "670c2aecc29b79e5aaef1b9b"
-        const collection = "example collection"
-        const {getByTestId, getByRole, findByText} = render(
-            <QueryClientProvider client={queryClient}>
-                <MemoryRouter initialEntries={[`/collections/${collection}/artworks/${artworkId}`]}>
-                    <Routes>
-                        <Route path="/collections/:collection/artworks/:artworkId" element={<ArtworkPage />}/>
-                    </Routes>  
-                </MemoryRouter>
-            </QueryClientProvider>
-        )
+        const {getByTestId, getByRole, findByText} = renderPage(queryClient)
 
         await waitFor(() => getByTestId('loaded-artwork-page-container'))
         expect(getByRole("button", {
@@ -167,31 +138,9 @@ describe("ArtworkPage tests", () => {
     })
 
     test("component renders delete warning popup correctly", async () => {
-        const user = userEvent.setup()
         mockGetArtwork.mockReturnValue(artworkData)
-        const artworkId = "670c2aecc29b79e5aaef1b9b"
-        const collection = "example collection"
-        
-        const UserContextProps = {
-            isUserLoggedIn: true,
-            firstName: "123",
-            userId: "123",
-            jwtToken: "123",
-            setUserData: jest.fn()
-        };
 
-        const {getByTestId, getByRole, getByText} = render(
-            <UserContext.Provider value={ UserContextProps }>
-                <QueryClientProvider client={queryClient}>
-                    <MemoryRouter initialEntries={[`/collections/${collection}/artworks/${artworkId}`]}>
-                        <Routes>
-                            <Route path="/collections/:collection/artworks/:artworkId" element={<ArtworkPage />}/>
-                        </Routes>  
-                    </MemoryRouter>
-                </QueryClientProvider>    
-            </UserContext.Provider>
-            
-        )
+        const {getByTestId, getByRole, getByText} = renderPage(queryClient, loggedInUserContextProps)
 
         await waitFor(() => getByTestId('loaded-artwork-page-container'))
         await user.click(getByRole("button", {
@@ -203,31 +152,9 @@ describe("ArtworkPage tests", () => {
     })
 
     test("delete warning popup exiting test 1", async () => {
-        const user = userEvent.setup()
         mockGetArtwork.mockReturnValue(artworkData)
-        const artworkId = "670c2aecc29b79e5aaef1b9b"
-        const collection = "example collection"
-        
-        const UserContextProps = {
-            isUserLoggedIn: true,
-            firstName: "123",
-            userId: "123",
-            jwtToken: "123",
-            setUserData: jest.fn()
-        };
 
-        const {getByTestId, getByRole, queryByText} = render(
-            <UserContext.Provider value={ UserContextProps }>
-                <QueryClientProvider client={queryClient}>
-                    <MemoryRouter initialEntries={[`/collections/${collection}/artworks/${artworkId}`]}>
-                        <Routes>
-                            <Route path="/collections/:collection/artworks/:artworkId" element={<ArtworkPage />}/>
-                        </Routes>  
-                    </MemoryRouter>
-                </QueryClientProvider>    
-            </UserContext.Provider>
-            
-        )
+        const {getByTestId, getByRole, queryByText} = renderPage(queryClient, loggedInUserContextProps)
 
         await waitFor(() => getByTestId('loaded-artwork-page-container'))
         await user.click(getByRole("button", {
@@ -242,31 +169,9 @@ describe("ArtworkPage tests", () => {
     })
 
     test("delete warning popup exiting test 2", async () => {
-        const user = userEvent.setup()
         mockGetArtwork.mockReturnValue(artworkData)
-        const artworkId = "670c2aecc29b79e5aaef1b9b"
-        const collection = "example collection"
-        
-        const UserContextProps = {
-            isUserLoggedIn: true,
-            firstName: "123",
-            userId: "123",
-            jwtToken: "123",
-            setUserData: jest.fn()
-        };
 
-        const {getByTestId, getByRole, queryByText} = render(
-            <UserContext.Provider value={ UserContextProps }>
-                <QueryClientProvider client={queryClient}>
-                    <MemoryRouter initialEntries={[`/collections/${collection}/artworks/${artworkId}`]}>
-                        <Routes>
-                            <Route path="/collections/:collection/artworks/:artworkId" element={<ArtworkPage />}/>
-                        </Routes>  
-                    </MemoryRouter>
-                </QueryClientProvider>    
-            </UserContext.Provider>
-            
-        )
+        const {getByTestId, getByRole, queryByText} = renderPage(queryClient, loggedInUserContextProps)
 
         await waitFor(() => getByTestId('loaded-artwork-page-container'))
         await user.click(getByRole("button", {
@@ -278,20 +183,23 @@ describe("ArtworkPage tests", () => {
         await expect(queryByText(/czy na pewno chcesz usunąć rekord?/i)).not.toBeInTheDocument()
     })
 
-    test("show more test", async () => {
-        const user = userEvent.setup()
+    test("delete warning popup confirm test 1", async () => {
         mockGetArtwork.mockReturnValue(artworkData)
-        const artworkId = "670c2aecc29b79e5aaef1b9b"
-        const collection = "example collection"
-        const {getByTestId, getByRole, findByRole} = render(
-            <QueryClientProvider client={queryClient}>
-                <MemoryRouter initialEntries={[`/collections/${collection}/artworks/${artworkId}`]}>
-                    <Routes>
-                        <Route path="/collections/:collection/artworks/:artworkId" element={<ArtworkPage />}/>
-                    </Routes>  
-                </MemoryRouter>
-            </QueryClientProvider>
-        )
+        mockDeleteArtwork.mockImplementation(() => {})
+
+        const {getByTestId, getByRole, getAllByRole, queryByText, findByText} = renderPage(queryClient, loggedInUserContextProps)
+
+        await waitFor(() => getByTestId('loaded-artwork-page-container'))
+        await user.click(getByRole("button", {
+            name: /usuń/i
+        }))
+        await user.click(getByTestId("deleteConfirmButton"))
+        // await expect(findByText(/czy na pewno chcesz usunąć rekord?/i)).not.toBeInTheDocument()
+    })
+
+    test("show more test", async () => {
+        mockGetArtwork.mockReturnValue(artworkData)
+        const {getByTestId, getByRole, findByRole} = renderPage(queryClient)
 
         await waitFor(() => getByTestId('loaded-artwork-page-container'))
         await user.click(getByRole("button", {
@@ -304,19 +212,8 @@ describe("ArtworkPage tests", () => {
     })
 
     test("show less test", async () => {
-        const user = userEvent.setup()
         mockGetArtwork.mockReturnValue(artworkData)
-        const artworkId = "670c2aecc29b79e5aaef1b9b"
-        const collection = "example collection"
-        const {getByTestId, getByRole, findByRole} = render(
-            <QueryClientProvider client={queryClient}>
-                <MemoryRouter initialEntries={[`/collections/${collection}/artworks/${artworkId}`]}>
-                    <Routes>
-                        <Route path="/collections/:collection/artworks/:artworkId" element={<ArtworkPage />}/>
-                    </Routes>  
-                </MemoryRouter>
-            </QueryClientProvider>
-        )
+        const {getByTestId, getByRole, findByRole} = renderPage(queryClient)
 
         await waitFor(() => getByTestId('loaded-artwork-page-container'))
 

@@ -211,6 +211,7 @@ exports[`ArtworkPage tests component renders delete warning popup correctly 1`] 
           </button>
           <button
             class="text-lg font-semibold h-fit border-red-700 text-red-700 bg-red-50 hover:bg-white"
+            data-testid="deleteConfirmButton"
           >
             <span
               class="flex-row flex items-center"
@@ -363,7 +364,6 @@ exports[`ArtworkPage tests component rerenders correctly when data is fetched fr
           <button
             class="text-lg font-semibold h-fit mr-4 bg-gray-100 hover:bg-gray-100"
             disabled=""
-            title="Aby edytować rekord musisz się zalogować."
           >
             <span
               class="flex-row flex items-center"
@@ -378,8 +378,8 @@ exports[`ArtworkPage tests component rerenders correctly when data is fetched fr
           </button>
           <button
             class="text-lg font-semibold h-fit border-red-700 text-red-700 bg-red-50 hover:bg-red-50"
+            data-testid="deleteConfirmButton"
             disabled=""
-            title="Aby usunąć rekord musisz się zalogować."
           >
             <span
               class="flex-row flex items-center"
@@ -560,7 +560,6 @@ exports[`ArtworkPage tests show more test 1`] = `
           <button
             class="text-lg font-semibold h-fit mr-4 bg-gray-100 hover:bg-gray-100"
             disabled=""
-            title="Aby edytować rekord musisz się zalogować."
           >
             <span
               class="flex-row flex items-center"
@@ -575,8 +574,8 @@ exports[`ArtworkPage tests show more test 1`] = `
           </button>
           <button
             class="text-lg font-semibold h-fit border-red-700 text-red-700 bg-red-50 hover:bg-red-50"
+            data-testid="deleteConfirmButton"
             disabled=""
-            title="Aby usunąć rekord musisz się zalogować."
           >
             <span
               class="flex-row flex items-center"

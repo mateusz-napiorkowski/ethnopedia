@@ -30,17 +30,19 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
     
     const { jwtToken } = useUser();
     const bulletClassnames = ["px-4 list-[circle]", "px-4 list-[square]", "px-4 list-[disc]"]
+
     const Sublist: React.FC<SublistProps> = ({subcategories, depth}) => {
-        if(subcategories !== undefined) {
-            return <ul className={bulletClassnames[depth%3]}>
-            {subcategories.map((category: any) => {
-            return <li>{category.name}: {category.values.join(", ")}
-                <Sublist subcategories={category.subcategories} depth={depth+1}/>
-            </li>
-            })}
-        </ul>
-        } else return <></> 
+        if(subcategories)
+            return <ul className={bulletClassnames[depth % 3]}>
+                {subcategories.map((category: any) => {
+                    return <li>{category.name}: {category.values.join(", ")}
+                        <Sublist subcategories={category.subcategories} depth={depth+1}/>
+                    </li>
+                })}
+            </ul>
+        return <></> 
     } 
+
     return (
         <div className="flex flex-row">
             <div className="mt-2 flex-2">
@@ -61,35 +63,33 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
             </div>
 
             <div className="flex-1 mt-4 flex justify-end text-gray-700">
-                {jwtToken &&<button className="text-lg font-semibold h-fit mr-4" onClick={handleEditClick}>
+                <button
+                    disabled={jwtToken ? false : true} 
+                    className={jwtToken ? 
+                        "text-lg font-semibold h-fit mr-4" : 
+                        "text-lg font-semibold h-fit mr-4 bg-gray-100 hover:bg-gray-100"
+                    }
+                    onClick={handleEditClick}
+                >
                     <span className="flex-row flex items-center">
                         <EditIcon />
                         <p className="ml-2">Edytuj</p>
                     </span>
-                </button>}
-                {!jwtToken &&<button disabled={true} title={"Aby edytować rekord musisz się zalogować."} className="text-lg font-semibold h-fit mr-4 bg-gray-100 hover:bg-gray-100" onClick={handleEditClick}>
-                    <span className="flex-row flex items-center">
-                        <EditIcon />
-                        <p className="ml-2">Edytuj</p>
-                    </span>
-                </button>}
-
-                {jwtToken && <button
-                    className="text-lg font-semibold h-fit border-red-700 text-red-700 bg-red-50 hover:bg-white"
-                    onClick={() => setShowDeleteArtworkWarning(true)}>
-                    <span className="flex-row flex items-center">
-                        <TrashBinIcon />
-                        <p className="ml-2">Usuń</p>
-                    </span>
-                </button>}
-                {!jwtToken && <button
-                    disabled={true} title={"Aby usunąć rekord musisz się zalogować."} className="text-lg font-semibold h-fit border-red-700 text-red-700 bg-red-50 hover:bg-red-50"
-                    onClick={() => setShowDeleteArtworkWarning(true)}>
+                </button>
+                <button
+                    data-testid="deleteConfirmButton"
+                    disabled={jwtToken ? false : true}
+                    className={jwtToken ?
+                        "text-lg font-semibold h-fit border-red-700 text-red-700 bg-red-50 hover:bg-white" : 
+                        "text-lg font-semibold h-fit border-red-700 text-red-700 bg-red-50 hover:bg-red-50"
+                    }
+                    onClick={() => setShowDeleteArtworkWarning(true)}
+                >
                     <span className="flex-row flex items-center">
                         <TrashBinIcon />
                         <p className="ml-2">Usuń</p>
                     </span>
-                </button>}
+                </button>
             </div>
         </div>
     )

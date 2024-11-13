@@ -23,76 +23,58 @@ const ArtworkPage = () => {
         enabled: !!artworkId,
     })
 
-    const findValue = (artwork: any, categoryName: string) => {
-        let val = ""
-        artwork.categories.forEach((category: any) => {
-            if(category.name === categoryName) {
-                val = category.values.toString()
-                return
-            }
-        });
-        return val
+    const findCategoryValue = (artwork: any, categoryName: string) => {
+        const foundCategory = artwork.categories.find((category: any) => category.name === categoryName);
+        return foundCategory ? foundCategory.values.toString() : "";
     }
 
-    const deleleArtwork = useMutation(() => deleteArtwork(artworkId as string, jwtToken as string), {
+    const deleteArtworkMutation = useMutation(() => deleteArtwork(artworkId as string, jwtToken as string), {
         onSuccess: () => {
             queryClient.invalidateQueries("artwork")
             navigate(-1)
         },
+        // onError: () => {}
     })
 
-    const handleArtworkDeletion = () => {
-        // if (!jwtToken || !artworkId) {
-        //     return
-        // }
-
-        deleleArtwork.mutate()
-    }
-
-    const handleEditClick = () => {
-        navigate(`edit-artwork`, {state:{categories: fetchedData.artwork.categories}})
-    }
-
-    if (!fetchedData) {
+    if (!fetchedData)
         return (
             <div data-testid="loading-page-container">
                 <LoadingPage />
-            </div>)
-    } else {
-        const artworkData = fetchedData.artwork
-        const detailsToShow = showMore ? artworkData : {}
-
-        return (
-            <>
-                <div data-testid="loaded-artwork-page-container">
-                    <Navbar />
-                    {showDeleteArtworkWarning &&
-                        <WarningPopup onClose={() => setShowDeleteArtworkWarning(!showDeleteArtworkWarning)}
-                                    deleteSelected={handleArtworkDeletion}
-                                    warningMessage={"Czy na pewno chcesz usunąć rekord?"} />}
-                    <section className="p-2 sm:p-4">
-                        <div className="mx-auto max-w-screen-xl lg:px-6">
-                            <Navigation />
-                                <ArtworkDetails
-                                    Tytuł={findValue(artworkData, "Tytuł")}
-                                    Artyści={findValue(artworkData, "Artyści")}
-                                    Rok={findValue(artworkData, "Rok")}
-                                    collectionName={artworkData.collectionName}
-                                    detailsToShow={detailsToShow}
-                                    handleEditClick={handleEditClick}
-                                    setShowDeleteArtworkWarning={setShowDeleteArtworkWarning}
-                                />
-
-                                <button type="button" onClick={() => setShowMore(!showMore)}
-                                        className="mt-4 px-4 py-2 bg-blue-500 text-white hover:bg-blue-400 font-semibold border-none">
-                                    {showMore ? "Pokaż mniej" : "Pokaż więcej"}
-                                </button>
-                        </div>
-                    </section>
-                </div>
-            </>
+            </div>
         )
 
-    }
+    const artworkData = fetchedData.artwork
+    return (
+        <>
+            <div data-testid="loaded-artwork-page-container">
+                <Navbar />
+                {showDeleteArtworkWarning &&
+                    <WarningPopup 
+                        onClose={() => setShowDeleteArtworkWarning(!showDeleteArtworkWarning)}
+                        deleteSelected={() => deleteArtworkMutation.mutate()}
+                        warningMessage={"Czy na pewno chcesz usunąć rekord?"}
+                    />
+                }
+                <section className="p-2 sm:p-4">
+                    <div className="mx-auto max-w-screen-xl lg:px-6">
+                        <Navigation />
+                        <ArtworkDetails
+                            Tytuł={findCategoryValue(artworkData, "Tytuł")}
+                            Artyści={findCategoryValue(artworkData, "Artyści")}
+                            Rok={findCategoryValue(artworkData, "Rok")}
+                            collectionName={artworkData.collectionName}
+                            detailsToShow={showMore ? artworkData : {}}
+                            handleEditClick={() => navigate(`edit-artwork`, {state:{categories: fetchedData.artwork.categories}})}
+                            setShowDeleteArtworkWarning={setShowDeleteArtworkWarning}
+                        />
+                        <button type="button" onClick={() => setShowMore(!showMore)}
+                                className="mt-4 px-4 py-2 bg-blue-500 text-white hover:bg-blue-400 font-semibold border-none">
+                            {showMore ? "Pokaż mniej" : "Pokaż więcej"}
+                        </button>
+                    </div>
+                </section>
+            </div>
+        </>
+    )
 }
 export default ArtworkPage
