@@ -68,7 +68,15 @@ const artworkData = {
                 "values": [
                     "testowy"
                 ],
-                "subcategories": []
+                "subcategories": [
+                    {
+                        "name": "Podtytuł",
+                        "values": [
+                            "testowy podtytuł"
+                        ],
+                        "subcategories": []
+                    }
+                ]
             },
             {
                 "name": "Artyści",
@@ -82,8 +90,43 @@ const artworkData = {
                 "values": [
                     "966"
                 ],
-                "subcategories": []
+                "subcategories": [
+                    {
+                        "name": "Miesiąc",
+                        "values": [
+                            "Wrzesień"
+                        ],
+                        "subcategories": [
+                            {
+                                "name": "Dzień",
+                                "values": [
+                                    "13"
+                                ],
+                                "subcategories": []
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Pora roku",
+                        "values": [
+                            "lato"
+                        ],
+                        "subcategories": []
+                    }
+                ]
             }
+        ],
+        "collectionName": "example collection"
+    }
+}
+
+const artworkDataWithoutCategories = {
+    "artwork": {
+        "_id": "670c2aecc29b79e5aaef1b9b",
+        "createdAt": "2024-11-05T20:14:22.883Z",
+        "updatedAt": "2024-11-05T20:14:22.883Z",
+        "__v": 0,
+        "categories": [
         ],
         "collectionName": "example collection"
     }
@@ -109,6 +152,17 @@ describe("ArtworkPage tests", () => {
         await waitFor(() => getByTestId('loaded-artwork-page-container'))
 
         expect(queryByTestId("loading-page-container")).not.toBeInTheDocument()
+        expect(getByTestId("main-categories-container")).toMatchSnapshot()
+    })
+
+    test("component rerenders correctly when data is fetched from API and main categories are unspecified", async () => {
+        mockGetArtwork.mockReturnValue(artworkDataWithoutCategories)
+        const {getByTestId, queryByTestId} = renderPage(queryClient)
+
+        await waitFor(() => getByTestId('loaded-artwork-page-container'))
+
+        expect(queryByTestId("loading-page-container")).not.toBeInTheDocument()
+        expect(getByTestId("main-categories-container")).toMatchSnapshot()
     })
 
     test("edit button is disabled when user is not logged in", async () => {
@@ -202,7 +256,7 @@ describe("ArtworkPage tests", () => {
 
     test("show more button works correctly", async () => {
         mockGetArtwork.mockReturnValue(artworkData)
-        const {getByTestId, getByRole, findByRole} = renderPage(queryClient)
+        const {getByTestId, getByRole} = renderPage(queryClient)
 
         await waitFor(() => getByTestId('loaded-artwork-page-container'))
         await user.click(getByRole("button", {
@@ -231,5 +285,29 @@ describe("ArtworkPage tests", () => {
             name: /pokaż więcej/i
         })).toBeInTheDocument()
         expect(queryByTestId("details-list")).not.toBeInTheDocument()
+    })
+
+    test("nested categories list renders correctly", async () => {
+        mockGetArtwork.mockReturnValue(artworkData)
+        const {getByTestId, getByRole} = renderPage(queryClient)
+
+        await waitFor(() => getByTestId('loaded-artwork-page-container'))
+        await user.click(getByRole("button", {
+            name: /pokaż więcej/i
+        }))
+
+        expect(getByTestId("details-list")).toMatchSnapshot()
+    })
+
+    test("categories list renders correctly when there are no categories", async () => {
+        mockGetArtwork.mockReturnValue(artworkDataWithoutCategories)
+        const {getByTestId, getByRole} = renderPage(queryClient)
+
+        await waitFor(() => getByTestId('loaded-artwork-page-container'))
+        await user.click(getByRole("button", {
+            name: /pokaż więcej/i
+        }))
+
+        expect(getByTestId("details-list")).toMatchSnapshot()
     })
 })

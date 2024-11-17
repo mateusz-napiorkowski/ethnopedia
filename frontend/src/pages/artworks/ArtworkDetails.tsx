@@ -32,20 +32,18 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
     const bulletClassnames = ["px-4 list-[circle]", "px-4 list-[square]", "px-4 list-[disc]"]
 
     const Sublist: React.FC<SublistProps> = ({subcategories, depth}) => {
-        if(subcategories)
-            return <ul className={bulletClassnames[depth % 3]}>
-                {subcategories.map((category: any) => {
-                    return <li>{category.name}: {category.values.join(", ")}
-                        <Sublist subcategories={category.subcategories} depth={depth+1}/>
-                    </li>
-                })}
-            </ul>
-        return <></> 
+        return <ul className={bulletClassnames[depth % 3]}>
+            {subcategories.map((category: any) => {
+                return <li>{category.name}: {category.values.join(", ")}
+                    { category.subcategories.length > 0 && <Sublist subcategories={category.subcategories} depth={depth+1}/> }          
+                </li>
+            })}
+        </ul>
     } 
 
     return (
         <div className="flex flex-row">
-            <div className="mt-2 flex-2">
+            <div className="mt-2 flex-2 " data-testid="main-categories-container">
                 <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-2">{Tytuł}</h1>
                 <p className="text-xl text-gray-600 dark:text-gray-400 mt-1">Artyści: {Artyści}</p>
                 <p className="text-lg text-gray-500 dark:text-gray-300 mt-1">Rok: {Rok}</p>
@@ -59,7 +57,6 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
                         })}
                     </ul>
                 }
-
             </div>
 
             <div className="flex-1 mt-4 flex justify-end text-gray-700">
