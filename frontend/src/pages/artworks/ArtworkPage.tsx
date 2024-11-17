@@ -31,9 +31,11 @@ const ArtworkPage = () => {
     const deleteArtworkMutation = useMutation(() => deleteArtwork(artworkId as string, jwtToken as string), {
         onSuccess: () => {
             queryClient.invalidateQueries("artwork")
-            navigate(-1)
+            navigate(`/collections/${artworkData.collectionName}/artworks/`)
         },
-        // onError: () => {}
+        onError: () => {
+            
+        },
     })
 
     if (!fetchedData)

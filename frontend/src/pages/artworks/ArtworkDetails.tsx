@@ -51,7 +51,7 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
                 <p className="text-lg text-gray-500 dark:text-gray-300 mt-1">Rok: {Rok}</p>
                 <p className="text-lg text-gray-500 dark:text-gray-300 mt-1">Kolekcja: {collectionName}</p>
                 {detailsToShow.categories && 
-                    <ul className={bulletClassnames[0]}>
+                    <ul data-testid="details-list" className={bulletClassnames[0]}>
                         {detailsToShow.categories.map((category: any) => {
                             return <li>{category.name}: {category.values.join(", ")}
                                 <Sublist subcategories={category.subcategories} depth={1}/>
@@ -77,7 +77,6 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
                     </span>
                 </button>
                 <button
-                    data-testid="deleteConfirmButton"
                     disabled={jwtToken ? false : true}
                     className={jwtToken ?
                         "text-lg font-semibold h-fit border-red-700 text-red-700 bg-red-50 hover:bg-white" : 

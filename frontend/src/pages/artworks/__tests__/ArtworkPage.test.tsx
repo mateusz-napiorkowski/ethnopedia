@@ -6,6 +6,12 @@ import { MemoryRouter, Routes, Route } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import { UserContext } from '../../../providers/UserProvider';
 
+const mockUseNavigate = jest.fn();
+jest.mock('react-router-dom', () => ({
+   ...jest.requireActual('react-router-dom') as any,
+  useNavigate: () => mockUseNavigate,
+}));
+
 const mockGetArtwork = jest.fn()
 const mockDeleteArtwork = jest.fn()
 jest.mock('../../../api/artworks', () => ({
@@ -41,6 +47,7 @@ const renderPage = (
         );
 };
 
+const collection = "example collection"
 const loggedInUserContextProps = {
     isUserLoggedIn: true,
     firstName: "123",
@@ -115,16 +122,16 @@ describe("ArtworkPage tests", () => {
         })).toBeDisabled();
     })
 
-    test("logged in user navigates to edit artwork page when edit button is clicked ???????", async () => {
+    test("logged in user navigates to edit artwork page when edit button is clicked", async () => {
         mockGetArtwork.mockReturnValue(artworkData)
-        const {getByTestId, getByRole, findByText} = renderPage(queryClient, loggedInUserContextProps)
+        const {getByTestId, getByRole } = renderPage(queryClient, loggedInUserContextProps)
 
         await waitFor(() => getByTestId('loaded-artwork-page-container'))
         await user.click(getByRole("button", {
             name: /edytuj/i
         }))
 
-        // await expect(findByText(/edytuj rekord/i)).toBeInTheDocument()
+        expect(mockUseNavigate.mock.calls[0][0]).toBe("edit-artwork")
     })
 
     test("delete button is disabled when user is not logged in", async () => {
@@ -178,22 +185,22 @@ describe("ArtworkPage tests", () => {
         await expect(queryByText(/czy na pewno chcesz usunąć rekord?/i)).not.toBeInTheDocument()
     })
 
-    test("logged in user navigates to artworks list page when delete button in delete warning popup is clicked ???????", async () => {
+    test("logged in user navigates to collection page when delete button in delete warning popup is clicked", async () => {
         mockGetArtwork.mockReturnValue(artworkData)
-        mockDeleteArtwork.mockImplementation(() => {})
-
-        const {getByTestId, getByRole, getAllByRole, queryByText, findByText} = renderPage(queryClient, loggedInUserContextProps)
+        mockDeleteArtwork.mockImplementation(() => ({acknowledged: true, deletedCount: 1}))
+        const {getByTestId, getByRole } = renderPage(queryClient, loggedInUserContextProps)
 
         await waitFor(() => getByTestId('loaded-artwork-page-container'))
         await user.click(getByRole("button", {
             name: /usuń/i
         }))
-        await user.click(getByTestId("deleteConfirmButton"))
+        user.click(getByTestId("deleteConfirmButton"))
 
-        // await expect(findByText(/czy na pewno chcesz usunąć rekord?/i)).not.toBeInTheDocument()
+        await waitFor(() => expect(mockDeleteArtwork).toHaveBeenCalled())
+        expect(mockUseNavigate.mock.calls[0][0]).toBe(`/collections/${collection}/artworks/`)
     })
 
-    test("show more button works correctly ????", async () => {
+    test("show more button works correctly", async () => {
         mockGetArtwork.mockReturnValue(artworkData)
         const {getByTestId, getByRole, findByRole} = renderPage(queryClient)
 
@@ -202,15 +209,15 @@ describe("ArtworkPage tests", () => {
             name: /pokaż więcej/i
         }))
 
-        // await expect(getByTestId('loaded-artwork-page-container')).toMatchSnapshot()
-        await expect(getByRole("button", {
+        expect(getByRole("button", {
             name: /pokaż mniej/i
         })).toBeInTheDocument()
+        expect(getByTestId("details-list")).toBeInTheDocument()
     })
 
-    test("show less button works correctly ????", async () => {
+    test("show less button works correctly", async () => {
         mockGetArtwork.mockReturnValue(artworkData)
-        const {getByTestId, getByRole, findByRole} = renderPage(queryClient)
+        const {getByTestId, getByRole, queryByTestId} = renderPage(queryClient)
 
         await waitFor(() => getByTestId('loaded-artwork-page-container'))
         await user.click(getByRole("button", {
@@ -219,10 +226,10 @@ describe("ArtworkPage tests", () => {
         await user.click(getByRole("button", {
             name: /pokaż mniej/i
         }))
-
-        // await expect(getByTestId('loaded-artwork-page-container')).toMatchSnapshot()
+        
         await expect(getByRole("button", {
             name: /pokaż więcej/i
         })).toBeInTheDocument()
+        expect(queryByTestId("details-list")).not.toBeInTheDocument()
     })
 })
