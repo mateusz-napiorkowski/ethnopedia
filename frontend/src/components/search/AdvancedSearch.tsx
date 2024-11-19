@@ -87,10 +87,12 @@ const AdvancedSearch: React.FC<SearchComponentProps> = ({ id }) => {
     // }
 
     if (categoriesData === undefined) {
-        return <LoadingPage />
+        return <div data-testid="loading-advanced-search-container">
+            <LoadingPage />
+        </div>
     }
     return (
-        <div className="my-2">
+        <div className="my-2" data-testid="advancedSearchComponent">
             <form onSubmit={formik.handleSubmit} className="flex flex-col gap-4">
                 <div className="flex items-center gap-2">
                     <select

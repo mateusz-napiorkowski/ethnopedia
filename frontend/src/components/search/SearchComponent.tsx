@@ -13,7 +13,7 @@ const SearchComponent: React.FC<SearchComponentProps> = ({ id }) => {
         setActiveTab(tabName)
     }
 
-    return <div className="mb-2">
+    return <div className="mb-2" data-testid="searchComponent">
         <ul className="flex flex-wrap text-sm font-medium text-center text-gray-500 border-b border-gray-200
         dark:border-gray-600 dark:text-gray-300">
             <li className="me-2">

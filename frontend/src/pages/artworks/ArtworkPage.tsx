@@ -32,10 +32,7 @@ const ArtworkPage = () => {
         onSuccess: () => {
             queryClient.invalidateQueries("artwork")
             navigate(`/collections/${artworkData.collectionName}/artworks/`)
-        },
-        onError: () => {
-            
-        },
+        }
     })
 
     if (!fetchedData)

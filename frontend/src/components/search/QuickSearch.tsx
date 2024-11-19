@@ -22,7 +22,7 @@ const QuickSearch = () => {
     })
 
     return <>
-        <div className="my-2">
+        <div className="my-2" data-testid="quickSearchComponent">
             <form onSubmit={formik.handleSubmit} className="flex space-x-2">
                 <input
                     type="text"
