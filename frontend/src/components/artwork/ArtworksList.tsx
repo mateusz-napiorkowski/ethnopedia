@@ -205,7 +205,7 @@ const ArtworksList = () => {
 
                     </div>
 
-                    {collection && <SearchComponent id={collection} />}
+                    {collection && <SearchComponent collectionName={collection} />}
 
                     <div className="flex w-full md:w-auto">
                         <div className="flex flex-1 space-x-2">

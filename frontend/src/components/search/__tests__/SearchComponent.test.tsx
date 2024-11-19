@@ -21,7 +21,7 @@ const renderPage = (
             <QueryClientProvider client={queryClient}>
                 <MemoryRouter initialEntries={[`/collections/${collection}/artworks`]}>
                     <Routes>
-                        <Route path="/collections/:collection/artworks" element={<SearchComponent id={collection} />}/>
+                        <Route path="/collections/:collection/artworks" element={<SearchComponent collectionName={collection} />}/>
                     </Routes>  
                 </MemoryRouter>
             </QueryClientProvider>

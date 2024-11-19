@@ -22,10 +22,10 @@ const initialRule = { id: Date.now(), field: "", operator: "", value: "" }
 // }
 
 interface SearchComponentProps {
-    id: string;
+    collectionName: string;
 }
 
-const AdvancedSearch: React.FC<SearchComponentProps> = ({ id }) => {
+const AdvancedSearch: React.FC<SearchComponentProps> = ({ collectionName }) => {
     const [rules, setRules] = useState<any[]>([])
     const [textInputCategory, setTextInputCategory] = useState((""))
     const [textInputValue, setTextInputValue] = useState((""))
@@ -42,6 +42,7 @@ const AdvancedSearch: React.FC<SearchComponentProps> = ({ id }) => {
       }, [location]);
     
     const collection = window.location.href.split("/")[window.location.href.split("/").findIndex((element) => element === "collections") + 1];
+    
     const { data: categoriesData } = useQuery({
         queryKey: ["allCategories"],
         queryFn: () => getAllCategories(collection as string),

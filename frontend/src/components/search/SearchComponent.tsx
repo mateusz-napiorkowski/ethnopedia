@@ -3,10 +3,10 @@ import QuickSearch from "./QuickSearch"
 import AdvancedSearch from "./AdvancedSearch"
 
 interface SearchComponentProps {
-    id: string
+    collectionName: string
 }
 
-const SearchComponent: React.FC<SearchComponentProps> = ({ id }) => {
+const SearchComponent: React.FC<SearchComponentProps> = ({ collectionName }) => {
     const [activeTab, setActiveTab] = useState<string>("advancedSearch")
 
     const handleTabClick = (tabName: string) => {
@@ -39,7 +39,7 @@ const SearchComponent: React.FC<SearchComponentProps> = ({ id }) => {
         </ul>
 
         {activeTab === "quickSearch" && <QuickSearch />}
-        {activeTab === "advancedSearch" && <AdvancedSearch id={id} />}
+        {activeTab === "advancedSearch" && <AdvancedSearch collectionName={collectionName} />}
     </div>
 }
 
