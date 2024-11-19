@@ -38,7 +38,7 @@ const SearchComponent: React.FC<SearchComponentProps> = ({ collectionName }) => 
             </li>
         </ul>
 
-        {activeTab === "quickSearch" && <QuickSearch />}
+        {activeTab === "quickSearch" && <QuickSearch collectionName={collectionName} />}
         {activeTab === "advancedSearch" && <AdvancedSearch collectionName={collectionName} />}
     </div>
 }
