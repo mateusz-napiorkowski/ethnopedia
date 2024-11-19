@@ -47,7 +47,7 @@ describe("QuickSearch tests", () => {
         const inputField = getByRole("textbox")
         await user.type(inputField, "example search Text")
         await user.click(getByRole("button"))
-        
+
         expect(mockUseNavigate).toHaveBeenCalledWith("?searchText=example search Text")
     })
 })
