@@ -1,0 +1,123 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AdvancedSearch tests error message shows up when user tries to add rule with category name already present in another rule 1`] = `
+<p
+  class="ml-auto text-red-500 text-sm"
+>
+  Reguła z tą nazwą kategorii już istnieje.
+</p>
+`;
+
+exports[`AdvancedSearch tests rule adding works correctly 1`] = `
+<div
+  data-testid="rules-container"
+>
+  <div
+    class="flex items-center gap-2 mt-4"
+  >
+    <button
+      class="border-none p-0 mr-2"
+      data-testid="delete-Tytuł"
+    >
+      <svg />
+    </button>
+    <span
+      class="border border-blue-300 p-2 rounded-lg bg-blue-100 text-blue-500 font-semibold"
+    >
+      Tytuł
+    </span>
+    <span
+      class="border border-blue-300 p-2 rounded-lg bg-blue-100 text-blue-500 font-semibold"
+    >
+      Przykładowy tytuł
+    </span>
+  </div>
+  <div
+    class="flex items-center gap-2 mt-4"
+  >
+    <button
+      class="border-none p-0 mr-2"
+      data-testid="delete-Rok"
+    >
+      <svg />
+    </button>
+    <span
+      class="border border-blue-300 p-2 rounded-lg bg-blue-100 text-blue-500 font-semibold"
+    >
+      Rok
+    </span>
+    <span
+      class="border border-blue-300 p-2 rounded-lg bg-blue-100 text-blue-500 font-semibold"
+    >
+       
+    </span>
+  </div>
+  <div
+    class="flex items-center gap-2 mt-4"
+  >
+    <button
+      class="border-none p-0 mr-2"
+      data-testid="delete-Tytuł.Podtytuł"
+    >
+      <svg />
+    </button>
+    <span
+      class="border border-blue-300 p-2 rounded-lg bg-blue-100 text-blue-500 font-semibold"
+    >
+      Tytuł.Podtytuł
+    </span>
+    <span
+      class="border border-blue-300 p-2 rounded-lg bg-blue-100 text-blue-500 font-semibold"
+    >
+      Przykładowy podtytuł
+    </span>
+  </div>
+</div>
+`;
+
+exports[`AdvancedSearch tests rule deleting works correctly 1`] = `
+<div
+  data-testid="rules-container"
+>
+  <div
+    class="flex items-center gap-2 mt-4"
+  >
+    <button
+      class="border-none p-0 mr-2"
+      data-testid="delete-Rok"
+    >
+      <svg />
+    </button>
+    <span
+      class="border border-blue-300 p-2 rounded-lg bg-blue-100 text-blue-500 font-semibold"
+    >
+      Rok
+    </span>
+    <span
+      class="border border-blue-300 p-2 rounded-lg bg-blue-100 text-blue-500 font-semibold"
+    >
+      1410
+    </span>
+  </div>
+  <div
+    class="flex items-center gap-2 mt-4"
+  >
+    <button
+      class="border-none p-0 mr-2"
+      data-testid="delete-Artyści"
+    >
+      <svg />
+    </button>
+    <span
+      class="border border-blue-300 p-2 rounded-lg bg-blue-100 text-blue-500 font-semibold"
+    >
+      Artyści
+    </span>
+    <span
+      class="border border-blue-300 p-2 rounded-lg bg-blue-100 text-blue-500 font-semibold"
+    >
+      Jan Nowak
+    </span>
+  </div>
+</div>
+`;
