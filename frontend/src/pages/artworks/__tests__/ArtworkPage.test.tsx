@@ -16,12 +16,14 @@ const mockGetArtwork = jest.fn()
 const mockDeleteArtwork = jest.fn()
 jest.mock('../../../api/artworks', () => ({
     getArtwork: () => mockGetArtwork(),
-    deleteArtwork: () => mockDeleteArtwork()
+    deleteArtwork: (artworkId: string, jwtToken: string) => mockDeleteArtwork(artworkId, jwtToken)
 }))
 
 const queryClient = new QueryClient();
 const user = userEvent.setup()
 
+const collection = "example collection"
+const artworkId = "670c2aecc29b79e5aaef1b9b"
 const renderPage = (
     queryClient: QueryClient, 
     userContextProps: any = {
@@ -47,12 +49,15 @@ const renderPage = (
         );
 };
 
-const collection = "example collection"
+const jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXN"
+    + "lcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaecc"
+    + "N-rDSjRS3kApqlA"
+
 const loggedInUserContextProps = {
     isUserLoggedIn: true,
     firstName: "123",
-    userId: "123",
-    jwtToken: "123",
+    userId: "66b6506fbb64df165e8a9ce6",
+    jwtToken: jwtToken,
     setUserData: jest.fn()
 };
 
@@ -242,7 +247,8 @@ describe("ArtworkPage tests", () => {
         await expect(queryByText(/czy na pewno chcesz usunąć rekord?/i)).not.toBeInTheDocument()
     })
 
-    it("should navigate to collection page after delete button in delete warning popup is clicked", async () => {
+    it("should call deleteArtwork with correct arguments and navigate to collection page" +
+        " after delete button in delete warning popup is clicked", async () => {
         mockGetArtwork.mockReturnValue(artworkData)
         mockDeleteArtwork.mockImplementation(() => ({acknowledged: true, deletedCount: 1}))
         const {getByTestId, getByRole, getByLabelText } = renderPage(queryClient, loggedInUserContextProps)
@@ -253,8 +259,8 @@ describe("ArtworkPage tests", () => {
         }))
         user.click(getByLabelText("confirm"))
 
-        await waitFor(() => expect(mockDeleteArtwork).toHaveBeenCalled())
-        expect(mockUseNavigate).toHaveBeenCalledWith(`/collections/${collection}/artworks/`)
+        await waitFor(() => expect(mockDeleteArtwork).toHaveBeenCalledWith(artworkId, jwtToken))
+        expect(mockUseNavigate).toHaveBeenCalledWith(`/collections/${collection}/artworks/`)      
     })
 
     it("should render categories list after show more button is clicked", async () => {

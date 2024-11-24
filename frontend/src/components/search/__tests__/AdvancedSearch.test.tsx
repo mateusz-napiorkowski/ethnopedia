@@ -1,10 +1,9 @@
 import '@testing-library/jest-dom';
-import { getByLabelText, render, waitFor } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import AdvancedSearch from "../AdvancedSearch"
 import { QueryClient, QueryClientProvider } from "react-query";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
-import { string } from 'yup';
 
 const mockUseNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
@@ -185,9 +184,9 @@ describe("AdvancedSearch tests", () => {
         expect(queryByText(/reguła z tą nazwą kategorii już istnieje./i)).not.toBeInTheDocument()
     })
 
-    it("should add appropriate query string parameters to the url when search button is clicked", async () => {
+    it("should navigate to the same page with correctly altered query string and component state after search button is clicked", async () => {
         mockGetAllCategories.mockReturnValue(fetchedCategories)
-        const {getByTestId, getByRole, queryByText} = renderPage(queryClient)
+        const {getByTestId, getByRole } = renderPage(queryClient)
         await waitFor(() => getByTestId("advancedSearchComponent"))
         const selectField = getByRole("combobox")
         const inputField = getByRole("textbox")
