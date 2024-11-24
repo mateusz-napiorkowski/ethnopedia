@@ -16,7 +16,6 @@ import CustomDropdown from "../CustomDropdown"
 import { getCollection, useBatchDeleteCollectionMutation } from "../../api/collections"
 import Navigation from "../Navigation"
 import Pagination from "../Pagination"
-import category from "../Category"
 import { useUser } from "../../providers/UserProvider"
 
 const ArtworksList = () => {
@@ -129,7 +128,7 @@ const ArtworksList = () => {
 
     const navigate = useNavigate()
 
-    if (artworkData === undefined || sortedArtworks === undefined || category === undefined) {
+    if (artworkData === undefined || sortedArtworks === undefined) {
         return <LoadingPage />
     } else {
         const allArtworks = sortedArtworks.map((artwork: any) => (
