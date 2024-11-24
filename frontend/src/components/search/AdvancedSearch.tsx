@@ -120,7 +120,7 @@ const AdvancedSearch: React.FC<SearchComponentProps> = ({ collectionName }) => {
             <div data-testid="rules-container">
                 {rules.map((rule) => (
                     <div key={rule.id} className="flex items-center gap-2 mt-4">
-                        <button data-testid={`delete-${rule.field}`} onClick={() => handleDeleteRule(rule.id)} className="border-none p-0 mr-2">
+                        <button aria-label={`delete ${rule.field}`} onClick={() => handleDeleteRule(rule.id)} className="border-none p-0 mr-2">
                             <CloseIcon />
                         </button>
                         <span className="border border-blue-300 p-2 rounded-lg bg-blue-100 text-blue-500 font-semibold">
