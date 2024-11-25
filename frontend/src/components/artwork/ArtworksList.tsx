@@ -333,7 +333,7 @@ const ArtworksList = () => {
                 <Pagination
                     currentPage={currentPage}
                     totalPages={Math.ceil(artworkData.total / pageSize)}
-                    onPageChange={(page) => setCurrentPage(page)}
+                    setCurrentPage={(page) => setCurrentPage(page)}
                 />
             </div>
         </>

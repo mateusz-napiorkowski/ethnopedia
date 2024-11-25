@@ -273,7 +273,7 @@ const CollectionsPage = () => {
                     <Pagination
                         currentPage={currentPage}
                         totalPages={Math.ceil(fetchedData.total / pageSize)}
-                        onPageChange={(page) => setCurrentPage(page)}
+                        setCurrentPage={(page) => setCurrentPage(page)}
                     />
                 </div>
             </div>

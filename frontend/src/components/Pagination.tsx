@@ -1,29 +1,29 @@
-import React, { useState } from "react"
+import { ChangeEvent, useState } from "react"
 
 interface PaginationProps {
     currentPage: number
+    setCurrentPage: (page: number) => void
     totalPages: number
-    onPageChange: (page: number) => void
 }
 
-const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPageChange }) => {
+const Pagination: React.FC<PaginationProps> = ({ currentPage, setCurrentPage, totalPages }) => {
     const [inputedPage, setInputedPage] = useState(currentPage)
     const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1)
 
     const handlePrevious = () => {
-        if (currentPage > 1) onPageChange(currentPage - 1)
+        if (currentPage > 1) setCurrentPage(currentPage - 1)
     }
 
     const handleNext = () => {
-        if (currentPage < totalPages) onPageChange(currentPage + 1)
+        if (currentPage < totalPages) setCurrentPage(currentPage + 1)
     }
 
-    const handleInputed = (event: any) => {
-        setInputedPage(event.target.value)
+    const handleInputed = (event: ChangeEvent<HTMLInputElement>) => {
+        setInputedPage(Number(event.target.value))
     }
 
-    const handleGoToPageButtonClick = (event: any) => {
-        onPageChange(inputedPage)
+    const handleGoToPageButtonClick = () => {
+        setCurrentPage(inputedPage)
     }
 
     return (
@@ -53,7 +53,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
                     currentPage <= 4 &&
                     pageNumbers.slice(0, 6).map(number => (
                         <li key={number}>
-                            <div onClick={() => onPageChange(number)} data-testid={`page-${number}`} className={`cursor-pointer flex items-center justify-center px-3 h-8
+                            <div onClick={() => setCurrentPage(number)} data-testid={`page-${number}`} className={`cursor-pointer flex items-center justify-center px-3 h-8
                              leading-tight ${currentPage === number ? "text-blue-600 bg-blue-50 border border-gray-300" :
                                 "text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"} 
                                 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
@@ -68,7 +68,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
                     &&
                     <>
                     <li key={totalPages}>
-                            <div onClick={() => onPageChange(1)} data-testid={`page-first`} className={`cursor-pointer flex items-center justify-center px-3 h-8
+                            <div onClick={() => setCurrentPage(1)} data-testid={`page-first`} className={`cursor-pointer flex items-center justify-center px-3 h-8
                     leading-tight ${currentPage === 1 ? "text-blue-600 bg-blue-50 border border-gray-300" :
                                     "text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"} 
                     dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
@@ -88,7 +88,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
                 &&
                 pageNumbers.slice(currentPage-3, currentPage+2).map(number => (
                     <li key={number}>
-                        <div onClick={() => onPageChange(number)} data-testid={`page-${number}`} className={`cursor-pointer flex items-center justify-center px-3 h-8
+                        <div onClick={() => setCurrentPage(number)} data-testid={`page-${number}`} className={`cursor-pointer flex items-center justify-center px-3 h-8
                          leading-tight ${currentPage === number ? "text-blue-600 bg-blue-50 border border-gray-300" :
                             "text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"} 
                             dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
@@ -106,8 +106,8 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
                             ...
                         </div>
                     </li><li key={totalPages}>
-                            <div onClick={() => onPageChange(totalPages)} data-testid={`page-last`} className={`cursor-pointer flex items-center justify-center px-3 h-8
-                    leading-tight ${currentPage === 1 ? "text-blue-600 bg-blue-50 border border-gray-300" :
+                            <div onClick={() => setCurrentPage(totalPages)} data-testid={`page-last`} className={`cursor-pointer flex items-center justify-center px-3 h-8
+                    leading-tight ${currentPage === totalPages ? "text-blue-600 bg-blue-50 border border-gray-300" :
                                     "text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"} 
                     dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
                     dark:hover:text-white`}>
@@ -119,7 +119,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
                     currentPage >= totalPages - 3 &&
                     pageNumbers.slice(totalPages - 6, totalPages).map(number => (
                         <li key={number}>
-                            <div onClick={() => onPageChange(number)} data-testid={`page-${number}`} className={`cursor-pointer flex items-center justify-center px-3 h-8
+                            <div onClick={() => setCurrentPage(number)} data-testid={`page-${number}`} className={`cursor-pointer flex items-center justify-center px-3 h-8
                              leading-tight ${currentPage === number ? "text-blue-600 bg-blue-50 border border-gray-300" :
                                 "text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"} 
                                 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
