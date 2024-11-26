@@ -75,7 +75,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, setCurrentPage, to
                     </div>
                 </li>
                 {
-                    currentPage <= 4 
+                    currentPage <= 4 || totalPages <= 6
                         ? pageNumbers.slice(0, 6).map(number => (
                                 <li key={number}>
                                     <div 
