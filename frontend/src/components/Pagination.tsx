@@ -11,11 +11,22 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, setCurrentPage, to
     const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1)
 
     const handlePrevious = () => {
-        if (currentPage > 1) setCurrentPage(currentPage - 1)
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1)
+            setInputedPage(currentPage-1)
+        }
+    }
+
+    const handlePageChange = (pageNumber: number) => {
+        setCurrentPage(pageNumber)
+        setInputedPage(pageNumber)
     }
 
     const handleNext = () => {
-        if (currentPage < totalPages) setCurrentPage(currentPage + 1)
+        if (currentPage < totalPages) {
+            setCurrentPage(currentPage + 1)
+            setInputedPage(currentPage + 1)
+        }
     }
 
     const handleInputed = (event: ChangeEvent<HTMLInputElement>) => {
@@ -30,8 +41,8 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, setCurrentPage, to
         <nav aria-label="Page navigation example" data-testid="pagination-menu" className="flex space-x-2">
             <span className="flex items-center justify-center text-gray-700 text-sm h-8">
                 Strona
-                <input type="number" className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none
-                    [&::-webkit-inner-spin-button]:appearance-none w-12 mx-2 text-center"
+                <input type="number" className={`[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none
+                    [&::-webkit-inner-spin-button]:appearance-none w-12 mx-2 text-center`}
                 value={inputedPage} onChange={handleInputed}></input>
                 z {totalPages}
                 <button className="font-normal h-6 mx-2 flex items-center justify-center px-3 leading-tight
@@ -53,7 +64,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, setCurrentPage, to
                     currentPage <= 4 &&
                     pageNumbers.slice(0, 6).map(number => (
                         <li key={number}>
-                            <div onClick={() => setCurrentPage(number)} data-testid={`page-${number}`} className={`cursor-pointer flex items-center justify-center px-3 h-8
+                            <div onClick={() => handlePageChange(number)} data-testid={`page-${number}`} className={`cursor-pointer flex items-center justify-center px-3 h-8
                              leading-tight ${currentPage === number ? "text-blue-600 bg-blue-50 border border-gray-300" :
                                 "text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"} 
                                 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
@@ -68,7 +79,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, setCurrentPage, to
                     &&
                     <>
                     <li key={totalPages}>
-                            <div onClick={() => setCurrentPage(1)} data-testid={`page-first`} className={`cursor-pointer flex items-center justify-center px-3 h-8
+                            <div onClick={() => handlePageChange(1)} data-testid={`page-first`} className={`cursor-pointer flex items-center justify-center px-3 h-8
                     leading-tight ${currentPage === 1 ? "text-blue-600 bg-blue-50 border border-gray-300" :
                                     "text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"} 
                     dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
@@ -88,7 +99,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, setCurrentPage, to
                 &&
                 pageNumbers.slice(currentPage-3, currentPage+2).map(number => (
                     <li key={number}>
-                        <div onClick={() => setCurrentPage(number)} data-testid={`page-${number}`} className={`cursor-pointer flex items-center justify-center px-3 h-8
+                        <div onClick={() => handlePageChange(number)} data-testid={`page-${number}`} className={`cursor-pointer flex items-center justify-center px-3 h-8
                          leading-tight ${currentPage === number ? "text-blue-600 bg-blue-50 border border-gray-300" :
                             "text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"} 
                             dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
@@ -98,7 +109,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, setCurrentPage, to
                     </li>
                 ))}
                 {
-                    currentPage < totalPages - 3
+                    currentPage < totalPages - 3 && totalPages > 6
                     &&
                     <><li>
                         <div className={`flex items-center justify-center px-3 h-8
@@ -106,7 +117,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, setCurrentPage, to
                             ...
                         </div>
                     </li><li key={totalPages}>
-                            <div onClick={() => setCurrentPage(totalPages)} data-testid={`page-last`} className={`cursor-pointer flex items-center justify-center px-3 h-8
+                            <div onClick={() => handlePageChange(totalPages)} data-testid={`page-last`} className={`cursor-pointer flex items-center justify-center px-3 h-8
                     leading-tight ${currentPage === totalPages ? "text-blue-600 bg-blue-50 border border-gray-300" :
                                     "text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"} 
                     dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
@@ -116,10 +127,10 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, setCurrentPage, to
                         </li></>
                 }
                 {
-                    currentPage >= totalPages - 3 &&
+                    currentPage >= totalPages - 3 && totalPages >= 5 &&
                     pageNumbers.slice(totalPages - 6, totalPages).map(number => (
                         <li key={number}>
-                            <div onClick={() => setCurrentPage(number)} data-testid={`page-${number}`} className={`cursor-pointer flex items-center justify-center px-3 h-8
+                            <div onClick={() => handlePageChange(number)} data-testid={`page-${number}`} className={`cursor-pointer flex items-center justify-center px-3 h-8
                              leading-tight ${currentPage === number ? "text-blue-600 bg-blue-50 border border-gray-300" :
                                 "text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"} 
                                 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
