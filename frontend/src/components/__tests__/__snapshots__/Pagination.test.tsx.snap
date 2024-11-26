@@ -12,8 +12,7 @@ exports[`Pagination tests component renders correctly for page 1 of 1 1`] = `
     >
       Strona
       <input
-        class="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none
-                    [&::-webkit-inner-spin-button]:appearance-none w-12 mx-2 text-center"
+        class="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-12 mx-2 text-center"
         type="number"
         value="1"
       />
@@ -43,10 +42,9 @@ exports[`Pagination tests component renders correctly for page 1 of 1 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-blue-600 bg-blue-50 border border-gray-300 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-blue-600 bg-blue-50 border border-gray-300 
+                                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                            dark:hover:text-white"
           data-testid="page-1"
         >
           1
@@ -55,9 +53,9 @@ exports[`Pagination tests component renders correctly for page 1 of 1 1`] = `
       <li>
         <div
           class="flex items-center justify-center px-3 h-8 leading-tight
-                     text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700
-                      dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
-                      dark:hover:text-white cursor-pointer"
+                            text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700
+                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
+                            dark:hover:text-white cursor-pointer"
         >
           Następna strona
         </div>
@@ -79,8 +77,7 @@ exports[`Pagination tests component renders correctly for page 1 of 4 1`] = `
     >
       Strona
       <input
-        class="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none
-                    [&::-webkit-inner-spin-button]:appearance-none w-12 mx-2 text-center"
+        class="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-12 mx-2 text-center"
         type="number"
         value="1"
       />
@@ -110,10 +107,9 @@ exports[`Pagination tests component renders correctly for page 1 of 4 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-blue-600 bg-blue-50 border border-gray-300 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-blue-600 bg-blue-50 border border-gray-300 
+                                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                            dark:hover:text-white"
           data-testid="page-1"
         >
           1
@@ -121,10 +117,9 @@ exports[`Pagination tests component renders correctly for page 1 of 4 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                            dark:hover:text-white"
           data-testid="page-2"
         >
           2
@@ -132,10 +127,9 @@ exports[`Pagination tests component renders correctly for page 1 of 4 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                            dark:hover:text-white"
           data-testid="page-3"
         >
           3
@@ -143,10 +137,9 @@ exports[`Pagination tests component renders correctly for page 1 of 4 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                            dark:hover:text-white"
           data-testid="page-4"
         >
           4
@@ -155,9 +148,9 @@ exports[`Pagination tests component renders correctly for page 1 of 4 1`] = `
       <li>
         <div
           class="flex items-center justify-center px-3 h-8 leading-tight
-                     text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700
-                      dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
-                      dark:hover:text-white cursor-pointer"
+                            text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700
+                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
+                            dark:hover:text-white cursor-pointer"
         >
           Następna strona
         </div>
@@ -179,8 +172,7 @@ exports[`Pagination tests component renders correctly for page 1 of 5 1`] = `
     >
       Strona
       <input
-        class="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none
-                    [&::-webkit-inner-spin-button]:appearance-none w-12 mx-2 text-center"
+        class="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-12 mx-2 text-center"
         type="number"
         value="1"
       />
@@ -210,10 +202,9 @@ exports[`Pagination tests component renders correctly for page 1 of 5 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-blue-600 bg-blue-50 border border-gray-300 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-blue-600 bg-blue-50 border border-gray-300 
+                                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                            dark:hover:text-white"
           data-testid="page-1"
         >
           1
@@ -221,10 +212,9 @@ exports[`Pagination tests component renders correctly for page 1 of 5 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                            dark:hover:text-white"
           data-testid="page-2"
         >
           2
@@ -232,10 +222,9 @@ exports[`Pagination tests component renders correctly for page 1 of 5 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                            dark:hover:text-white"
           data-testid="page-3"
         >
           3
@@ -243,10 +232,9 @@ exports[`Pagination tests component renders correctly for page 1 of 5 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                            dark:hover:text-white"
           data-testid="page-4"
         >
           4
@@ -254,10 +242,9 @@ exports[`Pagination tests component renders correctly for page 1 of 5 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                            dark:hover:text-white"
           data-testid="page-5"
         >
           5
@@ -266,9 +253,9 @@ exports[`Pagination tests component renders correctly for page 1 of 5 1`] = `
       <li>
         <div
           class="flex items-center justify-center px-3 h-8 leading-tight
-                     text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700
-                      dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
-                      dark:hover:text-white cursor-pointer"
+                            text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700
+                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
+                            dark:hover:text-white cursor-pointer"
         >
           Następna strona
         </div>
@@ -290,8 +277,7 @@ exports[`Pagination tests component renders correctly for page 1 of 6 1`] = `
     >
       Strona
       <input
-        class="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none
-                    [&::-webkit-inner-spin-button]:appearance-none w-12 mx-2 text-center"
+        class="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-12 mx-2 text-center"
         type="number"
         value="1"
       />
@@ -321,10 +307,9 @@ exports[`Pagination tests component renders correctly for page 1 of 6 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-blue-600 bg-blue-50 border border-gray-300 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-blue-600 bg-blue-50 border border-gray-300 
+                                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                            dark:hover:text-white"
           data-testid="page-1"
         >
           1
@@ -332,10 +317,9 @@ exports[`Pagination tests component renders correctly for page 1 of 6 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                            dark:hover:text-white"
           data-testid="page-2"
         >
           2
@@ -343,10 +327,9 @@ exports[`Pagination tests component renders correctly for page 1 of 6 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                            dark:hover:text-white"
           data-testid="page-3"
         >
           3
@@ -354,10 +337,9 @@ exports[`Pagination tests component renders correctly for page 1 of 6 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                            dark:hover:text-white"
           data-testid="page-4"
         >
           4
@@ -365,10 +347,9 @@ exports[`Pagination tests component renders correctly for page 1 of 6 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                            dark:hover:text-white"
           data-testid="page-5"
         >
           5
@@ -376,10 +357,9 @@ exports[`Pagination tests component renders correctly for page 1 of 6 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                            dark:hover:text-white"
           data-testid="page-6"
         >
           6
@@ -388,9 +368,9 @@ exports[`Pagination tests component renders correctly for page 1 of 6 1`] = `
       <li>
         <div
           class="flex items-center justify-center px-3 h-8 leading-tight
-                     text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700
-                      dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
-                      dark:hover:text-white cursor-pointer"
+                            text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700
+                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
+                            dark:hover:text-white cursor-pointer"
         >
           Następna strona
         </div>
@@ -412,8 +392,7 @@ exports[`Pagination tests component renders correctly for page 1 of 7 1`] = `
     >
       Strona
       <input
-        class="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none
-                    [&::-webkit-inner-spin-button]:appearance-none w-12 mx-2 text-center"
+        class="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-12 mx-2 text-center"
         type="number"
         value="1"
       />
@@ -443,10 +422,9 @@ exports[`Pagination tests component renders correctly for page 1 of 7 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-blue-600 bg-blue-50 border border-gray-300 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-blue-600 bg-blue-50 border border-gray-300 
+                                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                            dark:hover:text-white"
           data-testid="page-1"
         >
           1
@@ -454,10 +432,9 @@ exports[`Pagination tests component renders correctly for page 1 of 7 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                            dark:hover:text-white"
           data-testid="page-2"
         >
           2
@@ -465,10 +442,9 @@ exports[`Pagination tests component renders correctly for page 1 of 7 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                            dark:hover:text-white"
           data-testid="page-3"
         >
           3
@@ -476,10 +452,9 @@ exports[`Pagination tests component renders correctly for page 1 of 7 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                            dark:hover:text-white"
           data-testid="page-4"
         >
           4
@@ -487,10 +462,9 @@ exports[`Pagination tests component renders correctly for page 1 of 7 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                            dark:hover:text-white"
           data-testid="page-5"
         >
           5
@@ -498,10 +472,9 @@ exports[`Pagination tests component renders correctly for page 1 of 7 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                            dark:hover:text-white"
           data-testid="page-6"
         >
           6
@@ -510,17 +483,15 @@ exports[`Pagination tests component renders correctly for page 1 of 7 1`] = `
       <li>
         <div
           class="flex items-center justify-center px-3 h-8
-                        leading-tight text-blue-600"
+                                    leading-tight text-blue-600"
         >
           ...
         </div>
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                    leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                    dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                    dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
           data-testid="page-last"
         >
           7
@@ -529,9 +500,9 @@ exports[`Pagination tests component renders correctly for page 1 of 7 1`] = `
       <li>
         <div
           class="flex items-center justify-center px-3 h-8 leading-tight
-                     text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700
-                      dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
-                      dark:hover:text-white cursor-pointer"
+                            text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700
+                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
+                            dark:hover:text-white cursor-pointer"
         >
           Następna strona
         </div>
@@ -553,8 +524,7 @@ exports[`Pagination tests component renders correctly for page 1 of 10 1`] = `
     >
       Strona
       <input
-        class="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none
-                    [&::-webkit-inner-spin-button]:appearance-none w-12 mx-2 text-center"
+        class="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-12 mx-2 text-center"
         type="number"
         value="1"
       />
@@ -584,10 +554,9 @@ exports[`Pagination tests component renders correctly for page 1 of 10 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-blue-600 bg-blue-50 border border-gray-300 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-blue-600 bg-blue-50 border border-gray-300 
+                                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                            dark:hover:text-white"
           data-testid="page-1"
         >
           1
@@ -595,10 +564,9 @@ exports[`Pagination tests component renders correctly for page 1 of 10 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                            dark:hover:text-white"
           data-testid="page-2"
         >
           2
@@ -606,10 +574,9 @@ exports[`Pagination tests component renders correctly for page 1 of 10 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                            dark:hover:text-white"
           data-testid="page-3"
         >
           3
@@ -617,10 +584,9 @@ exports[`Pagination tests component renders correctly for page 1 of 10 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                            dark:hover:text-white"
           data-testid="page-4"
         >
           4
@@ -628,10 +594,9 @@ exports[`Pagination tests component renders correctly for page 1 of 10 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                            dark:hover:text-white"
           data-testid="page-5"
         >
           5
@@ -639,10 +604,9 @@ exports[`Pagination tests component renders correctly for page 1 of 10 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                            dark:hover:text-white"
           data-testid="page-6"
         >
           6
@@ -651,17 +615,15 @@ exports[`Pagination tests component renders correctly for page 1 of 10 1`] = `
       <li>
         <div
           class="flex items-center justify-center px-3 h-8
-                        leading-tight text-blue-600"
+                                    leading-tight text-blue-600"
         >
           ...
         </div>
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                    leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                    dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                    dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
           data-testid="page-last"
         >
           10
@@ -670,9 +632,9 @@ exports[`Pagination tests component renders correctly for page 1 of 10 1`] = `
       <li>
         <div
           class="flex items-center justify-center px-3 h-8 leading-tight
-                     text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700
-                      dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
-                      dark:hover:text-white cursor-pointer"
+                            text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700
+                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
+                            dark:hover:text-white cursor-pointer"
         >
           Następna strona
         </div>
@@ -694,8 +656,7 @@ exports[`Pagination tests component renders correctly for page 5 of 10 1`] = `
     >
       Strona
       <input
-        class="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none
-                    [&::-webkit-inner-spin-button]:appearance-none w-12 mx-2 text-center"
+        class="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-12 mx-2 text-center"
         type="number"
         value="5"
       />
@@ -725,10 +686,9 @@ exports[`Pagination tests component renders correctly for page 5 of 10 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                    leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                    dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                    dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                                dark:hover:text-white"
           data-testid="page-first"
         >
           1
@@ -736,18 +696,16 @@ exports[`Pagination tests component renders correctly for page 5 of 10 1`] = `
       </li>
       <li>
         <div
-          class="flex items-center justify-center px-3 h-8
-                        leading-tight text-blue-600"
+          class="flex items-center justify-center px-3 h-8 leading-tight text-blue-600"
         >
           ...
         </div>
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                         leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                            dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                dark:hover:text-white"
           data-testid="page-3"
         >
           3
@@ -755,10 +713,9 @@ exports[`Pagination tests component renders correctly for page 5 of 10 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                         leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                            dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                dark:hover:text-white"
           data-testid="page-4"
         >
           4
@@ -766,10 +723,9 @@ exports[`Pagination tests component renders correctly for page 5 of 10 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                         leading-tight text-blue-600 bg-blue-50 border border-gray-300 
-                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                            dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-blue-600 bg-blue-50 border border-gray-300 
+                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                dark:hover:text-white"
           data-testid="page-5"
         >
           5
@@ -777,10 +733,9 @@ exports[`Pagination tests component renders correctly for page 5 of 10 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                         leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                            dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                dark:hover:text-white"
           data-testid="page-6"
         >
           6
@@ -788,10 +743,9 @@ exports[`Pagination tests component renders correctly for page 5 of 10 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                         leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                            dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                dark:hover:text-white"
           data-testid="page-7"
         >
           7
@@ -800,17 +754,15 @@ exports[`Pagination tests component renders correctly for page 5 of 10 1`] = `
       <li>
         <div
           class="flex items-center justify-center px-3 h-8
-                        leading-tight text-blue-600"
+                                    leading-tight text-blue-600"
         >
           ...
         </div>
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                    leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                    dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                    dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
           data-testid="page-last"
         >
           10
@@ -819,9 +771,9 @@ exports[`Pagination tests component renders correctly for page 5 of 10 1`] = `
       <li>
         <div
           class="flex items-center justify-center px-3 h-8 leading-tight
-                     text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700
-                      dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
-                      dark:hover:text-white cursor-pointer"
+                            text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700
+                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
+                            dark:hover:text-white cursor-pointer"
         >
           Następna strona
         </div>
@@ -843,8 +795,7 @@ exports[`Pagination tests component renders correctly for page 6 of 10 1`] = `
     >
       Strona
       <input
-        class="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none
-                    [&::-webkit-inner-spin-button]:appearance-none w-12 mx-2 text-center"
+        class="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-12 mx-2 text-center"
         type="number"
         value="6"
       />
@@ -874,10 +825,9 @@ exports[`Pagination tests component renders correctly for page 6 of 10 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                    leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                    dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                    dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                                dark:hover:text-white"
           data-testid="page-first"
         >
           1
@@ -885,18 +835,16 @@ exports[`Pagination tests component renders correctly for page 6 of 10 1`] = `
       </li>
       <li>
         <div
-          class="flex items-center justify-center px-3 h-8
-                        leading-tight text-blue-600"
+          class="flex items-center justify-center px-3 h-8 leading-tight text-blue-600"
         >
           ...
         </div>
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                         leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                            dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                dark:hover:text-white"
           data-testid="page-4"
         >
           4
@@ -904,10 +852,9 @@ exports[`Pagination tests component renders correctly for page 6 of 10 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                         leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                            dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                dark:hover:text-white"
           data-testid="page-5"
         >
           5
@@ -915,10 +862,9 @@ exports[`Pagination tests component renders correctly for page 6 of 10 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                         leading-tight text-blue-600 bg-blue-50 border border-gray-300 
-                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                            dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-blue-600 bg-blue-50 border border-gray-300 
+                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                dark:hover:text-white"
           data-testid="page-6"
         >
           6
@@ -926,10 +872,9 @@ exports[`Pagination tests component renders correctly for page 6 of 10 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                         leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                            dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                dark:hover:text-white"
           data-testid="page-7"
         >
           7
@@ -937,10 +882,9 @@ exports[`Pagination tests component renders correctly for page 6 of 10 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                         leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                            dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                dark:hover:text-white"
           data-testid="page-8"
         >
           8
@@ -949,17 +893,15 @@ exports[`Pagination tests component renders correctly for page 6 of 10 1`] = `
       <li>
         <div
           class="flex items-center justify-center px-3 h-8
-                        leading-tight text-blue-600"
+                                    leading-tight text-blue-600"
         >
           ...
         </div>
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                    leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                    dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                    dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
           data-testid="page-last"
         >
           10
@@ -968,9 +910,9 @@ exports[`Pagination tests component renders correctly for page 6 of 10 1`] = `
       <li>
         <div
           class="flex items-center justify-center px-3 h-8 leading-tight
-                     text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700
-                      dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
-                      dark:hover:text-white cursor-pointer"
+                            text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700
+                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
+                            dark:hover:text-white cursor-pointer"
         >
           Następna strona
         </div>
@@ -992,8 +934,7 @@ exports[`Pagination tests component renders correctly for page 7 of 10 1`] = `
     >
       Strona
       <input
-        class="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none
-                    [&::-webkit-inner-spin-button]:appearance-none w-12 mx-2 text-center"
+        class="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-12 mx-2 text-center"
         type="number"
         value="7"
       />
@@ -1023,10 +964,9 @@ exports[`Pagination tests component renders correctly for page 7 of 10 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                    leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                    dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                    dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                                dark:hover:text-white"
           data-testid="page-first"
         >
           1
@@ -1034,18 +974,14 @@ exports[`Pagination tests component renders correctly for page 7 of 10 1`] = `
       </li>
       <li>
         <div
-          class="flex items-center justify-center px-3 h-8
-                        leading-tight text-blue-600"
+          class="flex items-center justify-center px-3 h-8 leading-tight text-blue-600"
         >
           ...
         </div>
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
           data-testid="page-5"
         >
           5
@@ -1053,10 +989,7 @@ exports[`Pagination tests component renders correctly for page 7 of 10 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
           data-testid="page-6"
         >
           6
@@ -1064,10 +997,7 @@ exports[`Pagination tests component renders correctly for page 7 of 10 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-blue-600 bg-blue-50 border border-gray-300 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-blue-600 bg-blue-50 border border-gray-300 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
           data-testid="page-7"
         >
           7
@@ -1075,10 +1005,7 @@ exports[`Pagination tests component renders correctly for page 7 of 10 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
           data-testid="page-8"
         >
           8
@@ -1086,10 +1013,7 @@ exports[`Pagination tests component renders correctly for page 7 of 10 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
           data-testid="page-9"
         >
           9
@@ -1097,10 +1021,7 @@ exports[`Pagination tests component renders correctly for page 7 of 10 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
           data-testid="page-10"
         >
           10
@@ -1109,9 +1030,9 @@ exports[`Pagination tests component renders correctly for page 7 of 10 1`] = `
       <li>
         <div
           class="flex items-center justify-center px-3 h-8 leading-tight
-                     text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700
-                      dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
-                      dark:hover:text-white cursor-pointer"
+                            text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700
+                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
+                            dark:hover:text-white cursor-pointer"
         >
           Następna strona
         </div>
@@ -1133,8 +1054,7 @@ exports[`Pagination tests component renders correctly for page 10 of 10 1`] = `
     >
       Strona
       <input
-        class="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none
-                    [&::-webkit-inner-spin-button]:appearance-none w-12 mx-2 text-center"
+        class="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-12 mx-2 text-center"
         type="number"
         value="10"
       />
@@ -1164,10 +1084,9 @@ exports[`Pagination tests component renders correctly for page 10 of 10 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                    leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                    dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                    dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
+                                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                                dark:hover:text-white"
           data-testid="page-first"
         >
           1
@@ -1175,18 +1094,14 @@ exports[`Pagination tests component renders correctly for page 10 of 10 1`] = `
       </li>
       <li>
         <div
-          class="flex items-center justify-center px-3 h-8
-                        leading-tight text-blue-600"
+          class="flex items-center justify-center px-3 h-8 leading-tight text-blue-600"
         >
           ...
         </div>
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
           data-testid="page-5"
         >
           5
@@ -1194,10 +1109,7 @@ exports[`Pagination tests component renders correctly for page 10 of 10 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
           data-testid="page-6"
         >
           6
@@ -1205,10 +1117,7 @@ exports[`Pagination tests component renders correctly for page 10 of 10 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
           data-testid="page-7"
         >
           7
@@ -1216,10 +1125,7 @@ exports[`Pagination tests component renders correctly for page 10 of 10 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
           data-testid="page-8"
         >
           8
@@ -1227,10 +1133,7 @@ exports[`Pagination tests component renders correctly for page 10 of 10 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
           data-testid="page-9"
         >
           9
@@ -1238,10 +1141,7 @@ exports[`Pagination tests component renders correctly for page 10 of 10 1`] = `
       </li>
       <li>
         <div
-          class="cursor-pointer flex items-center justify-center px-3 h-8
-                             leading-tight text-blue-600 bg-blue-50 border border-gray-300 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+          class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-blue-600 bg-blue-50 border border-gray-300 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
           data-testid="page-10"
         >
           10
@@ -1250,9 +1150,9 @@ exports[`Pagination tests component renders correctly for page 10 of 10 1`] = `
       <li>
         <div
           class="flex items-center justify-center px-3 h-8 leading-tight
-                     text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700
-                      dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
-                      dark:hover:text-white cursor-pointer"
+                            text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700
+                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
+                            dark:hover:text-white cursor-pointer"
         >
           Następna strona
         </div>
