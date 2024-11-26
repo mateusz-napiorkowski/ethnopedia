@@ -20,9 +20,8 @@ exports[`Pagination tests component renders correctly for page 1 of 1 1`] = `
       1
       <button
         class="font-normal h-6 mx-2 flex items-center justify-center px-3 leading-tight
-                     text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100
-                     hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
-                     dark:hover:text-white cursor-pointer"
+                     text-gray-500 border-gray-300 rounded-s-lg border bg-white hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white cursor-pointer
+                        "
       >
         Przejdź
       </button>
@@ -85,9 +84,8 @@ exports[`Pagination tests component renders correctly for page 1 of 4 1`] = `
       4
       <button
         class="font-normal h-6 mx-2 flex items-center justify-center px-3 leading-tight
-                     text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100
-                     hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
-                     dark:hover:text-white cursor-pointer"
+                     text-gray-500 border-gray-300 rounded-s-lg border bg-white hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white cursor-pointer
+                        "
       >
         Przejdź
       </button>
@@ -180,9 +178,8 @@ exports[`Pagination tests component renders correctly for page 1 of 5 1`] = `
       5
       <button
         class="font-normal h-6 mx-2 flex items-center justify-center px-3 leading-tight
-                     text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100
-                     hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
-                     dark:hover:text-white cursor-pointer"
+                     text-gray-500 border-gray-300 rounded-s-lg border bg-white hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white cursor-pointer
+                        "
       >
         Przejdź
       </button>
@@ -285,9 +282,8 @@ exports[`Pagination tests component renders correctly for page 1 of 6 1`] = `
       6
       <button
         class="font-normal h-6 mx-2 flex items-center justify-center px-3 leading-tight
-                     text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100
-                     hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
-                     dark:hover:text-white cursor-pointer"
+                     text-gray-500 border-gray-300 rounded-s-lg border bg-white hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white cursor-pointer
+                        "
       >
         Przejdź
       </button>
@@ -400,9 +396,8 @@ exports[`Pagination tests component renders correctly for page 1 of 7 1`] = `
       7
       <button
         class="font-normal h-6 mx-2 flex items-center justify-center px-3 leading-tight
-                     text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100
-                     hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
-                     dark:hover:text-white cursor-pointer"
+                     text-gray-500 border-gray-300 rounded-s-lg border bg-white hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white cursor-pointer
+                        "
       >
         Przejdź
       </button>
@@ -532,9 +527,8 @@ exports[`Pagination tests component renders correctly for page 1 of 10 1`] = `
       10
       <button
         class="font-normal h-6 mx-2 flex items-center justify-center px-3 leading-tight
-                     text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100
-                     hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
-                     dark:hover:text-white cursor-pointer"
+                     text-gray-500 border-gray-300 rounded-s-lg border bg-white hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white cursor-pointer
+                        "
       >
         Przejdź
       </button>
@@ -664,9 +658,8 @@ exports[`Pagination tests component renders correctly for page 5 of 10 1`] = `
       10
       <button
         class="font-normal h-6 mx-2 flex items-center justify-center px-3 leading-tight
-                     text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100
-                     hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
-                     dark:hover:text-white cursor-pointer"
+                     text-gray-500 border-gray-300 rounded-s-lg border bg-white hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white cursor-pointer
+                        "
       >
         Przejdź
       </button>
@@ -704,8 +697,8 @@ exports[`Pagination tests component renders correctly for page 5 of 10 1`] = `
       <li>
         <div
           class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+                                        dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                        dark:hover:text-white"
           data-testid="page-3"
         >
           3
@@ -714,8 +707,8 @@ exports[`Pagination tests component renders correctly for page 5 of 10 1`] = `
       <li>
         <div
           class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+                                        dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                        dark:hover:text-white"
           data-testid="page-4"
         >
           4
@@ -724,8 +717,8 @@ exports[`Pagination tests component renders correctly for page 5 of 10 1`] = `
       <li>
         <div
           class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-blue-600 bg-blue-50 border border-gray-300 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+                                        dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                        dark:hover:text-white"
           data-testid="page-5"
         >
           5
@@ -734,8 +727,8 @@ exports[`Pagination tests component renders correctly for page 5 of 10 1`] = `
       <li>
         <div
           class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+                                        dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                        dark:hover:text-white"
           data-testid="page-6"
         >
           6
@@ -744,8 +737,8 @@ exports[`Pagination tests component renders correctly for page 5 of 10 1`] = `
       <li>
         <div
           class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+                                        dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                        dark:hover:text-white"
           data-testid="page-7"
         >
           7
@@ -803,9 +796,8 @@ exports[`Pagination tests component renders correctly for page 6 of 10 1`] = `
       10
       <button
         class="font-normal h-6 mx-2 flex items-center justify-center px-3 leading-tight
-                     text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100
-                     hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
-                     dark:hover:text-white cursor-pointer"
+                     text-gray-500 border-gray-300 rounded-s-lg border bg-white hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white cursor-pointer
+                        "
       >
         Przejdź
       </button>
@@ -843,8 +835,8 @@ exports[`Pagination tests component renders correctly for page 6 of 10 1`] = `
       <li>
         <div
           class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+                                        dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                        dark:hover:text-white"
           data-testid="page-4"
         >
           4
@@ -853,8 +845,8 @@ exports[`Pagination tests component renders correctly for page 6 of 10 1`] = `
       <li>
         <div
           class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+                                        dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                        dark:hover:text-white"
           data-testid="page-5"
         >
           5
@@ -863,8 +855,8 @@ exports[`Pagination tests component renders correctly for page 6 of 10 1`] = `
       <li>
         <div
           class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-blue-600 bg-blue-50 border border-gray-300 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+                                        dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                        dark:hover:text-white"
           data-testid="page-6"
         >
           6
@@ -873,8 +865,8 @@ exports[`Pagination tests component renders correctly for page 6 of 10 1`] = `
       <li>
         <div
           class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+                                        dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                        dark:hover:text-white"
           data-testid="page-7"
         >
           7
@@ -883,8 +875,8 @@ exports[`Pagination tests component renders correctly for page 6 of 10 1`] = `
       <li>
         <div
           class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white"
+                                        dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                        dark:hover:text-white"
           data-testid="page-8"
         >
           8
@@ -942,9 +934,8 @@ exports[`Pagination tests component renders correctly for page 7 of 10 1`] = `
       10
       <button
         class="font-normal h-6 mx-2 flex items-center justify-center px-3 leading-tight
-                     text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100
-                     hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
-                     dark:hover:text-white cursor-pointer"
+                     text-gray-500 border-gray-300 rounded-s-lg border bg-white hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white cursor-pointer
+                        "
       >
         Przejdź
       </button>
@@ -1062,9 +1053,8 @@ exports[`Pagination tests component renders correctly for page 10 of 10 1`] = `
       10
       <button
         class="font-normal h-6 mx-2 flex items-center justify-center px-3 leading-tight
-                     text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100
-                     hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
-                     dark:hover:text-white cursor-pointer"
+                     text-gray-500 border-gray-300 rounded-s-lg border bg-white hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white cursor-pointer
+                        "
       >
         Przejdź
       </button>

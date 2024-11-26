@@ -37,6 +37,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, setCurrentPage, to
         setCurrentPage(inputedPage)
     }
 
+    const buttonDisabled = inputedPage > totalPages || inputedPage < 1
     return (
         <nav aria-label="Page navigation example" data-testid="pagination-menu" className="flex space-x-2">
             <span className="flex items-center justify-center text-gray-700 text-sm h-8">
@@ -49,10 +50,13 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, setCurrentPage, to
                 ></input>
                 z {totalPages}
                 <button
-                    className="font-normal h-6 mx-2 flex items-center justify-center px-3 leading-tight
-                     text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100
-                     hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
-                     dark:hover:text-white cursor-pointer"
+                    disabled={buttonDisabled}
+                    className={`font-normal h-6 mx-2 flex items-center justify-center px-3 leading-tight
+                     text-gray-500 border-gray-300 rounded-s-lg border ${
+                        buttonDisabled 
+                            ? "bg-gray-100"
+                            : "bg-white hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white cursor-pointer"}
+                        `}
                      onClick={handleGoToPageButtonClick}
                 >
                     Przejdź
@@ -112,24 +116,24 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, setCurrentPage, to
                             </>
                 }
                 {
-                currentPage > 4 && currentPage + 3 < totalPages
-                &&
-                pageNumbers.slice(currentPage-3, currentPage+2).map(number => (
-                    <li key={number}>
-                        <div 
-                            onClick={() => handlePageChange(number)}
-                            data-testid={`page-${number}`}
-                            className={`cursor-pointer flex items-center justify-center px-3 h-8 leading-tight ${
-                                currentPage === number
-                                ? "text-blue-600 bg-blue-50 border border-gray-300"
-                                : "text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"} 
-                                dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
-                                dark:hover:text-white`}
-                        >
-                            {number}
-                        </div>
-                    </li>
-                ))}
+                    currentPage > 4 && currentPage + 3 < totalPages &&
+                        pageNumbers.slice(currentPage-3, currentPage+2).map(number => (
+                            <li key={number}>
+                                <div 
+                                    onClick={() => handlePageChange(number)}
+                                    data-testid={`page-${number}`}
+                                    className={`cursor-pointer flex items-center justify-center px-3 h-8 leading-tight ${
+                                        currentPage === number
+                                        ? "text-blue-600 bg-blue-50 border border-gray-300"
+                                        : "text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"} 
+                                        dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                        dark:hover:text-white`}
+                                >
+                                    {number}
+                                </div>
+                            </li>
+                        ))
+                }
                 {
                     totalPages > 6 && (
                         currentPage < totalPages - 3 ?(

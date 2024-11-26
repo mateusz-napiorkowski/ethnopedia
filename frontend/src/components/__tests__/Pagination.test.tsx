@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { render } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import Pagination from "../Pagination"
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
@@ -82,5 +82,43 @@ describe("Pagination tests", () => {
         await user.click(nextPageButton)
         
         expect(mockSetCurrentPage).not.toHaveBeenCalled()
+    })
+
+    test("input element works correctly and user goes to inputed page when button is clicked", async () => {   
+        const { getByRole } = renderComponent(1, 10)
+        const inputPageElement = getByRole("spinbutton")
+        const goToPageButton = getByRole("button", {
+            name: /przejdź/i
+        })
+
+        await userEvent.clear(inputPageElement)
+        await user.type(inputPageElement, "5")
+        await user.click(goToPageButton)
+
+        expect(inputPageElement).toHaveValue(5)
+        expect(mockSetCurrentPage).toHaveBeenCalledWith(5)
+    })
+
+    test("button is disabled when inputed page is out of pages range", async () => {   
+        const { getByRole } = renderComponent(1, 10)
+        const inputPageElement = getByRole("spinbutton")
+        const goToPageButton = getByRole("button", {
+            name: /przejdź/i
+        })
+
+        await userEvent.clear(inputPageElement)
+        await user.type(inputPageElement, "0")
+
+        expect(goToPageButton).toBeDisabled()
+
+        await userEvent.clear(inputPageElement)
+        await user.type(inputPageElement, "5")
+
+        expect(goToPageButton).not.toBeDisabled()
+
+        await userEvent.clear(inputPageElement)
+        await user.type(inputPageElement, "11")
+        
+        expect(goToPageButton).toBeDisabled()
     })
 })
