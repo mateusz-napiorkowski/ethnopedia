@@ -44,7 +44,7 @@ const Navigation: React.FC = () => {
             <li className="inline-flex items-center text-lg">
                 <Link to="/"
                       className="inline-flex items-center font-medium text-gray-800 hover:text-blue-600">
-                    Powrót do listy kolekcji
+                    Lista kolekcji
                 </Link>
             </li>
             <span className="self-center">
@@ -53,9 +53,30 @@ const Navigation: React.FC = () => {
             <li className="inline-flex items-center text-lg">
                 <Link to={`/collections/${pathSegments[1]}/artworks`}
                       className="inline-flex items-center font-medium text-gray-800 hover:text-blue-600">
-                    {pathSegments[pathSegments.length-1] === "artworks" ? pathSegments[1] : "Powrót do listy utworów"}
+                    {/*{pathSegments[pathSegments.length - 1] === "artworks"*/}
+                    {/*    ? decodeURIComponent(pathSegments[1])*/}
+                    {/*    : "Lista utworów"}*/}
+                    {decodeURIComponent(pathSegments[1])}
                 </Link>
             </li>
+
+            {pathSegments[pathSegments.length - 1] !== "artworks" && (
+                <>
+                        <span className="self-center">
+                            <AngleRightIcon />
+                        </span>
+                    <li className="inline-flex items-center text-lg">
+                        <Link
+                            to={`/collections/${pathSegments[1]}/${pathSegments[2]}`}
+                            className="inline-flex items-center font-medium text-gray-800 hover:text-blue-600"
+                        >
+                            {/*TODO*/}
+                            {/*{decodeURIComponent(pathSegments[2])}*/}
+                            Utwór
+                        </Link>
+                    </li>
+                </>
+            )}
             {/* {breadcrumbItems} */}
         </ol>
     </nav>
