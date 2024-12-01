@@ -136,7 +136,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, setCurrentPage, to
                 }
                 {
                     totalPages > 6 && (
-                        currentPage < totalPages - 3 ?(
+                        currentPage < totalPages - 3 || (currentPage === 4 && totalPages === 7)?(
                             <>
                                 <li>
                                     <div className={`flex items-center justify-center px-3 h-8

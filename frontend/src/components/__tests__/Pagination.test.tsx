@@ -24,8 +24,8 @@ describe("Pagination tests", () => {
     });
 
     test.each([
-        [1, 1], [1, 4], [1, 5], [1, 6], [1, 7], [1, 10], 
-        [5,5], [6,6],
+        [1, 1], [1, 4], [1, 5], [1, 6], [1, 7], [1, 10],
+        [5,5], [6,6], [4,7],
         [5, 10], [6, 10], [7, 10], [10, 10]
       ])('component renders correctly for page %i of %i', (currentPage, totalPages,) => {
         const { container } = renderComponent(currentPage, totalPages)
