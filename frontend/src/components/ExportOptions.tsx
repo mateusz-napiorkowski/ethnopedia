@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom"
 import { getXlsxWithArtworksData } from "../api/dataExport"
 import { useQuery } from "react-query"
 import { getAllCategories } from "../api/categories"
+import LoadingPage from "../pages/LoadingPage"
 
 type Props = {
     onClose: () => void,
@@ -51,20 +52,12 @@ const ExportOptions = (props: Props) => {
         return keysInRightOrder
     }
 
-    function AllKeysWithCheckboxes(data: any) {
-        const keys = data.keys.categories;
-        const listItems = keys.map((key: string) =>
-            <span>
-                <input type="checkbox" id={key} name={key} value={key} onChange={event => handleCheckboxChange(event)} checked={selectedKeys.includes(key)}></input>
-                <label> {key}</label>
-            </span>
-        );
-        return (
-          <>{listItems}</>
-        );
-      }
+    if(!categoriesData)
+        return <div data-testid="loading-page-container">
+            <LoadingPage/>
+        </div>
 
-    return <div
+    return <div data-testid="export-options-container"
         id="default-modal"
         aria-hidden="true"
         className="fixed top-0 left-0 flex items-center justify-center w-full h-full z-50 "
@@ -88,9 +81,14 @@ const ExportOptions = (props: Props) => {
                     </div>
                     <div>          
                         <p className="flex py-2 px-4 text-base font-medium">Kolumny do wyeksportowania:</p>     
-                        <div className="flex flex-col items-start px-4 h-64 overflow-y-auto">   
-                            <AllKeysWithCheckboxes keys={categoriesData}/>                                    
-                        </div>
+                        <ul className="flex flex-col items-start px-4 h-64 overflow-y-auto">   
+                            {categoriesData.categories.map((key: string) =>
+                                <li key={key}>
+                                    <input type="checkbox" id={key} name={key} value={key} onChange={event => handleCheckboxChange(event)} checked={selectedKeys.includes(key)}></input>
+                                    <label>{key}</label>
+                                </li>
+                            )}                 
+                        </ul>
                         <div className="flex flex-row space-x-2 items-start px-4 py-4">
                             <input className="flex items-center justify-end dark:text-white text-xs
                                         hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium px-4 py-2
