@@ -84,11 +84,13 @@ describe("Export options tests", () => {
       ])('should have correct states of checkboxes for checkboxes/buttons clicked in sequence: $clickSequence', async ({categories, clickSequence, expectedChecked}) => {
         const expectedUnchecked = categories.filter(category => !expectedChecked.includes(category))
         mockGetAllCategories.mockReturnValue({categories: categories})
-        const { getByTestId, getByDisplayValue } = renderComponent()
+        const { getByTestId, getByDisplayValue, getByText } = renderComponent()
         await waitFor(() => getByTestId("export-options-container"))  
 
         for(const value of clickSequence) {
-            await user.click(getByDisplayValue(value))
+            const elementToClick = (value === "Zaznacz wszystkie" || value === "Odznacz wszystkie")
+                ? getByText(value) : getByDisplayValue(value)
+            await user.click(elementToClick)
         }
 
         expectedChecked.forEach(value => {
@@ -170,7 +172,7 @@ describe("Export options tests", () => {
 
     it("should call getXlsxWithArtworksData function with correct parameters after export metadata button is clicked and 'export all' checkbox is checked", async () => {
         mockGetAllCategories.mockReturnValue({categories: ["Tytuł", "Region", "Artyści", "Rok"]})        
-        const { getByTestId, getByDisplayValue } = renderComponent()
+        const { getByTestId, getByDisplayValue, getByText } = renderComponent()
         await waitFor(() => getByTestId("export-options-container"))
 
         await user.click(getByDisplayValue("Artyści"))
@@ -180,13 +182,13 @@ describe("Export options tests", () => {
         
         await user.clear(filenameInput)
         await user.type(filenameInput, "another-collection-name.xlsx")
-        await user.click(getByDisplayValue("Eksportuj metadane"))
+        await user.click(getByText("Eksportuj metadane"))
         expect(mockGetXlsxWithArtworksData).toHaveBeenCalledWith("example-collection", ["Region", "Artyści"], {}, false, "another-collection-name.xlsx")
     })
 
     it("should call getXlsxWithArtworksData function with correct parameters after export metadata button is clicked and 'export selected' checkbox is checked", async () => {
         mockGetAllCategories.mockReturnValue({categories: ["Tytuł", "Region", "Artyści", "Rok"]})        
-        const { getByTestId, getByDisplayValue } = renderComponent("example-collection", {'674386b32a2908778c0ad471': true, '674386b32a2908778c0ad470': true})
+        const { getByTestId, getByDisplayValue, getByText } = renderComponent("example-collection", {'674386b32a2908778c0ad471': true, '674386b32a2908778c0ad470': true})
         await waitFor(() => getByTestId("export-options-container"))
 
         await user.click(getByDisplayValue("Artyści"))
@@ -194,7 +196,7 @@ describe("Export options tests", () => {
 
         const exportSelectedCheckbox = getByDisplayValue("onlyChecked")
         await user.click(exportSelectedCheckbox)
-        await user.click(getByDisplayValue("Eksportuj metadane"))
+        await user.click(getByText("Eksportuj metadane"))
         expect(mockGetXlsxWithArtworksData).toHaveBeenCalledWith("example-collection", ["Region", "Artyści"], {'674386b32a2908778c0ad471': true, '674386b32a2908778c0ad470': true}, true, "example-collection.xlsx")
     })
 })
