@@ -25,18 +25,18 @@ const ExportOptions = ({onClose, selectedArtworks}: Props) => {
 
     const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
         const { value, checked } = event.target;
-        setSelectedKeys((prevSelected) =>
-            checked ? [...prevSelected, value] : prevSelected.filter((key) => key !== value)
-        );
+        setSelectedKeys((prevSelected) => {
+            const updatedKeys = checked 
+                ? [...prevSelected, value] 
+                : prevSelected.filter((key) => key !== value);
+            
+            return categoriesData.categories.filter((key: string) => updatedKeys.includes(key));
+        });
     }
 
     const handleExportSelectedRecordsChange = (event: ChangeEvent<HTMLInputElement>) => {
         setExportSelectedRecords(event.target.value === "onlyChecked");
     }
-
-    // without this function excel columns are generated in the same order in which the checkboxes were checked
-    const sortKeysInRightOrder = (keys: string[]): string[] =>
-        keys.filter((key) => selectedKeys.includes(key));
 
     const handleSelectAll = () => setSelectedKeys(categoriesData.categories);
     const handleDeselectAll = () => setSelectedKeys([]);
@@ -152,7 +152,7 @@ const ExportOptions = ({onClose, selectedArtworks}: Props) => {
                                     type="submit"
                                     onClick={() => getXlsxWithArtworksData(
                                         collection as string, 
-                                        sortKeysInRightOrder(categoriesData.categories), 
+                                        selectedKeys, 
                                         selectedArtworks, 
                                         exportSelectedRecords, 
                                         filename)}
