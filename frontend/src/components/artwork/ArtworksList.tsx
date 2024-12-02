@@ -12,7 +12,7 @@ import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg"
 import { ReactComponent as FileImportIcon } from "../../assets/icons/fileImport.svg"
 import { ReactComponent as FileExportIcon } from "../../assets/icons/fileExport.svg"
 import WarningPopup from "../../pages/collections/WarningPopup"
-import CustomDropdown from "../CustomDropdown"
+import SortOptions from "../SortOptions"
 import { getCollection, useBatchDeleteCollectionMutation } from "../../api/collections"
 import Navigation from "../Navigation"
 import Pagination from "../Pagination"
@@ -307,7 +307,7 @@ const ArtworksList = () => {
                         </div>
 
                         <span className="">
-                                <CustomDropdown
+                                <SortOptions
                                     options={sortOptions}
                                     onSelect={(value) => setSortOrder(value)}
                                 />

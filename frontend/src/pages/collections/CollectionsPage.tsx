@@ -1,5 +1,5 @@
 import CreateCollectionModal from "./CreateCollectionModal"
-import CustomDropdown from "../../components/CustomDropdown"
+import SortOptions from "../../components/SortOptions"
 import LoadingPage from "../LoadingPage"
 import React, { useEffect, useState } from "react"
 import WarningPopup from "./WarningPopup"
@@ -260,7 +260,7 @@ const CollectionsPage = () => {
                         </button>}
                     </div>
                     <span className="mb-2">
-                    <CustomDropdown
+                    <SortOptions
                         options={sortOptions}
                         onSelect={(value: string) => setSortOrder(value)}
                     />
