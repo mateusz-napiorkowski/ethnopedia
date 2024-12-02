@@ -70,7 +70,7 @@ const ExportOptions = (props: Props) => {
                         <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                             Ustawienia eksportu metadanych do pliku .xlsx
                         </h3>
-                        <button type="button"
+                        <button type="button" aria-label="exit"
                                 className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg
                                 text-sm w-4 h-4 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600
                                 dark:hover:text-white"

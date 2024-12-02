@@ -12,20 +12,24 @@ jest.mock('../../api/categories', () => ({
 
 const mockGetXlsxWithArtworksData = jest.fn()
 jest.mock('../../api/dataExport', () => ({
-    getXlsxWithArtworksData: (collection: string, keys: any, selectedArtworks: any, exportSelectedRecords: boolean, filename: string) => mockGetXlsxWithArtworksData(collection, keys, selectedArtworks, exportSelectedRecords, filename)
+    getXlsxWithArtworksData: (collection: string,
+        keys: Array<string>,
+        selectedArtworks: Array<any>,
+        exportSelectedRecords: boolean,
+        filename: string) => mockGetXlsxWithArtworksData(collection, keys, selectedArtworks, exportSelectedRecords, filename)
 }))
+
+const mockOnClose = jest.fn()
 
 const queryClient = new QueryClient();
 const user = userEvent.setup()
 
-const renderComponent = (collection = "example-collection") => {
+const renderComponent = (collection = "example-collection", selectedArtworks = {}) => {
     return render(
         <QueryClientProvider client={queryClient}>
             <MemoryRouter initialEntries={[`/collections/${collection}/artworks/`]}>
                 <Routes>
-                    <Route path="/collections/:collection/artworks/" element={<ExportOptions onClose={function (): void {
-                        throw new Error('Function not implemented.');
-                    } } selectedArtworks={{}}/>}/>
+                    <Route path="/collections/:collection/artworks/" element={<ExportOptions onClose={mockOnClose} selectedArtworks={selectedArtworks}/>}/>
                 </Routes>  
             </MemoryRouter>
         </QueryClientProvider>
@@ -53,6 +57,15 @@ describe("Export options tests", () => {
 
         expect(queryByTestId("loading-page-container")).not.toBeInTheDocument()
         expect(queryByTestId("export-options-container")).toBeInTheDocument()
+    })
+
+    it("should call onClose when exit button is clicked", async () => {
+        mockGetAllCategories.mockReturnValue({categories: ["Tytuł"]})        
+        const { getByTestId, getByLabelText } = renderComponent()
+        await waitFor(() => getByTestId("export-options-container"))
+
+        await user.click(getByLabelText("exit"))
+        expect(mockOnClose).toHaveBeenCalled()
     })
 
     it.each([
@@ -86,7 +99,7 @@ describe("Export options tests", () => {
         });
     })
 
-    it("should have export selected/all checkboxes checked correctly", async () => {
+    it("should have initial state where 'export selected' checkbox is unchecked and 'export all' checkbox is checked", async () => {
         mockGetAllCategories.mockReturnValue({categories: ["Tytuł", "Region", "Artyści", "Rok"]})        
         const { getByTestId, getByDisplayValue } = renderComponent()
         await waitFor(() => getByTestId("export-options-container"))
@@ -95,44 +108,93 @@ describe("Export options tests", () => {
         
         expect(exportAllCheckbox).toBeChecked()
         expect(exportSelectedCheckbox).not.toBeChecked()
+    })
 
+    it(`should have 'export selected' checked and 'export all' unchecked after 'export selected' is clicked`, async () => {
+        mockGetAllCategories.mockReturnValue({categories: ["Tytuł", "Region", "Artyści", "Rok"]})        
+        const { getByTestId, getByDisplayValue } = renderComponent()
+        await waitFor(() => getByTestId("export-options-container"))
+        const exportSelectedCheckbox = getByDisplayValue("onlyChecked")
+        const exportAllCheckbox = getByDisplayValue("exportAll")
+        
         await user.click(exportSelectedCheckbox)
 
         expect(exportAllCheckbox).not.toBeChecked()
         expect(exportSelectedCheckbox).toBeChecked()
+    })
 
+    it("should have 'export selected' unchecked and 'export all' checked after 'export all' is clicked", async () => {
+        mockGetAllCategories.mockReturnValue({categories: ["Tytuł", "Region", "Artyści", "Rok"]})        
+        const { getByTestId, getByDisplayValue } = renderComponent()
+        await waitFor(() => getByTestId("export-options-container"))
+        const exportSelectedCheckbox = getByDisplayValue("onlyChecked")
+        const exportAllCheckbox = getByDisplayValue("exportAll")
+        
         await user.click(exportSelectedCheckbox)
-
-        expect(exportAllCheckbox).not.toBeChecked()
-        expect(exportSelectedCheckbox).toBeChecked()
-
-        await user.click(exportAllCheckbox)
-
-        expect(exportAllCheckbox).toBeChecked()
-        expect(exportSelectedCheckbox).not.toBeChecked()
-
         await user.click(exportAllCheckbox)
 
         expect(exportAllCheckbox).toBeChecked()
         expect(exportSelectedCheckbox).not.toBeChecked()
     })
 
-    it("should pass correct params to export function", async () => {
+    it("should not change state after checked 'export selected'/'export all' checkbox is clicked", async () => {
         mockGetAllCategories.mockReturnValue({categories: ["Tytuł", "Region", "Artyści", "Rok"]})        
-        const { getByTestId, queryByTestId, getByDisplayValue } = renderComponent()
+        const { getByTestId, getByDisplayValue } = renderComponent()
+        await waitFor(() => getByTestId("export-options-container"))
+        const exportSelectedCheckbox = getByDisplayValue("onlyChecked")
+        const exportAllCheckbox = getByDisplayValue("exportAll")
+        
+        await user.click(exportAllCheckbox)
+
+        expect(exportAllCheckbox).toBeChecked()
+        expect(exportSelectedCheckbox).not.toBeChecked()
+
+        await user.click(exportSelectedCheckbox)
+        await user.click(exportSelectedCheckbox)
+
+        expect(exportAllCheckbox).not.toBeChecked()
+        expect(exportSelectedCheckbox).toBeChecked()
+    })
+
+    it("should change filename input value when user types in another filename", async () => {
+        mockGetAllCategories.mockReturnValue({categories: ["Tytuł", "Region", "Artyści", "Rok"]})        
+        const { getByTestId, getByDisplayValue } = renderComponent()
+        await waitFor(() => getByTestId("export-options-container"))
+        
+        const filenameInput = getByDisplayValue("example-collection.xlsx")
+        await user.clear(filenameInput)
+        await user.type(filenameInput, "another-collection-name.xlsx")
+        
+        expect(filenameInput).toHaveValue("another-collection-name.xlsx")
+    })
+
+    it("should call getXlsxWithArtworksData function with correct parameters after export metadata button is clicked and 'export all' checkbox is checked", async () => {
+        mockGetAllCategories.mockReturnValue({categories: ["Tytuł", "Region", "Artyści", "Rok"]})        
+        const { getByTestId, getByDisplayValue } = renderComponent()
         await waitFor(() => getByTestId("export-options-container"))
 
         await user.click(getByDisplayValue("Artyści"))
         await user.click(getByDisplayValue("Region"))
 
         const filenameInput = getByDisplayValue("example-collection.xlsx")
-
-        const exportSelectedCheckbox = getByDisplayValue("onlyChecked")
-        const exportAllCheckbox = getByDisplayValue("exportAll")
         
         await user.clear(filenameInput)
         await user.type(filenameInput, "another-collection-name.xlsx")
         await user.click(getByDisplayValue("Eksportuj metadane"))
         expect(mockGetXlsxWithArtworksData).toHaveBeenCalledWith("example-collection", ["Region", "Artyści"], {}, false, "another-collection-name.xlsx")
+    })
+
+    it("should call getXlsxWithArtworksData function with correct parameters after export metadata button is clicked and 'export selected' checkbox is checked", async () => {
+        mockGetAllCategories.mockReturnValue({categories: ["Tytuł", "Region", "Artyści", "Rok"]})        
+        const { getByTestId, getByDisplayValue } = renderComponent("example-collection", {'674386b32a2908778c0ad471': true, '674386b32a2908778c0ad470': true})
+        await waitFor(() => getByTestId("export-options-container"))
+
+        await user.click(getByDisplayValue("Artyści"))
+        await user.click(getByDisplayValue("Region"))
+
+        const exportSelectedCheckbox = getByDisplayValue("onlyChecked")
+        await user.click(exportSelectedCheckbox)
+        await user.click(getByDisplayValue("Eksportuj metadane"))
+        expect(mockGetXlsxWithArtworksData).toHaveBeenCalledWith("example-collection", ["Region", "Artyści"], {'674386b32a2908778c0ad471': true, '674386b32a2908778c0ad470': true}, true, "example-collection.xlsx")
     })
 })
