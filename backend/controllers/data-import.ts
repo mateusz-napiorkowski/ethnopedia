@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
 import Artwork from "../models/artwork";
 import { authAsyncWrapper } from "../middleware/auth"
-import { prepRecords } from "../utils/controllers-utils/data-import";
+import { prepRecords } from "../utils/data-import";
 import CollectionCollection from "../models/collection";
 import mongoose, { ClientSession } from "mongoose";
 
@@ -27,8 +27,8 @@ export const importData = authAsyncWrapper(async (req: Request, res: Response) =
             res.status(400).json({ error: err.message })
         else if (err.message === `Collection not found`)
             res.status(404).json({ error: err.message })
-        else if (err.message === `Error preparing data for database insertion`)
-            res.status(500).json({ error: err.message })
+        else if (err.message === "Invalid data in the spreadsheet file"){
+            res.status(400).json({ error: err.message, cause: err.cause })}
         else
             res.status(503).json({ error: `Database unavailable` })
     }
