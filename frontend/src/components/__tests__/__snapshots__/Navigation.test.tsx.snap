@@ -1,0 +1,334 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Navigation tests component renders correctly on artwork page 1`] = `
+<div>
+  <nav
+    class="flex"
+  >
+    <ol
+      class="inline-flex items-center space-x-1 md:space-x-2"
+    >
+      <li
+        class="inline-flex items-center text-lg"
+      >
+        <a
+          class="inline-flex items-center font-medium text-gray-800 hover:text-blue-600"
+          href="/"
+        >
+          Wszystkie kolekcje
+        </a>
+      </li>
+      <span
+        class="self-center"
+      >
+        <svg />
+      </span>
+      <li
+        class="inline-flex items-center text-lg"
+      >
+        <a
+          class="inline-flex items-center font-medium text-gray-800 hover:text-blue-600"
+          href="/collections/example-collection/artworks"
+        >
+          example-collection
+        </a>
+      </li>
+      <span
+        class="self-center"
+      >
+        <svg />
+      </span>
+      <li
+        class="inline-flex items-center text-lg"
+      >
+        <a
+          class="inline-flex items-center font-medium text-gray-800 hover:text-blue-600"
+          href="/collections/example-collection/artworks/674386b32a2908778c0ad471"
+        >
+          Example artwork title
+        </a>
+      </li>
+    </ol>
+  </nav>
+</div>
+`;
+
+exports[`Navigation tests component renders correctly on artwork page when artwork title is undefined 1`] = `
+<div>
+  <nav
+    class="flex"
+  >
+    <ol
+      class="inline-flex items-center space-x-1 md:space-x-2"
+    >
+      <li
+        class="inline-flex items-center text-lg"
+      >
+        <a
+          class="inline-flex items-center font-medium text-gray-800 hover:text-blue-600"
+          href="/"
+        >
+          Wszystkie kolekcje
+        </a>
+      </li>
+      <span
+        class="self-center"
+      >
+        <svg />
+      </span>
+      <li
+        class="inline-flex items-center text-lg"
+      >
+        <a
+          class="inline-flex items-center font-medium text-gray-800 hover:text-blue-600"
+          href="/collections/example-collection/artworks"
+        >
+          example-collection
+        </a>
+      </li>
+      <span
+        class="self-center"
+      >
+        <svg />
+      </span>
+      <li
+        class="inline-flex items-center text-lg"
+      >
+        <a
+          class="inline-flex items-center font-medium text-gray-800 hover:text-blue-600"
+          href="/collections/example-collection/artworks/674386b32a2908778c0ad471"
+        >
+          Utwór bez tytułu
+        </a>
+      </li>
+    </ol>
+  </nav>
+</div>
+`;
+
+exports[`Navigation tests component renders correctly on artworks list page 1`] = `
+<div>
+  <nav
+    class="flex"
+  >
+    <ol
+      class="inline-flex items-center space-x-1 md:space-x-2"
+    >
+      <li
+        class="inline-flex items-center text-lg"
+      >
+        <a
+          class="inline-flex items-center font-medium text-gray-800 hover:text-blue-600"
+          href="/"
+        >
+          Wszystkie kolekcje
+        </a>
+      </li>
+      <span
+        class="self-center"
+      >
+        <svg />
+      </span>
+      <li
+        class="inline-flex items-center text-lg"
+      >
+        <a
+          class="inline-flex items-center font-medium text-gray-800 hover:text-blue-600"
+          href="/collections/example-collection/artworks"
+        >
+          example-collection
+        </a>
+      </li>
+    </ol>
+  </nav>
+</div>
+`;
+
+exports[`Navigation tests component renders correctly on create artwork page 1`] = `
+<div>
+  <nav
+    class="flex"
+  >
+    <ol
+      class="inline-flex items-center space-x-1 md:space-x-2"
+    >
+      <li
+        class="inline-flex items-center text-lg"
+      >
+        <a
+          class="inline-flex items-center font-medium text-gray-800 hover:text-blue-600"
+          href="/"
+        >
+          Wszystkie kolekcje
+        </a>
+      </li>
+      <span
+        class="self-center"
+      >
+        <svg />
+      </span>
+      <li
+        class="inline-flex items-center text-lg"
+      >
+        <a
+          class="inline-flex items-center font-medium text-gray-800 hover:text-blue-600"
+          href="/collections/example-collection/artworks"
+        >
+          example-collection
+        </a>
+      </li>
+      <span
+        class="self-center"
+      >
+        <svg />
+      </span>
+      <li
+        class="inline-flex items-center text-lg"
+      >
+        <a
+          class="inline-flex items-center font-medium text-gray-800 hover:text-blue-600"
+          href="/collections/example-collection/create-artwork"
+        >
+          Dodaj nowy rekord
+        </a>
+      </li>
+    </ol>
+  </nav>
+</div>
+`;
+
+exports[`Navigation tests component renders correctly on edit artwork page 1`] = `
+<div>
+  <nav
+    class="flex"
+  >
+    <ol
+      class="inline-flex items-center space-x-1 md:space-x-2"
+    >
+      <li
+        class="inline-flex items-center text-lg"
+      >
+        <a
+          class="inline-flex items-center font-medium text-gray-800 hover:text-blue-600"
+          href="/"
+        >
+          Wszystkie kolekcje
+        </a>
+      </li>
+      <span
+        class="self-center"
+      >
+        <svg />
+      </span>
+      <li
+        class="inline-flex items-center text-lg"
+      >
+        <a
+          class="inline-flex items-center font-medium text-gray-800 hover:text-blue-600"
+          href="/collections/example-collection/artworks"
+        >
+          example-collection
+        </a>
+      </li>
+      <span
+        class="self-center"
+      >
+        <svg />
+      </span>
+      <li
+        class="inline-flex items-center text-lg"
+      >
+        <a
+          class="inline-flex items-center font-medium text-gray-800 hover:text-blue-600"
+          href="/collections/example-collection/artworks/674386b32a2908778c0ad471"
+        >
+          Example artwork title
+        </a>
+      </li>
+      <span
+        class="self-center"
+      >
+        <svg />
+      </span>
+      <li
+        class="inline-flex items-center text-lg"
+      >
+        <a
+          class="inline-flex items-center font-medium text-gray-800 hover:text-blue-600"
+          href="/collections/example-collection/artworks/674386b32a2908778c0ad471/edit-artwork"
+        >
+          Edytuj rekord
+        </a>
+      </li>
+    </ol>
+  </nav>
+</div>
+`;
+
+exports[`Navigation tests component renders correctly on edit artwork page when artwork title is undefined 1`] = `
+<div>
+  <nav
+    class="flex"
+  >
+    <ol
+      class="inline-flex items-center space-x-1 md:space-x-2"
+    >
+      <li
+        class="inline-flex items-center text-lg"
+      >
+        <a
+          class="inline-flex items-center font-medium text-gray-800 hover:text-blue-600"
+          href="/"
+        >
+          Wszystkie kolekcje
+        </a>
+      </li>
+      <span
+        class="self-center"
+      >
+        <svg />
+      </span>
+      <li
+        class="inline-flex items-center text-lg"
+      >
+        <a
+          class="inline-flex items-center font-medium text-gray-800 hover:text-blue-600"
+          href="/collections/example-collection/artworks"
+        >
+          example-collection
+        </a>
+      </li>
+      <span
+        class="self-center"
+      >
+        <svg />
+      </span>
+      <li
+        class="inline-flex items-center text-lg"
+      >
+        <a
+          class="inline-flex items-center font-medium text-gray-800 hover:text-blue-600"
+          href="/collections/example-collection/artworks/674386b32a2908778c0ad471"
+        >
+          Utwór bez tytułu
+        </a>
+      </li>
+      <span
+        class="self-center"
+      >
+        <svg />
+      </span>
+      <li
+        class="inline-flex items-center text-lg"
+      >
+        <a
+          class="inline-flex items-center font-medium text-gray-800 hover:text-blue-600"
+          href="/collections/example-collection/artworks/674386b32a2908778c0ad471/edit-artwork"
+        >
+          Edytuj rekord
+        </a>
+      </li>
+    </ol>
+  </nav>
+</div>
+`;

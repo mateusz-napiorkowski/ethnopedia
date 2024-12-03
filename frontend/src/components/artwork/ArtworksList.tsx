@@ -12,25 +12,25 @@ import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg"
 import { ReactComponent as FileImportIcon } from "../../assets/icons/fileImport.svg"
 import { ReactComponent as FileExportIcon } from "../../assets/icons/fileExport.svg"
 import WarningPopup from "../../pages/collections/WarningPopup"
-import CustomDropdown from "../CustomDropdown"
+import SortOptions from "../SortOptions"
 import { getCollection, useBatchDeleteCollectionMutation } from "../../api/collections"
 import Navigation from "../Navigation"
 import Pagination from "../Pagination"
-import category from "../Category"
 import { useUser } from "../../providers/UserProvider"
 
-const Artworks = () => {
+const ArtworksList = () => {
     const [selectedArtworks, setSelectedArtworks] = useState<{ [key: string]: boolean }>({})
     const [showFileDropzone, setShowFileDropzone] = useState<boolean>(false)
     const [showExportOptions, setShowExportOptions] = useState<boolean>(false)
     const [showDeleteRecordsWarning, setShowDeleteRecordsWarning] = useState(false)
     const [showDeleteCollectionWarning, setShowDeleteCollectionWarning] = useState(false)
     const [sortOrder, setSortOrder] = useState<string>("newest-first")
+    const [showEditCollection, setShowEditCollection] = useState<boolean>(false)
     const { jwtToken } = useUser();
     const location = useLocation()
     useEffect(() => {
 
-      }, [location]);
+    }, [location]);
 
     const queryParameters = new URLSearchParams(window.location.search)
     const searchText = queryParameters.get("searchText")
@@ -128,7 +128,7 @@ const Artworks = () => {
 
     const navigate = useNavigate()
 
-    if (artworkData === undefined || sortedArtworks === undefined || category === undefined) {
+    if (artworkData === undefined || sortedArtworks === undefined) {
         return <LoadingPage />
     } else {
         const allArtworks = sortedArtworks.map((artwork: any) => (
@@ -204,15 +204,15 @@ const Artworks = () => {
 
                     </div>
 
-                    {collection && <SearchComponent id={collection} />}
+                    {collection && <SearchComponent collectionName={collection} />}
 
                     <div className="flex w-full md:w-auto">
                         <div className="flex flex-1 space-x-2">
                             {jwtToken && <button className="flex items-center justify-center dark:text-white
                             hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2
                             dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
-                                    type="button"
-                                    onClick={() => navigate(`/collections/${collection}/create-artwork`)}>
+                                                 type="button"
+                                                 onClick={() => navigate(`/collections/${collection}/create-artwork`)}>
                                     <span className="mr-2 text-white dark:text-gray-400">
                                         <PlusIcon />
                                     </span>
@@ -221,31 +221,31 @@ const Artworks = () => {
                             {!jwtToken && <button disabled={true} title={"Aby dodać rekord musisz się zalogować."} className="flex items-center justify-center dark:text-white
                             hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2
                             dark:focus:ring-primary-800 font-semibold text-white hover:bg-gray-600 bg-gray-600 border-gray-800"
-                                    type="button"
-                                    onClick={() => navigate(`/collections/${collection}/create-artwork`)}>
+                                                  type="button"
+                                                  onClick={() => navigate(`/collections/${collection}/create-artwork`)}>
                                     <span className="mr-2 text-white dark:text-gray-400">
                                         <PlusIcon />
                                     </span>
                                 Nowy rekord
                             </button>}
-                                <button className="flex items-center justify-center dark:text-white
+                            <button className="flex items-center justify-center dark:text-white
                                             hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium px-4 py-2
                                             dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
-                                        type="button"
-                                        onClick={async () => {
-                                            setShowExportOptions(showExportOptions => !showExportOptions)
-                                        }}
-                                >
+                                    type="button"
+                                    onClick={async () => {
+                                        setShowExportOptions(showExportOptions => !showExportOptions)
+                                    }}
+                            >
                                 <span className="text-white dark:text-gray-400">
                                     <FileExportIcon />
                                 </span>
-                                    Eksportuj plik
-                                </button>
+                                Eksportuj plik
+                            </button>
                             {jwtToken && <button className="flex items-center justify-center dark:text-white
                                         hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2
                                         dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
-                                    type="button"
-                                    onClick={() => setShowFileDropzone(showFileDropzone => !showFileDropzone)}
+                                                 type="button"
+                                                 onClick={() => setShowFileDropzone(showFileDropzone => !showFileDropzone)}
                             >
                                 <span className="text-white dark:text-gray-400">
                                     <FileImportIcon />
@@ -255,8 +255,8 @@ const Artworks = () => {
                             {!jwtToken && <button disabled={true} title={"Aby zaimportować plik musisz się zalogować."} className="flex items-center justify-center dark:text-white
                                         hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2
                                         dark:focus:ring-primary-800 font-semibold text-white bg-gray-600 hover:bg-gray-600 border-gray-800"
-                                    type="button"
-                                    onClick={() => setShowFileDropzone(showFileDropzone => !showFileDropzone)}
+                                                  type="button"
+                                                  onClick={() => setShowFileDropzone(showFileDropzone => !showFileDropzone)}
                             >
                                 <span className="text-white dark:text-gray-400">
                                     <FileImportIcon />
@@ -285,29 +285,29 @@ const Artworks = () => {
                             {jwtToken && <button className="flex items-center justify-center dark:text-white
                                         hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2
                                         dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
-                                    type="button"
-                                    onClick={() => {
-                                        if (Object.keys(selectedArtworks).length !== 0)
-                                            setShowDeleteRecordsWarning(!showDeleteRecordsWarning)
-                                    }}
+                                                 type="button"
+                                                 onClick={() => {
+                                                     if (Object.keys(selectedArtworks).length !== 0)
+                                                         setShowDeleteRecordsWarning(!showDeleteRecordsWarning)
+                                                 }}
                             >
                                 Usuń zaznaczone
                             </button>}
                             {!jwtToken && <button disabled={true} title={"Aby usuwać rekordy musisz się zalogować."} className="flex items-center justify-center dark:text-white
                                         hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2
                                         dark:focus:ring-primary-800 font-semibold text-white bg-gray-600 hover:bg-gray-600 border-gray-800"
-                                    type="button"
-                                    onClick={() => {
-                                        if (Object.keys(selectedArtworks).length !== 0)
-                                            setShowDeleteRecordsWarning(!showDeleteRecordsWarning)
-                                    }}
+                                                  type="button"
+                                                  onClick={() => {
+                                                      if (Object.keys(selectedArtworks).length !== 0)
+                                                          setShowDeleteRecordsWarning(!showDeleteRecordsWarning)
+                                                  }}
                             >
                                 Usuń zaznaczone
                             </button>}
                         </div>
 
                         <span className="">
-                                <CustomDropdown
+                                <SortOptions
                                     options={sortOptions}
                                     onSelect={(value) => setSortOrder(value)}
                                 />
@@ -333,10 +333,10 @@ const Artworks = () => {
                 <Pagination
                     currentPage={currentPage}
                     totalPages={Math.ceil(artworkData.total / pageSize)}
-                    onPageChange={(page) => setCurrentPage(page)}
+                    setCurrentPage={(page) => setCurrentPage(page)}
                 />
             </div>
         </>
     }
 }
-export default Artworks
+export default ArtworksList

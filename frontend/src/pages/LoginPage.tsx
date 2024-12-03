@@ -12,7 +12,7 @@ const LoginPage = () => {
     const loginMutation = useLoginMutation()
     const { setUserData } = useUser()
 
-    const [showErrorToast, setShowErrorToast] = useState(false)
+    const [showErrorToast, setShowErrorToast] = React.useState(false)
     const validationSchema = Yup.object().shape({
         username: Yup.string()
             .required("Nazwa użytkownika jest wymagana"),
@@ -110,7 +110,7 @@ const LoginPage = () => {
                                     <ErrorMessage name="password" component="div"
                                                   className="text-red-600 text-sm" />
                                 </div>
-                                <button type="submit"
+                                <button type="submit" data-testid="login-button"
                                         className="color-button w-full">
                                     Zaloguj się
                                 </button>

@@ -1,0 +1,124 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ArtworkPage tests should render artwork page component correctly after data is fetched from API when main categories are specified 1`] = `
+<div
+  class="mt-2 flex-2 "
+  data-testid="main-categories-container"
+>
+  <h1
+    class="text-4xl font-bold text-gray-800 dark:text-white mb-2"
+  >
+    testowy
+  </h1>
+  <p
+    class="text-xl text-gray-600 dark:text-gray-400 mt-1"
+  >
+    Artyści: 
+    testowi
+  </p>
+  <p
+    class="text-lg text-gray-500 dark:text-gray-300 mt-1"
+  >
+    Rok: 
+    966
+  </p>
+  <p
+    class="text-lg text-gray-500 dark:text-gray-300 mt-1"
+  >
+    Kolekcja: 
+    example collection
+  </p>
+</div>
+`;
+
+exports[`ArtworkPage tests should render artwork page component correctly after data is fetched from API when main categories are unspecified 1`] = `
+<div
+  class="mt-2 flex-2 "
+  data-testid="main-categories-container"
+>
+  <h1
+    class="text-4xl font-bold text-gray-800 dark:text-white mb-2"
+  />
+  <p
+    class="text-xl text-gray-600 dark:text-gray-400 mt-1"
+  >
+    Artyści: 
+  </p>
+  <p
+    class="text-lg text-gray-500 dark:text-gray-300 mt-1"
+  >
+    Rok: 
+  </p>
+  <p
+    class="text-lg text-gray-500 dark:text-gray-300 mt-1"
+  >
+    Kolekcja: 
+    example collection
+  </p>
+</div>
+`;
+
+exports[`ArtworkPage tests should render categories list correctly when there aren't any categories 1`] = `
+<ul
+  class="px-4 list-[circle]"
+  data-testid="details-list"
+/>
+`;
+
+exports[`ArtworkPage tests should render nested categories list correctly 1`] = `
+<ul
+  class="px-4 list-[circle]"
+  data-testid="details-list"
+>
+  <li>
+    Tytuł
+    : 
+    testowy
+    <ul
+      class="px-4 list-[square]"
+    >
+      <li>
+        Podtytuł
+        : 
+        testowy podtytuł
+      </li>
+    </ul>
+  </li>
+  <li>
+    Artyści
+    : 
+    testowi
+    <ul
+      class="px-4 list-[square]"
+    />
+  </li>
+  <li>
+    Rok
+    : 
+    966
+    <ul
+      class="px-4 list-[square]"
+    >
+      <li>
+        Miesiąc
+        : 
+        Wrzesień
+        <ul
+          class="px-4 list-[disc]"
+        >
+          <li>
+            Dzień
+            : 
+            13
+          </li>
+        </ul>
+      </li>
+      <li>
+        Pora roku
+        : 
+        lato
+      </li>
+    </ul>
+  </li>
+</ul>
+`;

@@ -16,7 +16,7 @@ interface UserContextProps {
     setUserData: (isLoggedIn: boolean, name: string, jwtToken: string, userId: string) => void;
 }
 
-const UserContext = createContext<UserContextProps>({
+export const UserContext = createContext<UserContextProps>({
     isUserLoggedIn: false,
     firstName: "",
     userId: "",
