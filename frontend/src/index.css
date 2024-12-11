@@ -75,4 +75,27 @@
         font-weight: 400;
         font-style: normal;
     }
+
+
+    .tree-line {
+        position: absolute;
+        background-color: #ccc;
+        z-index: 0;
+    }
+
+    .tree-line.vertical {
+        width: 1px;
+        left: -16px; /* Dopasowanie do pozycji elementów */
+        top: 0;
+    }
+
+    .tree-line.horizontal {
+        height: 1px;
+        width: 16px; /* Dopasowanie długości */
+        top: 50%; /* Wycentrowanie względem elementu */
+        transform: translateY(-50%);
+    }
+
+
+
 }
