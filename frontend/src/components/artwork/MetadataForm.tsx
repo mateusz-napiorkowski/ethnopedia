@@ -112,7 +112,7 @@ const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, setDataToI
             ...item,
             subcategories: [
               ...(item.subcategories || []),
-              { name: '', values: [''] }
+              { name: '', values: [''], subcategories: [] }
             ]
           };
         } else {
