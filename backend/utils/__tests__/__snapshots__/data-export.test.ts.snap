@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`data-export util functions tests fillRow test - functions returns correct data 1`] = `
+{
+  "Artyści": "testowi",
+  "Rok": "966",
+  "Rok.Kwartał": "",
+  "Rok.Kwartał.Miesiąc": "",
+  "Rok.Kwartał.Miesiąc.Dzień": "",
+  "Rok.Miesiąc": "12",
+  "Rok.Miesiąc.Dzień": "13",
+  "Tytuł": "testowy",
+  "Tytuł.Podtytuł": "podtytuł testowy",
+  "Tytuł.Podtytuł.Podpodtytuł": "podpodtytuł testowy",
+  "Tytuł.Znaczenie tytułu": "",
+}
+`;

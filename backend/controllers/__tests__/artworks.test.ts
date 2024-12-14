@@ -3,6 +3,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import request from "supertest";
 import ArtworksRouter from "../../routes/artwork";
+import { constructAdvSearchFilter, constructQuickSearchFilter, sortRecordsByCategory } from "../../utils/artworks";
 
 const app = express()
 app.use(bodyParser.json());
@@ -14,7 +15,15 @@ jest.mock('mongoose', () => ({
     startSession: () => mockStartSession()
 }))
 
+const mockSortRecordsByCategory = jest.fn() 
+jest.mock('../../utils/artworks', () => ({
+    constructQuickSearchFilter: jest.fn(),
+    constructAdvSearchFilter: jest.fn(),
+    sortRecordsByCategory: () => mockSortRecordsByCategory()
+}))
+
 const mockFindById = jest.fn()
+const mockArtworkFind = jest.fn()
 const mockCreate = jest.fn()
 const mockReplaceOne = jest.fn()
 const mockCountDocuments = jest.fn()
@@ -22,6 +31,7 @@ const mockDeleteMany = jest.fn()
 
 jest.mock("../../models/artwork", () => ({
     findById: () => mockFindById(),
+    find: () => mockArtworkFind(),
     create: () => mockCreate(),
     replaceOne: () => mockReplaceOne(),
     countDocuments: () => mockCountDocuments(),
@@ -93,6 +103,179 @@ describe('artworks controller', () => {
 
                 const res = await request(app)
                     .get(`/${artworkId}`)
+                    .set('Accept', 'application/json')
+
+                expect(res.status).toBe(statusCode)
+                expect(res.body.error).toBe(error)
+            }
+        )
+
+        test.each([
+            {
+                case: "no filtering",
+                page: "page=1&", pageSize: "pageSize=10&", sortOrder: "Tytuł-asc",
+                search: "search=false&", searchText: undefined,
+                quickSearchCalls: 0, advSearchCalls: 0,
+                artworkFind: () => {return {exec: () => Promise.resolve([
+                    {
+                      _id: "6717d4c0666e8575d873ee69",
+                      createdAt: '2024-10-22T20:12:12.209Z',
+                      updatedAt: '2024-10-22T20:12:12.209Z',
+                      __v: 0,
+                      categories: [
+                        {
+                          name: 'Tytuł',
+                          values: [ 'testowy' ],
+                          subcategories: []
+                        },
+                      ],
+                      collectionName: 'collection'
+                    },
+                ])}},
+                sortRecordsByCategory: () => [
+                    {
+                      _id: "6717d4c0666e8575d873ee69",
+                      createdAt: '2024-10-22T20:12:12.209Z',
+                      updatedAt: '2024-10-22T20:12:12.209Z',
+                      __v: 0,
+                      categories: [
+                        {
+                          name: 'Tytuł',
+                          values: [ 'testowy' ],
+                          subcategories: []
+                        },
+                      ],
+                      collectionName: 'collection'
+                    },
+                ],
+                statusCode: 200
+            },
+            {
+                case: "quicksearch",
+                page: "page=1&", pageSize: "pageSize=10&", sortOrder: "Tytuł-asc",
+                search: "search=true&", searchText: "searchText=Testowy&",
+                quickSearchCalls: 1, advSearchCalls: 0,
+                artworkFind: () => {return {exec: () => Promise.resolve([
+                    {
+                      _id: "6717d4c0666e8575d873ee69",
+                      createdAt: '2024-10-22T20:12:12.209Z',
+                      updatedAt: '2024-10-22T20:12:12.209Z',
+                      __v: 0,
+                      categories: [
+                        {
+                          name: 'Tytuł',
+                          values: [ 'testowy' ],
+                          subcategories: []
+                        },
+                      ],
+                      collectionName: 'collection'
+                    },
+                ])}},
+                sortRecordsByCategory: () => [
+                    {
+                      _id: "6717d4c0666e8575d873ee69",
+                      createdAt: '2024-10-22T20:12:12.209Z',
+                      updatedAt: '2024-10-22T20:12:12.209Z',
+                      __v: 0,
+                      categories: [
+                        {
+                          name: 'Tytuł',
+                          values: [ 'testowy' ],
+                          subcategories: []
+                        },
+                      ],
+                      collectionName: 'collection'
+                    },
+                ],
+                statusCode: 200
+            },
+            {
+                case: "advanced search",
+                page: "page=1&", pageSize: "pageSize=10&", sortOrder: "Tytuł-asc",
+                search: "search=true&", searchText: undefined,
+                quickSearchCalls: 0, advSearchCalls: 1,
+                artworkFind: () => {return {exec: () => Promise.resolve([
+                    {
+                      _id: "6717d4c0666e8575d873ee69",
+                      createdAt: '2024-10-22T20:12:12.209Z',
+                      updatedAt: '2024-10-22T20:12:12.209Z',
+                      __v: 0,
+                      categories: [
+                        {
+                          name: 'Tytuł',
+                          values: [ 'testowy' ],
+                          subcategories: []
+                        },
+                      ],
+                      collectionName: 'collection'
+                    },
+                ])}},
+                sortRecordsByCategory: () => [
+                    {
+                      _id: "6717d4c0666e8575d873ee69",
+                      createdAt: '2024-10-22T20:12:12.209Z',
+                      updatedAt: '2024-10-22T20:12:12.209Z',
+                      __v: 0,
+                      categories: [
+                        {
+                          name: 'Tytuł',
+                          values: [ 'testowy' ],
+                          subcategories: []
+                        },
+                      ],
+                      collectionName: 'collection'
+                    },
+                ],
+                statusCode: 200
+            },
+        ])(`getArtworksForCollectionPage should respond with status 200 and correct body - $case`,
+            async ({page, pageSize, sortOrder, search, searchText, quickSearchCalls, advSearchCalls, artworkFind, sortRecordsByCategory, statusCode}) => {
+                mockArtworkFind.mockImplementation(artworkFind)
+                mockSortRecordsByCategory.mockImplementation(sortRecordsByCategory)
+
+                let queryString = `/collection/artworks/${sortOrder}?`
+                if (page) queryString += page
+                if (pageSize) queryString += pageSize
+                if (search) queryString += search
+                if (searchText) queryString += searchText
+
+                const res = await request(app)
+                    .get(queryString)
+                    .set('Accept', 'application/json')
+
+                expect(res.status).toBe(statusCode)
+                expect(constructQuickSearchFilter).toHaveBeenCalledTimes(quickSearchCalls)
+                expect(constructAdvSearchFilter).toHaveBeenCalledTimes(advSearchCalls)
+                expect(res.body).toMatchSnapshot()
+            }
+        )
+
+        test.each([
+            {
+                page: undefined, pageSize: "pageSize=10&", sortOrder: "Tytuł-asc",
+                artworkFind: () => {throw Error()},
+                statusCode: 400, error: 'Request is missing query params'
+            },
+            {
+                page: "page=1&", pageSize: undefined, sortOrder: "Tytuł-asc",
+                artworkFind: () => {throw Error()},
+                statusCode: 400, error: 'Request is missing query params'
+            },
+            {
+                page: "page=1&", pageSize: "pageSize=10&", sortOrder: "Tytuł-asc",
+                artworkFind: () => {throw Error()},
+                statusCode: 503, error: 'Database unavailable'
+            },
+        ])(`getArtworksForCollectionPage should respond with status $statusCode and correct error message`,
+            async ({page, pageSize, sortOrder, artworkFind, statusCode, error}) => {
+                mockArtworkFind.mockImplementation(artworkFind)
+
+                let queryString = `/collection/artworks/${sortOrder}?`
+                if (page) queryString += page
+                if (pageSize) queryString += pageSize
+
+                const res = await request(app)
+                    .get(queryString)
                     .set('Accept', 'application/json')
 
                 expect(res.status).toBe(statusCode)

@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "react-query"
 import { useBatchDeleteArtworkMutation } from "../../api/artworks"
-import { getArtworksInCollection } from "../../api/collections"
+import { getArtworksForCollectionPage } from "../../api/artworks"
 import LoadingPage from "../../pages/LoadingPage"
 import React, { useEffect, useMemo, useState} from "react"
 import Navbar from "../navbar/Navbar"
@@ -61,7 +61,7 @@ const ArtworksList = () => {
 
     const { data: artworkData} = useQuery({
         queryKey: ["artwork", currentPage, searchText, queryParameters, location, sortOrder],
-        queryFn: () => getArtworksInCollection(collection as string, currentPage, pageSize, sortOrder, searchText, Object.fromEntries(queryParameters.entries())),
+        queryFn: () => getArtworksForCollectionPage(collection as string, currentPage, pageSize, sortOrder, searchText, Object.fromEntries(queryParameters.entries())),
         enabled: !!collection,
     })
 

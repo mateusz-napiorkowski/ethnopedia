@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`categories util functions tests getAllColletions test - artworks present in collection 1`] = `
+[
+  "Tytuł",
+  "Tytuł.Podtytuł",
+  "Tytuł.Podtytuł.Podpodtytuł",
+  "Artyści",
+  "Rok",
+  "Rok.Miesiąc",
+  "Rok.Miesiąc.Dzień",
+  "Tytuł.Znaczenie tytułu",
+  "Rok.Kwartał",
+  "Rok.Kwartał.Miesiąc",
+  "Rok.Kwartał.Miesiąc.Dzień",
+]
+`;
+
+exports[`categories util functions tests getAllColletions test - no artworks in collection 1`] = `[]`;

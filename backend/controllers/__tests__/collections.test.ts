@@ -16,16 +16,20 @@ const mockCollectionFindOne = jest.fn()
 const mockCollectionCreate = jest.fn()
 const mockCollectionFind = jest.fn()
 const mockCollectionDeleteMany = jest.fn()
+const mockCollectionCountDocuments = jest.fn()
 jest.mock("../../models/collection", () => ({
 	findOne: () => mockCollectionFindOne(),
     create: () => mockCollectionCreate(),
     find: () => mockCollectionFind(),
     deleteMany: () => mockCollectionDeleteMany(),
+    countDocuments: () => mockCollectionCountDocuments()
 }))
 
 const mockArtworkDeleteMany = jest.fn()
+const mockArtworkAggregate = jest.fn()
 jest.mock("../../models/artwork", () => ({
     deleteMany: () => mockArtworkDeleteMany(),
+    aggregate: () => mockArtworkAggregate()
 }))
 
 jest.mock("jsonwebtoken", () => ({
@@ -46,6 +50,129 @@ describe('collections controller', () =>{
         endSession: jest.fn()      
     })
     describe('GET endpoints', () =>{
+
+        test("getAllCollections should respond with status 200 and correct body", async () => {
+            mockCollectionFind.mockReturnValue({sort: () => ({skip: () => ({limit: () => ({exec: () => Promise.resolve([
+                {
+                    _id: "66f2194a6123d7f50558cd8f",
+                    name: 'collection 1',
+                    description: 'description 1',
+                    __v: 0
+                },
+                {
+                    _id: "66f2194a6214d7f50558cd7e",
+                    name: 'collection 2',
+                    description: 'description 2',
+                    __v: 0
+                },
+                {
+                    _id: "66f2194a6214d7f50558ac1b",
+                    name: 'collection 3',
+                    description: 'description 3',
+                    __v: 0
+                },
+            ])})})})})
+            mockCollectionCountDocuments.mockReturnValue(Promise.resolve(3))
+            mockArtworkAggregate.mockReturnValue({exec: () => Promise.resolve([
+                { _id: 'collection 1', count: 33 },
+                { _id: 'collection 2', count: 17 }
+            ])})
+
+            const res = await request(app.use(CollectionsRouter))
+            .get('/?page=1&pageSize=3&sortOrder=asc');
+    
+            expect(res.status).toBe(200)
+            expect(res.body).toMatchSnapshot()
+        })
+
+        test.each([
+            {statusCode: 400, error: 'Request is missing query params',
+                pageQuery: undefined, pageSizeQuery: "&pageSize=3", sortOrderQuery: "&sortOrder=asc",
+                collectionFind: () => {}, collectionCountDocuments: () => {}, aggregate: () => {}
+            },
+            {statusCode: 400, error: 'Request is missing query params',
+                pageQuery: "&page=1", pageSizeQuery: undefined, sortOrderQuery: "&sortOrder=asc",
+                collectionFind: () => {}, collectionCountDocuments: () => {}, aggregate: () => {}
+            },
+            {statusCode: 400, error: 'Request is missing query params',
+                pageQuery: "&page=1", pageSizeQuery: "&pageSize=3", sortOrderQuery: undefined,
+                collectionFind: () => {}, collectionCountDocuments: () => {}, aggregate: () => {}
+            },
+            {statusCode: 503, error: 'Database unavailable',
+                pageQuery: "&page=1", pageSizeQuery: "&pageSize=3", sortOrderQuery: "&sortOrder=asc",
+                collectionFind: () => {throw Error()},
+                collectionCountDocuments: () => {},
+                aggregate: () => {}
+            },
+            {statusCode: 503, error: 'Database unavailable',
+                pageQuery: "&page=1", pageSizeQuery: "&pageSize=3", sortOrderQuery: "&sortOrder=asc",
+                collectionFind: () => ({sort: () => ({skip: () => ({limit: () => ({exec: () => Promise.resolve([
+                    {
+                        _id: "66f2194a6123d7f50558cd8f",
+                        name: 'collection 1',
+                        description: 'description 1',
+                        __v: 0
+                    },
+                    {
+                        _id: "66f2194a6214d7f50558cd7e",
+                        name: 'collection 2',
+                        description: 'description 2',
+                        __v: 0
+                    },
+                    {
+                        _id: "66f2194a6214d7f50558ac1b",
+                        name: 'collection 3',
+                        description: 'description 3',
+                        __v: 0
+                    },
+                ])})})})}),
+                collectionCountDocuments: () => {throw Error()},
+                aggregate: () => {}
+            },
+            {statusCode: 503, error: 'Database unavailable',
+                pageQuery: "&page=1", pageSizeQuery: "&pageSize=3", sortOrderQuery: "&sortOrder=asc",
+                collectionFind: () => ({sort: () => ({skip: () => ({limit: () => ({exec: () => Promise.resolve([
+                    {
+                        _id: "66f2194a6123d7f50558cd8f",
+                        name: 'collection 1',
+                        description: 'description 1',
+                        __v: 0
+                    },
+                    {
+                        _id: "66f2194a6214d7f50558cd7e",
+                        name: 'collection 2',
+                        description: 'description 2',
+                        __v: 0
+                    },
+                    {
+                        _id: "66f2194a6214d7f50558ac1b",
+                        name: 'collection 3',
+                        description: 'description 3',
+                        __v: 0
+                    },
+                ])})})})}),
+                collectionCountDocuments: () => 3,
+                aggregate: () => {throw Error()}
+            },
+        ])('getAllCollections should respond with status $statusCode and correct error message',
+            async ({statusCode, error, pageQuery, pageSizeQuery, sortOrderQuery, collectionFind, collectionCountDocuments, aggregate}) => {
+                mockCollectionFind.mockImplementation(collectionFind)
+                mockCollectionCountDocuments.mockImplementation(collectionCountDocuments)
+                mockArtworkAggregate.mockImplementation(aggregate)
+                
+                let queryString = '/?'
+                if (pageQuery) queryString += pageQuery
+                if (pageSizeQuery) queryString += pageSizeQuery
+                if (sortOrderQuery) queryString += sortOrderQuery
+
+                const res = await request(app.use(CollectionsRouter))
+                .get(queryString);
+        
+                expect(res.status).toBe(statusCode)
+                expect(res.body.error).toBe(error)
+            }
+        )
+
         test("getCollection should respond with status 200 and correct body", async () => {
             mockCollectionFindOne.mockReturnValue({
                 exec: () => Promise.resolve({

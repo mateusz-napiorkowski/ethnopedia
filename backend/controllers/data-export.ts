@@ -1,7 +1,8 @@
 import { Request, Response } from "express"
 import excelJS from "exceljs"
 import Artwork from "../models/artwork";
-import { fillRow, getAllCategories } from "../utils/controllers-utils/data-export"
+import { fillRow } from "../utils/data-export"
+import { getAllCategories } from "../utils/categories";
 
 export const getXlsxWithArtworksData = async (req: Request, res: Response) => {
     try {
