@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Sort options tests should render component correctly 1`] = `
+<div>
+  <div
+    class="flex flex-row items-center ml-2 custom-dropdown text-sm"
+  >
+    <p
+      class="pr-2"
+    >
+      Sortuj:
+    </p>
+    <select
+      class="py-2 px-4 border bg-white border border-gray-300 rounded-lg cursor-pointer"
+    >
+      <option
+        class="py-2 px-4 cursor-pointer"
+        value="name-asc"
+      >
+        Nazwa rosnąco
+      </option>
+      <option
+        class="py-2 px-4 cursor-pointer"
+        value="name-desc"
+      >
+        Nazwa malejąco
+      </option>
+    </select>
+  </div>
+</div>
+`;

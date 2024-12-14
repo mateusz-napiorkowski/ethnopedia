@@ -6,8 +6,8 @@
       "dom.iterable",
       "esnext"
     ],
-    "types": ["node"],
-    "typeRoots": ["./src/@types"],
+    "baseUrl": ".",
+    "types": ["node", "jest", "@testing-library/jest-dom"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -23,7 +23,7 @@
     "jsx": "react-jsx"
   },
   "include": [
-    "src",
+    "src/**/*",
     "./src/@types/custom.d.ts",
     "./src/@types/i18next.d.ts"
   ]
