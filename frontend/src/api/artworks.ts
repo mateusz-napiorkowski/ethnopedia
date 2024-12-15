@@ -38,29 +38,14 @@ export const editArtwork = async (artworkData: any, artworkId: string, jwtToken:
         .then(res => res.data)
 }
 
-
-// deletes selected records (used on collection page)
-export const useBatchDeleteArtworkMutation = () => {
-    return useMutation(async (data: Array<any>) => {        
-        const config = {
-            headers: { Authorization: `Bearer ${data[1]}` },
-            data: { ids: data[0]}
-        };
-        const url = `${API_URL}v1/artworks/delete`
-
-        const res = await axios.delete(url, config)
-        return res.data
-    })
-}
-
-// deletes one artwork (used on artwork page)
-export const deleteArtwork = async (artworkId: string, jwtToken: string) => {
+export const deleteArtworks = async (artworkIds: Array<string>, jwtToken: string) => {
     const config = {
         headers: { "Authorization": `Bearer ${jwtToken}` },
-        data: { ids: [artworkId]}
+        data: { ids: artworkIds}
     };
-    const response = await axios.delete(`${API_URL}v1/artworks/delete`, config)
-    return response.data
+    return await axios
+        .delete(`${API_URL}v1/artworks/delete`, config)
+        .then(res => res.data)
 }
 
 

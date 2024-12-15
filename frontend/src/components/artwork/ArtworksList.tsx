@@ -1,8 +1,8 @@
-import { useQuery, useQueryClient } from "react-query"
-import { useBatchDeleteArtworkMutation } from "../../api/artworks"
-import { getArtworksForCollectionPage } from "../../api/artworks"
+import { useMutation, useQuery, useQueryClient } from "react-query"
+import { getArtworksForCollectionPage, deleteArtworks } from "../../api/artworks"
+import { getCollection } from "../../api/collections"
 import LoadingPage from "../../pages/LoadingPage"
-import React, { useEffect, useMemo, useState} from "react"
+import { useEffect, useMemo, useState} from "react"
 import Navbar from "../navbar/Navbar"
 import { useLocation, useNavigate, useParams } from "react-router-dom"
 import SearchComponent from "../search/SearchComponent"
@@ -13,7 +13,6 @@ import { ReactComponent as FileImportIcon } from "../../assets/icons/fileImport.
 import { ReactComponent as FileExportIcon } from "../../assets/icons/fileExport.svg"
 import WarningPopup from "../../pages/collections/WarningPopup"
 import SortOptions from "../SortOptions"
-import { getCollection, useBatchDeleteCollectionMutation } from "../../api/collections"
 import Navigation from "../Navigation"
 import Pagination from "../Pagination"
 import { useUser } from "../../providers/UserProvider"
@@ -23,7 +22,6 @@ const ArtworksList = () => {
     const [showFileDropzone, setShowFileDropzone] = useState<boolean>(false)
     const [showExportOptions, setShowExportOptions] = useState<boolean>(false)
     const [showDeleteRecordsWarning, setShowDeleteRecordsWarning] = useState(false)
-    const [showDeleteCollectionWarning, setShowDeleteCollectionWarning] = useState(false)
     const [sortOrder, setSortOrder] = useState<string>("newest-first")
     const [showEditCollection, setShowEditCollection] = useState<boolean>(false)
     const { jwtToken } = useUser();
@@ -39,7 +37,6 @@ const ArtworksList = () => {
 
     const { collection } = useParams()
     const queryClient = useQueryClient()
-    const { mutate: batchDeleteMutation } = useBatchDeleteArtworkMutation()
 
     const findValue = (artwork: any, categoryName: string) => {
         let val = ""
@@ -95,41 +92,19 @@ const ArtworksList = () => {
         setSelectedArtworks({})
     }
 
-    const deleteSelected = () => {
-        const selectedIds = Object.keys(selectedArtworks).filter(id => selectedArtworks[id])
-
-        if (selectedIds.length > 0) {
-            batchDeleteMutation([selectedIds, jwtToken],
-                {
-                    onSuccess: () => {
-                        queryClient.invalidateQueries(["artwork"])
-                        setShowDeleteRecordsWarning(!showDeleteRecordsWarning)
-                    },
-                })
+    const deleteArtworksMutation = useMutation(() => deleteArtworks(Object.keys(selectedArtworks).filter(id => selectedArtworks[id]), jwtToken as string), {
+        onSuccess: () => {
+            queryClient.invalidateQueries("artwork")
+            setShowDeleteRecordsWarning(!showDeleteRecordsWarning)
         }
-    }
-
-    const deleteCollectionMutation = useBatchDeleteCollectionMutation()
-    const deleteCollection = () => {
-        if (collection) {
-            deleteCollectionMutation.mutate([collection], {
-                onSuccess: () => {
-                    queryClient.invalidateQueries(["artwork"])
-                    queryClient.invalidateQueries(["collection"])
-                    setShowDeleteCollectionWarning(false)
-                    navigate("/")
-                },
-                onError: (error: any) => {
-                    console.error("Error deleting collection: ", error)
-                },
-            })
-        }
-    }
+    })
 
     const navigate = useNavigate()
 
-    if (artworkData === undefined || sortedArtworks === undefined) {
-        return <LoadingPage />
+    if (!artworkData || !sortedArtworks || !collectionData) {
+        return <div data-testid="loading-page-container">
+                <LoadingPage />
+            </div>
     } else {
         const allArtworks = sortedArtworks.map((artwork: any) => (
             <div className="px-4 max-w-screen-xl py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4
@@ -156,21 +131,12 @@ const ArtworksList = () => {
             </div>
         ))
 
-        return <>
+        return <><div data-testid="loaded-artwork-page-container">
             <Navbar />
-
-            {/* {showFileDropzone && <FileDropzone onClose={() => setShowFileDropzone(false)} />}
-            {showExportOptions && <ExportOptions onClose={() => setShowExportOptions(false)} />} */}
-            {/*{showCreateArtwork && <CreateArtwork onClose={() => setShowCreateArtwork(false)} />}*/}
             {showDeleteRecordsWarning &&
                 <WarningPopup onClose={() => setShowDeleteRecordsWarning(false)}
-                              deleteSelected={deleteSelected}
+                              deleteSelected={() => deleteArtworksMutation.mutate()}
                               warningMessage={"Czy na pewno chcesz usunąć zaznaczone rekordy?"} />}
-
-            {showDeleteCollectionWarning &&
-                <WarningPopup onClose={() => setShowDeleteCollectionWarning(false)}
-                              deleteSelected={deleteCollection}
-                              warningMessage={"Czy na pewno chcesz usunąć zaznaczoną kolekcję?"} />}
             <div className="flex flex-col w-full items-center bg-gray-50 dark:bg-gray-900 p-2 sm:p-4">
                 <div className="flex flex-col max-w-screen-xl w-full lg:px-6">
                     <Navigation />
@@ -184,28 +150,9 @@ const ArtworksList = () => {
                                 {collectionData?.description}
                             </p>
                         </div>
-
-                        {/* <div className="flex items-center">
-                            <button className="text-lg mr-2 h-fit font-semibold ml-4"
-                                    onClick={() => setShowEditCollection(true)}>
-                                Edytuj
-                            </button>
-                        </div>
-
-                        <div className="flex items-center">
-                            <button
-                                className="text-lg font-semibold h-fit border-red-700 text-red-700 bg-red-50 hover:bg-white">
-                                <span className="flex-row flex items-center"
-                                      onClick={() => setShowDeleteCollectionWarning(true)}>
-                                    <p>Usuń</p>
-                                </span>
-                            </button>
-                        </div> */}
-
                     </div>
 
                     {collection && <SearchComponent collectionName={collection} />}
-
                     <div className="flex w-full md:w-auto">
                         <div className="flex flex-1 space-x-2">
                             {jwtToken && <button className="flex items-center justify-center dark:text-white
@@ -321,7 +268,6 @@ const ArtworksList = () => {
             <div className="flex flex-row">
                 <div
                     className="flex mx-auto flex-1 justify-end w-full">
-                    {/* <FilterDropdown /> */}
                 </div>
                 <div className="w-full flex-2 lg:px-6 max-w-screen-xl">
                     {allArtworks}
@@ -336,7 +282,7 @@ const ArtworksList = () => {
                     setCurrentPage={(page) => setCurrentPage(page)}
                 />
             </div>
-        </>
+        </div></>
     }
 }
 export default ArtworksList

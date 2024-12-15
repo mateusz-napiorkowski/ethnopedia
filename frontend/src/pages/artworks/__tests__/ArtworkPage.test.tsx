@@ -13,10 +13,10 @@ jest.mock('react-router-dom', () => ({
 }));
 
 const mockGetArtwork = jest.fn()
-const mockDeleteArtwork = jest.fn()
+const mockDeleteArtworks = jest.fn()
 jest.mock('../../../api/artworks', () => ({
     getArtwork: () => mockGetArtwork(),
-    deleteArtwork: (artworkId: string, jwtToken: string) => mockDeleteArtwork(artworkId, jwtToken)
+    deleteArtworks: (artworkId: string, jwtToken: string) => mockDeleteArtworks(artworkId, jwtToken)
 }))
 
 const queryClient = new QueryClient();
@@ -247,10 +247,10 @@ describe("ArtworkPage tests", () => {
         await expect(queryByText(/czy na pewno chcesz usunąć rekord?/i)).not.toBeInTheDocument()
     })
 
-    it("should call deleteArtwork with correct arguments and navigate to collection page" +
+    it("should call deleteArtworks with correct arguments and navigate to collection page" +
         " after delete button in delete warning popup is clicked", async () => {
         mockGetArtwork.mockReturnValue(artworkData)
-        mockDeleteArtwork.mockImplementation(() => ({acknowledged: true, deletedCount: 1}))
+        mockDeleteArtworks.mockImplementation(() => ({acknowledged: true, deletedCount: 1}))
         const {getByTestId, getByRole, getByLabelText } = renderPage(queryClient, loggedInUserContextProps)
 
         await waitFor(() => getByTestId('loaded-artwork-page-container'))
@@ -259,7 +259,7 @@ describe("ArtworkPage tests", () => {
         }))
         user.click(getByLabelText("confirm"))
 
-        await waitFor(() => expect(mockDeleteArtwork).toHaveBeenCalledWith(artworkId, jwtToken))
+        await waitFor(() => expect(mockDeleteArtworks).toHaveBeenCalledWith([artworkId], jwtToken))
         expect(mockUseNavigate).toHaveBeenCalledWith(`/collections/${collection}/artworks/`)      
     })
 
