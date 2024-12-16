@@ -110,6 +110,7 @@ const ArtworksList = () => {
             <div className="px-4 max-w-screen-xl py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4
                 border border-gray-300 dark:border-gray-600 cursor-pointer"
                  key={artwork._id}
+                 data-testid={artwork._id}
                  onClick={() => navigate(`/collections/${collection}/artworks/${artwork._id}`)}>
 
                 <div className="flex flex-row">
@@ -141,7 +142,7 @@ const ArtworksList = () => {
                 <div className="flex flex-col max-w-screen-xl w-full lg:px-6">
                     <Navigation />
 
-                    <div className="flex flex-row mb-4 mt-2">
+                    <div data-testid="collection-name-and-description-container" className="flex flex-row mb-4 mt-2">
                         <div className="flex flex-col w-full">
                             <h2 className="text-4xl font-bold text-gray-800 dark:text-white mb-1">
                                 {collectionData?.name}
@@ -269,7 +270,7 @@ const ArtworksList = () => {
                 <div
                     className="flex mx-auto flex-1 justify-end w-full">
                 </div>
-                <div className="w-full flex-2 lg:px-6 max-w-screen-xl">
+                <div data-testid="artworks-listed" className="w-full flex-2 lg:px-6 max-w-screen-xl">
                     {allArtworks}
                 </div>
                 <div className="mx-auto w-full flex-1">
