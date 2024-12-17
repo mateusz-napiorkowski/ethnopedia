@@ -99,7 +99,7 @@ describe("ArtworksList tests", () => {
         expect(deleteSelectedButton).toBeDisabled()
     })
 
-    it("should have add record, import file, and delete selected buttons enabled when user is logged in", async () => {
+    it("should have add record and import file buttons enabled when user is logged in, delete selected button should stay disabled when no artworks are selected", async () => {
         mockGetArtworksForCollectionPage.mockReturnValue(artworksData)
         mockGetCollection.mockReturnValue(collectionData)
         const {getByRole, getByTestId} = renderPage(queryClient, loggedInUserContextProps)
@@ -111,7 +111,7 @@ describe("ArtworksList tests", () => {
 
         expect(addNewRecordButton).not.toBeDisabled()
         expect(importFileButton).not.toBeDisabled()
-        expect(deleteSelectedButton).not.toBeDisabled()
+        expect(deleteSelectedButton).toBeDisabled()
     })
  
     it("should navigate to add record page when enabled add record button is clicked", async () => {
@@ -164,32 +164,34 @@ describe("ArtworksList tests", () => {
         expect(mockUseNavigate).toHaveBeenCalledWith(`/collections/${collection}/artworks/${exampleArtworkId}`)
     })
 
-    //TODO test disabled button when no artworks are selected
-    // it("should not open delete selected warning popup when enabled delete selected button is clicked and no records are selected", async () => {
-    //     mockGetArtworksForCollectionPage.mockReturnValue(artworksData)
-    //     mockGetCollection.mockReturnValue(collectionData)
-    //     const {getByRole, getByTestId, queryByText} = renderPage(queryClient, loggedInUserContextProps)
+    // TODO add more scenarios to this test 
+    it("should have delete selected button enabled if any artworks are selected", async () => {
+        mockGetArtworksForCollectionPage.mockReturnValue(artworksData)
+        mockGetCollection.mockReturnValue(collectionData)
+        const {getByRole, getByTestId} = renderPage(queryClient, loggedInUserContextProps)
 
-    //     await waitFor(() => getByTestId('loaded-artwork-page-container'))
-    //     const deleteSelectedButton = getByRole("button", {name: /usuń zaznaczone/i})
-    //     await user.click(deleteSelectedButton)
+        await waitFor(() => getByTestId('loaded-artwork-page-container'))
+        const deleteSelectedButton = getByRole("button", {name: /usuń zaznaczone/i})
+        const exampleArtworkCheckbox = getByTestId(`${exampleArtworkId}-checkbox`)
+        await user.click(deleteSelectedButton)
+        await user.click(exampleArtworkCheckbox)
 
-    //     expect(queryByText(/czy na pewno chcesz usunąć zaznaczone rekordy?/i)).not.toBeInTheDocument()
-    // })
+        expect(deleteSelectedButton).not.toBeDisabled()
+    })
 
-    //TODO page change tests
-    // it("should refetch artworks list when artwork page is changed", async () => {
-    //     mockGetArtworksForCollectionPage.mockReturnValue(artworksData)
-    //     mockGetCollection.mockReturnValue(collectionData)
-    //     const {getByTestId} = renderPage(queryClient)
+    it("should refetch artworks list when artwork page is changed", async () => {
+        mockGetArtworksForCollectionPage.mockReturnValue(artworksData)
+        mockGetCollection.mockReturnValue(collectionData)
+        const {getByTestId} = renderPage(queryClient)
+        await waitFor(() => getByTestId('loaded-artwork-page-container'))
 
-    //     await waitFor(() => getByTestId('loaded-artwork-page-container'))
+        await waitFor(() => expect(getByTestId('artworks-listed')).toMatchSnapshot("page 1"))
 
-    //     await waitFor(() => expect(getByTestId('artworks-listed')).toMatchSnapshot("page 1"))
-    //     mockGetArtworksForCollectionPage.mockReturnValueOnce(artworksDataSecondPage)
-    //     await user.click(getByTestId("page-2"))
-    //     await waitFor(() => expect(getByTestId('artworks-listed')).toMatchSnapshot("page 2"))
-    // })
+        mockGetArtworksForCollectionPage.mockReturnValueOnce(artworksDataSecondPage)
+        await user.click(getByTestId("page-2"))
+
+        await waitFor(() => expect(getByTestId('artworks-listed')).toMatchSnapshot("page 2"))
+    })
 
     // TODO deleting of checked artworks tests
     // it("should ???", async () => {
