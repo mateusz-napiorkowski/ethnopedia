@@ -17,7 +17,7 @@ import Navigation from "../Navigation"
 import Pagination from "../Pagination"
 import { useUser } from "../../providers/UserProvider"
 
-const ArtworksList = () => {
+const ArtworksList = ({pageSize = 10}) => {
     const [selectedArtworks, setSelectedArtworks] = useState<{ [key: string]: boolean }>({})
     const [showFileDropzone, setShowFileDropzone] = useState<boolean>(false)
     const [showExportOptions, setShowExportOptions] = useState<boolean>(false)
@@ -33,7 +33,6 @@ const ArtworksList = () => {
     const queryParameters = new URLSearchParams(window.location.search)
     const searchText = queryParameters.get("searchText")
     const [currentPage, setCurrentPage] = useState(1)
-    const pageSize = 10
 
     const { collection } = useParams()
     const queryClient = useQueryClient()
@@ -115,12 +114,15 @@ const ArtworksList = () => {
 
                 <div className="flex flex-row">
                         <span className="mr-4 flex items-center">
-                            <input type="checkbox"
-                                   checked={selectedArtworks[artwork._id!] || false}
-                                   onClick={(e) => e.stopPropagation()}
-                                   onChange={() => {
-                                       handleCheck(artwork._id!)
-                                   }} />
+                            <input 
+                                type="checkbox"
+                                data-testid={`${artwork._id}-checkbox`}
+                                checked={selectedArtworks[artwork._id!] || false}
+                                onClick={(e) => e.stopPropagation()}
+                                onChange={() => {
+                                    handleCheck(artwork._id!)
+                                }}
+                            />
                         </span>
 
                     <div>
