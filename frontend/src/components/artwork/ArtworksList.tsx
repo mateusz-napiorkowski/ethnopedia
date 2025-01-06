@@ -84,7 +84,9 @@ const ArtworksList = ({pageSize = 10}) => {
     }, [artworkData, sortOrder])
 
     const handleCheck = (id: string) => {
-        setSelectedArtworks((prev) => ({ ...prev, [id]: !prev[id] }))
+        setSelectedArtworks((prev) => (
+            { ...prev, [id]: !prev[id] }
+        ))
     }
 
     const deselectAll = () => {
@@ -95,6 +97,7 @@ const ArtworksList = ({pageSize = 10}) => {
         onSuccess: () => {
             queryClient.invalidateQueries("artwork")
             setShowDeleteRecordsWarning(!showDeleteRecordsWarning)
+            deselectAll()
         }
     })
 
@@ -216,10 +219,10 @@ const ArtworksList = ({pageSize = 10}) => {
                                 Odznacz wszystkie
                             </button>
                             <button
-                                disabled={jwtToken && Object.keys(selectedArtworks).length !== 0 ? false : true} 
+                                disabled={jwtToken && !Object.values(selectedArtworks).every(value => value === false) ? false : true}
                                 className={`flex items-center justify-center dark:text-white
                                         hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2
-                                        dark:focus:ring-primary-800 font-semibold text-white ${jwtToken && Object.keys(selectedArtworks).length !== 0 ?
+                                        dark:focus:ring-primary-800 font-semibold text-white ${jwtToken && !Object.values(selectedArtworks).every(value => value === false) ?
                                             "bg-gray-800 hover:bg-gray-700 border-gray-800" : "bg-gray-600 hover:bg-gray-600 border-gray-800"}`}               
                                 type="button"
                                 onClick={() => { setShowDeleteRecordsWarning(!showDeleteRecordsWarning)}}

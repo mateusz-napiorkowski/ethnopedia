@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import { UserContext } from '../../../providers/UserProvider';
-import {collection, exampleArtworkId, artworksData, artworksDataSecondPage, collectionData, loggedInUserContextProps, jwtToken} from './utils/ArtworksListUtils'
+import {jwtToken, loggedInUserContextProps, collectionData, artworkIds, artworkTitles, artworksData, artworksDataSecondPage} from './utils/ArtworksListUtils'
 
 const mockUseNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
@@ -42,7 +42,7 @@ const renderPage = (
         jwtToken: undefined,
         setUserData: jest.fn()
     },
-    collection: string = "example collection",
+    collection: string = collectionData.name,
     pageSize = 3
     ) => {
         return render(
@@ -159,21 +159,19 @@ describe("ArtworksList tests", () => {
 
         await waitFor(() => getByTestId('artworks-listed'))
 
-        await user.click(getByTestId(exampleArtworkId))
+        await user.click(getByTestId(artworkIds[0]))
         
-        expect(mockUseNavigate).toHaveBeenCalledWith(`/collections/${collection}/artworks/${exampleArtworkId}`)
+        expect(mockUseNavigate).toHaveBeenCalledWith(`/collections/${collectionData.name}/artworks/${artworkIds[0]}`)
     })
 
-    // TODO add more scenarios to this test 
     it("should have delete selected button enabled if any artworks are selected", async () => {
         mockGetArtworksForCollectionPage.mockReturnValue(artworksData)
         mockGetCollection.mockReturnValue(collectionData)
         const {getByRole, getByTestId} = renderPage(queryClient, loggedInUserContextProps)
-
         await waitFor(() => getByTestId('loaded-artwork-page-container'))
         const deleteSelectedButton = getByRole("button", {name: /usuń zaznaczone/i})
-        const exampleArtworkCheckbox = getByTestId(`${exampleArtworkId}-checkbox`)
-        await user.click(deleteSelectedButton)
+        const exampleArtworkCheckbox = getByTestId(`${artworkIds[0]}-checkbox`)
+
         await user.click(exampleArtworkCheckbox)
 
         expect(deleteSelectedButton).not.toBeDisabled()
@@ -193,26 +191,55 @@ describe("ArtworksList tests", () => {
         await waitFor(() => expect(getByTestId('artworks-listed')).toMatchSnapshot("page 2"))
     })
 
-    // TODO deleting of checked artworks tests
-    // it("should ???", async () => {
-    //     mockGetArtworksForCollectionPage.mockReturnValue(artworksData)
-    //     mockGetCollection.mockReturnValue(collectionData)
-    //     const {getByTestId, getByRole, getByLabelText, queryByText} = renderPage(queryClient, loggedInUserContextProps)
+    it.each([
+            {
+                clickSequence: [],
+                clickSequenceWithTitles: [],
+                expectedChecked: []
+            },
+            {
+                clickSequence: [artworkIds[1], artworkIds[2], artworkIds[0], artworkIds[2], artworkIds[1], artworkIds[2]],
+                clickSequenceWithTitles: [artworkTitles[1], artworkTitles[2], artworkTitles[0], artworkTitles[2], artworkTitles[1], artworkTitles[2]],
+                expectedChecked: [artworkIds[2], artworkIds[0]]
+            },
+            {
+                clickSequence: [artworkIds[1], artworkIds[0], artworkIds[2], artworkIds[0], "Odznacz wszystkie"],
+                clickSequenceWithTitles: [artworkTitles[1], artworkTitles[0], artworkTitles[2], artworkIds[0], "Odznacz wszystkie"],
+                expectedChecked: []
+            },
+            {
+                clickSequence: [artworkIds[1], "Zaznacz wszystkie"],
+                clickSequenceWithTitles: [artworkTitles[1], "Zaznacz wszystkie"],
+                expectedChecked: [artworkIds[0], artworkIds[1], artworkIds[2]]
+            },
+          ])('should have correct artworks checked and call deleteArtwork with correct args for checkboxes/buttons clicked in sequence: $clickSequenceWithTitles', async ({clickSequence, expectedChecked}) => {
+            const expectedUnchecked = artworkIds.filter(category => !expectedChecked.includes(category))
+            mockGetArtworksForCollectionPage.mockReturnValue(artworksData)
+            mockGetCollection.mockReturnValue(collectionData)
+            const {getByTestId, getByRole, getByLabelText, getByText} = renderPage(queryClient, loggedInUserContextProps)
+            
+            await waitFor(() => getByTestId('artworks-listed'))
+            for(const value of clickSequence) {
+                const elementToClick = (value === "Zaznacz wszystkie" || value === "Odznacz wszystkie")
+                    ? getByText(value) : getByTestId(`${value}-checkbox`)
+                await user.click(elementToClick)
+            }
+            
+            expectedChecked.forEach(value => {
+                expect(getByTestId(`${value}-checkbox`)).toBeChecked();
+            })
+            expectedUnchecked.forEach(value => {
+                expect(getByTestId(`${value}-checkbox`)).not.toBeChecked();
+            })
 
-    //     await waitFor(() => getByTestId('artworks-listed'))
-
-    //     await user.click(getByTestId(`${exampleArtworkId}-checkbox`))
-        
-    //     expect(getByTestId(`${exampleArtworkId}-checkbox`)).toBeChecked()
-
-    //     const deleteSelectedButton = getByRole("button", {name: /usuń zaznaczone/i})
-    //     await user.click(deleteSelectedButton)
-
-    //     expect(queryByText("Czy na pewno chcesz usunąć zaznaczone rekordy?")).toBeInTheDocument()
-
-    //     await user.click(getByLabelText("confirm"))
-
-    //     await waitFor(() => expect(mockDeleteArtworks).toHaveBeenCalledWith([exampleArtworkId], jwtToken))
-    //     expect(queryByText("Czy na pewno chcesz usunąć zaznaczone rekordy?")).not.toBeInTheDocument()
-    // })
+            const deleteSelectedButton = getByRole("button", {name: /usuń zaznaczone/i}) as HTMLInputElement
+            if (!deleteSelectedButton.disabled) {
+                await user.click(deleteSelectedButton)
+                await user.click(getByLabelText("confirm"))
+                await waitFor(() => expect(mockDeleteArtworks).toHaveBeenCalledWith(expectedChecked, jwtToken))
+                expectedChecked.forEach(value => {
+                    expect(getByTestId(`${value}-checkbox`)).not.toBeChecked();
+                })
+            }
+        })
 })

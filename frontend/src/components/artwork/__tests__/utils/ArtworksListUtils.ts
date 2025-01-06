@@ -1,12 +1,3 @@
-export const collection = "example collection"
-export const exampleArtworkId = "6752ddca46e3ca48231024dc"
-export const collectionData = {
-    "_id": "675ddf8c1e6d01766fbc5b2e",
-    "name": collection,
-    "description": "example collection description",
-    "__v": 0
-}
-
 export const jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXN"
     + "lcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaecc"
     + "N-rDSjRS3kApqlA"
@@ -18,15 +9,26 @@ export const loggedInUserContextProps = {
     jwtToken: jwtToken,
     setUserData: jest.fn()
 };
+
+export const collectionData = {
+    "_id": "675ddf8c1e6d01766fbc5b2e",
+    "name": "example collection",
+    "description": "example collection description",
+    "__v": 0
+}
+
+export const artworkIds = ["6752ddca46e3ca48231024dc", "6752ddca46e3ca48231024aa", "6752ddca46e3ca48231024bb"]
+export const artworkTitles = ["Jakym jechoł koło dworu", "Ojcze, ojcze, kup mi kónia", "Piękna jagoda"]
+
 export const artworksData = {
     "artworks": [
         {
-            "_id": exampleArtworkId,
+            "_id": artworkIds[0],
             "categories": [
                 {
                     "name": "Tytuł",
                     "values": [
-                        "Jakym jechoł koło dworu"
+                        artworkTitles[0]
                     ],
                     "subcategories": []
                 },
@@ -45,18 +47,18 @@ export const artworksData = {
                     "subcategories": []
                 },
             ],
-            "collectionName": collection,
+            "collectionName": collectionData.name,
             "__v": 0,
             "createdAt": "2024-12-06T11:19:38.327Z",
             "updatedAt": "2024-12-06T11:19:38.327Z"
         },
         {
-            "_id": "6752ddca46e3ca48231024aa",
+            "_id": artworkIds[1],
             "categories": [
                 {
                     "name": "Tytuł",
                     "values": [
-                        "Ojcze, ojcze, kup mi kónia"
+                        artworkTitles[1]
                     ],
                     "subcategories": []
                 },
@@ -75,18 +77,18 @@ export const artworksData = {
                     "subcategories": []
                 },
             ],
-            "collectionName": collection,
+            "collectionName": collectionData.name,
             "__v": 0,
             "createdAt": "2024-12-06T11:19:38.327Z",
             "updatedAt": "2024-12-06T11:19:38.327Z"
         },
         {
-            "_id": "6752ddca46e3ca48231024bb",
+            "_id": artworkIds[2],
             "categories": [
                 {
                     "name": "Tytuł",
                     "values": [
-                        "Piękna jagoda"
+                        artworkTitles[2]
                     ],
                     "subcategories": []
                 },
@@ -105,7 +107,7 @@ export const artworksData = {
                     "subcategories": []
                 },
             ],
-            "collectionName": collection,
+            "collectionName": collectionData.name,
             "__v": 0,
             "createdAt": "2024-12-06T11:19:38.327Z",
             "updatedAt": "2024-12-06T11:19:38.327Z"
@@ -143,7 +145,7 @@ export const artworksDataSecondPage = {
                     "subcategories": []
                 },
             ],
-            "collectionName": collection,
+            "collectionName": collectionData.name,
             "__v": 0,
             "createdAt": "2024-12-06T11:19:38.327Z",
             "updatedAt": "2024-12-06T11:19:38.327Z"
@@ -173,7 +175,7 @@ export const artworksDataSecondPage = {
                     "subcategories": []
                 },
             ],
-            "collectionName": collection,
+            "collectionName": collectionData.name,
             "__v": 0,
             "createdAt": "2024-12-06T11:19:38.327Z",
             "updatedAt": "2024-12-06T11:19:38.327Z"
@@ -203,7 +205,7 @@ export const artworksDataSecondPage = {
                     "subcategories": []
                 },
             ],
-            "collectionName": collection,
+            "collectionName": collectionData.name,
             "__v": 0,
             "createdAt": "2024-12-06T11:19:38.327Z",
             "updatedAt": "2024-12-06T11:19:38.327Z"
