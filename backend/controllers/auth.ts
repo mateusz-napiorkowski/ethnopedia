@@ -60,7 +60,7 @@ export const loginUser = async (req: Request, res: Response) => {
     try {
         if (!loginUsername || !loginPassword)
             throw new Error("Incorrect request body provided")
-        
+
         const user = await User.findOne({username: loginUsername}).exec()
         if (!user)
             throw new Error("Invalid username or password")
@@ -87,8 +87,8 @@ export const loginUser = async (req: Request, res: Response) => {
         else if (err.message === 'Internal server error')
             return res.status(500).json({ error: err.message })
         else
-            return res.status(503).json({ error: `Database unavailable` })  
-    }   
+            return res.status(503).json({ error: `Database unavailable` })
+    }
 }
 
 export const deleteUser = authAsyncWrapper(async (req: Request, res: Response) => {

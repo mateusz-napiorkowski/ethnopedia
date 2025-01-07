@@ -37,7 +37,7 @@ const FileDropzone = ({ onClose, inCollectionPage }: Props) => {
         createCollection(collectionName, description, jwtToken)
         importData(dataToSend, jwtToken, collectionName)
     }
-    
+
     const handleFileUpload = (event: any) => {
         const file = event.target.files[0]
         var name = file.name;
@@ -45,7 +45,7 @@ const FileDropzone = ({ onClose, inCollectionPage }: Props) => {
         reader.onload = (evt: any) => {
             const bString = evt.target.result;
             const workbook = XLSX.read(bString, {type:'binary'});
-            
+
             const worksheetName = workbook.SheetNames[0];
             const worksheet = workbook.Sheets[worksheetName];
 
@@ -75,16 +75,17 @@ const FileDropzone = ({ onClose, inCollectionPage }: Props) => {
                         <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                             {headerText}
                         </h3>
-                        <button type="button"
-                                className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg
-                                text-sm w-4 h-4 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600
-                                dark:hover:text-white"
-                                data-modal-hide="default-modal"
-                                onClick={onClose}>
+                        <button
+                            type="button"
+                            className="text-gray-400 hover:bg-gray-200 hover:text-gray-900 text-sm
+                                    dark:hover:bg-gray-600 dark:hover:text-white p-2 rounded-lg"
+                            onClick={onClose}
+                        >
                             <Close />
                         </button>
+
                     </div>
-                    { showDropzone && <div className="w-full h-full flex items-center justify-center">
+                    {showDropzone && <div className="w-full h-full flex items-center justify-center">
                         <label
                             htmlFor="dropzone-file"
                             className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300
@@ -111,7 +112,7 @@ const FileDropzone = ({ onClose, inCollectionPage }: Props) => {
                             <div className="flex py-2 px-4 text-base">
                                 <p><span className="font-medium">Plik:</span> {filename}</p>
                             </div>
-                            <div className="flex justify-end px-4 py-4">  
+                            <div className="flex justify-end px-4 py-4">
                                     <input className="flex items-center justify-end dark:text-white
                                         hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium px-4 py-2
                                         dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"

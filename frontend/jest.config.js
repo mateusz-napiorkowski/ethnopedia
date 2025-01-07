@@ -4,7 +4,7 @@ module.exports = {
   transform: {
     "^.+\\.(ts|tsx)$": "ts-jest"
   },
-  testMatch: ['**/__tests__/*.test.ts?(x)'],
+  testMatch: ['**/*.test.ts?(x)'],
   setupFilesAfterEnv: [
     "@testing-library/jest-dom"
   ],

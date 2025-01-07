@@ -11,7 +11,7 @@ import { Category } from '../../@types/Category';
 //     { name: "Wykonawca nr 1", values: ["Imię Nazwisko 1"] },
 //     { name: "Wykonawca nr 2", values: ["Imię Nazwisko 2"] } ] },
 //   { name: "Region", values: ["Wielkopolska"], subcategories: [
-//     { name: "Podregion", values: ["Wielkopolska Północna"] },
+//     { name: "Podregion", values: ["WielkopQolska Północna"] },
 //     { name: "Podregion etnograficzny", values: ["Szamotulskie"] },
 //     { name: "Powiat", values: ["Szamotulski"]} ] }
 // ]
@@ -178,9 +178,9 @@ const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, setDataToI
               <button type="button" onClick={handleAddCategory} title="Dodaj kategorię">
                 <PlusIcon />
               </button>
-              <button type="button" onClick={handleShowJson}>
-                Show JSON
-              </button>
+              {/*<button type="button" onClick={handleShowJson}>*/}
+              {/*  Show JSON*/}
+              {/*</button>*/}
             </div>
           </form>
           <pre>{jsonOutput}</pre>
