@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Category } from '../../@types/Category';
 import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg";
 import { ReactComponent as MinusIcon } from "../../assets/icons/minus.svg";
@@ -22,6 +22,10 @@ const FormField: React.FC<FormFieldProps> = ({
                                                  handleRemove,
                                                  handleAddSubcategory,
                                              }) => {
+    const [isHovered, setIsHovered] = useState(false); // Stan hovera dla każdego elementu
+    const [subCategoryHovered, setSubCategoryHovered] = useState(false); // Stan hovera dla subkategorii
+
+    // Funkcja sprawdzająca, czy to ostatni element w danym poziomie
     const isLastChild = (index: string, formDataList: Category[]): boolean => {
         const parts = index.split('-').map(Number);
 
@@ -36,7 +40,11 @@ const FormField: React.FC<FormFieldProps> = ({
     };
 
     return (
-        <div className="relative flex flex-col pb-1 mt-1">
+        <div
+            className="relative flex flex-col pb-1 mt-1"
+            onMouseEnter={() => setIsHovered(true)} // Zmiana stanu na true, gdy myszka nad elementem
+            onMouseLeave={() => setIsHovered(false)} // Zmiana stanu na false, gdy myszka opuści element
+        >
             <div className="relative flex items-center">
                 {level > 0 && (
                     <>
@@ -81,14 +89,25 @@ const FormField: React.FC<FormFieldProps> = ({
                     />
                 </label>
                 <div className="actions">
-                    {level < 5 && (
-                        <button type="button" onClick={() => handleAddSubcategory(index)} title="Dodaj podkategorię">
+                    {/* Tylko przyciski dla aktualnej kategorii/subkategorii */}
+                    {level < 5 && isHovered && !subCategoryHovered && (
+                        <button
+                            type="button"
+                            onClick={() => handleAddSubcategory(index)}
+                            title="Dodaj podkategorię"
+                        >
                             <PlusIcon />
                         </button>
                     )}
-                    <button type="button" onClick={() => handleRemove(index)} title="Usuń kategorię">
-                        <MinusIcon />
-                    </button>
+                    {isHovered && !subCategoryHovered && (
+                        <button
+                            type="button"
+                            onClick={() => handleRemove(index)}
+                            title="Usuń kategorię"
+                        >
+                            <MinusIcon />
+                        </button>
+                    )}
                 </div>
             </div>
             {/* Podkategorie */}
@@ -96,7 +115,12 @@ const FormField: React.FC<FormFieldProps> = ({
                 formData.subcategories.map((subCategory, subIndex) => {
                     const uniqueSubIndex = `${index}-${subIndex}`;
                     return (
-                        <div key={uniqueSubIndex} className="ml-8 relative">
+                        <div
+                            key={uniqueSubIndex}
+                            className="ml-8 relative"
+                            onMouseEnter={() => setSubCategoryHovered(true)} // Ustawienie hovera na subkategorię
+                            onMouseLeave={() => setSubCategoryHovered(false)} // Ustawienie hovera na false po opuszczeniu subkategorii
+                        >
                             <div
                                 className="tree-line vertical-helper"
                                 style={{
