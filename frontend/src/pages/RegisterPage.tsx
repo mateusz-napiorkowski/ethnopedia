@@ -25,7 +25,7 @@ const RegisterPage = () => {
 
         confirmPassword: Yup.string()
             .oneOf([Yup.ref("password"), ""], "Hasła muszą być takie same")
-            .required("Powtórz hasło"),
+            .required("Powtórz swoje hasło"),
     })
     const { mutate: registerUser } = registerMutation
 
