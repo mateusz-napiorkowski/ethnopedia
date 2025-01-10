@@ -80,22 +80,26 @@
     .tree-line {
         position: absolute;
         background-color: #ccc;
-        z-index: 0;
     }
 
     .tree-line.vertical {
-        width: 1px;
-        left: -16px; /* Dopasowanie do pozycji elementów */
-        top: 0;
+        width: 2px;
+        background-color: #ccc;
     }
 
     .tree-line.horizontal {
-        height: 1px;
-        width: 16px; /* Dopasowanie długości */
-        top: 50%; /* Wycentrowanie względem elementu */
-        transform: translateY(-50%);
+        height: 2px;
+        background-color: #ccc;
     }
 
+    .tree-line.vertical-helper {
+        position: absolute;
+        background-color: #ccc;
+        width: 2px;
+        left: -16px;
+        top: 0;
+        height: 100%;
+    }
 
 
 }

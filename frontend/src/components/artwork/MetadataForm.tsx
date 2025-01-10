@@ -41,6 +41,15 @@ const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, setDataToI
     setDataToInsert(transformToNewStructure(formDataList, collectionName))
   }, [formDataList, collectionName, setDataToInsert])
 
+  useEffect(() => {
+    const handleResize = () => {
+      setFormDataList((prev) => [...prev]); // Wymuszenie ponownego renderowania
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+
   const [jsonOutput, setJsonOutput] = useState<string>('');
   const handleShowJson = () => {
     let jsonData = transformToNewStructure(formDataList, collectionName);

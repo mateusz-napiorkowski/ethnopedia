@@ -22,75 +22,65 @@ const FormField: React.FC<FormFieldProps> = ({
                                                  handleRemove,
                                                  handleAddSubcategory,
                                              }) => {
-
     const isLastChild = (index: string, formDataList: Category[]): boolean => {
         const parts = index.split('-').map(Number);
 
-        if (parts.length === 1) {
-            // Poziom główny
-            return formDataList[parts[0]] === formDataList.slice(-1)[0];
+        let currentList = formDataList;
+        for (let i = 0; i < parts.length - 1; i++) {
+            const parentIndex = parts[i];
+            currentList = currentList[parentIndex]?.subcategories || [];
         }
 
-        // Poziom zagnieżdżony
-        const parentCategory = formDataList[parts[0]];
-        if (!parentCategory || !parentCategory.subcategories) {
-            return false; // Nieprawidłowe dane
-        }
-
-        const subcategories = parentCategory.subcategories;
-        return subcategories[parts[1]] === subcategories.slice(-1)[0];
+        const currentIndex = parts[parts.length - 1];
+        return currentList[currentIndex] === currentList[currentList.length - 1];
     };
 
-
     return (
-        <div key={index} className="flex flex-col pb-1 mt-1 relative">
-            <div className="flex items-center group relative">
+        <div className="relative flex flex-col pb-1 mt-1">
+            <div className="relative flex items-center">
                 {level > 0 && (
                     <>
-                        {/* Pionowa linia drzewa */}
+                        {/* Pionowa linia */}
                         <div
-                            className={`tree-line vertical`}
+                            className="tree-line vertical"
                             style={{
                                 height: isLastChild(index, formDataList) ? '50%' : '100%',
-                                top: '0',
+                                top: 0,
                                 left: '-16px',
                             }}
-                        ></div>
-                        {/* Pozioma linia drzewa */}
+                        />
+                        {/* Pozioma linia */}
                         <div
-                            className={`tree-line horizontal`}
+                            className="tree-line horizontal"
                             style={{
+                                width: '16px',
                                 left: '-16px',
+                                top: '50%',
                             }}
-                        ></div>
+                        />
                     </>
                 )}
-                {/* Pole nazwy kategorii */}
                 <label className="flex items-center">
                     <input
                         type="text"
-                        name={`name`}
+                        name="name"
                         value={formData.name}
                         onChange={(e) => handleInputChange(index, e)}
                         placeholder="Podaj nazwę kategorii..."
                         className="mx-2 p-2"
-                        list="name-options"
                     />
                 </label>
-                {/* Pole wartości kategorii */}
                 <label className="flex items-center">
                     <span>:</span>
                     <input
                         type="text"
-                        name={`values`}
+                        name="values"
                         value={formData.values[0]}
                         onChange={(e) => handleInputChange(index, e)}
                         className="mx-2 p-2"
-                        list="values-options"
                     />
                 </label>
-                {/* Przyciski + i - */}
-                <div className="actions opacity-0 group-hover:opacity-100 transition-opacity duration-100">
+                <div className="actions">
                     {level < 5 && (
                         <button type="button" onClick={() => handleAddSubcategory(index)} title="Dodaj podkategorię">
                             <PlusIcon />
@@ -101,15 +91,24 @@ const FormField: React.FC<FormFieldProps> = ({
                     </button>
                 </div>
             </div>
-
-            {/* render subcategories */}
+            {/* Podkategorie */}
             {formData.subcategories &&
                 formData.subcategories.map((subCategory, subIndex) => {
-                    const uniqueSubIndex = `${index}-${subIndex}`;  // e.g. index '2-0-1'
+                    const uniqueSubIndex = `${index}-${subIndex}`;
                     return (
-                        <div className="ml-8 flex flex-row relative mt-1">
+                        <div key={uniqueSubIndex} className="ml-8 relative">
+                            <div
+                                className="tree-line vertical-helper"
+                                style={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: '-16px',
+                                    height: '100%',
+                                    width: '2px',
+                                    backgroundColor: '#ccc',
+                                }}
+                            />
                             <FormField
-                                key={uniqueSubIndex}
                                 index={uniqueSubIndex}
                                 level={level + 1}
                                 formData={subCategory}
@@ -125,4 +124,4 @@ const FormField: React.FC<FormFieldProps> = ({
     );
 };
 
-export default FormField;
+export default React.memo(FormField);
