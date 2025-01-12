@@ -190,8 +190,14 @@ const CollectionsPage = () => {
                                     if(Object.keys(checkedCollections).length === 0){
                                         setExportErrorMessage("Najpierw należy zaznaczyć kolekcję do wyeksportowania.")
                                     } else {
-                                        for(const key in fetchedData.collections) {
-                                            getXlsxWithCollectionData(fetchedData.collections[key].name)
+                                        const checkedCollectionsNames = Object.keys(checkedCollections)
+                                            .filter((checkedCollection) => checkedCollections[checkedCollection])
+                                            .map((checkedCollection) => {
+                                                const collection = fetchedData.collections.find((col) => col.id == checkedCollection);
+                                                return collection!.name;
+                                            })
+                                        for(const collectionName of checkedCollectionsNames) {
+                                            getXlsxWithCollectionData(collectionName)
                                         }
                                         setExportErrorMessage("")
                                     }
