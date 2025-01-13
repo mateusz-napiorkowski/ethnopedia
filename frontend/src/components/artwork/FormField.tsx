@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Category } from '../../@types/Category';
 import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg";
 import { ReactComponent as MinusIcon } from "../../assets/icons/minus.svg";
@@ -22,8 +22,8 @@ const FormField: React.FC<FormFieldProps> = ({
                                                  handleRemove,
                                                  handleAddSubcategory,
                                              }) => {
-    const [isHovered, setIsHovered] = useState(false); // Stan hovera dla każdego elementu
-    const [subCategoryHovered, setSubCategoryHovered] = useState(false); // Stan hovera dla subkategorii
+    const [isHovered, setIsHovered] = useState(false); // Stan hovera dla kategorii
+    const [isSubCategoryHovered, setIsSubCategoryHovered] = useState(false); // Stan hovera dla subkategorii
 
     // Funkcja sprawdzająca, czy to ostatni element w danym poziomie
     const isLastChild = (index: string, formDataList: Category[]): boolean => {
@@ -38,6 +38,14 @@ const FormField: React.FC<FormFieldProps> = ({
         const currentIndex = parts[parts.length - 1];
         return currentList[currentIndex] === currentList[currentList.length - 1];
     };
+
+    // Resetowanie stanów hovera po usunięciu kategorii
+    useEffect(() => {
+        if (!formDataList.some(category => category.name === formData.name)) {
+            setIsHovered(false);
+            setIsSubCategoryHovered(false);
+        }
+    }, [formDataList]);
 
     return (
         <div
@@ -89,8 +97,8 @@ const FormField: React.FC<FormFieldProps> = ({
                     />
                 </label>
                 <div className="actions">
-                    {/* Tylko przyciski dla aktualnej kategorii/subkategorii */}
-                    {level < 5 && isHovered && !subCategoryHovered && (
+                    {/* Tylko przyciski dla kategorii/subkategorii, jeśli myszka nad nimi */}
+                    {level < 5 && isHovered && !isSubCategoryHovered && (
                         <button
                             type="button"
                             onClick={() => handleAddSubcategory(index)}
@@ -99,7 +107,7 @@ const FormField: React.FC<FormFieldProps> = ({
                             <PlusIcon />
                         </button>
                     )}
-                    {isHovered && !subCategoryHovered && (
+                    {isHovered && !isSubCategoryHovered && (
                         <button
                             type="button"
                             onClick={() => handleRemove(index)}
@@ -118,8 +126,8 @@ const FormField: React.FC<FormFieldProps> = ({
                         <div
                             key={uniqueSubIndex}
                             className="ml-8 relative"
-                            onMouseEnter={() => setSubCategoryHovered(true)} // Ustawienie hovera na subkategorię
-                            onMouseLeave={() => setSubCategoryHovered(false)} // Ustawienie hovera na false po opuszczeniu subkategorii
+                            onMouseEnter={() => setIsSubCategoryHovered(true)} // Ustawienie hovera na subkategorię
+                            onMouseLeave={() => setIsSubCategoryHovered(false)} // Ustawienie hovera na false po opuszczeniu subkategorii
                         >
                             <div
                                 className="tree-line vertical-helper"
