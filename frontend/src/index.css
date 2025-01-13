@@ -82,16 +82,23 @@
         background-color: #ccc;
     }
 
+    /* Pionowa linia */
     .tree-line.vertical {
         width: 2px;
-        background-color: #ccc;
+        height: 40px;  /* Stała wysokość dla wszystkich linii */
+        top: 0;
+        left: -16px;
     }
 
+    /* Pozioma linia */
     .tree-line.horizontal {
         height: 2px;
-        background-color: #ccc;
+        width: 16px;  /* Stała szerokość */
+        left: -16px;
+        top: 50%;
     }
 
+    /* Linia pomocnicza dla subkategorii */
     .tree-line.vertical-helper {
         position: absolute;
         background-color: #ccc;
@@ -100,6 +107,14 @@
         top: 0;
         height: 100%;
     }
+
+    /* Linia pionowa pomocnicza dla subkategorii */
+    .tree-line.horizontal-end {
+        border-left: 2px solid #ccc;
+        width: 16px;
+        height: 2px;
+    }
+
 
 
 }

@@ -22,26 +22,12 @@ const FormField: React.FC<FormFieldProps> = ({
                                                  handleRemove,
                                                  handleAddSubcategory,
                                              }) => {
-    const [isHovered, setIsHovered] = useState(false); // Stan hovera dla kategorii
-    const [isSubCategoryHovered, setIsSubCategoryHovered] = useState(false); // Stan hovera dla subkategorii
+    const [isHovered, setIsHovered] = useState(false);
+    const [isSubCategoryHovered, setIsSubCategoryHovered] = useState(false);
 
-    // Funkcja sprawdzająca, czy to ostatni element w danym poziomie
-    const isLastChild = (index: string, formDataList: Category[]): boolean => {
-        const parts = index.split('-').map(Number);
-
-        let currentList = formDataList;
-        for (let i = 0; i < parts.length - 1; i++) {
-            const parentIndex = parts[i];
-            currentList = currentList[parentIndex]?.subcategories || [];
-        }
-
-        const currentIndex = parts[parts.length - 1];
-        return currentList[currentIndex] === currentList[currentList.length - 1];
-    };
-
-    // Resetowanie stanów hovera po usunięciu kategorii
+    // Funkcja resetująca stan hovera
     useEffect(() => {
-        if (!formDataList.some(category => category.name === formData.name)) {
+        if (!formDataList.some((category) => category.name === formData.name)) {
             setIsHovered(false);
             setIsSubCategoryHovered(false);
         }
@@ -50,30 +36,16 @@ const FormField: React.FC<FormFieldProps> = ({
     return (
         <div
             className="relative flex flex-col pb-1 mt-1"
-            onMouseEnter={() => setIsHovered(true)} // Zmiana stanu na true, gdy myszka nad elementem
-            onMouseLeave={() => setIsHovered(false)} // Zmiana stanu na false, gdy myszka opuści element
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
         >
             <div className="relative flex items-center">
                 {level > 0 && (
                     <>
                         {/* Pionowa linia */}
-                        <div
-                            className="tree-line vertical"
-                            style={{
-                                height: isLastChild(index, formDataList) ? '50%' : '100%',
-                                top: 0,
-                                left: '-16px',
-                            }}
-                        />
+                        <div className="tree-line vertical" />
                         {/* Pozioma linia */}
-                        <div
-                            className="tree-line horizontal"
-                            style={{
-                                width: '16px',
-                                left: '-16px',
-                                top: '50%',
-                            }}
-                        />
+                        <div className="tree-line horizontal" />
                     </>
                 )}
                 <label className="flex items-center">
@@ -97,7 +69,6 @@ const FormField: React.FC<FormFieldProps> = ({
                     />
                 </label>
                 <div className="actions">
-                    {/* Tylko przyciski dla kategorii/subkategorii, jeśli myszka nad nimi */}
                     {level < 5 && isHovered && !isSubCategoryHovered && (
                         <button
                             type="button"
@@ -126,20 +97,10 @@ const FormField: React.FC<FormFieldProps> = ({
                         <div
                             key={uniqueSubIndex}
                             className="ml-8 relative"
-                            onMouseEnter={() => setIsSubCategoryHovered(true)} // Ustawienie hovera na subkategorię
-                            onMouseLeave={() => setIsSubCategoryHovered(false)} // Ustawienie hovera na false po opuszczeniu subkategorii
+                            onMouseEnter={() => setIsSubCategoryHovered(true)}
+                            onMouseLeave={() => setIsSubCategoryHovered(false)}
                         >
-                            <div
-                                className="tree-line vertical-helper"
-                                style={{
-                                    position: 'absolute',
-                                    top: 0,
-                                    left: '-16px',
-                                    height: '100%',
-                                    width: '2px',
-                                    backgroundColor: '#ccc',
-                                }}
-                            />
+                            <div className="tree-line vertical-helper" />
                             <FormField
                                 index={uniqueSubIndex}
                                 level={level + 1}
