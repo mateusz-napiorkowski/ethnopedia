@@ -8,7 +8,7 @@ export const getArtwork = async (id: string) => {
 }
 
 export const getArtworksForCollectionPage = async (collection: string, page: number, pageSize: number, sortOrder: string, searchText: string | null, queryParams: any) => {
-    return await axios.get(`${API_URL}v1/artworks/${collection}/artworks/Tytuł-asc`, {
+    return await axios.get(`${API_URL}v1/artworks/${collection}/artworks/${sortOrder}`, {
         params: {
             page: page,
             pageSize: pageSize,

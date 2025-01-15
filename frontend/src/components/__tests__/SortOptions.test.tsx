@@ -15,6 +15,7 @@ const renderComponent = () => {
                 {value: "name-desc", label: "Nazwa malejąco"}
             ]}
             onSelect={mockOnSelect}
+            sortOrder='name-asc'
         />
     );
 };

@@ -269,6 +269,7 @@ const CollectionsPage = () => {
                     <SortOptions
                         options={sortOptions}
                         onSelect={(value: string) => setSortOrder(value)}
+                        sortOrder=""
                     />
                     </span>
                 </div>

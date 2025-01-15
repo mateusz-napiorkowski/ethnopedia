@@ -102,11 +102,32 @@ export const constructAdvSearchFilter = (requestQuery: any, collectionName: stri
     return queryFilter
 }
 
+const findMatchingCategory = (categoryName: string, record: any) => {
+    if(categoryName.split(".").length === 1) {
+        if(!record.subcategories)
+            return record.categories.find((category: any) => category.name === categoryName);
+        return record.subcategories.find((category: any) => category.name === categoryName);
+    } else {
+        const prefix = categoryName.split(".")[0]
+        const rest = categoryName.split(".").slice(1).join(".")
+        if(!record.subcategories) {
+            const parent = record.categories.find((category: any) => category.name === prefix);
+            if(!parent)
+                return undefined
+            return findMatchingCategory(rest, parent)
+        }
+        const parent = record.subcategories.find((category: any) => category.name === prefix);
+        if(!parent)
+            return undefined
+        return findMatchingCategory(rest, parent)
+    }
+}
+
 export const sortRecordsByCategory = (records: any, order: string) => {
     const [categoryToSortBy, ascOrDesc] = order.split('-')
 
     const recordAndCategoryValuePairs = records.map((record: any) => {
-        const matchingCategory = record.categories.find((category: any) => category.name === categoryToSortBy);
+        const matchingCategory = findMatchingCategory(categoryToSortBy, record)
         const categoryValue = matchingCategory ? matchingCategory.values.join(", ") : null;
         return [record, categoryValue];
     })

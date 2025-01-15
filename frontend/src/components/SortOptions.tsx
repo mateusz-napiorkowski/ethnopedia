@@ -7,11 +7,12 @@ interface Option {
 
 interface SortOptionsProps {
     options: Option[]
-    onSelect: (value: string) => void
+    onSelect: (value: string) => void,
+    sortOrder: string
 }
 
-const SortOptions: React.FC<SortOptionsProps> = ({ options, onSelect }) => {
-    const [selectedOption, setSelectedOption] = useState<string>(options[0].value)
+const SortOptions: React.FC<SortOptionsProps> = ({ options, onSelect, sortOrder }) => {
+    const [selectedOption, setSelectedOption] = useState<string>(sortOrder)
 
     const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setSelectedOption(event.target.value)

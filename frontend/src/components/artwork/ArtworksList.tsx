@@ -16,14 +16,14 @@ import SortOptions from "../SortOptions"
 import Navigation from "../Navigation"
 import Pagination from "../Pagination"
 import { useUser } from "../../providers/UserProvider"
+import { getAllCategories } from "../../api/categories"
 
 const ArtworksList = ({pageSize = 10}) => {
     const [selectedArtworks, setSelectedArtworks] = useState<{ [key: string]: boolean }>({})
     const [showFileDropzone, setShowFileDropzone] = useState<boolean>(false)
     const [showExportOptions, setShowExportOptions] = useState<boolean>(false)
     const [showDeleteRecordsWarning, setShowDeleteRecordsWarning] = useState(false)
-    const [sortOrder, setSortOrder] = useState<string>("newest-first")
-    const [showEditCollection, setShowEditCollection] = useState<boolean>(false)
+    const [sortOrder, setSortOrder] = useState<string>("Tytuł-asc")
     const { jwtToken } = useUser();
     const location = useLocation()
     useEffect(() => {
@@ -48,13 +48,6 @@ const ArtworksList = ({pageSize = 10}) => {
         return val
     }
 
-    const sortOptions = [
-        { value: "newest-first", label: "Od najnowszych" },
-        { value: "oldest-first", label: "Od najstarszych" },
-        { value: "title-asc", label: "Tytuł rosnąco" },
-        { value: "title-desc", label: "Tytuł malejąco" },
-    ]
-
     const { data: artworkData} = useQuery({
         queryKey: ["artwork", currentPage, searchText, queryParameters, location, sortOrder],
         queryFn: () => getArtworksForCollectionPage(collection as string, currentPage, pageSize, sortOrder, searchText, Object.fromEntries(queryParameters.entries())),
@@ -66,6 +59,17 @@ const ArtworksList = ({pageSize = 10}) => {
         enabled: !!collection,
         queryFn: () => getCollection(collection as string),
     })
+
+    const { data: categoriesData } = useQuery({
+        queryKey: ["allCategories"],
+        queryFn: () => getAllCategories(collection as string),
+        enabled: !!collection,
+    })
+
+    const sortOptions = categoriesData?.categories?.flatMap((category: string) => [
+        { value: `${category}-asc`, label: `${category} rosnąco` },
+        { value: `${category}-desc`, label: `${category} malejąco` },
+    ])
 
     const selectAll = () => {
         const newSelection = artworkData?.artworks.reduce((acc: any, artwork: any) => {
@@ -230,13 +234,13 @@ const ArtworksList = ({pageSize = 10}) => {
                                 Usuń zaznaczone
                             </button>
                         </div>
-
-                        <span className="">
-                                <SortOptions
-                                    options={sortOptions}
-                                    onSelect={(value) => setSortOrder(value)}
-                                />
-                            </span>
+                    </div>
+                    <div className="flex w-full md:w-auto pt-4 flex-col items-end">
+                        {sortOptions && <SortOptions
+                            options={sortOptions}
+                            onSelect={(value) => setSortOrder(value)}
+                            sortOrder={sortOrder}
+                        />}
                     </div>
                     {showFileDropzone && <FileDropzone onClose={() => setShowFileDropzone(false)} inCollectionPage={false}/>}
                     {showExportOptions && <ExportOptions selectedArtworks={selectedArtworks} onClose={() => setShowExportOptions(false)} />}
