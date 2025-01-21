@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState} from "react"
 import Navbar from "../navbar/Navbar"
 import { useLocation, useNavigate, useParams } from "react-router-dom"
 import SearchComponent from "../search/SearchComponent"
-import FileDropzone from "../FileDropzone"
+import ImportOptions from "../ImportOptions"
 import ExportOptions from "../ExportOptions"
 import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg"
 import { ReactComponent as FileImportIcon } from "../../assets/icons/fileImport.svg"
@@ -20,7 +20,7 @@ import { getAllCategories } from "../../api/categories"
 
 const ArtworksList = ({pageSize = 10}) => {
     const [selectedArtworks, setSelectedArtworks] = useState<{ [key: string]: boolean }>({})
-    const [showFileDropzone, setShowFileDropzone] = useState<boolean>(false)
+    const [showImportOptions, setShowImportOptions] = useState<boolean>(false)
     const [showExportOptions, setShowExportOptions] = useState<boolean>(false)
     const [showDeleteRecordsWarning, setShowDeleteRecordsWarning] = useState(false)
     const [sortOrder, setSortOrder] = useState<string>("Tytuł-asc")
@@ -198,7 +198,7 @@ const ArtworksList = ({pageSize = 10}) => {
                                         hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2
                                         dark:focus:ring-primary-800 font-semibold text-white ${jwtToken ?
                                             "bg-gray-800 hover:bg-gray-700 border-gray-800" : "bg-gray-600 hover:bg-gray-600 border-gray-800"}`}                                type="button"
-                                onClick={() => setShowFileDropzone(showFileDropzone => !showFileDropzone)}
+                                onClick={() => setShowImportOptions(showImportOptions => !showImportOptions)}
                             >
                                 <span className="text-white dark:text-gray-400">
                                     <FileImportIcon />
@@ -243,7 +243,7 @@ const ArtworksList = ({pageSize = 10}) => {
                             setCurrentPage={setCurrentPage}
                         />}
                     </div>
-                    {showFileDropzone && <FileDropzone onClose={() => setShowFileDropzone(false)} collectionData={collectionData}/>}
+                    {showImportOptions && <ImportOptions onClose={() => setShowImportOptions(false)} collectionData={collectionData}/>}
                     {showExportOptions && <ExportOptions selectedArtworks={selectedArtworks} onClose={() => setShowExportOptions(false)} />}
                 </div>
             </div>

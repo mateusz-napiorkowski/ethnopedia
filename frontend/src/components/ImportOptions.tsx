@@ -2,7 +2,7 @@ import { useState } from "react"
 import { ReactComponent as DragAndDrop } from "../assets/icons/dragAndDrop.svg"
 import { ReactComponent as Close } from "../assets/icons/close.svg"
 import * as XLSX from 'xlsx';
-import { importDataAsCollection, importData } from "../api/dataImport"
+import { importData, importDataAsCollection } from "../api/dataImport"
 import { useUser } from "../providers/UserProvider";
 import { useMutation, useQueryClient } from "react-query";
 import { Collection } from "../@types/Collection"
@@ -12,7 +12,7 @@ type Props = {
     collectionData?: Collection
 }
 
-const FileDropzone = ({ onClose, collectionData }: Props) => {
+const ImportOptions = ({ onClose, collectionData }: Props) => {
     const [showDropzoneForm, setShowDropzoneForm] = useState(true)
     const [showCollectionForm, setShowCollectionForm] = useState(false)
     const [filename, setFilename] = useState("")
@@ -23,20 +23,14 @@ const FileDropzone = ({ onClose, collectionData }: Props) => {
     const { jwtToken } = useUser();
     const queryClient = useQueryClient()
 
-    const handleSubmit = () => {
-        importDataMutation.mutate()
+    const handleGoBack = () => {
+        setShowDropzoneForm(true)
+        setShowCollectionForm(false)
     }
 
-    const handleNameChange = (event: any) => {
-        setCollectionName(event.target.value)
-    }
-
-    const handleDescriptionChange = (event: any) => {
-        setDescription(event.target.value)
-    }
-
-    const handleCollectionSubmit = () => {
-        importCollectionMutation.mutate()
+    const handleGoForward = () => {
+        setShowDropzoneForm(false)
+        setShowCollectionForm(true)
     }
 
     const handleFileUpload = (event: any) => {
@@ -57,6 +51,22 @@ const FileDropzone = ({ onClose, collectionData }: Props) => {
         reader.readAsArrayBuffer(file)
         
         setFilename(file.name)
+    }
+
+    const handleNameChange = (event: any) => {
+        setCollectionName(event.target.value)
+    }
+
+    const handleDescriptionChange = (event: any) => {
+        setDescription(event.target.value)
+    }
+
+    const handleSubmit = () => {
+        importDataMutation.mutate()
+    }
+
+    const handleCollectionSubmit = () => {
+        importCollectionMutation.mutate()
     }
 
     const importDataMutation = useMutation(() => importData(dataToSend, jwtToken, collectionData?.name), {
@@ -132,14 +142,14 @@ const FileDropzone = ({ onClose, collectionData }: Props) => {
                                         type={!collectionData ? "button" : "submit"}
                                         value={!collectionData ? "Dalej" : "Importuj metadane"}
                                         disabled={!filename ? true : false}
-                                        onClick={!collectionData ? () => {setShowDropzoneForm(false); setShowCollectionForm(true)} : () => {}}
+                                        onClick={!collectionData ? handleGoForward : undefined}
                                     >{!collectionData ? "Dalej" : "Importuj metadane"}
                                     </button>
                                 </div>
                             </form>
                         </div>
                     </div> }
-                    { !collectionData && showCollectionForm && <div>
+                    {showCollectionForm && <div>
                         <form onSubmit={handleCollectionSubmit} className="relative bg-white rounded-lg shadow-md dark:bg-gray-800 border
                             dark:border-gray-600">
                             <div className="px-4 pb-4">
@@ -175,9 +185,9 @@ const FileDropzone = ({ onClose, collectionData }: Props) => {
                                 <button
                                     type="button"
                                     className="px-4 py-2 color-button"
-                                    onClick={onClose}
+                                    onClick={handleGoBack}
                                 >
-                                    Anuluj
+                                    Wstecz
                                 </button>
                                 <button
                                     type="submit"
@@ -194,4 +204,4 @@ const FileDropzone = ({ onClose, collectionData }: Props) => {
     </div>
 }
 
-export default FileDropzone
+export default ImportOptions
