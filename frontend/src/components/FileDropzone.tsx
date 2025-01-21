@@ -2,27 +2,29 @@ import { useState } from "react"
 import { ReactComponent as DragAndDrop } from "../assets/icons/dragAndDrop.svg"
 import { ReactComponent as Close } from "../assets/icons/close.svg"
 import * as XLSX from 'xlsx';
-import { importData } from "../api/dataImport"
-import { createCollection } from "../api/collections";
+import { importDataAsCollection, importData } from "../api/dataImport"
 import { useUser } from "../providers/UserProvider";
+import { useMutation, useQueryClient } from "react-query";
+import { Collection } from "../@types/Collection"
 
 type Props = {
-    inCollectionPage: boolean
-    onClose: () => void
+    onClose: () => void,
+    collectionData?: Collection
 }
 
-const FileDropzone = ({ onClose, inCollectionPage }: Props) => {
-    const [headerText, setHeaderText] = useState("Prześlij plik")
+const FileDropzone = ({ onClose, collectionData }: Props) => {
+    const [showDropzoneForm, setShowDropzoneForm] = useState(true)
+    const [showCollectionForm, setShowCollectionForm] = useState(false)
     const [filename, setFilename] = useState("")
-    const [showDropzone, setShowDropzone] = useState(true)
-    const [showImportOptions, setShowImportOptions] = useState(false)
     const [dataToSend, setDataToSend] = useState<any>()
     const [collectionName, setCollectionName] = useState("")
     const [description, setDescription] = useState("")
-    const { jwtToken } = useUser();
 
-    const handleSubmit = (event: any) => {
-        importData(dataToSend, jwtToken, window.location.href.split("/")[window.location.href.split("/").findIndex((element) => element === "collections") + 1])
+    const { jwtToken } = useUser();
+    const queryClient = useQueryClient()
+
+    const handleSubmit = () => {
+        importDataMutation.mutate()
     }
 
     const handleNameChange = (event: any) => {
@@ -33,14 +35,14 @@ const FileDropzone = ({ onClose, inCollectionPage }: Props) => {
         setDescription(event.target.value)
     }
 
-    const handleCollectionSubmit = (event: any) => {
-        createCollection(collectionName, description, jwtToken)
-        importData(dataToSend, jwtToken, collectionName)
+    const handleCollectionSubmit = () => {
+        importCollectionMutation.mutate()
     }
 
     const handleFileUpload = (event: any) => {
         const file = event.target.files[0]
-        var name = file.name;
+        if(!file) return
+
         const reader = new FileReader();
         reader.onload = (evt: any) => {
             const bString = evt.target.result;
@@ -52,15 +54,25 @@ const FileDropzone = ({ onClose, inCollectionPage }: Props) => {
             const parsedData = XLSX.utils.sheet_to_json(worksheet, {header:1, defval: ""});
             setDataToSend(parsedData)
         };
-        reader.readAsBinaryString(file);
-
-        if (file) {
-            setHeaderText("Ustawienia importu metadanych z pliku .xlsx")
-            setShowDropzone(false)
-            setShowImportOptions(true)
-            setFilename(name)
-        }
+        reader.readAsArrayBuffer(file)
+        
+        setFilename(file.name)
     }
+
+    const importDataMutation = useMutation(() => importData(dataToSend, jwtToken, collectionData?.name), {
+        onSuccess: () => {
+            queryClient.invalidateQueries("artwork")
+            setShowDropzoneForm(false)
+        }
+    })
+
+    const importCollectionMutation = useMutation(() => importDataAsCollection(dataToSend, collectionName, description, jwtToken), {
+        onSuccess: () => {
+            queryClient.invalidateQueries("collection")
+            setShowDropzoneForm(false)
+            setShowCollectionForm(false)
+        }
+    })
 
     return <div
         id="default-modal"
@@ -73,7 +85,7 @@ const FileDropzone = ({ onClose, inCollectionPage }: Props) => {
                 <div className="relative bg-white rounded-lg shadow dark:bg-gray-800 border dark:border-gray-600">
                     <div className="flex items-start justify-between p-4 rounded-t">
                         <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                            {headerText}
+                            Ustawienia importu metadanych z pliku .xlsx
                         </h3>
                         <button
                             type="button"
@@ -85,7 +97,7 @@ const FileDropzone = ({ onClose, inCollectionPage }: Props) => {
                         </button>
 
                     </div>
-                    {showDropzone && <div className="w-full h-full flex items-center justify-center">
+                    {showDropzoneForm && <div className="w-full h-full flex flex-col items-start justify-center">
                         <label
                             htmlFor="dropzone-file"
                             className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300
@@ -97,7 +109,7 @@ const FileDropzone = ({ onClose, inCollectionPage }: Props) => {
                                 <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
                                     <span className="font-semibold">Kliknij, aby przesłać</span> lub przeciągnij i upuść
                                 </p>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">Pliki XLSX, XLS lub CSV</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">Pliki XLSX</p>
                             </div>
                             <input
                                 id="dropzone-file"
@@ -106,22 +118,28 @@ const FileDropzone = ({ onClose, inCollectionPage }: Props) => {
                                 onChange={handleFileUpload}
                             />
                         </label>
-                    </div> }
-                    { !inCollectionPage && showImportOptions && <div>
-                        <form onSubmit={handleSubmit}>
-                            <div className="flex py-2 px-4 text-base">
-                                <p><span className="font-medium">Plik:</span> {filename}</p>
+                        <div className="w-full flex flex-col">
+                            <div className="flex p-4 text-base">
+                                <p><span className="font-medium">Plik do przesłania:</span> {filename ? filename : "-"}</p>
                             </div>
-                            <div className="flex justify-end px-4 py-4">
-                                    <input className="flex items-center justify-end dark:text-white
-                                        hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium px-4 py-2
-                                        dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
-                                        type="submit" value="Importuj metadane" onClick={() => {}}
-                                    ></input>
-                            </div>
-                        </form>
+                            <form onSubmit={handleSubmit} className="flex flex-col items-end p-4">
+                                <div>
+                                    <button
+                                        className={`flex dark:text-white
+                                            hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2
+                                            dark:focus:ring-primary-800 font-semibold text-white ${filename ?
+                                                "bg-gray-800 hover:bg-gray-700 border-gray-800" : "bg-gray-600 hover:bg-gray-600 border-gray-800"}`}
+                                        type={!collectionData ? "button" : "submit"}
+                                        value={!collectionData ? "Dalej" : "Importuj metadane"}
+                                        disabled={!filename ? true : false}
+                                        onClick={!collectionData ? () => {setShowDropzoneForm(false); setShowCollectionForm(true)} : () => {}}
+                                    >{!collectionData ? "Dalej" : "Importuj metadane"}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div> }
-                    { inCollectionPage && showImportOptions && <div>
+                    { !collectionData && showCollectionForm && <div>
                         <form onSubmit={handleCollectionSubmit} className="relative bg-white rounded-lg shadow-md dark:bg-gray-800 border
                             dark:border-gray-600">
                             <div className="px-4 pb-4">

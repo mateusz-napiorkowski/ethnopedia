@@ -243,7 +243,7 @@ const ArtworksList = ({pageSize = 10}) => {
                             setCurrentPage={setCurrentPage}
                         />}
                     </div>
-                    {showFileDropzone && <FileDropzone onClose={() => setShowFileDropzone(false)} inCollectionPage={false}/>}
+                    {showFileDropzone && <FileDropzone onClose={() => setShowFileDropzone(false)} collectionData={collectionData}/>}
                     {showExportOptions && <ExportOptions selectedArtworks={selectedArtworks} onClose={() => setShowExportOptions(false)} />}
                 </div>
             </div>

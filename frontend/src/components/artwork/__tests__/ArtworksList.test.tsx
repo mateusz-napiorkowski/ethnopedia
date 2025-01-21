@@ -135,7 +135,7 @@ describe("ArtworksList tests", () => {
         const importFileButton = getByRole("button", {name: /importuj plik/i})
         await user.click(importFileButton)
 
-        expect(getByText(/prześlij plik/i)).toBeInTheDocument()
+        expect(getByText(/ustawienia importu metadanych z pliku .xlsx/i)).toBeInTheDocument()
     })
 
     it("should open export options window when export file button is clicked", async () => {

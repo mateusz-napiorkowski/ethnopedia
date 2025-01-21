@@ -237,7 +237,7 @@ const CollectionsPage = () => {
 
                     </div>
                 </div>
-                {showFileDropzone && <FileDropzone onClose={() => setShowFileDropzone(false)} inCollectionPage={true} />}
+                {showFileDropzone && <FileDropzone onClose={() => setShowFileDropzone(false)} />}
                 <div className="flex flex-row">
                     <div className="flex flex-1">
                         <button type="button" className="px-4 py-2 mb-2 bg-white"
