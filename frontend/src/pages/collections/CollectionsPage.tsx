@@ -270,6 +270,7 @@ const CollectionsPage = () => {
                         options={sortOptions}
                         onSelect={(value: string) => setSortOrder(value)}
                         sortOrder=""
+                        setCurrentPage={() => setCurrentPage}
                     />
                     </span>
                 </div>

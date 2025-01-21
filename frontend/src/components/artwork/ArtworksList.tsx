@@ -240,6 +240,7 @@ const ArtworksList = ({pageSize = 10}) => {
                             options={sortOptions}
                             onSelect={(value) => setSortOrder(value)}
                             sortOrder={sortOrder}
+                            setCurrentPage={setCurrentPage}
                         />}
                     </div>
                     {showFileDropzone && <FileDropzone onClose={() => setShowFileDropzone(false)} inCollectionPage={false}/>}
