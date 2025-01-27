@@ -98,6 +98,7 @@ const ImportOptions = ({ onClose, collectionData }: Props) => {
                             Ustawienia importu metadanych z pliku .xlsx
                         </h3>
                         <button
+                            aria-label="exit"
                             type="button"
                             className="text-gray-400 hover:bg-gray-200 hover:text-gray-900 text-sm
                                     dark:hover:bg-gray-600 dark:hover:text-white p-2 rounded-lg"
@@ -109,6 +110,7 @@ const ImportOptions = ({ onClose, collectionData }: Props) => {
                     </div>
                     {showDropzoneForm && <div className="w-full h-full flex flex-col items-start justify-center">
                         <label
+                            aria-label="upload"
                             htmlFor="dropzone-file"
                             className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300
                                         border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-600
@@ -119,7 +121,7 @@ const ImportOptions = ({ onClose, collectionData }: Props) => {
                                 <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
                                     <span className="font-semibold">Kliknij, aby przesłać</span> lub przeciągnij i upuść
                                 </p>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">Pliki XLSX</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">Plik XLSX</p>
                             </div>
                             <input
                                 id="dropzone-file"
@@ -159,6 +161,7 @@ const ImportOptions = ({ onClose, collectionData }: Props) => {
                                     Nazwa kolekcji
                                 </label>
                                 <textarea
+                                    aria-label="name"
                                     id="name"
                                     name="name"
                                     value = {collectionName}
@@ -172,6 +175,7 @@ const ImportOptions = ({ onClose, collectionData }: Props) => {
                                     Opis kolekcji
                                 </label>
                                 <textarea
+                                    aria-label="description"
                                     id="description"
                                     name="description"
                                     rows={4}
@@ -191,9 +195,10 @@ const ImportOptions = ({ onClose, collectionData }: Props) => {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="ml-2 px-4 py-2 color-button"
+                                    className={`ml-2 px-4 py-2 color-button ${collectionName && description ? "" : "bg-blue-400"}`}
+                                    disabled = {collectionName && description ? false : true}
                                 >
-                                    Utwórz
+                                    Importuj metadane
                                 </button>
                             </div>
                         </form>
