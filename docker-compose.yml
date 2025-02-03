@@ -6,7 +6,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        - REACT_APP_API_URL=http://localhost:4051/api/
+        - REACT_APP_API_URL=https://music-put.lab.dariah.pl/ethnopedia-api/
     ports:
       - "4050:80"
     volumes:
