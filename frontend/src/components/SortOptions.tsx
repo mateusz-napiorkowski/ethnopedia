@@ -7,15 +7,18 @@ interface Option {
 
 interface SortOptionsProps {
     options: Option[]
-    onSelect: (value: string) => void
+    onSelect: (value: string) => void,
+    sortOrder: string,
+    setCurrentPage: (pageNumber: number) => void
 }
 
-const SortOptions: React.FC<SortOptionsProps> = ({ options, onSelect }) => {
-    const [selectedOption, setSelectedOption] = useState<string>(options[0].value)
+const SortOptions: React.FC<SortOptionsProps> = ({ options, onSelect, sortOrder, setCurrentPage }) => {
+    const [selectedOption, setSelectedOption] = useState<string>(sortOrder)
 
     const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setSelectedOption(event.target.value)
         onSelect(event.target.value)
+        setCurrentPage(1)
     }
 
     return <div className="flex flex-row items-center ml-2 custom-dropdown text-sm">

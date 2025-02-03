@@ -13,7 +13,7 @@ import { useQuery, useQueryClient } from "react-query"
 import { useUser } from "../../providers/UserProvider"
 import Pagination from "../../components/Pagination"
 import { getXlsxWithCollectionData } from "../../api/dataExport"
-import FileDropzone from "../../components/FileDropzone"
+import ImportOptions from "../../components/ImportOptions"
 
 interface Option {
     value: string
@@ -22,7 +22,7 @@ interface Option {
 
 const CollectionsPage = () => {
     const { firstName } = useUser()
-    const [showFileDropzone, setShowFileDropzone] = useState<boolean>(false)
+    const [showImportOptions, setShowImportOptions] = useState<boolean>(false)
     const [checkedCollections, setCheckedCollections] = useState<{ [key: string]: boolean }>({})
     const [showWarningPopup, setShowWarningPopup] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
@@ -190,8 +190,14 @@ const CollectionsPage = () => {
                                     if(Object.keys(checkedCollections).length === 0){
                                         setExportErrorMessage("Najpierw należy zaznaczyć kolekcję do wyeksportowania.")
                                     } else {
-                                        for(const key in fetchedData.collections) {
-                                            getXlsxWithCollectionData(fetchedData.collections[key].name)
+                                        const checkedCollectionsNames = Object.keys(checkedCollections)
+                                            .filter((checkedCollection) => checkedCollections[checkedCollection])
+                                            .map((checkedCollection) => {
+                                                const collection = fetchedData.collections.find((col) => col.id === checkedCollection);
+                                                return collection!.name;
+                                            })
+                                        for(const collectionName of checkedCollectionsNames) {
+                                            getXlsxWithCollectionData(collectionName)
                                         }
                                         setExportErrorMessage("")
                                     }
@@ -209,7 +215,7 @@ const CollectionsPage = () => {
                                     text-sm px-4 py-2 mb-2 hover:bg-gray-700 bg-gray-800 text-white border-gray-800
                                     font-semibold"
                             type="button"
-                            onClick={() => setShowFileDropzone(showFileDropzone => !showFileDropzone)}
+                            onClick={() => setShowImportOptions(showImportOptions => !showImportOptions)}
                         >
                             <FileImportIcon />
                             Importuj kolekcję
@@ -221,7 +227,7 @@ const CollectionsPage = () => {
                                     text-sm px-4 py-2 mb-2 hover:bg-gray-600 bg-gray-600 text-white border-gray-800
                                     font-semibold"
                             type="button" disabled={true} title={"Aby zaimportować kolecję musisz się zalogować."}
-                            onClick={() => setShowFileDropzone(showFileDropzone => !showFileDropzone)}
+                            onClick={() => setShowImportOptions(showImportOptions => !showImportOptions)}
                         >
                             <FileImportIcon />
                             Importuj kolekcję
@@ -231,7 +237,7 @@ const CollectionsPage = () => {
 
                     </div>
                 </div>
-                {showFileDropzone && <FileDropzone onClose={() => setShowFileDropzone(false)} inCollectionPage={true} />}
+                {showImportOptions && <ImportOptions onClose={() => setShowImportOptions(false)} />}
                 <div className="flex flex-row">
                     <div className="flex flex-1">
                         <button type="button" className="px-4 py-2 mb-2 bg-white"
@@ -263,6 +269,8 @@ const CollectionsPage = () => {
                     <SortOptions
                         options={sortOptions}
                         onSelect={(value: string) => setSortOrder(value)}
+                        sortOrder=""
+                        setCurrentPage={() => setCurrentPage}
                     />
                     </span>
                 </div>

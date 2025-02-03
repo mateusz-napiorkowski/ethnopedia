@@ -102,11 +102,23 @@ export const constructAdvSearchFilter = (requestQuery: any, collectionName: stri
     return queryFilter
 }
 
+const findMatchingCategory: any = (categoryFullName: string, record: any) => {
+    const categoriesList = record.categories ? record.categories : record.subcategories
+    const [topmostParentCategoryName, ...categoryNameWithoutTopmostPart] = categoryFullName.split(".");
+
+    const matchedObject = categoriesList.find((category: any) => category.name === topmostParentCategoryName);
+    if (!matchedObject) return undefined;
+
+    return categoryNameWithoutTopmostPart.length === 0
+        ? matchedObject
+        : findMatchingCategory(categoryNameWithoutTopmostPart.join("."), matchedObject);
+}
+
 export const sortRecordsByCategory = (records: any, order: string) => {
     const [categoryToSortBy, ascOrDesc] = order.split('-')
 
     const recordAndCategoryValuePairs = records.map((record: any) => {
-        const matchingCategory = record.categories.find((category: any) => category.name === categoryToSortBy);
+        const matchingCategory = findMatchingCategory(categoryToSortBy, record)
         const categoryValue = matchingCategory ? matchingCategory.values.join(", ") : null;
         return [record, categoryValue];
     })

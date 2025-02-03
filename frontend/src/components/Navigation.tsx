@@ -30,7 +30,7 @@ const renderNavItem = (label: string, to: string, renderAngleRightIcon = true) =
 const Navigation: React.FC<NavigationProps> = ({artworkTitle}) => {
     const location = useLocation()
     const pathSegments = decodeURIComponent(location.pathname).split("/").filter(Boolean)
-    const [_, collectionName, __, urlArtworkTitle] = pathSegments;
+    const [, collectionName, , urlArtworkTitle] = pathSegments;
 
     const titleLabel = 
         artworkTitle || 

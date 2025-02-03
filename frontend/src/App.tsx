@@ -10,17 +10,10 @@ import Artworks from "./components/artwork/ArtworksList"
 import RegisterPage from "./pages/RegisterPage"
 import { UserProvider } from "./providers/UserProvider"
 import CreateArtwork from "./components/artwork/CreateArtwork"
-import CreateCollectionPage from "./pages/collections/CreateCollectionPage"
 
 const queryClient = new QueryClient()
 
 const App = () => {
-    // const electron = (window as any).electron
-
-    // return <div className="flex flex-row font-black">
-    //     homedir: {electron.homeDir()}
-    // </div>
-
     return <div className="dark:text-white min-h-screen bg-gray-50 dark:bg-gray-900">
         <UserProvider>
             <QueryClientProvider client={queryClient}>
@@ -33,8 +26,6 @@ const App = () => {
                         <Route path="/" element={<Home />} />
                         <Route path="/collections/:collection/artworks" element={<Artworks />} />
 
-                        <Route path="/create-collection" element={<CreateCollectionPage />} />
-
                         <Route path="/login" element={<LoginPage />} />
                         <Route path="/register" element={<RegisterPage />} />
 
@@ -44,7 +35,6 @@ const App = () => {
             </QueryClientProvider>
         </UserProvider>
     </div>
-
 }
 
 export default App

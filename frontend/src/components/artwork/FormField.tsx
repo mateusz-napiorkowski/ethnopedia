@@ -1,6 +1,6 @@
+import React from 'react';
 import { Category } from '../../@types/Category';
-import React from "react";
-import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg"
+import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg";
 import { ReactComponent as MinusIcon } from "../../assets/icons/minus.svg";
 
 interface FormFieldProps {
@@ -22,27 +22,50 @@ const FormField: React.FC<FormFieldProps> = ({
                                                  handleRemove,
                                                  handleAddSubcategory,
                                              }) => {
-    // Generate options for the category name input based on the example_data structure
-    // const nameOptions = example_data
-    //   .filter((category) => !formDataList.some((data) => data.name === category.name))
-    //   .map((category, i) => (
-    //     <option key={i} value={category.name} />
-    //   ));
 
-    // // Generate options for the value input based on the selected key
-    // const valueOptions = example_data
-    //   .find((category) => category.name === formData.name)
-    //   ?.subcategories?.filter((subcategory) => !formData.subcategories?.some((data) => data.name === subcategory.name))
-    //   .map((subcategory, i) => (
-    //     <option key={i} value={subcategory.values[0]} />
-    // ));
+    const isLastChild = (index: string, formDataList: Category[]): boolean => {
+        const parts = index.split('-').map(Number);
+
+        if (parts.length === 1) {
+            // Poziom główny
+            return formDataList[parts[0]] === formDataList.slice(-1)[0];
+        }
+
+        // Poziom zagnieżdżony
+        const parentCategory = formDataList[parts[0]];
+        if (!parentCategory || !parentCategory.subcategories) {
+            return false; // Nieprawidłowe dane
+        }
+
+        const subcategories = parentCategory.subcategories;
+        return subcategories[parts[1]] === subcategories.slice(-1)[0];
+    };
+
 
     return (
         <div key={index} className="flex flex-col pb-1 mt-1 relative">
             <div className="flex items-center group relative">
                 {level > 0 && (
-                    <span className="absolute left-0 top-1/2 transform -translate-y-1/2 border-l-2 border-gray-400 h-full"></span>
+                    <>
+                        {/* Pionowa linia drzewa */}
+                        <div
+                            className={`tree-line vertical`}
+                            style={{
+                                height: isLastChild(index, formDataList) ? '50%' : '100%',
+                                top: '0',
+                                left: '-16px',
+                            }}
+                        ></div>
+                        {/* Pozioma linia drzewa */}
+                        <div
+                            className={`tree-line horizontal`}
+                            style={{
+                                left: '-16px',
+                            }}
+                        ></div>
+                    </>
                 )}
+                {/* Pole nazwy kategorii */}
                 <label className="flex items-center">
                     <input
                         type="text"
@@ -54,6 +77,7 @@ const FormField: React.FC<FormFieldProps> = ({
                         list="name-options"
                     />
                 </label>
+                {/* Pole wartości kategorii */}
                 <label className="flex items-center">
                     <span>:</span>
                     <input
@@ -65,6 +89,7 @@ const FormField: React.FC<FormFieldProps> = ({
                         list="values-options"
                     />
                 </label>
+                {/* Przyciski + i - */}
                 <div className="actions opacity-0 group-hover:opacity-100 transition-opacity duration-100">
                     {level < 5 && (
                         <button type="button" onClick={() => handleAddSubcategory(index)} title="Dodaj podkategorię">
@@ -76,6 +101,7 @@ const FormField: React.FC<FormFieldProps> = ({
                     </button>
                 </div>
             </div>
+
             {/* render subcategories */}
             {formData.subcategories &&
                 formData.subcategories.map((subCategory, subIndex) => {

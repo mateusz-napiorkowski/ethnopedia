@@ -3,7 +3,7 @@ import Navbar from "../../components/navbar/Navbar"
 import Navigation from "../../components/Navigation"
 import { useState } from "react"
 import WarningPopup from "../collections/WarningPopup"
-import { deleteArtwork, getArtwork } from "../../api/artworks"
+import { deleteArtworks, getArtwork } from "../../api/artworks"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { useNavigate, useParams } from "react-router-dom"
 import { useUser } from "../../providers/UserProvider"
@@ -28,7 +28,7 @@ const ArtworkPage = () => {
         return foundCategory ? foundCategory.values.toString() : "";
     }
 
-    const deleteArtworkMutation = useMutation(() => deleteArtwork(artworkId as string, jwtToken as string), {
+    const deleteArtworksMutation = useMutation(() => deleteArtworks([artworkId as string], jwtToken as string), {
         onSuccess: () => {
             queryClient.invalidateQueries("artwork")
             navigate(`/collections/${artworkData.collectionName}/artworks/`)
@@ -50,7 +50,7 @@ const ArtworkPage = () => {
                 {showDeleteArtworkWarning &&
                     <WarningPopup 
                         onClose={() => setShowDeleteArtworkWarning(!showDeleteArtworkWarning)}
-                        deleteSelected={() => deleteArtworkMutation.mutate()}
+                        deleteSelected={() => deleteArtworksMutation.mutate()}
                         warningMessage={"Czy na pewno chcesz usunąć rekord?"}
                     />
                 }

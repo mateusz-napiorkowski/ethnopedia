@@ -35,7 +35,7 @@
         "build": "react-scripts build",
         "electron": "electron .",
         "dev:watch": "npx electronmon --trace-warnings .",
-        "test": "jest"
+        "test": "jest --coverage"
     },
     "eslintConfig": {
         "extends": [

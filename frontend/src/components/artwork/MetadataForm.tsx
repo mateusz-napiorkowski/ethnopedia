@@ -1,6 +1,6 @@
-import React, { useState, ChangeEvent, useEffect } from 'react';
+import React, { ChangeEvent, useEffect } from 'react';
 import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg"
-import { ReactComponent as MinusIcon } from "../../assets/icons/minus.svg";
+// import { ReactComponent as MinusIcon } from "../../assets/icons/minus.svg";
 import FormField from './FormField';
 import { Category } from '../../@types/Category';
 
@@ -11,7 +11,7 @@ import { Category } from '../../@types/Category';
 //     { name: "Wykonawca nr 1", values: ["Imię Nazwisko 1"] },
 //     { name: "Wykonawca nr 2", values: ["Imię Nazwisko 2"] } ] },
 //   { name: "Region", values: ["Wielkopolska"], subcategories: [
-//     { name: "Podregion", values: ["Wielkopolska Północna"] },
+//     { name: "Podregion", values: ["WielkopQolska Północna"] },
 //     { name: "Podregion etnograficzny", values: ["Szamotulskie"] },
 //     { name: "Powiat", values: ["Szamotulski"]} ] }
 // ]
@@ -41,11 +41,11 @@ const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, setDataToI
     setDataToInsert(transformToNewStructure(formDataList, collectionName))
   }, [formDataList, collectionName, setDataToInsert])
 
-  const [jsonOutput, setJsonOutput] = useState<string>('');
-  const handleShowJson = () => {
-    let jsonData = transformToNewStructure(formDataList, collectionName);
-    setJsonOutput(JSON.stringify(jsonData, null, 2));
-  };
+  // const [jsonOutput, setJsonOutput] = useState<string>('');
+  // const handleShowJson = () => {
+  //   let jsonData = transformToNewStructure(formDataList, collectionName);
+  //   setJsonOutput(JSON.stringify(jsonData, null, 2));
+  // };
 
   const handleInputChange = (index: string, e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -178,12 +178,12 @@ const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, setDataToI
               <button type="button" onClick={handleAddCategory} title="Dodaj kategorię">
                 <PlusIcon />
               </button>
-              <button type="button" onClick={handleShowJson}>
-                Show JSON
-              </button>
+              {/*<button type="button" onClick={handleShowJson}>*/}
+              {/*  Show JSON*/}
+              {/*</button>*/}
             </div>
           </form>
-          <pre>{jsonOutput}</pre>
+          {/* <pre>{jsonOutput}</pre> */}
         </div>
       </div>
   );

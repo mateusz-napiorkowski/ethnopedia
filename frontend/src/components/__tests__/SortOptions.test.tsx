@@ -4,6 +4,7 @@ import SortOptions from "../SortOptions"
 import userEvent from "@testing-library/user-event";
 
 const mockOnSelect = jest.fn()
+const mockSelectCurrentPage = jest.fn()
 
 const user = userEvent.setup()
 
@@ -15,6 +16,8 @@ const renderComponent = () => {
                 {value: "name-desc", label: "Nazwa malejąco"}
             ]}
             onSelect={mockOnSelect}
+            sortOrder='name-asc'
+            setCurrentPage={mockSelectCurrentPage}
         />
     );
 };
@@ -30,7 +33,7 @@ describe("Sort options tests", () => {
         expect(container).toMatchSnapshot()
     })
 
-    it("should call onSelect and change selected option in select menu after user chooses an option from select menu", async () => {           
+    it("should call onSelect, change selected option in select menu and call setCurrentPage(1) after user chooses an option from select menu", async () => {           
         const { getByRole } = renderComponent()
         const selectElement = getByRole("combobox")
         const nameAscOption = getByRole("option", {
@@ -44,6 +47,7 @@ describe("Sort options tests", () => {
 
         expect(mockOnSelect).toHaveBeenCalled()
         expect((nameAscOption as HTMLOptionElement).selected).toBe(true)
-        expect((nameDescOption as HTMLOptionElement).selected).toBe(false)  
+        expect((nameDescOption as HTMLOptionElement).selected).toBe(false)
+        expect(mockSelectCurrentPage).toHaveBeenCalledWith(1) 
     })
 })

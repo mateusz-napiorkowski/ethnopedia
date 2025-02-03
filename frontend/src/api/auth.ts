@@ -13,8 +13,8 @@ type LoginValues = {
     password: string
 }
 
-export const useRegisterMutation = () => {
-    return useMutation((userData: FormValues) => axios.post(`${API_URL}v1/auth/register`, userData))
+export const registerUser = async (userData: FormValues) => {
+    return await axios.post(`${API_URL}v1/auth/register`, userData)
 }
 
 export const useLoginMutation = () => {

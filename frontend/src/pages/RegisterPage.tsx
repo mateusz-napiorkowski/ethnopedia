@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { Formik, Form, Field, ErrorMessage } from "formik"
 import * as Yup from "yup"
 import { useNavigate } from "react-router-dom"
-import { useRegisterMutation } from "../api/auth"
+import { registerUser } from "../api/auth"
 import { Toast, ToastToggle } from "flowbite-react"
 import { HiExclamation } from "react-icons/hi"
 import { jwtDecode } from "jwt-decode"
 import { JWT, useUser } from "../providers/UserProvider"
+import { useMutation } from "react-query"
 
 const RegisterPage = () => {
-    const registerMutation = useRegisterMutation()
     const [showErrorToast, setShowErrorToast] = useState(false)
     const { setUserData } = useUser()
 
@@ -25,9 +25,26 @@ const RegisterPage = () => {
 
         confirmPassword: Yup.string()
             .oneOf([Yup.ref("password"), ""], "Hasła muszą być takie same")
-            .required("Powtórz hasło"),
+            .required("Powtórz swoje hasło"),
     })
-    const { mutate: registerUser } = registerMutation
+
+    const registerUserMutation = useMutation(
+        (data: { username: string; firstName: string; password: string }) => registerUser(data),
+        {
+            onSuccess: (response) => {
+                const { token } = response.data;
+                localStorage.setItem("token", token);
+        
+                const decodedToken = jwtDecode<JWT>(token);
+                setUserData(true, decodedToken.firstName, token, decodedToken.userId);
+        
+                navigate("/");
+            },
+            onError: () => {
+                setShowErrorToast(true);
+            },
+        }
+      );
 
     const navigate = useNavigate()
 
@@ -70,21 +87,11 @@ const RegisterPage = () => {
                         validationSchema={validationSchema}
                         onSubmit={(values, { setSubmitting }) => {
                             const { firstName, username, password } = values
-
-                            registerUser({ username, firstName, password }, {
-                                onSuccess: (response) => {
-                                    const { token } = response.data
-                                    localStorage.setItem("token", token)
-                                    const decodedToken = jwtDecode<JWT>(token)
-                                    setUserData(true, decodedToken.firstName, token, decodedToken.userId)
-                                    navigate("/")
+                            registerUserMutation.mutate({ username, firstName, password }, {
+                                onSettled: () => {
+                                    setSubmitting(false);
                                 },
-                                onError: (error: any) => {
-                                    console.error(error)
-                                    setShowErrorToast(true)
-                                    setSubmitting(false)
-                                },
-                            })
+                            });
                         }}
                     >
                         {({ errors, touched }) => (
