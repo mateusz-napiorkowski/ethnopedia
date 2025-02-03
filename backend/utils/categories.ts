@@ -2,6 +2,16 @@ import Artwork from "../models/artwork";
 import CollectionCollection from "../models/collection";
 import { subcategoryData } from "./interfaces"
 
+export const hasValidCategoryFormat = (categories: any[], isRootArray = true): boolean => {
+    if(isRootArray && !categories.length)
+        return false
+    return categories.every(category => 
+        category?.name && 
+        Array.isArray(category?.subcategories) && 
+        hasValidCategoryFormat(category.subcategories, false)
+    );
+};
+
 const getNestedCategories = ((prefix: string, subcategories: Array<subcategoryData>) => {
     const nestedCategories: Array<string> = []
     if(subcategories)

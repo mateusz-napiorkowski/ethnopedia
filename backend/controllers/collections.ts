@@ -3,6 +3,7 @@ import mongoose, { ClientSession, SortOrder } from "mongoose"
 import { authAsyncWrapper } from "../middleware/auth"
 import Artwork from "../models/artwork";
 import CollectionCollection from "../models/collection";
+import {hasValidCategoryFormat} from "../utils/categories";
 
 export const getAllCollections = async (req: Request, res: Response) => {
     try {
@@ -79,8 +80,9 @@ export const getCollection = async (req: Request, res: Response) => {
 export const createCollection = authAsyncWrapper(async (req: Request, res: Response) => {
     const collectionName = req.body.name
     const collectionDescription = req.body.description
+    const categories = req.body.categories
     try {
-        if(!collectionName || !collectionDescription)
+        if(!collectionName || !collectionDescription || !categories || !hasValidCategoryFormat(categories))
             throw new Error("Incorrect request body provided")
         const session = await mongoose.startSession()
         await session.withTransaction(async (session: ClientSession) => {
