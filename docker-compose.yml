@@ -1,7 +1,32 @@
 name: Ethnopedia
 services:
-  mongodb-community-server:
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - REACT_APP_API_URL=http://localhost:4051/api/
+    ports:
+      - "4050:80"
+    volumes:
+      - ./frontend:/app
+    depends_on:
+      - backend
+  backend:
+    container_name: backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "4051:3000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules # anonymous volume for node_modules only
+    depends_on:
+      - mongodb
+  mongodb:
     container_name: mongodb
     ports:
-      - 27017:27017
+      - "27017:27017"
     image: mongodb/mongodb-community-server:latest
