@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "start": "PORT=3000 MONGO_URI=mongodb://mongodb:27017 ts-node-esm index.ts",
+    "start": "PORT=3000 MONGO_URI=mongodb://ethnopedia-mongodb:27017 ts-node-esm index.ts",
     "test": "jest --coverage",
     "dev": "PORT=3000 MONGO_URI=mongodb://localhost:27017 nodemon --exec ts-node-esm index.ts",
     "lint": "eslint",
