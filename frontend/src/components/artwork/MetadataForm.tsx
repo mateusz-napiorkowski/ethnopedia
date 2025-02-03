@@ -1,6 +1,6 @@
-import React, { useState, ChangeEvent, useEffect } from 'react';
+import React, { ChangeEvent, useEffect } from 'react';
 import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg"
-import { ReactComponent as MinusIcon } from "../../assets/icons/minus.svg";
+// import { ReactComponent as MinusIcon } from "../../assets/icons/minus.svg";
 import FormField from './FormField';
 import { Category } from '../../@types/Category';
 
@@ -41,11 +41,11 @@ const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, setDataToI
     setDataToInsert(transformToNewStructure(formDataList, collectionName))
   }, [formDataList, collectionName, setDataToInsert])
 
-  const [jsonOutput, setJsonOutput] = useState<string>('');
-  const handleShowJson = () => {
-    let jsonData = transformToNewStructure(formDataList, collectionName);
-    setJsonOutput(JSON.stringify(jsonData, null, 2));
-  };
+  // const [jsonOutput, setJsonOutput] = useState<string>('');
+  // const handleShowJson = () => {
+  //   let jsonData = transformToNewStructure(formDataList, collectionName);
+  //   setJsonOutput(JSON.stringify(jsonData, null, 2));
+  // };
 
   const handleInputChange = (index: string, e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -183,7 +183,7 @@ const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, setDataToI
               {/*</button>*/}
             </div>
           </form>
-          <pre>{jsonOutput}</pre>
+          {/* <pre>{jsonOutput}</pre> */}
         </div>
       </div>
   );

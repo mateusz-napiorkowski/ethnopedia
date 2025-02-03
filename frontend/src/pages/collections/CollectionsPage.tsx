@@ -193,7 +193,7 @@ const CollectionsPage = () => {
                                         const checkedCollectionsNames = Object.keys(checkedCollections)
                                             .filter((checkedCollection) => checkedCollections[checkedCollection])
                                             .map((checkedCollection) => {
-                                                const collection = fetchedData.collections.find((col) => col.id == checkedCollection);
+                                                const collection = fetchedData.collections.find((col) => col.id === checkedCollection);
                                                 return collection!.name;
                                             })
                                         for(const collectionName of checkedCollectionsNames) {
