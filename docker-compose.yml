@@ -1,7 +1,7 @@
 name: ethnopedia
 services:
   frontend:
-    container_name: frontend
+    container_name: ethnopedia-frontend
     build:
       context: ./frontend
       dockerfile: Dockerfile
@@ -14,7 +14,7 @@ services:
     depends_on:
       - backend
   backend:
-    container_name: backend
+    container_name: ethnopedia-backend
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -26,7 +26,8 @@ services:
     depends_on:
       - mongodb
   mongodb:
-    container_name: mongodb
+    container_name: ethnopedia-mongodb
     ports:
       - "27017:27017"
-    image: mongodb/mongodb-community-server:latest
+#    image: mongodb/mongodb-community-server:latest # use this one instead on proper processor architecture
+    image: mongodb/mongodb-community-server:4.4-ubuntu2004  # fix for Xeon processor missing AVX instruction set https://www.mongodb.com/docs/manual/tutorial/install-mongodb-community-with-docker/
