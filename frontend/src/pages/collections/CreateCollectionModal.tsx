@@ -16,7 +16,7 @@ const CreateCollectionModal = ({ stateChanger, onClose }: Props) => {
     return <div
         id="default-modal"
         aria-hidden="true"
-        className="fixed inset-0 top-0 left-0 flex items-center justify-center w-full h-full z-100"
+        className="fixed inset-0 top-0 left-0 flex items-center justify-center w-full h-full z-[100]"
         onClick={(e) => e.stopPropagation()}
     >
         <div className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center">

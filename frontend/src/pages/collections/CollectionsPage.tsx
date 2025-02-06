@@ -179,18 +179,18 @@ const CollectionsPage = () => {
                                     font-semibold mr-2"
                             type="button"
                             onClick={() => {
-                                if(Object.keys(checkedCollections).length === 1) {
-                                    for(const key in fetchedData.collections) {
-                                        if(fetchedData.collections[key].id === Object.keys(checkedCollections)[0]) {
+                                if (Object.keys(checkedCollections).length === 1) {
+                                    for (const key in fetchedData.collections) {
+                                        if (fetchedData.collections[key].id === Object.keys(checkedCollections)[0]) {
                                             getXlsxWithCollectionData(fetchedData.collections[key].name)
                                             setExportErrorMessage("")
                                         }
                                     }
                                 } else {
-                                    if(Object.keys(checkedCollections).length === 0){
+                                    if (Object.keys(checkedCollections).length === 0) {
                                         setExportErrorMessage("Najpierw należy zaznaczyć kolekcję do wyeksportowania.")
                                     } else {
-                                        for(const key in fetchedData.collections) {
+                                        for (const key in fetchedData.collections) {
                                             getXlsxWithCollectionData(fetchedData.collections[key].name)
                                         }
                                         setExportErrorMessage("")
@@ -205,33 +205,34 @@ const CollectionsPage = () => {
                         </button>
                         {
                             jwtToken && <button
-                            className="flex items-center justify-center dark:text-white
+                                className="flex items-center justify-center dark:text-white
                                     text-sm px-4 py-2 mb-2 hover:bg-gray-700 bg-gray-800 text-white border-gray-800
                                     font-semibold"
-                            type="button"
-                            onClick={() => setShowFileDropzone(showFileDropzone => !showFileDropzone)}
-                        >
-                            <FileImportIcon />
-                            Importuj kolekcję
-                        </button>
+                                type="button"
+                                onClick={() => setShowFileDropzone(showFileDropzone => !showFileDropzone)}
+                            >
+                                <FileImportIcon />
+                                Importuj kolekcję
+                            </button>
                         }
                         {
                             !jwtToken && <button
-                            className="flex items-center justify-center dark:text-white
+                                className="flex items-center justify-center dark:text-white
                                     text-sm px-4 py-2 mb-2 hover:bg-gray-600 bg-gray-600 text-white border-gray-800
                                     font-semibold"
-                            type="button" disabled={true} title={"Aby zaimportować kolecję musisz się zalogować."}
-                            onClick={() => setShowFileDropzone(showFileDropzone => !showFileDropzone)}
-                        >
-                            <FileImportIcon />
-                            Importuj kolekcję
-                        </button>
+                                type="button" disabled={true} title={"Aby zaimportować kolecję musisz się zalogować."}
+                                onClick={() => setShowFileDropzone(showFileDropzone => !showFileDropzone)}
+                            >
+                                <FileImportIcon />
+                                Importuj kolekcję
+                            </button>
                         }
-                        
+
 
                     </div>
                 </div>
-                {showFileDropzone && <FileDropzone onClose={() => setShowFileDropzone(false)} inCollectionPage={true} />}
+                {showFileDropzone &&
+                    <FileDropzone onClose={() => setShowFileDropzone(false)} inCollectionPage={true} />}
                 <div className="flex flex-row">
                     <div className="flex flex-1">
                         <button type="button" className="px-4 py-2 mb-2 bg-white"
@@ -245,19 +246,21 @@ const CollectionsPage = () => {
                         </button>
 
                         {jwtToken && <button type="button" className="px-4 py-2 mb-2 ml-2 bg-white"
-                                onClick={() => {
-                                    if (Object.keys(checkedCollections).length !== 0)
-                                        setShowWarningPopup(!showWarningPopup)
-                                }}>
+                                             onClick={() => {
+                                                 if (Object.keys(checkedCollections).length !== 0)
+                                                     setShowWarningPopup(!showWarningPopup)
+                                             }}>
                             Usuń zaznaczone
                         </button>}
-                        {!jwtToken && <button type="button" disabled={true} title={"Aby usuwać kolecje musisz się zalogować."} className="px-4 py-2 mb-2 ml-2 bg-gray-100 hover:bg-gray-100"
-                                onClick={() => {
-                                    if (Object.keys(checkedCollections).length !== 0)
-                                        setShowWarningPopup(!showWarningPopup)
-                                }}>
-                            Usuń zaznaczone
-                        </button>}
+                        {!jwtToken &&
+                            <button type="button" disabled={true} title={"Aby usuwać kolecje musisz się zalogować."}
+                                    className="px-4 py-2 mb-2 ml-2 bg-gray-100 hover:bg-gray-100"
+                                    onClick={() => {
+                                        if (Object.keys(checkedCollections).length !== 0)
+                                            setShowWarningPopup(!showWarningPopup)
+                                    }}>
+                                Usuń zaznaczone
+                            </button>}
                     </div>
                     <span className="mb-2">
                     <CustomDropdown
@@ -267,7 +270,50 @@ const CollectionsPage = () => {
                     </span>
                 </div>
 
-                {allCollections}
+                {/*{allCollections}*/}
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    {sortedCollections.map((collection: Collection) => {
+                        const isChecked = checkedCollections[collection.id!] || false
+                        return (
+                            <div
+                                key={collection.id}
+                                className="relative group px-4 py-3 bg-white dark:bg-gray-800 shadow-md rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                onClick={() => navigate(`/collections/${collection.name}/artworks`)}
+                            >
+                                {/* Checkbox - widoczny stale, jeśli zaznaczony, lub na hover gdy niezaznaczony */}
+                                <div
+                                    className={`absolute top-2 right-2 transition-opacity ${
+                                        isChecked ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                                    }`}
+                                >
+                                    <input
+                                        type="checkbox"
+                                        checked={isChecked}
+                                        onClick={(e) => e.stopPropagation()}
+                                        onChange={() => handleCheck(collection.id!)}
+                                        className="cursor-pointer"
+                                    />
+                                </div>
+
+                                <div className="flex flex-col h-full">
+                                    <h2 className="text-lg font-semibold mb-2">{collection.name}</h2>
+                                    <p className="text-gray-600 dark:text-gray-300 flex-grow">{collection.description}</p>
+                                    <div className="mt-2 text-md flex items-center">
+                                    <span className="font-bold mr-1">
+                                      {collection.artworksCount ?? 0}
+                                    </span>
+                                        {(collection.artworksCount ?? 0) === 1
+                                            ? "rekord"
+                                            : (collection.artworksCount ?? 0) > 1 && (collection.artworksCount ?? 0) < 5
+                                                ? "rekordy"
+                                                : "rekordów"}
+                                    </div>
+                                </div>
+                            </div>
+                        )
+                    })}
+                </div>
+
 
                 <div className="flex justify-center">
                     <Pagination

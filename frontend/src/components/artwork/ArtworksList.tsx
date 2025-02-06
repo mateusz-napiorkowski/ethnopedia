@@ -186,22 +186,14 @@ const ArtworksList = () => {
                             </p>
                         </div>
 
-                        {/* <div className="flex items-center">
-                            <button className="text-lg mr-2 h-fit font-semibold ml-4"
+                        {/* Edytuj kolekcję */}
+                        <div className="flex items-center">
+                            <button className="text-sm mr-2 h-fit font-semibold ml-4 whitespace-nowrap"
                                     onClick={() => setShowEditCollection(true)}>
-                                Edytuj
+                                Edytuj kolekcję
                             </button>
                         </div>
 
-                        <div className="flex items-center">
-                            <button
-                                className="text-lg font-semibold h-fit border-red-700 text-red-700 bg-red-50 hover:bg-white">
-                                <span className="flex-row flex items-center"
-                                      onClick={() => setShowDeleteCollectionWarning(true)}>
-                                    <p>Usuń</p>
-                                </span>
-                            </button>
-                        </div> */}
 
                     </div>
 
@@ -209,7 +201,7 @@ const ArtworksList = () => {
 
                     <div className="flex w-full md:w-auto">
                         <div className="flex flex-1 space-x-2">
-                            {jwtToken && <button className="flex items-center justify-center dark:text-white
+                        {jwtToken && <button className="flex items-center justify-center dark:text-white
                             hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2
                             dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
                                                  type="button"
