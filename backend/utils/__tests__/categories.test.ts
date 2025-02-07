@@ -1,5 +1,5 @@
 import {describe, expect, test, jest, beforeEach} from "@jest/globals"
-import { getAllCategories, hasValidCategoryFormat } from "../categories"
+import { getAllCategories, hasValidCategoryFormat, artworkCategoriesHaveValidFormat } from "../categories"
 
 const mockArtworkFind = jest.fn()
 jest.mock('../../models/artwork', () => ({
@@ -62,6 +62,222 @@ describe('categories util functions tests', () => {
 		])(`$testName`,
 				({categoryData, returnValue}) => {
 					expect(hasValidCategoryFormat(categoryData)).toBe(returnValue)
+				}
+		)
+
+		test.each([
+			{
+				testName: 'artworkCategoriesHaveValidFormat test - return false when collection and artwork category names do not match',
+				collectionCategories: [
+					{name: "Tytuł", subcategories: []},
+					{name: "Artyści", subcategories: []}
+				],
+				artworkCategories: [
+					{name: "Tytuł", values: ["example title"], subcategories: []},
+					{name: "Rok", values: ["1999"], subcategories: []}
+				],
+				returnValue: false
+			},
+			{
+				testName: 'artworkCategoriesHaveValidFormat test - return false when collection and artwork subcategory names do not match',
+				collectionCategories: [
+					{name: "Tytuł", subcategories: [
+						{name: "Podtytuł", subcategories: [
+							{name: "Podpodtytuł", subcategories: []},
+							{name: "Podpodtytuł alternatywny", subcategories: []},
+						]}
+					]},
+				],
+				artworkCategories: [
+					{name: "Tytuł", values: ["example title"], subcategories: [
+						{name: "Podtytuł", values: ["example subtitle"], subcategories: [
+							{name: "Podpodtytuł", values: ["example subsubtitle"], subcategories: []},
+							{name: "Podpodtytuł inny", values: ["alternative subsubtitle"], subcategories: []},
+						]}
+					]},
+				],
+				returnValue: false
+			},
+			{
+				testName: 'artworkCategoriesHaveValidFormat test - return false when collection and artwork categories do not follow the same order',
+				collectionCategories: [
+					{name: "Tytuł", subcategories: []},
+					{name: "Rok", subcategories: []}
+				],
+				artworkCategories: [
+					{name: "Rok", values: ["1999"], subcategories: []},
+					{name: "Tytuł", values: ["example title"], subcategories: []}
+					
+				],
+				returnValue: false
+			},
+			{
+				testName: 'artworkCategoriesHaveValidFormat test - return false when collection and artwork subcategories do not follow the same order',
+				collectionCategories: [
+					{name: "Tytuł", subcategories: [
+						{name: "Podtytuł", subcategories: [
+							{name: "Podpodtytuł", subcategories: []},
+							{name: "Podpodtytuł alternatywny", subcategories: []},
+						]}
+					]},
+				],
+				artworkCategories: [
+					{name: "Tytuł", values: ["example title"], subcategories: [
+						{name: "Podtytuł", values: ["example subtitle"], subcategories: [
+							{name: "Podpodtytuł alternatywny", values: ["alternative subsubtitle"], subcategories: []},
+							{name: "Podpodtytuł", values: ["example subsubtitle"], subcategories: []}
+						]}
+					]},
+				],
+				returnValue: false
+			},
+			{
+				testName: 'artworkCategoriesHaveValidFormat test - return false when category object is missing artwork categories array',
+				collectionCategories: [
+					{name: "Tytuł", subcategories: []},
+					{name: "Artyści", subcategories: []}
+				],
+				artworkCategories: [
+					{name: "Tytuł", values: ["example title"], subcategories: []}
+				],
+				returnValue: false
+			},
+			{
+				testName: 'artworkCategoriesHaveValidFormat test - return false when category object is missing artwork subcategories array',
+				collectionCategories: [
+					{name: "Tytuł", subcategories: [
+						{name: "Podtytuł", subcategories: [
+							{name: "Podpodtytuł", subcategories: []},
+							{name: "Podpodtytuł alternatywny", subcategories: []},
+						]}
+					]},
+				],
+				artworkCategories: [
+					{name: "Tytuł", values: ["example title"], subcategories: [
+						{name: "Podtytuł", values: ["example subtitle"], subcategories: [
+							{name: "Podpodtytuł alternatywny", values: ["alternative subsubtitle"], subcategories: []},
+						]}
+					]},
+				],
+				returnValue: false
+			},
+			{
+				testName: 'artworkCategoriesHaveValidFormat test - return false when name proprerty is missing in artwork categories',
+				collectionCategories: [
+					{name: "Tytuł", subcategories: []},
+					{name: "Rok", subcategories: []}
+				],
+				artworkCategories: [
+					{name: "Tytuł", values: ["example title"], subcategories: []},
+					{values: ["1999"], subcategories: []}
+				],
+				returnValue: false
+			},
+			{
+				testName: 'artworkCategoriesHaveValidFormat test - return false when name proprerty is missing in artwork subcategories',
+				collectionCategories: [
+					{name: "Tytuł", subcategories: [
+						{name: "Podtytuł", subcategories: [
+							{name: "Podpodtytuł", subcategories: []},
+							{name: "Podpodtytuł alternatywny", subcategories: []},
+						]}
+					]},
+				],
+				artworkCategories: [
+					{name: "Tytuł", values: ["example title"], subcategories: [
+						{name: "Podtytuł", values: ["example subtitle"], subcategories: [
+							{name: "Podpodtytuł", values: ["example subsubtitle"], subcategories: []},
+							{values: ["alternative subsubtitle"], subcategories: []},
+						]}
+					]},
+				],
+				returnValue: false
+			},
+			{
+				testName: 'artworkCategoriesHaveValidFormat test - return false when values proprerty is missing in artwork categories',
+				collectionCategories: [
+					{name: "Tytuł", subcategories: []},
+					{name: "Rok", subcategories: []}
+				],
+				artworkCategories: [
+					{name: "Tytuł", values: ["example title"], subcategories: []},
+					{name: "Rok", subcategories: []}
+				],
+				returnValue: false
+			},
+			{
+				testName: 'artworkCategoriesHaveValidFormat test - return false when values proprerty is missing in artwork subcategories',
+				collectionCategories: [
+					{name: "Tytuł", subcategories: [
+						{name: "Podtytuł", subcategories: [
+							{name: "Podpodtytuł", subcategories: []},
+							{name: "Podpodtytuł alternatywny", subcategories: []},
+						]}
+					]},
+				],
+				artworkCategories: [
+					{name: "Tytuł", values: ["example title"], subcategories: [
+						{name: "Podtytuł", values: ["example subtitle"], subcategories: [
+							{name: "Podpodtytuł", values: ["example subsubtitle"], subcategories: []},
+							{name: "Podpodtytuł alternatywny", subcategories: []},
+						]}
+					]},
+				],
+				returnValue: false
+			},
+			{
+				testName: 'artworkCategoriesHaveValidFormat test - return false when subcategories proprerty is missing in artwork categories',
+				collectionCategories: [
+					{name: "Tytuł", subcategories: []},
+					{name: "Rok", subcategories: []}
+				],
+				artworkCategories: [
+					{name: "Tytuł", values: ["example title"], subcategories: []},
+					{name: "Rok", values: ["1999"], }
+				],
+				returnValue: false
+			},
+			{
+				testName: 'artworkCategoriesHaveValidFormat test - return false when subcategories proprerty is missing in artwork subcategories',
+				collectionCategories: [
+					{name: "Tytuł", subcategories: [
+						{name: "Podtytuł", subcategories: [
+							{name: "Podpodtytuł", subcategories: []},
+							{name: "Podpodtytuł alternatywny", subcategories: []},
+						]}
+					]},
+				],
+				artworkCategories: [
+					{name: "Tytuł", values: ["example title"], subcategories: [
+						{name: "Podtytuł", values: ["example subtitle"], subcategories: [
+							{name: "Podpodtytuł", values: ["example subsubtitle"], subcategories: []},
+							{name: "Podpodtytuł alternatywny", values: ["alternative subsubtitle"]},
+						]}
+					]},
+				],
+				returnValue: false
+			},
+			{
+				testName: 'artworkCategoriesHaveValidFormat test - return true when collection and artwork categories match',
+				collectionCategories: [
+					{name: "Tytuł", subcategories: [
+						{name: "Podtytuł", subcategories: [{name: "Podpodtytuł", subcategories: []}]},
+						{name: "Podtytuł alternatywny", subcategories: []},
+					]},
+					{name: "Rok", subcategories: [{name: "Miesiąc", subcategories: [{name: "Dzień", subcategories: []}]}]}
+				],
+				artworkCategories: [
+					{name: "Tytuł", values: ["example title"], subcategories: [
+						{name: "Podtytuł", values: ["subtitle"], subcategories: [{name: "Podpodtytuł", values: ["subsubtitle"], subcategories: []}]},
+						{name: "Podtytuł alternatywny", values: ["alternative subtitle"], subcategories: []},
+					]},
+					{name: "Rok", values: ["1999"], subcategories: [{name: "Miesiąc", values: ["styczeń"], subcategories: [{name: "Dzień", values: ["3"], subcategories: []}]}]}
+				],
+				returnValue: true
+			},
+		])(`$testName`,
+				({collectionCategories, artworkCategories, returnValue}) => {
+					expect(artworkCategoriesHaveValidFormat(artworkCategories, collectionCategories)).toBe(returnValue)
 				}
 		)
 

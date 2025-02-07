@@ -45,7 +45,6 @@ export const importDataAsCollection = authAsyncWrapper(async (req: Request, res:
             const collectionName = req.body.collectionName
             const newCollection = await CollectionCollection.create([{name: req.body.collectionName, description: req.body.description}], {session})
             const records = prepRecords(req.body.importData, collectionName)
-            console.log(records.length)
             const result = await Artwork.insertMany(records, {session})
             return res.status(201).json(result)
         });

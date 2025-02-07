@@ -12,6 +12,20 @@ export const hasValidCategoryFormat = (categories: any[], isRootArray = true): b
     );
 };
 
+export const artworkCategoriesHaveValidFormat = (artworkCategories: any, collectionCategories: any): boolean => {
+    if(!collectionCategories || !artworkCategories) return false
+    if (collectionCategories.length !== artworkCategories.length) return false;
+    for(const [index, category] of collectionCategories.entries()) {
+        if(category.name != artworkCategories[index].name || !artworkCategories[index].values) {
+            return false
+        }
+        if(!artworkCategoriesHaveValidFormat(artworkCategories[index].subcategories, category.subcategories)) {
+            return false
+        }
+    }
+    return true
+};
+
 const getNestedCategories = ((prefix: string, subcategories: Array<subcategoryData>) => {
     const nestedCategories: Array<string> = []
     if(subcategories)

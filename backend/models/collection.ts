@@ -7,6 +7,9 @@ const CollectionSchema = new mongoose.Schema({
     description: {
         type: String,
     },
+    categories: {
+        type: Array<any>
+    }
 })
 
 const CollectionCollection = mongoose.model("Collection", CollectionSchema)
