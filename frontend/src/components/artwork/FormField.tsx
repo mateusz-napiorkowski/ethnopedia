@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Category } from '../../@types/Category';
 import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg";
 import { ReactComponent as MinusIcon } from "../../assets/icons/minus.svg";
@@ -23,23 +23,15 @@ const FormField: React.FC<FormFieldProps> = ({
                                                  handleAddSubcategory,
                                              }) => {
     const [isHovered, setIsHovered] = useState(false);
-    const [isSubCategoryHovered, setIsSubCategoryHovered] = useState(false);
-
-    // Funkcja resetująca stan hovera
-    useEffect(() => {
-        if (!formDataList.some((category) => category.name === formData.name)) {
-            setIsHovered(false);
-            setIsSubCategoryHovered(false);
-        }
-    }, [formDataList]);
 
     return (
-        <div
-            className="relative flex flex-col pb-1 mt-1"
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-        >
-            <div className="relative flex items-center">
+        <div className="relative flex flex-col pb-1 mt-1">
+            {/* Obszar dla pola kategorii i przycisków */}
+            <div
+                className="field-container relative flex items-center"
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+            >
                 {level > 0 && (
                     <>
                         {/* Pionowa linia */}
@@ -54,65 +46,52 @@ const FormField: React.FC<FormFieldProps> = ({
                         name="name"
                         value={formData.name}
                         onChange={(e) => handleInputChange(index, e)}
-                        placeholder="Podaj nazwę kategorii..."
-                        className="p-2"
+                        placeholder={`[${index}] Podaj nazwę kategorii...`}
+                        className="p-2 border rounded"
                     />
                 </label>
-                {/*<label className="flex items-center">*/}
-                {/*    <span>:</span>*/}
-                {/*    <input*/}
-                {/*        type="text"*/}
-                {/*        name="values"*/}
-                {/*        value={formData.values[0]}*/}
-                {/*        onChange={(e) => handleInputChange(index, e)}*/}
-                {/*        className="mx-2 p-2"*/}
-                {/*    />*/}
-                {/*</label>*/}
                 <div className="actions">
-                    {level < 5 && isHovered && !isSubCategoryHovered && (
+                    {level < 5 && isHovered && (
                         <button
                             type="button"
                             onClick={() => handleAddSubcategory(index)}
-                            title="Dodaj podkategorię"
+                            title={`Dodaj podkategorię dla [${index}]`}
                         >
                             <PlusIcon />
                         </button>
                     )}
-                    {isHovered && !isSubCategoryHovered && (
+                    {isHovered && (
                         <button
                             type="button"
                             onClick={() => handleRemove(index)}
-                            title="Usuń kategorię"
+                            title={`Usuń kategorię [${index}]`}
                         >
                             <MinusIcon />
                         </button>
                     )}
                 </div>
             </div>
-            {/* Podkategorie */}
-            {formData.subcategories &&
-                formData.subcategories.map((subCategory, subIndex) => {
-                    const uniqueSubIndex = `${index}-${subIndex}`;
-                    return (
-                        <div
-                            key={uniqueSubIndex}
-                            className="ml-8 relative"
-                            onMouseEnter={() => setIsSubCategoryHovered(true)}
-                            onMouseLeave={() => setIsSubCategoryHovered(false)}
-                        >
-                            <div className="tree-line vertical-helper" />
-                            <FormField
-                                index={uniqueSubIndex}
-                                level={level + 1}
-                                formData={subCategory}
-                                formDataList={formDataList}
-                                handleInputChange={handleInputChange}
-                                handleRemove={handleRemove}
-                                handleAddSubcategory={handleAddSubcategory}
-                            />
-                        </div>
-                    );
-                })}
+            {/* Obszar renderowania podkategorii – oddzielony od obszaru pola */}
+            <div className="children-container ml-8">
+                {formData.subcategories &&
+                    formData.subcategories.map((subCategory, subIndex) => {
+                        const uniqueSubIndex = `${index}-${subIndex}`;
+                        return (
+                            <div key={uniqueSubIndex} className="relative">
+                                <div className="tree-line vertical-helper" />
+                                <FormField
+                                    index={uniqueSubIndex}
+                                    level={level + 1}
+                                    formData={subCategory}
+                                    formDataList={formDataList}
+                                    handleInputChange={handleInputChange}
+                                    handleRemove={handleRemove}
+                                    handleAddSubcategory={handleAddSubcategory}
+                                />
+                            </div>
+                        );
+                    })}
+            </div>
         </div>
     );
 };

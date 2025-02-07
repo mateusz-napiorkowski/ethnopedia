@@ -5,28 +5,14 @@ import FormField from './FormField';
 import { Category } from '../../@types/Category';
 
 
-// let example_data: Category[] = [
-//   { name: "Tytuł", values: ["tytuł utworu"], subcategories: [] },
-//   { name: "Wykonawca", values: ["nazwa zespołu"], subcategories: [
-//     { name: "Wykonawca nr 1", values: ["Imię Nazwisko 1"] },
-//     { name: "Wykonawca nr 2", values: ["Imię Nazwisko 2"] } ] },
-//   { name: "Region", values: ["Wielkopolska"], subcategories: [
-//     { name: "Podregion", values: ["WielkopQolska Północna"] },
-//     { name: "Podregion etnograficzny", values: ["Szamotulskie"] },
-//     { name: "Powiat", values: ["Szamotulski"]} ] }
-// ]
-
 function transformToNewStructure(data: Category[], collectionName: string): { categories: Category[]; collectionName: string } {
   return { categories: data, collectionName: collectionName };
 }
-
-
 
 interface MetadataFormProps {
   initialFormData: Category[];
   setDataToInsert: any
 }
-
 
 const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, setDataToInsert }) => {
   const [formDataList, setFormDataList] = React.useState<Category[]>(initialFormData); // Ustaw początkowe dane
@@ -168,8 +154,7 @@ const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, setDataToI
   };
 
   return (
-      // <div style={{ overflowY: 'auto', height: '70vh', minWidth: '2000px'}}> {/* TODO */}
-        <div style={{ overflowY: 'auto'}}> {/* TODO */}
+        <div style={{ overflowY: 'auto'}}>
           <form>
             {formDataList.map((formData, index) => (
                 <FormField
@@ -187,9 +172,9 @@ const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, setDataToI
               <button type="button" onClick={handleAddCategory} title="Dodaj kategorię">
                 <PlusIcon />
               </button>
-              {/*<button type="button" onClick={handleShowJson}>*/}
-              {/*  Show JSON*/}
-              {/*</button>*/}
+              <button type="button" onClick={handleShowJson}>
+                Show JSON
+              </button>
             </div>
           </form>
           <pre>{jsonOutput}</pre>
