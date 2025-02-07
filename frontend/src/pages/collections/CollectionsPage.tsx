@@ -29,6 +29,7 @@ const CollectionsPage = () => {
     const [exportErrorMessage, setExportErrorMessage] = useState("")
     const { jwtToken } = useUser();
     const pageSize = 10
+    const navigate = useNavigate();
 
     const queryClient = useQueryClient()
 
@@ -84,8 +85,6 @@ const CollectionsPage = () => {
     const [showPopup, setShowNewCollectionPopup] = useState(false)
     const [sortOrder, setSortOrder] = useState("A-Z")
 
-    const navigate = useNavigate()
-
     if (fetchedData === undefined) {
         return <LoadingPage />
     } else {
@@ -97,44 +96,6 @@ const CollectionsPage = () => {
             }
         }) : []
 
-        const allCollections = sortedCollections.map((collection: Collection) => (
-            <div
-                className="px-4 py-3 bg-white dark:bg-gray-800 shadow-md rounded-lg mb-4 border border-gray-300 dark:border-gray-600 cursor-pointer"
-                key={collection.id}
-                onClick={() => navigate(`/collections/${collection.name}/artworks`)}
-            >
-
-                <div className="flex flex-row justify-between">
-                    <div className="flex">
-                        <span className="mr-4 items-center flex">
-                            <input
-                                type="checkbox"
-                                checked={checkedCollections[collection.id!] || false}
-                                onClick={(e) => e.stopPropagation()}
-                                onChange={() => {
-                                    handleCheck(collection.id!)
-                                }} />
-                        </span>
-
-                        <div className="flex-grow">
-                            <h2 className="text-lg font-semibold">{collection.name}</h2>
-                            <p className="text-gray-600 dark:text-gray-300">{collection.description}</p>
-                        </div>
-                    </div>
-
-                    {/* <div className="flex flex-col"> */}
-                        <h2 className="text-md min-w-fit items-center flex mx-2">
-                        <span className="font-bold mr-1">
-                            {collection.artworksCount ?? 0}
-                        </span>
-                            {
-                                (collection.artworksCount ?? 0) === 1 ? "rekord" :
-                                    (collection.artworksCount ?? 0) > 1 && (collection.artworksCount ?? 0) < 5 ? "rekordy" : "rekordów"
-                            }
-                        </h2>
-                </div>
-            </div>
-        ))
 
         const sortOptions: Option[] = [
             { value: "A-Z", label: "Kolekcja rosnąco" },
@@ -163,10 +124,9 @@ const CollectionsPage = () => {
                     <div className="flex items-center justify-end w-full">
                         <button
                             type="button"
-                            className="flex items-center justify-center dark:text-white
-                                    text-sm px-4 py-2 mb-2 hover:bg-gray-700 bg-gray-800 text-white border-gray-800
-                                    font-semibold mr-2"
-                            onClick={() => setShowNewCollectionPopup(!showPopup)}>
+                            className="flex items-center justify-center dark:text-white text-sm px-4 py-2 mb-2 hover:bg-gray-700 bg-gray-800 text-white border-gray-800 font-semibold mr-2"
+                            onClick={() => navigate("/create-collection")}
+                        >
                             <span className="mr-2">
                                 <PlusIcon />
                             </span>
@@ -270,7 +230,6 @@ const CollectionsPage = () => {
                     </span>
                 </div>
 
-                {/*{allCollections}*/}
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                     {sortedCollections.map((collection: Collection) => {
                         const isChecked = checkedCollections[collection.id!] || false

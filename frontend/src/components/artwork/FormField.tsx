@@ -55,19 +55,19 @@ const FormField: React.FC<FormFieldProps> = ({
                         value={formData.name}
                         onChange={(e) => handleInputChange(index, e)}
                         placeholder="Podaj nazwę kategorii..."
-                        className="mx-2 p-2"
+                        className="p-2"
                     />
                 </label>
-                <label className="flex items-center">
-                    <span>:</span>
-                    <input
-                        type="text"
-                        name="values"
-                        value={formData.values[0]}
-                        onChange={(e) => handleInputChange(index, e)}
-                        className="mx-2 p-2"
-                    />
-                </label>
+                {/*<label className="flex items-center">*/}
+                {/*    <span>:</span>*/}
+                {/*    <input*/}
+                {/*        type="text"*/}
+                {/*        name="values"*/}
+                {/*        value={formData.values[0]}*/}
+                {/*        onChange={(e) => handleInputChange(index, e)}*/}
+                {/*        className="mx-2 p-2"*/}
+                {/*    />*/}
+                {/*</label>*/}
                 <div className="actions">
                     {level < 5 && isHovered && !isSubCategoryHovered && (
                         <button

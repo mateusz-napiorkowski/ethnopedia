@@ -168,8 +168,8 @@ const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, setDataToI
   };
 
   return (
-      <div style={{ overflowY: 'auto', height: '70vh', minWidth: '2000px'}}> {/* TODO */}
-        <div className="m-4">
+      // <div style={{ overflowY: 'auto', height: '70vh', minWidth: '2000px'}}> {/* TODO */}
+        <div style={{ overflowY: 'auto'}}> {/* TODO */}
           <form>
             {formDataList.map((formData, index) => (
                 <FormField
@@ -183,7 +183,7 @@ const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, setDataToI
                     handleAddSubcategory={handleAddSubcategory}
                 />
             ))}
-            <div className="flex flex-col justify-between items-start mt-4 space-y-4">
+            <div className="flex flex-col justify-between items-start mt-1 space-y-4">
               <button type="button" onClick={handleAddCategory} title="Dodaj kategorię">
                 <PlusIcon />
               </button>
@@ -193,7 +193,6 @@ const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, setDataToI
             </div>
           </form>
           <pre>{jsonOutput}</pre>
-        </div>
       </div>
   );
 }
