@@ -2,6 +2,7 @@ import axios from "axios"
 import { Collection } from "../@types/Collection"
 import { useMutation } from "react-query"
 import { API_URL } from "../config"
+import { Category } from "../@types/Category"
 
 interface CollectionsResponse {
     collections: Collection[];
@@ -39,12 +40,12 @@ export const getArtworksInCollection = async (collection: string, page: number, 
         .then(res => res.data)
 }
 
-export const createCollection = async (name: any, description: any, jwtToken: any) => {
+export const createCollection = async (name: any, description: any, categories: Category[], jwtToken: any) => {
     const config = {
         headers: { Authorization: `Bearer ${jwtToken}` }
     };
     return await axios
-        .post(`${API_URL}v1/collection/create`, {name, description}, config)
+        .post(`${API_URL}v1/collection/create`, {name, description, categories}, config)
         .then(res => res.data)
 }
 

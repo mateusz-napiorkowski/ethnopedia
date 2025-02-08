@@ -9,7 +9,7 @@ import { Category } from "../../@types/Category"
 import { useLocation, useNavigate } from "react-router-dom";
 
 
-let example_data: Category[] = [
+let initial_structure: Category[] = [
     { name: "", subcategories: [] }
 ]
 
@@ -18,12 +18,11 @@ const CreateCollectionPage = () => {
     const { jwtToken } = useUser();
     const [showErrorMessage, setShowErrorMessage] = useState(false);
     const navigate = useNavigate();
-
     const [dataToInsert, setDataToInsert] = useState({})
     const location = useLocation();
 
     // Inicjalizacja danych formularza
-    let initialFormData: Category[] = example_data
+    let initialFormData: Category[] = initial_structure
     if(location.state && location.state.categories) {
         initialFormData = location.state.categories
     }
@@ -50,13 +49,13 @@ const CreateCollectionPage = () => {
                             </h3>
                         </div>
                         <Formik
-                            initialValues={{ name: "", description: "" }}
+                            initialValues={{ name: "", description: "", categories: initialFormData }}
                             onSubmit={async (values, { setSubmitting }) => {
-                                const { name, description } = values;
+                                const { name, description, categories } = values;
                                 try {
-                                    await createCollection(name, description, jwtToken);
+                                    await createCollection(name, description, categories, jwtToken);
                                     setShowErrorMessage(false);
-                                    navigate("/"); // Po udanym dodaniu przekieruj do listy kolekcji
+                                    navigate("/"); // Redirect to the collection list after successful creation
                                 } catch (error) {
                                     console.error(error);
                                     setShowErrorMessage(true);
@@ -65,8 +64,15 @@ const CreateCollectionPage = () => {
                                 }
                             }}
                         >
-                            {({ isSubmitting }) => (
+                            {({ isSubmitting, setFieldValue }) => (
                                 <Form>
+
+                                    {showErrorMessage && (
+                                        <p className="text-red-500 text-sm my-2">
+                                            Kolekcja o podanej nazwie już istnieje.
+                                        </p>
+                                    )}
+
                                     <label
                                         htmlFor="name"
                                         className="block text-sm font-bold text-gray-700 dark:text-white my-2"
@@ -104,12 +110,6 @@ const CreateCollectionPage = () => {
                                         className="text-red-500 text-sm"
                                     />
 
-                                    {showErrorMessage && (
-                                        <p className="text-red-500 text-sm my-2">
-                                            Kolekcja o podanej nazwie już istnieje.
-                                        </p>
-                                    )}
-
                                     <hr />
                                     <label
                                         htmlFor="categories"
@@ -120,7 +120,7 @@ const CreateCollectionPage = () => {
                                     <div className="flex-grow">
                                         <StructureForm
                                             initialFormData={initialFormData}
-                                            setDataToInsert={(dataToInsert: any) => setDataToInsert(dataToInsert)} />
+                                            setFieldValue={setFieldValue} />
                                     </div>
 
                                     <div className="flex justify-end mt-6">

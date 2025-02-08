@@ -92,9 +92,9 @@ const CreateArtwork: React.FC = () => {
                                                 </h3>
                                             </div>
                                             <div className="flex-grow">
-                                                <StructureForm
-                                                    initialFormData={initialFormData}
-                                                    setDataToInsert={(dataToInsert: any) => setDataToInsert(dataToInsert)} />
+                                                {/*<StructureForm*/}
+                                                {/*    initialFormData={initialFormData}*/}
+                                                {/*    setDataToInsert={(dataToInsert: any) => setDataToInsert(dataToInsert)} />*/}
                                             </div>
                                             <div className="flex justify-end px-4 pb-4 border-t pt-4 h-auto">
                                                 <button

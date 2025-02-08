@@ -7,31 +7,25 @@ import { Category } from '../../@types/Category';
 //   return { categories: data, collectionName: collectionName };
 // }
 
-interface MetadataFormProps {
+interface StructureFormProps {
   initialFormData: Category[];
-  setDataToInsert: any;
+  setFieldValue: (field: string, value: any, shouldValidate?: boolean) => void;
 }
 
-const StructureForm: React.FC<MetadataFormProps> = ({ initialFormData, setDataToInsert }) => {
+const StructureForm: React.FC<StructureFormProps> = ({ initialFormData, setFieldValue }) => {
   const [formDataList, setFormDataList] = useState<Category[]>(initialFormData);
 
-  // const createOrEdit = window.location.href.split("/")[window.location.href.split("/").length - 1];
-  // let collectionName = window.location.href.split("/")[window.location.href.split("/").length - 2];
-  // if (createOrEdit === "edit-artwork") {
-  //   collectionName = window.location.href.split("/")[window.location.href.split("/").length - 4];
-  // }
+  useEffect(() => {
+    setFieldValue('categories', formDataList); // Update Formik's categories field whenever formDataList changes
+  }, [formDataList, setFieldValue]);
 
   // useEffect(() => {
-  //   setDataToInsert(transformToNewStructure(formDataList, collectionName));
-  // }, [formDataList, collectionName, setDataToInsert]);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setFormDataList((prev) => [...prev]);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  //   const handleResize = () => {
+  //     setFormDataList((prev) => [...prev]);
+  //   };
+  //   window.addEventListener('resize', handleResize);
+  //   return () => window.removeEventListener('resize', handleResize);
+  // }, []);
 
   const [jsonOutput, setJsonOutput] = useState<string>('');
   const handleShowJson = () => {

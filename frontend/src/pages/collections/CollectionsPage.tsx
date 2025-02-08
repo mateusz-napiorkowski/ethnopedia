@@ -1,4 +1,3 @@
-import CreateCollectionModal from "./CreateCollectionModal"
 import CustomDropdown from "../../components/CustomDropdown"
 import LoadingPage from "../LoadingPage"
 import React, { useEffect, useState } from "react"
@@ -103,7 +102,7 @@ const CollectionsPage = () => {
         ]
 
         return <section className="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5 h-full">
-            {showPopup && <CreateCollectionModal stateChanger={setNewCollection} onClose={() => setShowNewCollectionPopup(!showPopup)} />}
+            {/*{showPopup && <CreateCollectionModal stateChanger={setNewCollection} onClose={() => setShowNewCollectionPopup(!showPopup)} />}*/}
             {showWarningPopup && <WarningPopup onClose={() => setShowWarningPopup(!showWarningPopup)}
                                                deleteSelected={deleteSelected}
                                                warningMessage={"Czy na pewno chcesz usunąć zaznaczone kolekcje?"} />}

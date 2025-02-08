@@ -34,7 +34,7 @@ const FileDropzone = ({ onClose, inCollectionPage }: Props) => {
     }
 
     const handleCollectionSubmit = (event: any) => {
-        createCollection(collectionName, description, jwtToken)
+        createCollection(collectionName, description, [], jwtToken) //TODO uwaga jeszcze nie zrobione - wstawia pustą strukturę
         importData(dataToSend, jwtToken, collectionName)
     }
 
