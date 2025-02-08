@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Category } from '../../@types/Category';
+import { Metadata } from '../../@types/Metadata';
 import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg";
 import { ReactComponent as MinusIcon } from "../../assets/icons/minus.svg";
 
 interface FormFieldProps {
-    formData: Category;
-    formDataList: Category[];
+    formData: Metadata;
+    formDataList: Metadata[];
     index: string;
     level: number;
     handleInputChange: (index: string, e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -46,8 +46,20 @@ const FormField: React.FC<FormFieldProps> = ({
                         name="name"
                         value={formData.name}
                         onChange={(e) => handleInputChange(index, e)}
-                        // placeholder={`[${index}] Podaj nazwę kategorii...`}
                         placeholder={`Podaj nazwę kategorii...`}
+                        className="p-2 border rounded"
+                    />
+                </label>
+                <label className="flex items-center">
+                    <span className="ml-1 mr-1">
+                        :
+                    </span>
+                    <input
+                        type="text"
+                        name="values"
+                        value={formData.values[0]}
+                        onChange={(e) => handleInputChange(index, e)}
+                        // placeholder={`Podaj wartość kategorii...`}
                         className="p-2 border rounded"
                     />
                 </label>

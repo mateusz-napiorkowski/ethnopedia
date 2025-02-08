@@ -7,12 +7,12 @@ import { useUser } from "../../providers/UserProvider";
 import Navigation from "../Navigation";
 import FetchDataWrapper from "../TreeWrapper";
 
-import { Category } from '../../@types/Category';
+import { Metadata } from '../../@types/Metadata';
 import { createArtwork, editArtwork } from "../../api/artworks";
-import StructureForm from "../collections/StructureForm";
+import MetadataForm from "./MetadataForm"
 
 
-let example_data: Category[] = [
+let example_data: Metadata[] = [
     { name: "Tytuł", values: [""], subcategories: [] },
     { name: "Artyści", values: [""], subcategories: [] },
     { name: "Rok", values: [""], subcategories: []}
@@ -41,13 +41,13 @@ const CreateArtwork: React.FC = () => {
     const [dataToInsert, setDataToInsert] = useState({})
 
     // Inicjalizacja danych formularza
-    let initialFormData: Category[] = example_data
+    let initialFormData: Metadata[] = example_data
     if(location.state && location.state.categories) {
         initialFormData = location.state.categories
     }
 
 
-    const handleSubmit = async (formDataList: Category[]) => {
+    const handleSubmit = async (formDataList: Metadata[]) => {
         console.log("Submit");
         // Przekazanie danych formularza do funkcji createArtwork
         try {
@@ -91,10 +91,10 @@ const CreateArtwork: React.FC = () => {
                                                     {(!location.state) ? "Dodaj nowy rekord" : "Edytuj rekord"}
                                                 </h3>
                                             </div>
-                                            <div className="flex-grow">
-                                                {/*<StructureForm*/}
-                                                {/*    initialFormData={initialFormData}*/}
-                                                {/*    setDataToInsert={(dataToInsert: any) => setDataToInsert(dataToInsert)} />*/}
+                                            <div className="flex-grow p-4">
+                                                <MetadataForm
+                                                    initialFormData={initialFormData}
+                                                    setDataToInsert={(dataToInsert: any) => setDataToInsert(dataToInsert)} />
                                             </div>
                                             <div className="flex justify-end px-4 pb-4 border-t pt-4 h-auto">
                                                 <button
