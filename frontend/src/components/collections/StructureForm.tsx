@@ -19,6 +19,7 @@ const StructureForm: React.FC<StructureFormProps> = ({ initialFormData, setField
     setFieldValue('categories', formDataList); // Update Formik's categories field whenever formDataList changes
   }, [formDataList, setFieldValue]);
 
+
   // useEffect(() => {
   //   const handleResize = () => {
   //     setFormDataList((prev) => [...prev]);

@@ -4,29 +4,26 @@ import { useUser } from "../../providers/UserProvider";
 import React, { useState } from "react";
 import Navbar from "../../components/navbar/Navbar";
 import Navigation from "../../components/Navigation";
-import StructureForm from "../../components/collections/StructureForm"
-import { Category } from "../../@types/Category"
+import StructureForm from "../../components/collections/StructureForm";
+import { Category } from "../../@types/Category";
 import { useLocation, useNavigate } from "react-router-dom";
-
 
 let initial_structure: Category[] = [
     { name: "", subcategories: [] }
-]
-
+];
 
 const CreateCollectionPage = () => {
     const { jwtToken } = useUser();
     const [showErrorMessage, setShowErrorMessage] = useState(false);
     const navigate = useNavigate();
-    const [dataToInsert, setDataToInsert] = useState({})
+    const [dataToInsert, setDataToInsert] = useState({});
     const location = useLocation();
 
     // Inicjalizacja danych formularza
-    let initialFormData: Category[] = initial_structure
-    if(location.state && location.state.categories) {
-        initialFormData = location.state.categories
+    let initialFormData: Category[] = initial_structure;
+    if (location.state && location.state.categories) {
+        initialFormData = location.state.categories;
     }
-
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
@@ -35,7 +32,6 @@ const CreateCollectionPage = () => {
 
             {/* Główny kontener treści */}
             <div className="container mx-auto px-24 sm:px-32 md:px-40 lg:px-48 mt-4 max-w-screen-lg">
-
                 {/* Nawigacja */}
                 <Navigation />
 
@@ -44,7 +40,6 @@ const CreateCollectionPage = () => {
                     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border dark:border-gray-600 p-8">
                         <div className="flex items-start rounded-t border-b pb-2">
                             <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-                                {/*{(!location.state) ? "Dodaj nową kolekcję" : "Edytuj kolekcję"}*/}
                                 Dodaj nową kolekcję
                             </h3>
                         </div>
@@ -52,6 +47,8 @@ const CreateCollectionPage = () => {
                             initialValues={{ name: "", description: "", categories: initialFormData }}
                             onSubmit={async (values, { setSubmitting }) => {
                                 const { name, description, categories } = values;
+
+                                console.log("Dane wysyłane do API:", values);
                                 try {
                                     await createCollection(name, description, categories, jwtToken);
                                     setShowErrorMessage(false);
@@ -66,13 +63,11 @@ const CreateCollectionPage = () => {
                         >
                             {({ isSubmitting, setFieldValue }) => (
                                 <Form>
-
                                     {showErrorMessage && (
                                         <p className="text-red-500 text-sm my-2">
                                             Kolekcja o podanej nazwie już istnieje.
                                         </p>
                                     )}
-
                                     <label
                                         htmlFor="name"
                                         className="block text-sm font-bold text-gray-700 dark:text-white my-2"
@@ -112,7 +107,6 @@ const CreateCollectionPage = () => {
 
                                     <hr />
                                     <label
-                                        htmlFor="categories"
                                         className="block text-sm mt-4 font-bold text-gray-700 dark:text-white my-2"
                                     >
                                         Struktura metadanych w kolekcji
@@ -120,7 +114,8 @@ const CreateCollectionPage = () => {
                                     <div className="flex-grow">
                                         <StructureForm
                                             initialFormData={initialFormData}
-                                            setFieldValue={setFieldValue} />
+                                            setFieldValue={setFieldValue}
+                                        />
                                     </div>
 
                                     <div className="flex justify-end mt-6">

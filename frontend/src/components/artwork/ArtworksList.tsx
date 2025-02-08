@@ -23,6 +23,7 @@ const ArtworksList = () => {
     const [selectedArtworks, setSelectedArtworks] = useState<{ [key: string]: boolean }>({})
     const [showFileDropzone, setShowFileDropzone] = useState<boolean>(false)
     const [showExportOptions, setShowExportOptions] = useState<boolean>(false)
+    const [showEditCollection, setShowEditCollection] = useState(false);
     const [showDeleteRecordsWarning, setShowDeleteRecordsWarning] = useState(false)
     const [showDeleteCollectionWarning, setShowDeleteCollectionWarning] = useState(false)
     const [sortOrder, setSortOrder] = useState<string>("newest-first")

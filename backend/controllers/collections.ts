@@ -1,58 +1,62 @@
-import { NextFunction, Request, Response } from "express"
-import mongoose, { ClientSession } from "mongoose"
-import { findSearchText, findMatch, sortRecordsByTitle } from "../utils/controllers-utils/collections"
+import { Request, Response } from "express"
+import mongoose, { ClientSession, SortOrder } from "mongoose"
 import { authAsyncWrapper } from "../middleware/auth"
 import Artwork from "../models/artwork";
 import CollectionCollection from "../models/collection";
+import {hasValidCategoryFormat} from "../utils/categories";
 
 export const getAllCollections = async (req: Request, res: Response) => {
-    const page = parseInt(req.query.page as string) || 1
-    const pageSize = parseInt(req.query.pageSize as string) || 10
-    const collections = await CollectionCollection.find({})
-        .skip((page - 1) * pageSize)
-        .limit(pageSize)
+    try {
+        const page = parseInt(req.query.page as string)
+        const pageSize = parseInt(req.query.pageSize as string)
+        const sortOrder = req.query.sortOrder
+        
+        if(!page || !pageSize || !sortOrder)
+            throw new Error("Request is missing query params")
 
-    const totalCollections = await CollectionCollection.countDocuments({})
-
-    const pipeline = [
-        {
-            $match: { "collectionName": { $exists: true } },
-        },
-        {
-            $group: {
-                _id: "$collectionName",
-                count: { $sum: 1 },
+        const collections = await CollectionCollection.find()
+            .sort({name: sortOrder as SortOrder})
+            .skip((page - 1) * pageSize)
+            .limit(pageSize)
+            .exec()
+        
+        const totalCollections = await CollectionCollection.countDocuments()
+        
+        const pipeline = [
+            {
+                $match: { "collectionName": { $exists: true } },
             },
-        },
-    ]
-
-    const artworks = await Artwork.aggregate(pipeline)
-    const artworkMap = new Map()
-
-    artworks.forEach((artwork: any) => {
-        artworkMap.set(artwork._id, artwork.count)
-    })
-
-    const combinedData = new Map()
-
-    collections.forEach((collection: any) => {
-        combinedData.set(collection._id, {
+            {
+                $group: {
+                    _id: "$collectionName",
+                    count: { $sum: 1 },
+                },
+            },
+        ]
+        const artworkCounts = await Artwork.aggregate(pipeline).exec()
+        
+        const collectionsData = collections.map((collection: any) => ({
             id: collection._id,
             name: collection.name,
             description: collection.description,
-            artworksCount: artworkMap.get(collection.name) || 0,
-            categoriesCount: 17,
-        })
-    })
+            artworksCount: artworkCounts.find((element) => element._id == collection.name)?.count ?? 0
+        }))
 
-    const combinedArray = Array.from(combinedData.values())
-
-    res.status(200).json({
-        collections: combinedArray,
-        total: totalCollections,
-        currentPage: page,
-        pageSize: pageSize,
-    })
+        res.status(200).json({
+            collections: collectionsData,
+            total: totalCollections,
+            currentPage: page,
+            pageSize: pageSize,
+        })    
+    } catch (error) {
+        const err = error as Error
+        console.error(error)
+        if (err.message === "Request is missing query params")
+            res.status(400).json({ error: err.message })
+        else
+            res.status(503).json({ error: `Database unavailable` })
+    }
+    
 }
 
 export const getCollection = async (req: Request, res: Response) => {
@@ -73,113 +77,42 @@ export const getCollection = async (req: Request, res: Response) => {
     }
 }
 
-export const getArtworksInCollection = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
-    try {
-        const page = parseInt(req.query.page as string) || 1
-        const pageSize = parseInt(req.query.pageSize as string) || 10
-        let totalArtworks = await Artwork.countDocuments({ collectionName: req.params.name })
-        let records = []
-        const searchText = req.query.searchText
-        const sortOrder = req.query.sortOrder
-        if(sortOrder == "newest-first") {
-            records = await Artwork.find({ collectionName: req.params.name }).sort({ "$natural": -1 })
-        } else {
-            records = await Artwork.find({ collectionName: req.params.name }).sort({ "$natural": 1 })
-        }
-        let recordsFinal: Array<any> = []
-        if(req.query.searchText!==undefined) {
-            // quicksearch
-            let foundSearchText: boolean = false
-            records.forEach((record:any) => {
-                for(const category of record.categories){
-                    foundSearchText = false
-                    for(const value of category.values) {
-                        if(value.toString().includes(searchText)) {
-                            recordsFinal.push(record)
-                            foundSearchText = true
-                            break;
-                        }
-                    }
-                    if(foundSearchText) {
-                        break;
-                    } else {
-                        foundSearchText = findSearchText(searchText, category.subcategories)
-                        if(foundSearchText) {
-                            recordsFinal.push(record)
-                            break;
-                        }
-                    }
-                }
-            })
-        } else if(req.query.advSearch == "true") {
-            /*advanced search*/
-            const rules: any = {}
-            for(const ruleField in req.query) {
-                if(req.query?.ruleField && !["page", "pageSize", "sortOrder", "advSearch"].includes(ruleField)) {
-                    rules[ruleField] = req.query[ruleField]
-                }
-            }
-
-            records.forEach((record:any) => {
-                let matched: boolean = true
-                for(const ruleField in rules) {
-                    if(!findMatch(record.categories, ruleField.split("."), rules[ruleField])) {
-                        matched = false
-                        break
-                    }
-                }
-                if(matched) {
-                    recordsFinal.push(record)
-                }
-            })
-        } 
-        else {
-            // without search criteria
-            recordsFinal = records
-        }
-
-        if(sortOrder == "title-asc" || sortOrder == "title-desc") {
-            recordsFinal = sortRecordsByTitle(recordsFinal, sortOrder)
-        }
-        totalArtworks = recordsFinal.length
-        recordsFinal = recordsFinal.slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize)
-        return res.json({
-            artworks: recordsFinal,
-            total: totalArtworks,
-            currentPage: page,
-            pageSize: pageSize,
-        })
-    } catch (error: any) {
-        next(error)
-    }
-}
-
 export const createCollection = authAsyncWrapper(async (req: Request, res: Response) => {
-    const collectionName = req.body.name
-    const collectionDescription = req.body.description
+    const collectionName = req.body.name;
+    const collectionDescription = req.body.description;
+    const categories = req.body.categories;
+    console.log("Otrzymane categories:", req.body.categories);
     try {
-        if(!collectionName || !collectionDescription)
-            throw new Error("Incorrect request body provided")
-        const session = await mongoose.startSession()
+        if (!collectionName || !collectionDescription || !categories || !hasValidCategoryFormat(categories))
+            throw new Error("Incorrect request body provided");
+        const session = await mongoose.startSession();
         await session.withTransaction(async (session: ClientSession) => {
-            const duplicateCollection = await CollectionCollection.findOne({name: collectionName}, null, {session}).exec()
-            if(duplicateCollection)
-                throw new Error("Collection with provided name already exists")
-            const newCollection = await CollectionCollection.create([{name: req.body.name, description: req.body.description}], {session})
-            res.status(201).json(newCollection)
-        })
-        session.endSession()
-    } catch(error) {
-        const err = error as Error
-        console.error(error)
+            const duplicateCollection = await CollectionCollection.findOne({ name: collectionName }, null, { session }).exec();
+            if (duplicateCollection)
+                throw new Error("Collection with provided name already exists");
+            const newCollection = await CollectionCollection.create(
+                [{
+                    name: req.body.name,
+                    description: req.body.description,
+                    categories: req.body.categories
+                }],
+                { session }
+            );
+            res.status(201).json(newCollection);
+        });
+        session.endSession();
+    } catch (error) {
+        const err = error as Error;
+        console.error(error);
         if (err.message === "Incorrect request body provided")
-            res.status(400).json({ error: err.message })
+            res.status(400).json({ error: err.message });
         else if (err.message === "Collection with provided name already exists")
-            res.status(409).json({ error: err.message })
-        else 
-            res.status(503).json( { error: "Database unavailable" })
+            res.status(409).json({ error: err.message });
+        else
+            res.status(503).json({ error: "Database unavailable" });
     }
-})
+});
+
 
 export const deleteCollections = authAsyncWrapper(async (req: Request, res: Response) => {
     const collectionsToDelete = req.body.ids
