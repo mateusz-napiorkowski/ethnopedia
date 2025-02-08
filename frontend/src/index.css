@@ -79,14 +79,14 @@
 
     .tree-line {
         position: absolute;
-        background-color: #ccc;
+        background-color: #e6e6e6;
     }
 
     /* Pionowa linia */
     .tree-line.vertical {
         width: 2px;
         height: 40px;  /* Stała wysokość dla wszystkich linii */
-        top: 0;
+        top: -4px;
         left: -16px;
     }
 
@@ -101,20 +101,9 @@
     /* Linia pomocnicza dla subkategorii */
     .tree-line.vertical-helper {
         position: absolute;
-        background-color: #ccc;
         width: 2px;
         left: -16px;
         top: 0;
         height: 100%;
     }
-
-    /* Linia pionowa pomocnicza dla subkategorii */
-    .tree-line.horizontal-end {
-        border-left: 2px solid #ccc;
-        width: 16px;
-        height: 2px;
-    }
-
-
-
 }

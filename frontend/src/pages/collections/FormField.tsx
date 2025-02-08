@@ -25,7 +25,7 @@ const FormField: React.FC<FormFieldProps> = ({
     const [isHovered, setIsHovered] = useState(false);
 
     return (
-        <div className="relative flex flex-col pb-1 mt-1">
+        <div className="relative flex flex-col mt-1">
             {/* Obszar dla pola kategorii i przycisków */}
             <div
                 className="field-container relative flex items-center"
@@ -46,7 +46,8 @@ const FormField: React.FC<FormFieldProps> = ({
                         name="name"
                         value={formData.name}
                         onChange={(e) => handleInputChange(index, e)}
-                        placeholder={`[${index}] Podaj nazwę kategorii...`}
+                        // placeholder={`[${index}] Podaj nazwę kategorii...`}
+                        placeholder={`Podaj nazwę kategorii...`}
                         className="p-2 border rounded"
                     />
                 </label>

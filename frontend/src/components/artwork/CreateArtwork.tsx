@@ -9,7 +9,7 @@ import FetchDataWrapper from "../TreeWrapper";
 
 import { Category } from '../../@types/Category';
 import { createArtwork, editArtwork } from "../../api/artworks";
-import MetadataForm from "./MetadataForm";
+import StructureForm from "../../pages/collections/StructureForm";
 
 
 let example_data: Category[] = [
@@ -92,7 +92,7 @@ const CreateArtwork: React.FC = () => {
                                                 </h3>
                                             </div>
                                             <div className="flex-grow">
-                                                <MetadataForm
+                                                <StructureForm
                                                     initialFormData={initialFormData}
                                                     setDataToInsert={(dataToInsert: any) => setDataToInsert(dataToInsert)} />
                                             </div>

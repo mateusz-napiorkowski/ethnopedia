@@ -4,15 +4,14 @@ import { useUser } from "../../providers/UserProvider";
 import React, { useState } from "react";
 import Navbar from "../../components/navbar/Navbar";
 import Navigation from "../../components/Navigation";
-import MetadataForm from "../../components/artwork/MetadataForm"
+import StructureForm from "./StructureForm"
 import { Category } from "../../@types/Category"
 import { useLocation, useNavigate } from "react-router-dom";
 
 
 let example_data: Category[] = [
-    { name: "", values: [""], subcategories: [] }
+    { name: "", subcategories: [] }
 ]
-
 
 
 const CreateCollectionPage = () => {
@@ -119,7 +118,7 @@ const CreateCollectionPage = () => {
                                         Struktura metadanych w kolekcji
                                     </label>
                                     <div className="flex-grow">
-                                        <MetadataForm
+                                        <StructureForm
                                             initialFormData={initialFormData}
                                             setDataToInsert={(dataToInsert: any) => setDataToInsert(dataToInsert)} />
                                     </div>
