@@ -1,8 +1,8 @@
 import Artwork from "../models/artwork";
 import CollectionCollection from "../models/collection";
-import { subcategoryData } from "./interfaces"
+import { collectionCategory, artworkCategory } from "./interfaces"
 
-export const hasValidCategoryFormat = (categories: any[], isRootArray = true): boolean => {
+export const hasValidCategoryFormat = (categories: Array<collectionCategory>, isRootArray = true): boolean => {
     if(isRootArray && !categories.length)
         return false
     return categories.every(category => 
@@ -12,21 +12,22 @@ export const hasValidCategoryFormat = (categories: any[], isRootArray = true): b
     );
 };
 
-export const artworkCategoriesHaveValidFormat = (artworkCategories: any, collectionCategories: any): boolean => {
-    if(!collectionCategories || !artworkCategories) return false
-    if (collectionCategories.length !== artworkCategories.length) return false;
-    for(const [index, category] of collectionCategories.entries()) {
-        if(category.name != artworkCategories[index].name || !artworkCategories[index].values) {
-            return false
-        }
-        if(!artworkCategoriesHaveValidFormat(artworkCategories[index].subcategories, category.subcategories)) {
-            return false
-        }
-    }
-    return true
+export const artworkCategoriesHaveValidFormat = (artworkCategories: Array<artworkCategory>, collectionCategories: Array<collectionCategory>, isRootArray = true): boolean => {
+    if (isRootArray && (artworkCategories.length == 0 || collectionCategories.length == 0)) return false;
+    if (artworkCategories.length !== collectionCategories.length) return false;
+
+    return collectionCategories.every((category, index) => {
+        const artworkCategory = artworkCategories[index];
+
+        return (
+            category.name === artworkCategory.name &&
+            !!artworkCategory.values &&
+            artworkCategoriesHaveValidFormat(artworkCategory.subcategories, category.subcategories, false)
+        );
+    });
 };
 
-const getNestedCategories = ((prefix: string, subcategories: Array<subcategoryData>) => {
+const getNestedCategories = ((prefix: string, subcategories: Array<artworkCategory>) => {
     const nestedCategories: Array<string> = []
     if(subcategories)
         for(const subcategory of subcategories){

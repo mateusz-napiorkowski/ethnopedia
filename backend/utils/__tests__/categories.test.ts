@@ -23,32 +23,6 @@ describe('categories util functions tests', () => {
 				returnValue: false
 			},
 			{
-					testName: 'hasValidCategoryFormat test - return false when subcategories are missing',
-					categoryData: [{name: "Tytuł", subcategories: []}, {name: "Artyści"}],
-					returnValue: false
-			},
-			{
-				testName: 'hasValidCategoryFormat test - return false when name is missing',
-				categoryData: [{subcategories: [{name: "Podtytuł", subcategories: []}]}, {name: "Artyści", subcategories: []}],
-				returnValue: false
-			},
-			{
-				testName: 'hasValidCategoryFormat test - return false when subcategories are missing in nested subcategory array',
-				categoryData: [
-					{name: "Tytuł", subcategories: [{name: "Podtytuł", subcategories: [{name: "Podpodtytuł"}]}]},
-					{name: "Rok", subcategories: [{name: "Miesiąc", subcategories: [{name: "Dzień", subcategories: []}]}]}
-				],
-				returnValue: false
-			},
-			{
-				testName: 'hasValidCategoryFormat test - return false when name is missing in nested subcategory array',
-				categoryData: [
-					{name: "Tytuł", subcategories: [{name: "Podtytuł", subcategories: [{name: "Podpodtytuł", subcategories: []}]}]},
-					{name: "Rok", subcategories: [{name: "Miesiąc", subcategories: [{subcategories: []}]}]}
-				],
-				returnValue: false
-			},
-			{
 				testName: 'hasValidCategoryFormat test - return true when category data format is correct',
 				categoryData: [
 					{name: "Tytuł", subcategories: [
@@ -66,6 +40,12 @@ describe('categories util functions tests', () => {
 		)
 
 		test.each([
+			{
+				testName: 'artworkCategoriesHaveValidFormat test - return false when collection and artwork category arrays are empty',
+				collectionCategories: [],
+				artworkCategories: [],
+				returnValue: false
+			},
 			{
 				testName: 'artworkCategoriesHaveValidFormat test - return false when collection and artwork category names do not match',
 				collectionCategories: [
@@ -132,7 +112,7 @@ describe('categories util functions tests', () => {
 				returnValue: false
 			},
 			{
-				testName: 'artworkCategoriesHaveValidFormat test - return false when category object is missing artwork categories array',
+				testName: 'artworkCategoriesHaveValidFormat test - return false when category object is missing in artwork categories array',
 				collectionCategories: [
 					{name: "Tytuł", subcategories: []},
 					{name: "Artyści", subcategories: []}
@@ -143,7 +123,7 @@ describe('categories util functions tests', () => {
 				returnValue: false
 			},
 			{
-				testName: 'artworkCategoriesHaveValidFormat test - return false when category object is missing artwork subcategories array',
+				testName: 'artworkCategoriesHaveValidFormat test - return false when category object is missing in artwork subcategories array',
 				collectionCategories: [
 					{name: "Tytuł", subcategories: [
 						{name: "Podtytuł", subcategories: [
@@ -156,102 +136,6 @@ describe('categories util functions tests', () => {
 					{name: "Tytuł", values: ["example title"], subcategories: [
 						{name: "Podtytuł", values: ["example subtitle"], subcategories: [
 							{name: "Podpodtytuł alternatywny", values: ["alternative subsubtitle"], subcategories: []},
-						]}
-					]},
-				],
-				returnValue: false
-			},
-			{
-				testName: 'artworkCategoriesHaveValidFormat test - return false when name proprerty is missing in artwork categories',
-				collectionCategories: [
-					{name: "Tytuł", subcategories: []},
-					{name: "Rok", subcategories: []}
-				],
-				artworkCategories: [
-					{name: "Tytuł", values: ["example title"], subcategories: []},
-					{values: ["1999"], subcategories: []}
-				],
-				returnValue: false
-			},
-			{
-				testName: 'artworkCategoriesHaveValidFormat test - return false when name proprerty is missing in artwork subcategories',
-				collectionCategories: [
-					{name: "Tytuł", subcategories: [
-						{name: "Podtytuł", subcategories: [
-							{name: "Podpodtytuł", subcategories: []},
-							{name: "Podpodtytuł alternatywny", subcategories: []},
-						]}
-					]},
-				],
-				artworkCategories: [
-					{name: "Tytuł", values: ["example title"], subcategories: [
-						{name: "Podtytuł", values: ["example subtitle"], subcategories: [
-							{name: "Podpodtytuł", values: ["example subsubtitle"], subcategories: []},
-							{values: ["alternative subsubtitle"], subcategories: []},
-						]}
-					]},
-				],
-				returnValue: false
-			},
-			{
-				testName: 'artworkCategoriesHaveValidFormat test - return false when values proprerty is missing in artwork categories',
-				collectionCategories: [
-					{name: "Tytuł", subcategories: []},
-					{name: "Rok", subcategories: []}
-				],
-				artworkCategories: [
-					{name: "Tytuł", values: ["example title"], subcategories: []},
-					{name: "Rok", subcategories: []}
-				],
-				returnValue: false
-			},
-			{
-				testName: 'artworkCategoriesHaveValidFormat test - return false when values proprerty is missing in artwork subcategories',
-				collectionCategories: [
-					{name: "Tytuł", subcategories: [
-						{name: "Podtytuł", subcategories: [
-							{name: "Podpodtytuł", subcategories: []},
-							{name: "Podpodtytuł alternatywny", subcategories: []},
-						]}
-					]},
-				],
-				artworkCategories: [
-					{name: "Tytuł", values: ["example title"], subcategories: [
-						{name: "Podtytuł", values: ["example subtitle"], subcategories: [
-							{name: "Podpodtytuł", values: ["example subsubtitle"], subcategories: []},
-							{name: "Podpodtytuł alternatywny", subcategories: []},
-						]}
-					]},
-				],
-				returnValue: false
-			},
-			{
-				testName: 'artworkCategoriesHaveValidFormat test - return false when subcategories proprerty is missing in artwork categories',
-				collectionCategories: [
-					{name: "Tytuł", subcategories: []},
-					{name: "Rok", subcategories: []}
-				],
-				artworkCategories: [
-					{name: "Tytuł", values: ["example title"], subcategories: []},
-					{name: "Rok", values: ["1999"], }
-				],
-				returnValue: false
-			},
-			{
-				testName: 'artworkCategoriesHaveValidFormat test - return false when subcategories proprerty is missing in artwork subcategories',
-				collectionCategories: [
-					{name: "Tytuł", subcategories: [
-						{name: "Podtytuł", subcategories: [
-							{name: "Podpodtytuł", subcategories: []},
-							{name: "Podpodtytuł alternatywny", subcategories: []},
-						]}
-					]},
-				],
-				artworkCategories: [
-					{name: "Tytuł", values: ["example title"], subcategories: [
-						{name: "Podtytuł", values: ["example subtitle"], subcategories: [
-							{name: "Podpodtytuł", values: ["example subsubtitle"], subcategories: []},
-							{name: "Podpodtytuł alternatywny", values: ["alternative subsubtitle"]},
 						]}
 					]},
 				],

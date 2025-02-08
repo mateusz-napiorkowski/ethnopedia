@@ -1,4 +1,4 @@
-import { subcategoryData, record } from "./interfaces"
+import { artworkCategory, record } from "./interfaces"
 
 export const prepRecords = (data: Array<Array<string>>, collectionName: string) => {
     try {
@@ -47,7 +47,7 @@ export const prepRecords = (data: Array<Array<string>>, collectionName: string) 
 }
 
 const fillSubcategories = (fields: Array<string>, depth: number, header: Array<string>, rowValues: Array<string>) => {
-    const subcategories: Array<subcategoryData> = []
+    const subcategories: Array<artworkCategory> = []
     fields.forEach(field => {
         const allSubcategoriesNames = header.filter(columnName => (columnName.startsWith(`${field}.`)))
         const directSubcategoriesNames = allSubcategoriesNames.filter(columnName => columnName.split(".").length === depth + 1)
