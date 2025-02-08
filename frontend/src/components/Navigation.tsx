@@ -24,12 +24,38 @@ const Navigation: React.FC = () => {
                         </Link>
                     </li>
                     <span className="self-center">
-            <AngleRightIcon />
-          </span>
+                    <AngleRightIcon />
+                    </span>
+                        <li className="inline-flex items-center text-lg">
+                            <span className="inline-flex items-center font-medium text-gray-800">
+                                Nowa kolekcja
+                            </span>
+                        </li>
+                    </ol>
+            </nav>
+        );
+    }
+
+    // strona tworzenia rekordu
+    if (pathSegments[2] === "create-artwork") {
+        return (
+            <nav className="flex">
+                <ol className="inline-flex items-center space-x-1 md:space-x-2">
                     <li className="inline-flex items-center text-lg">
-            <span className="inline-flex items-center font-medium text-gray-800">
-              Nowa kolekcja
-            </span>
+                        <Link
+                            to="/"
+                            className="inline-flex items-center font-medium text-gray-800 hover:text-blue-600"
+                        >
+                            Lista kolekcji
+                        </Link>
+                    </li>
+                    <span className="self-center">
+                    <AngleRightIcon />
+                    </span>
+                    <li className="inline-flex items-center text-lg">
+                            <span className="inline-flex items-center font-medium text-gray-800">
+                                Nowy rekord
+                            </span>
                     </li>
                 </ol>
             </nav>
@@ -67,12 +93,9 @@ const Navigation: React.FC = () => {
               <AngleRightIcon />
             </span>
                         <li className="inline-flex items-center text-lg">
-                            <Link
-                                to={`/collections/${pathSegments[1]}/${pathSegments[2]}`}
-                                className="inline-flex items-center font-medium text-gray-800 hover:text-blue-600"
-                            >
-                                Utwór
-                            </Link>
+                            <span className="inline-flex items-center font-medium text-gray-800">
+                                Rekord
+                            </span>
                         </li>
                     </>
                 )}
