@@ -9,7 +9,7 @@ import FetchDataWrapper from "../TreeWrapper";
 
 import { Category } from '../../@types/Category';
 import { createArtwork, editArtwork } from "../../api/artworks";
-import StructureForm from "../../pages/collections/StructureForm";
+import StructureForm from "../collections/StructureForm";
 
 
 let example_data: Category[] = [

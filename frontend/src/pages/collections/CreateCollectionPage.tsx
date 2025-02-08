@@ -4,7 +4,7 @@ import { useUser } from "../../providers/UserProvider";
 import React, { useState } from "react";
 import Navbar from "../../components/navbar/Navbar";
 import Navigation from "../../components/Navigation";
-import StructureForm from "./StructureForm"
+import StructureForm from "../../components/collections/StructureForm"
 import { Category } from "../../@types/Category"
 import { useLocation, useNavigate } from "react-router-dom";
 
