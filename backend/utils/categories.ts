@@ -1,4 +1,3 @@
-import Artwork from "../models/artwork";
 import CollectionCollection from "../models/collection";
 import { collectionCategory, artworkCategory } from "./interfaces"
 
@@ -29,29 +28,24 @@ export const artworkCategoriesHaveValidFormat = (artworkCategories: Array<artwor
 
 const getNestedCategories = ((prefix: string, subcategories: Array<artworkCategory>) => {
     const nestedCategories: Array<string> = []
-    if(subcategories)
-        for(const subcategory of subcategories){
-            nestedCategories.push(`${prefix}.${subcategory.name}`)
-            nestedCategories.push(...getNestedCategories(`${prefix}.${subcategory.name}`, subcategory.subcategories))
-        }
+    for(const subcategory of subcategories) {
+        nestedCategories.push(`${prefix}.${subcategory.name}`)
+        nestedCategories.push(...getNestedCategories(`${prefix}.${subcategory.name}`, subcategory.subcategories))
+    }
     return nestedCategories
 })
 
 export const getAllCategories = async (collectionName: string) => {
     try {
-        const collection = await CollectionCollection.find({name: collectionName}).exec()
-        if(collection.length !== 1)
-            throw new Error("Collection not found")            
-        const records = await Artwork.find({ collectionName: collectionName }).exec()
-        
+        const collections = await CollectionCollection.find({name: collectionName}).exec()
+        if(collections.length !== 1)
+            throw new Error("Collection not found")
         const allCategories: Array<string> = []
-        records.forEach((record:any) => {
-            for(const category of record.categories){
-                allCategories.push(category.name)
-                allCategories.push(...getNestedCategories(`${category.name}`, category.subcategories))
-            }
-        })
-        return [...new Set(allCategories)]
+        for(const category of collections[0].categories) {
+            allCategories.push(category.name)
+            allCategories.push(...getNestedCategories(`${category.name}`, category.subcategories))
+        }           
+        return allCategories
     } catch (error) {
         const err = error as Error
         console.error(error)
