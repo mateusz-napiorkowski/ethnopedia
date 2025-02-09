@@ -13,9 +13,6 @@ import { useUser } from "../../providers/UserProvider"
 import Pagination from "../../components/Pagination"
 import { getXlsxWithCollectionData } from "../../api/dataExport"
 import ImportOptions from "../../components/ImportOptions"
-import CustomDropdown from "../../components/CustomDropdown"
-import FileDropzone from "../../components/FileDropzone"
-import CustomDropdown from "../../components/CustomDropdown"
 
 interface Option {
     value: string
