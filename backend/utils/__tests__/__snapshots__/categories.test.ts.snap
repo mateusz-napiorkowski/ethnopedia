@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`categories util functions tests getAllCategories test - categories present in collection 1`] = `
+[
+  "Tytuł",
+  "Tytuł.Podtytuł",
+  "Tytuł.Podtytuł.Podpodtytuł",
+  "Tytuł.Podtytuł alternatywny",
+  "Artyści",
+  "Rok",
+  "Rok.Miesiąc",
+  "Rok.Miesiąc.Dzień",
+]
+`;
+
+exports[`categories util functions tests getAllCategories test - no categories in collection 1`] = `[]`;

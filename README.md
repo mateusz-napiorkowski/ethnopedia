@@ -35,11 +35,8 @@ This tool will be developed in collaboration with the musicology expert, making 
   - **Creation**: Add new metadata entries for artworks.
   - **Updating**: Modify existing metadata entries.
   - **Deleting**: Remove unwanted metadata entries.
-  - **Batch Deleting**: Remove multiple artworks simultaneously for efficient management.
-- **Liking Artworks**: Engage with your favorite artworks by liking them.
 - **Creating Collections**: Organize artwork metadata into collections for easy management.
-- **Managing Collections**: 
-  - **Updating Collections**: Modify the details of existing collections.
+- **Managing Collections**:
   - **Deleting Collections**: Remove collections as needed.
 
 ***
@@ -52,38 +49,36 @@ This tool will be developed in collaboration with the musicology expert, making 
 
 The application is built using the following technologies:
 
--   [Electron](https://www.electronjs.org/)
 -   [React](https://reactjs.org/)
 -   [TypeScript](https://www.typescriptlang.org/)
 -   [Tailwind CSS](https://tailwindcss.com/)
--   [Flowbite](https://flowbite.com/)
-
+-   [Node.js](https://nodejs.org/en)
+-   [MongoDB](https://www.mongodb.com/)
 
 ## Running the application
 
 ### Frontend
-Before running the frontend, `cd frontend`
+Before running/testing the frontend, `cd frontend`
 
 Make sure to set up your configuration. Create a `.env` file in the frontend directory with the following environment variables:
 ```
 REACT_APP_API_URL=http://localhost:8080/api/
 ```
 
-To run the application run the following command:
+To run the application, use the following command:
 
 ```
 npm start
-npm run dev:watch
 ```
 
-To build the application for production, use the following command:
+To run unit tests for the application, use the following command:
 
 ```
-npm run build
+npm run test
 ```
 
 ### Backend 
-1. Before running the backend, `cd backend`
+1. Before running/testing the backend, `cd backend`
 2. Make sure to set up your configuration. Create a `.env` file in the backend directory with the following environment variables:
 
 ```
@@ -99,3 +94,8 @@ npm install
 ```
 npx nodemon
 ```
+To run unit tests for the application, use the following command:
+```
+npm run test
+```
+

@@ -1,3 +1,4 @@
+import SortOptions from "../../components/SortOptions"
 import LoadingPage from "../LoadingPage"
 import React, { useEffect, useState } from "react"
 import WarningPopup from "./WarningPopup"
@@ -11,6 +12,8 @@ import { useQuery, useQueryClient } from "react-query"
 import { useUser } from "../../providers/UserProvider"
 import Pagination from "../../components/Pagination"
 import { getXlsxWithCollectionData } from "../../api/dataExport"
+import ImportOptions from "../../components/ImportOptions"
+import CustomDropdown from "../../components/CustomDropdown"
 import FileDropzone from "../../components/FileDropzone"
 import CustomDropdown from "../../components/CustomDropdown"
 
@@ -21,7 +24,7 @@ interface Option {
 
 const CollectionsPage = () => {
     const { firstName } = useUser()
-    const [showFileDropzone, setShowFileDropzone] = useState<boolean>(false)
+    const [showImportOptions, setShowImportOptions] = useState<boolean>(false)
     const [checkedCollections, setCheckedCollections] = useState<{ [key: string]: boolean }>({})
     const [showWarningPopup, setShowWarningPopup] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
@@ -95,6 +98,44 @@ const CollectionsPage = () => {
             }
         }) : []
 
+        const allCollections = sortedCollections.map((collection: Collection) => (
+            <div
+                className="px-4 py-3 bg-white dark:bg-gray-800 shadow-md rounded-lg mb-4 border border-gray-300 dark:border-gray-600 cursor-pointer"
+                key={collection.id}
+                onClick={() => navigate(`/collections/${collection.name}/artworks`)}
+            >
+
+                <div className="flex flex-row justify-between">
+                    <div className="flex">
+                        <span className="mr-4 items-center flex">
+                            <input
+                                type="checkbox"
+                                checked={checkedCollections[collection.id!] || false}
+                                onClick={(e) => e.stopPropagation()}
+                                onChange={() => {
+                                    handleCheck(collection.id!)
+                                }} />
+                        </span>
+
+                        <div className="flex-grow">
+                            <h2 className="text-lg font-semibold">{collection.name}</h2>
+                            <p className="text-gray-600 dark:text-gray-300">{collection.description}</p>
+                        </div>
+                    </div>
+
+                    {/* <div className="flex flex-col"> */}
+                        <h2 className="text-md min-w-fit items-center flex mx-2">
+                        <span className="font-bold mr-1">
+                            {collection.artworksCount ?? 0}
+                        </span>
+                            {
+                                (collection.artworksCount ?? 0) === 1 ? "rekord" :
+                                    (collection.artworksCount ?? 0) > 1 && (collection.artworksCount ?? 0) < 5 ? "rekordy" : "rekordów"
+                            }
+                        </h2>
+                </div>
+            </div>
+        ))
 
         const sortOptions: Option[] = [
             { value: "A-Z", label: "Kolekcja rosnąco" },
@@ -121,16 +162,16 @@ const CollectionsPage = () => {
                     </div>
 
                     <div className="flex items-center justify-end w-full">
-                        <button
-                            type="button"
-                            className="flex items-center justify-center dark:text-white text-sm px-4 py-2 mb-2 hover:bg-gray-700 bg-gray-800 text-white border-gray-800 font-semibold mr-2"
-                            onClick={() => navigate("/create-collection")}
-                        >
-                            <span className="mr-2">
-                                <PlusIcon />
-                            </span>
-                            Nowa kolekcja
-                        </button>
+                    <button
+                        type="button"
+                        className="flex items-center justify-center dark:text-white text-sm px-4 py-2 mb-2 hover:bg-gray-700 bg-gray-800 text-white border-gray-800 font-semibold mr-2"
+                        onClick={() => navigate("/create-collection")}
+                    >
+                        <span className="mr-2">
+                            <PlusIcon />
+                        </span>
+                        Nowa kolekcja
+                    </button>
 
                         <button
                             className="flex items-center justify-center dark:text-white
@@ -149,8 +190,14 @@ const CollectionsPage = () => {
                                     if (Object.keys(checkedCollections).length === 0) {
                                         setExportErrorMessage("Najpierw należy zaznaczyć kolekcję do wyeksportowania.")
                                     } else {
-                                        for (const key in fetchedData.collections) {
-                                            getXlsxWithCollectionData(fetchedData.collections[key].name)
+                                        const checkedCollectionsNames = Object.keys(checkedCollections)
+                                            .filter((checkedCollection) => checkedCollections[checkedCollection])
+                                            .map((checkedCollection) => {
+                                                const collection = fetchedData.collections.find((col) => col.id === checkedCollection);
+                                                return collection!.name;
+                                            })
+                                        for(const collectionName of checkedCollectionsNames) {
+                                            getXlsxWithCollectionData(collectionName)
                                         }
                                         setExportErrorMessage("")
                                     }
@@ -167,31 +214,30 @@ const CollectionsPage = () => {
                                 className="flex items-center justify-center dark:text-white
                                     text-sm px-4 py-2 mb-2 hover:bg-gray-700 bg-gray-800 text-white border-gray-800
                                     font-semibold"
-                                type="button"
-                                onClick={() => setShowFileDropzone(showFileDropzone => !showFileDropzone)}
-                            >
-                                <FileImportIcon />
-                                Importuj kolekcję
-                            </button>
+                            type="button"
+                            onClick={() => setShowImportOptions(showImportOptions => !showImportOptions)}
+                        >
+                            <FileImportIcon />
+                            Importuj kolekcję
+                        </button>
                         }
                         {
                             !jwtToken && <button
                                 className="flex items-center justify-center dark:text-white
                                     text-sm px-4 py-2 mb-2 hover:bg-gray-600 bg-gray-600 text-white border-gray-800
                                     font-semibold"
-                                type="button" disabled={true} title={"Aby zaimportować kolecję musisz się zalogować."}
-                                onClick={() => setShowFileDropzone(showFileDropzone => !showFileDropzone)}
-                            >
-                                <FileImportIcon />
-                                Importuj kolekcję
-                            </button>
+                            type="button" disabled={true} title={"Aby zaimportować kolecję musisz się zalogować."}
+                            onClick={() => setShowImportOptions(showImportOptions => !showImportOptions)}
+                        >
+                            <FileImportIcon />
+                            Importuj kolekcję
+                        </button>
                         }
 
 
                     </div>
                 </div>
-                {showFileDropzone &&
-                    <FileDropzone onClose={() => setShowFileDropzone(false)} inCollectionPage={true} />}
+                {showImportOptions && <ImportOptions onClose={() => setShowImportOptions(false)} />}
                 <div className="flex flex-row">
                     <div className="flex flex-1">
                         <button type="button" className="px-4 py-2 mb-2 bg-white"
@@ -222,9 +268,11 @@ const CollectionsPage = () => {
                             </button>}
                     </div>
                     <span className="mb-2">
-                    <CustomDropdown
+                    <SortOptions
                         options={sortOptions}
                         onSelect={(value: string) => setSortOrder(value)}
+                        sortOrder=""
+                        setCurrentPage={() => setCurrentPage}
                     />
                     </span>
                 </div>
@@ -277,7 +325,7 @@ const CollectionsPage = () => {
                     <Pagination
                         currentPage={currentPage}
                         totalPages={Math.ceil(fetchedData.total / pageSize)}
-                        onPageChange={(page) => setCurrentPage(page)}
+                        setCurrentPage={(page) => setCurrentPage(page)}
                     />
                 </div>
             </div>

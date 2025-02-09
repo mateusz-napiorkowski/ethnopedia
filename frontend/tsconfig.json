@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2022",
     "lib": [
       "dom",
       "dom.iterable",
@@ -8,7 +8,6 @@
     ],
     "baseUrl": ".",
     "types": ["node", "jest", "@testing-library/jest-dom"],
-    // "typeRoots": ["./node_modules/@types"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,

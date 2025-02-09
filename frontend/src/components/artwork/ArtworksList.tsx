@@ -1,32 +1,30 @@
-import { useQuery, useQueryClient } from "react-query"
-import { useBatchDeleteArtworkMutation } from "../../api/artworks"
-import { getArtworksInCollection } from "../../api/collections"
+import { useMutation, useQuery, useQueryClient } from "react-query"
+import { getArtworksForCollectionPage, deleteArtworks } from "../../api/artworks"
+import { getCollection } from "../../api/collections"
 import LoadingPage from "../../pages/LoadingPage"
-import React, { useEffect, useMemo, useState} from "react"
+import { useEffect, useMemo, useState} from "react"
 import Navbar from "../navbar/Navbar"
 import { useLocation, useNavigate, useParams } from "react-router-dom"
 import SearchComponent from "../search/SearchComponent"
-import FileDropzone from "../FileDropzone"
+import ImportOptions from "../ImportOptions"
 import ExportOptions from "../ExportOptions"
 import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg"
 import { ReactComponent as FileImportIcon } from "../../assets/icons/fileImport.svg"
 import { ReactComponent as FileExportIcon } from "../../assets/icons/fileExport.svg"
 import WarningPopup from "../../pages/collections/WarningPopup"
-import CustomDropdown from "../CustomDropdown"
-import { getCollection, useBatchDeleteCollectionMutation } from "../../api/collections"
+import SortOptions from "../SortOptions"
 import Navigation from "../Navigation"
 import Pagination from "../Pagination"
-import category from "../Category"
 import { useUser } from "../../providers/UserProvider"
+import { getAllCategories } from "../../api/categories"
 
-const ArtworksList = () => {
+const ArtworksList = ({pageSize = 10}) => {
     const [selectedArtworks, setSelectedArtworks] = useState<{ [key: string]: boolean }>({})
-    const [showFileDropzone, setShowFileDropzone] = useState<boolean>(false)
+    const [showImportOptions, setShowImportOptions] = useState<boolean>(false)
     const [showExportOptions, setShowExportOptions] = useState<boolean>(false)
     const [showDeleteRecordsWarning, setShowDeleteRecordsWarning] = useState(false)
-    const [showDeleteCollectionWarning, setShowDeleteCollectionWarning] = useState(false)
-    const [sortOrder, setSortOrder] = useState<string>("newest-first")
     const [showEditCollection, setShowEditCollection] = useState<boolean>(false)
+    const [sortOrder, setSortOrder] = useState<string>("Tytuł-asc")
     const { jwtToken } = useUser();
     const location = useLocation()
     useEffect(() => {
@@ -36,11 +34,9 @@ const ArtworksList = () => {
     const queryParameters = new URLSearchParams(window.location.search)
     const searchText = queryParameters.get("searchText")
     const [currentPage, setCurrentPage] = useState(1)
-    const pageSize = 10
 
     const { collection } = useParams()
     const queryClient = useQueryClient()
-    const { mutate: batchDeleteMutation } = useBatchDeleteArtworkMutation()
 
     const findValue = (artwork: any, categoryName: string) => {
         let val = ""
@@ -53,16 +49,9 @@ const ArtworksList = () => {
         return val
     }
 
-    const sortOptions = [
-        { value: "newest-first", label: "Od najnowszych" },
-        { value: "oldest-first", label: "Od najstarszych" },
-        { value: "title-asc", label: "Tytuł rosnąco" },
-        { value: "title-desc", label: "Tytuł malejąco" },
-    ]
-
     const { data: artworkData} = useQuery({
         queryKey: ["artwork", currentPage, searchText, queryParameters, location, sortOrder],
-        queryFn: () => getArtworksInCollection(collection as string, currentPage, pageSize, sortOrder, searchText, Object.fromEntries(queryParameters.entries())),
+        queryFn: () => getArtworksForCollectionPage(collection as string, currentPage, pageSize, sortOrder, searchText, Object.fromEntries(queryParameters.entries())),
         enabled: !!collection,
     })
 
@@ -71,6 +60,17 @@ const ArtworksList = () => {
         enabled: !!collection,
         queryFn: () => getCollection(collection as string),
     })
+
+    const { data: categoriesData } = useQuery({
+        queryKey: ["allCategories"],
+        queryFn: () => getAllCategories(collection as string),
+        enabled: !!collection,
+    })
+
+    const sortOptions = categoriesData?.categories?.flatMap((category: string) => [
+        { value: `${category}-asc`, label: `${category} rosnąco` },
+        { value: `${category}-desc`, label: `${category} malejąco` },
+    ])
 
     const selectAll = () => {
         const newSelection = artworkData?.artworks.reduce((acc: any, artwork: any) => {
@@ -89,63 +89,48 @@ const ArtworksList = () => {
     }, [artworkData, sortOrder])
 
     const handleCheck = (id: string) => {
-        setSelectedArtworks((prev) => ({ ...prev, [id]: !prev[id] }))
+        setSelectedArtworks((prev) => (
+            { ...prev, [id]: !prev[id] }
+        ))
     }
 
     const deselectAll = () => {
         setSelectedArtworks({})
     }
 
-    const deleteSelected = () => {
-        const selectedIds = Object.keys(selectedArtworks).filter(id => selectedArtworks[id])
-
-        if (selectedIds.length > 0) {
-            batchDeleteMutation([selectedIds, jwtToken],
-                {
-                    onSuccess: () => {
-                        queryClient.invalidateQueries(["artwork"])
-                        setShowDeleteRecordsWarning(!showDeleteRecordsWarning)
-                    },
-                })
+    const deleteArtworksMutation = useMutation(() => deleteArtworks(Object.keys(selectedArtworks).filter(id => selectedArtworks[id]), jwtToken as string), {
+        onSuccess: () => {
+            queryClient.invalidateQueries("artwork")
+            setShowDeleteRecordsWarning(!showDeleteRecordsWarning)
+            deselectAll()
         }
-    }
-
-    const deleteCollectionMutation = useBatchDeleteCollectionMutation()
-    const deleteCollection = () => {
-        if (collection) {
-            deleteCollectionMutation.mutate([collection], {
-                onSuccess: () => {
-                    queryClient.invalidateQueries(["artwork"])
-                    queryClient.invalidateQueries(["collection"])
-                    setShowDeleteCollectionWarning(false)
-                    navigate("/")
-                },
-                onError: (error: any) => {
-                    console.error("Error deleting collection: ", error)
-                },
-            })
-        }
-    }
+    })
 
     const navigate = useNavigate()
 
-    if (artworkData === undefined || sortedArtworks === undefined || category === undefined) {
-        return <LoadingPage />
+    if (!artworkData || !sortedArtworks || !collectionData) {
+        return <div data-testid="loading-page-container">
+                <LoadingPage />
+            </div>
     } else {
         const allArtworks = sortedArtworks.map((artwork: any) => (
             <div className="px-4 max-w-screen-xl py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4
                 border border-gray-300 dark:border-gray-600 cursor-pointer"
                  key={artwork._id}
+                 data-testid={artwork._id}
                  onClick={() => navigate(`/collections/${collection}/artworks/${artwork._id}`)}>
 
                 <div className="flex flex-row">
                         <span className="mr-4 flex items-center">
-                            <input type="checkbox"
-                                   checked={selectedArtworks[artwork._id!] || false}
-                                   onClick={(e) => e.stopPropagation()}
-                                   onChange={() => {
-                                       handleCheck(artwork._id!)
-                                   }} />
+                            <input 
+                                type="checkbox"
+                                data-testid={`${artwork._id}-checkbox`}
+                                checked={selectedArtworks[artwork._id!] || false}
+                                onClick={(e) => e.stopPropagation()}
+                                onChange={() => {
+                                    handleCheck(artwork._id!)
+                                }}
+                            />
                         </span>
 
                     <div>
@@ -157,26 +142,17 @@ const ArtworksList = () => {
             </div>
         ))
 
-        return <>
+        return <><div data-testid="loaded-artwork-page-container">
             <Navbar />
-
-            {/* {showFileDropzone && <FileDropzone onClose={() => setShowFileDropzone(false)} />}
-            {showExportOptions && <ExportOptions onClose={() => setShowExportOptions(false)} />} */}
-            {/*{showCreateArtwork && <CreateArtwork onClose={() => setShowCreateArtwork(false)} />}*/}
             {showDeleteRecordsWarning &&
                 <WarningPopup onClose={() => setShowDeleteRecordsWarning(false)}
-                              deleteSelected={deleteSelected}
+                              deleteSelected={() => deleteArtworksMutation.mutate()}
                               warningMessage={"Czy na pewno chcesz usunąć zaznaczone rekordy?"} />}
-
-            {showDeleteCollectionWarning &&
-                <WarningPopup onClose={() => setShowDeleteCollectionWarning(false)}
-                              deleteSelected={deleteCollection}
-                              warningMessage={"Czy na pewno chcesz usunąć zaznaczoną kolekcję?"} />}
             <div className="flex flex-col w-full items-center bg-gray-50 dark:bg-gray-900 p-2 sm:p-4">
                 <div className="flex flex-col max-w-screen-xl w-full lg:px-6">
                     <Navigation />
 
-                    <div className="flex flex-row mb-4 mt-2">
+                    <div data-testid="collection-name-and-description-container" className="flex flex-row mb-4 mt-2">
                         <div className="flex flex-col w-full">
                             <h2 className="text-4xl font-bold text-gray-800 dark:text-white mb-1">
                                 {collectionData?.name}
@@ -198,29 +174,22 @@ const ArtworksList = () => {
                     </div>
 
                     {collection && <SearchComponent collectionName={collection} />}
-
                     <div className="flex w-full md:w-auto">
                         <div className="flex flex-1 space-x-2">
-                        {jwtToken && <button className="flex items-center justify-center dark:text-white
-                            hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2
-                            dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
-                                                 type="button"
-                                                 onClick={() => navigate(`/collections/${collection}/create-artwork`)}>
-                                    <span className="mr-2 text-white dark:text-gray-400">
-                                        <PlusIcon />
-                                    </span>
+                            <button
+                                disabled={jwtToken ? false : true} 
+                                className={`flex items-center justify-center dark:text-white
+                                        hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2
+                                        dark:focus:ring-primary-800 font-semibold text-white ${jwtToken ?
+                                            "bg-gray-800 hover:bg-gray-700 border-gray-800" : "bg-gray-600 hover:bg-gray-600 border-gray-800"}`}
+                                type="button"
+                                onClick={() => navigate(`/collections/${collection}/create-artwork`)}
+                            >
+                                <span className="mr-2 text-white dark:text-gray-400">
+                                    <PlusIcon />
+                                </span>
                                 Nowy rekord
-                            </button>}
-                            {!jwtToken && <button disabled={true} title={"Aby dodać rekord musisz się zalogować."} className="flex items-center justify-center dark:text-white
-                            hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2
-                            dark:focus:ring-primary-800 font-semibold text-white hover:bg-gray-600 bg-gray-600 border-gray-800"
-                                                  type="button"
-                                                  onClick={() => navigate(`/collections/${collection}/create-artwork`)}>
-                                    <span className="mr-2 text-white dark:text-gray-400">
-                                        <PlusIcon />
-                                    </span>
-                                Nowy rekord
-                            </button>}
+                            </button>
                             <button className="flex items-center justify-center dark:text-white
                                             hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium px-4 py-2
                                             dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
@@ -234,29 +203,19 @@ const ArtworksList = () => {
                                 </span>
                                 Eksportuj plik
                             </button>
-                            {jwtToken && <button className="flex items-center justify-center dark:text-white
+                            <button
+                                disabled={jwtToken ? false : true} 
+                                className={`flex items-center justify-center dark:text-white
                                         hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2
-                                        dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
-                                                 type="button"
-                                                 onClick={() => setShowFileDropzone(showFileDropzone => !showFileDropzone)}
+                                        dark:focus:ring-primary-800 font-semibold text-white ${jwtToken ?
+                                            "bg-gray-800 hover:bg-gray-700 border-gray-800" : "bg-gray-600 hover:bg-gray-600 border-gray-800"}`}                                type="button"
+                                onClick={() => setShowImportOptions(showImportOptions => !showImportOptions)}
                             >
                                 <span className="text-white dark:text-gray-400">
                                     <FileImportIcon />
                                 </span>
                                 Importuj plik
-                            </button>}
-                            {!jwtToken && <button disabled={true} title={"Aby zaimportować plik musisz się zalogować."} className="flex items-center justify-center dark:text-white
-                                        hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2
-                                        dark:focus:ring-primary-800 font-semibold text-white bg-gray-600 hover:bg-gray-600 border-gray-800"
-                                                  type="button"
-                                                  onClick={() => setShowFileDropzone(showFileDropzone => !showFileDropzone)}
-                            >
-                                <span className="text-white dark:text-gray-400">
-                                    <FileImportIcon />
-                                </span>
-                                Importuj plik
-                            </button>}
-
+                            </button>
                             <button className="flex items-center justify-center dark:text-white
                                         hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2
                                         dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
@@ -274,39 +233,28 @@ const ArtworksList = () => {
                             >
                                 Odznacz wszystkie
                             </button>
-
-                            {jwtToken && <button className="flex items-center justify-center dark:text-white
+                            <button
+                                disabled={jwtToken && !Object.values(selectedArtworks).every(value => value === false) ? false : true}
+                                className={`flex items-center justify-center dark:text-white
                                         hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2
-                                        dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
-                                                 type="button"
-                                                 onClick={() => {
-                                                     if (Object.keys(selectedArtworks).length !== 0)
-                                                         setShowDeleteRecordsWarning(!showDeleteRecordsWarning)
-                                                 }}
+                                        dark:focus:ring-primary-800 font-semibold text-white ${jwtToken && !Object.values(selectedArtworks).every(value => value === false) ?
+                                            "bg-gray-800 hover:bg-gray-700 border-gray-800" : "bg-gray-600 hover:bg-gray-600 border-gray-800"}`}               
+                                type="button"
+                                onClick={() => { setShowDeleteRecordsWarning(!showDeleteRecordsWarning)}}
                             >
                                 Usuń zaznaczone
-                            </button>}
-                            {!jwtToken && <button disabled={true} title={"Aby usuwać rekordy musisz się zalogować."} className="flex items-center justify-center dark:text-white
-                                        hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2
-                                        dark:focus:ring-primary-800 font-semibold text-white bg-gray-600 hover:bg-gray-600 border-gray-800"
-                                                  type="button"
-                                                  onClick={() => {
-                                                      if (Object.keys(selectedArtworks).length !== 0)
-                                                          setShowDeleteRecordsWarning(!showDeleteRecordsWarning)
-                                                  }}
-                            >
-                                Usuń zaznaczone
-                            </button>}
+                            </button>
                         </div>
-
-                        <span className="">
-                                <CustomDropdown
-                                    options={sortOptions}
-                                    onSelect={(value) => setSortOrder(value)}
-                                />
-                            </span>
                     </div>
-                    {showFileDropzone && <FileDropzone onClose={() => setShowFileDropzone(false)} inCollectionPage={false}/>}
+                    <div className="flex w-full md:w-auto pt-4 flex-col items-end">
+                        {sortOptions && <SortOptions
+                            options={sortOptions}
+                            onSelect={(value) => setSortOrder(value)}
+                            sortOrder={sortOrder}
+                            setCurrentPage={setCurrentPage}
+                        />}
+                    </div>
+                    {showImportOptions && <ImportOptions onClose={() => setShowImportOptions(false)} collectionData={collectionData}/>}
                     {showExportOptions && <ExportOptions selectedArtworks={selectedArtworks} onClose={() => setShowExportOptions(false)} />}
                 </div>
             </div>
@@ -314,9 +262,8 @@ const ArtworksList = () => {
             <div className="flex flex-row">
                 <div
                     className="flex mx-auto flex-1 justify-end w-full">
-                    {/* <FilterDropdown /> */}
                 </div>
-                <div className="w-full flex-2 lg:px-6 max-w-screen-xl">
+                <div data-testid="artworks-listed" className="w-full flex-2 lg:px-6 max-w-screen-xl">
                     {allArtworks}
                 </div>
                 <div className="mx-auto w-full flex-1">
@@ -326,10 +273,10 @@ const ArtworksList = () => {
                 <Pagination
                     currentPage={currentPage}
                     totalPages={Math.ceil(artworkData.total / pageSize)}
-                    onPageChange={(page) => setCurrentPage(page)}
+                    setCurrentPage={(page) => setCurrentPage(page)}
                 />
             </div>
-        </>
+        </div></>
     }
 }
 export default ArtworksList

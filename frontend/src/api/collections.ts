@@ -16,6 +16,7 @@ export const getAllCollections = async (page: number = 1, pageSize: number = 10)
         params: {
             page: page,
             pageSize: pageSize,
+            sortOrder: 'asc'
         },
     })
     return response.data as CollectionsResponse
@@ -26,19 +27,6 @@ export const getCollection = async (id: string) => {
     return response.data as Collection
 }
 
-export const getArtworksInCollection = async (collection: string, page: number, pageSize: number, sortOrder: string, searchText: string | null, queryParams: any) => {
-    return await axios.get(`${API_URL}v1/collection/${collection}/artworks/`, {
-        params: {
-            page: page,
-            pageSize: pageSize,
-            sortOrder: sortOrder,
-            searchText: searchText,
-            advSearch: Object.entries(queryParams).length !== 0 ? true : false,
-            ...queryParams
-        }
-    })
-        .then(res => res.data)
-}
 
 export const createCollection = async (name: any, description: any, categories: Category[], jwtToken: any) => {
     const config = {

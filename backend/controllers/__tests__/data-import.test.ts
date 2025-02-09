@@ -14,7 +14,7 @@ jest.mock('mongoose', () => ({
 }))
 
 const mockPrepRecords = jest.fn()
-jest.mock("../../utils/controllers-utils/data-import", () => ({
+jest.mock("../../utils/data-import", () => ({
     prepRecords: () => mockPrepRecords()
 }))
 
@@ -143,7 +143,7 @@ describe('data-import controller', () => {
             {
                 payload: {importData: [["Title"], ["An artwork title"]],collectionName: 'collection'},
                 startSession: () => startSessionDefaultReturnValue,
-                statusCode: 500, error: 'Error preparing data for database insertion',
+                statusCode: 400, error: 'Invalid data in the spreadsheet file',
                 find: {exec: () => Promise.resolve([
                     {
                       _id: `${artworkId}`,
@@ -152,7 +152,7 @@ describe('data-import controller', () => {
                       __v: 0
                     }
                   ])},
-                prepRecords: () => {throw Error('Error preparing data for database insertion')} 
+                prepRecords: () => {throw Error('Invalid data in the spreadsheet file')} 
             },
             {
                 payload: {importData: [["Title"], ["An artwork title"]],collectionName: 'collection'},

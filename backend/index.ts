@@ -6,7 +6,6 @@ const app = express()
 import connectDB from "./db/connect"
 
 import cors from "cors";
-import errorHandler from "./middleware/errorHandler";
 import auth from "./routes/auth";
 import dataImport from "./routes/dataImport";
 import artworks from "./routes/artwork";
@@ -23,7 +22,6 @@ app.use("/api/v1/collection", collections)
 app.use("/api/v1/categories", categories)
 app.use("/api/v1/dataExport", dataExport)
 app.use("/api/v1/dataImport", dataImport)
-app.use(errorHandler)
 
 const port = process.env.PORT || 5000
 

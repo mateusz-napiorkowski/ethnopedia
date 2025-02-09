@@ -28,6 +28,84 @@ exports[`artworks controller GET endpoints getArtwork should respond with status
 }
 `;
 
+exports[`artworks controller GET endpoints getArtworksForCollectionPage should respond with status 200 and correct body - advanced search 1`] = `
+{
+  "artworks": [
+    {
+      "__v": 0,
+      "_id": "6717d4c0666e8575d873ee69",
+      "categories": [
+        {
+          "name": "Tytuł",
+          "subcategories": [],
+          "values": [
+            "testowy",
+          ],
+        },
+      ],
+      "collectionName": "collection",
+      "createdAt": "2024-10-22T20:12:12.209Z",
+      "updatedAt": "2024-10-22T20:12:12.209Z",
+    },
+  ],
+  "currentPage": 1,
+  "pageSize": 10,
+  "total": 1,
+}
+`;
+
+exports[`artworks controller GET endpoints getArtworksForCollectionPage should respond with status 200 and correct body - no filtering 1`] = `
+{
+  "artworks": [
+    {
+      "__v": 0,
+      "_id": "6717d4c0666e8575d873ee69",
+      "categories": [
+        {
+          "name": "Tytuł",
+          "subcategories": [],
+          "values": [
+            "testowy",
+          ],
+        },
+      ],
+      "collectionName": "collection",
+      "createdAt": "2024-10-22T20:12:12.209Z",
+      "updatedAt": "2024-10-22T20:12:12.209Z",
+    },
+  ],
+  "currentPage": 1,
+  "pageSize": 10,
+  "total": 1,
+}
+`;
+
+exports[`artworks controller GET endpoints getArtworksForCollectionPage should respond with status 200 and correct body - quicksearch 1`] = `
+{
+  "artworks": [
+    {
+      "__v": 0,
+      "_id": "6717d4c0666e8575d873ee69",
+      "categories": [
+        {
+          "name": "Tytuł",
+          "subcategories": [],
+          "values": [
+            "testowy",
+          ],
+        },
+      ],
+      "collectionName": "collection",
+      "createdAt": "2024-10-22T20:12:12.209Z",
+      "updatedAt": "2024-10-22T20:12:12.209Z",
+    },
+  ],
+  "currentPage": 1,
+  "pageSize": 10,
+  "total": 1,
+}
+`;
+
 exports[`artworks controller POST endpoints createArtwork should respond with status 201 and correct body 1`] = `
 {
   "__v": 0,

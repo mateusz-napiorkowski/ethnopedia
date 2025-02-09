@@ -2,7 +2,9 @@ import { Request, Response } from "express"
 import mongoose, { ClientSession } from "mongoose"
 import { authAsyncWrapper } from "../middleware/auth"
 import Artwork from "../models/artwork";
-import CollectionCollection from "../models/collection";
+import CollectionCollection from "../models/collection"
+import { constructQuickSearchFilter, constructAdvSearchFilter, sortRecordsByCategory } from "../utils/artworks"
+import { artworkCategoriesHaveValidFormat } from "../utils/categories";
 
 export const getArtwork = async (req: Request, res: Response) => {
     try {
@@ -25,6 +27,48 @@ export const getArtwork = async (req: Request, res: Response) => {
     }
 }
 
+export const getArtworksForCollectionPage = async (req: Request, res: Response) => {
+    try {
+        const page = parseInt(req.query.page as string)
+        const pageSize = parseInt(req.query.pageSize as string)
+        
+        if(!page || !pageSize)
+            throw new Error("Request is missing query params")
+
+        const collectionName = req.params.collectionName
+        const searchText = req.query.searchText
+        const sortOrder = req.params.sortOrder
+        
+        const search = req.query.search === "true" ? true : false
+
+        let queryFilter;
+        if(!search)
+            queryFilter = { collectionName: collectionName }
+        else if(searchText)
+            queryFilter = await constructQuickSearchFilter(searchText, collectionName)
+        else
+            queryFilter = await constructAdvSearchFilter(req.query, collectionName)
+        
+        const artworksFiltered = await Artwork.find(queryFilter).exec()
+        const artworksSorted = sortRecordsByCategory(artworksFiltered, sortOrder)
+        const artworksForPage = artworksSorted.slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize)
+
+        return res.status(200).json({
+            artworks: artworksForPage,
+            total: artworksFiltered.length,
+            currentPage: page,
+            pageSize: pageSize,
+        })
+    } catch (error) {
+        const err = error as Error
+        console.error(error)
+        if (err.message === "Request is missing query params")
+            res.status(400).json({ error: err.message })
+        else
+            res.status(503).json({ error: `Database unavailable` })
+    }
+}
+
 export const createArtwork = authAsyncWrapper((async (req: Request, res: Response) => {
     try {
         const collectionName = req.body.collectionName
@@ -33,6 +77,9 @@ export const createArtwork = authAsyncWrapper((async (req: Request, res: Respons
         const foundCollections = await CollectionCollection.find({name: collectionName}).exec()
         if (foundCollections.length !== 1)
             throw new Error(`Collection not found`)
+        const collectionCategories = foundCollections[0].categories
+        if(!artworkCategoriesHaveValidFormat(req.body.categories, collectionCategories))
+            throw new Error(`Incorrect request body provided`)
         const newArtwork = await Artwork.create(req.body)
         res.status(201).json(newArtwork)
     } catch (error) {

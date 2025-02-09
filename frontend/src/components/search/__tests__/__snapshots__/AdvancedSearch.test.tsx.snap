@@ -1,14 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`AdvancedSearch tests error message shows up when user tries to add rule with category name already present in another rule 1`] = `
-<p
-  class="ml-auto text-red-500 text-sm"
->
-  Reguła z tą nazwą kategorii już istnieje.
-</p>
-`;
-
-exports[`AdvancedSearch tests rule adding works correctly 1`] = `
+exports[`AdvancedSearch tests should add and render search rules correctly 1`] = `
 <div
   data-testid="rules-container"
 >
@@ -16,8 +8,8 @@ exports[`AdvancedSearch tests rule adding works correctly 1`] = `
     class="flex items-center gap-2 mt-4"
   >
     <button
+      aria-label="delete Tytuł"
       class="border-none p-0 mr-2"
-      data-testid="delete-Tytuł"
     >
       <svg />
     </button>
@@ -36,8 +28,8 @@ exports[`AdvancedSearch tests rule adding works correctly 1`] = `
     class="flex items-center gap-2 mt-4"
   >
     <button
+      aria-label="delete Rok"
       class="border-none p-0 mr-2"
-      data-testid="delete-Rok"
     >
       <svg />
     </button>
@@ -56,8 +48,8 @@ exports[`AdvancedSearch tests rule adding works correctly 1`] = `
     class="flex items-center gap-2 mt-4"
   >
     <button
+      aria-label="delete Tytuł.Podtytuł"
       class="border-none p-0 mr-2"
-      data-testid="delete-Tytuł.Podtytuł"
     >
       <svg />
     </button>
@@ -75,7 +67,7 @@ exports[`AdvancedSearch tests rule adding works correctly 1`] = `
 </div>
 `;
 
-exports[`AdvancedSearch tests rule deleting works correctly 1`] = `
+exports[`AdvancedSearch tests should delete appropriate search rules and render search rules correctly 1`] = `
 <div
   data-testid="rules-container"
 >
@@ -83,8 +75,8 @@ exports[`AdvancedSearch tests rule deleting works correctly 1`] = `
     class="flex items-center gap-2 mt-4"
   >
     <button
+      aria-label="delete Rok"
       class="border-none p-0 mr-2"
-      data-testid="delete-Rok"
     >
       <svg />
     </button>
@@ -103,8 +95,8 @@ exports[`AdvancedSearch tests rule deleting works correctly 1`] = `
     class="flex items-center gap-2 mt-4"
   >
     <button
+      aria-label="delete Artyści"
       class="border-none p-0 mr-2"
-      data-testid="delete-Artyści"
     >
       <svg />
     </button>

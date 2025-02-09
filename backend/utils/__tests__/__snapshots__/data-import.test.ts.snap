@@ -1,0 +1,288 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`data-import controller util functions tests prepRecords test - remove leading/trailing whitespace in category values 1`] = `
+[
+  {
+    "categories": [
+      {
+        "name": "Title",
+        "subcategories": [
+          {
+            "name": "Subtitle",
+            "subcategories": [],
+            "values": [
+              "subtitle 1",
+              "alternate subtitle 1",
+            ],
+          },
+        ],
+        "values": [
+          "title 1",
+          "alternate title 1",
+        ],
+      },
+      {
+        "name": "Artists",
+        "subcategories": [],
+        "values": [
+          "artists 1",
+        ],
+      },
+    ],
+    "collectionName": "collection",
+  },
+]
+`;
+
+exports[`data-import controller util functions tests prepRecords test - remove leading/trailing whitespace in each part of full category name 1`] = `
+[
+  {
+    "categories": [
+      {
+        "name": "Title",
+        "subcategories": [
+          {
+            "name": "Subtitle",
+            "subcategories": [],
+            "values": [
+              "subtitle 1",
+            ],
+          },
+        ],
+        "values": [
+          "title 1",
+        ],
+      },
+      {
+        "name": "Artists",
+        "subcategories": [],
+        "values": [
+          "artists 1",
+        ],
+      },
+    ],
+    "collectionName": "collection",
+  },
+]
+`;
+
+exports[`data-import controller util functions tests prepRecords test - skip all whitespace category values 1`] = `
+[
+  {
+    "categories": [
+      {
+        "name": "Title",
+        "subcategories": [],
+        "values": [
+          "title 1",
+        ],
+      },
+    ],
+    "collectionName": "collection",
+  },
+]
+`;
+
+exports[`data-import controller util functions tests prepRecords test - skip subcategory with empty values only if there are no deeper subcategories 1`] = `
+[
+  {
+    "categories": [
+      {
+        "name": "Title",
+        "subcategories": [
+          {
+            "name": "Subtitle",
+            "subcategories": [
+              {
+                "name": "Subsubtitle",
+                "subcategories": [
+                  {
+                    "name": "Subsubsubtitle",
+                    "subcategories": [],
+                    "values": [
+                      "subsubsubtitle 1",
+                    ],
+                  },
+                ],
+                "values": [],
+              },
+            ],
+            "values": [
+              "subtitle 1",
+            ],
+          },
+        ],
+        "values": [],
+      },
+    ],
+    "collectionName": "collection",
+  },
+  {
+    "categories": [
+      {
+        "name": "Title",
+        "subcategories": [
+          {
+            "name": "Subtitle",
+            "subcategories": [
+              {
+                "name": "Subsubtitle",
+                "subcategories": [
+                  {
+                    "name": "Subsubsubtitle",
+                    "subcategories": [
+                      {
+                        "name": "Subsubsubsubtitle",
+                        "subcategories": [],
+                        "values": [
+                          "subsubsubsubtitle 1",
+                        ],
+                      },
+                    ],
+                    "values": [],
+                  },
+                ],
+                "values": [],
+              },
+            ],
+            "values": [],
+          },
+        ],
+        "values": [],
+      },
+    ],
+    "collectionName": "collection",
+  },
+]
+`;
+
+exports[`data-import controller util functions tests prepRecords test - skipped category values in some records 1`] = `
+[
+  {
+    "categories": [
+      {
+        "name": "Title",
+        "subcategories": [],
+        "values": [
+          "title 1",
+        ],
+      },
+      {
+        "name": "Release Year",
+        "subcategories": [],
+        "values": [
+          "release year 1",
+        ],
+      },
+    ],
+    "collectionName": "collection",
+  },
+  {
+    "categories": [
+      {
+        "name": "Artists",
+        "subcategories": [],
+        "values": [
+          "artists 2",
+        ],
+      },
+      {
+        "name": "Release Year",
+        "subcategories": [],
+        "values": [
+          "release year 2",
+        ],
+      },
+    ],
+    "collectionName": "collection",
+  },
+  {
+    "categories": [
+      {
+        "name": "Title",
+        "subcategories": [],
+        "values": [
+          "title 3",
+        ],
+      },
+    ],
+    "collectionName": "collection",
+  },
+]
+`;
+
+exports[`data-import controller util functions tests prepRecords test - three levels deep data 1`] = `
+[
+  {
+    "categories": [
+      {
+        "name": "Title",
+        "subcategories": [
+          {
+            "name": "Subtitle",
+            "subcategories": [
+              {
+                "name": "Subsubtitle",
+                "subcategories": [],
+                "values": [
+                  "subsubtitle 1",
+                  "alternate subsubtitle 1",
+                  "another alternate subsubtitle 1",
+                ],
+              },
+            ],
+            "values": [
+              "subtitle 1",
+              "alternate subtitle 1",
+              "another alternate subtitle 1",
+            ],
+          },
+        ],
+        "values": [
+          "title 1",
+          "alternate title 1",
+        ],
+      },
+    ],
+    "collectionName": "collection",
+  },
+]
+`;
+
+exports[`data-import controller util functions tests prepRecords test - unusual column order 1`] = `
+[
+  {
+    "categories": [
+      {
+        "name": "Title",
+        "subcategories": [
+          {
+            "name": "Subtitle",
+            "subcategories": [
+              {
+                "name": "Subsubtitle",
+                "subcategories": [],
+                "values": [
+                  "subsubtitle 1",
+                  "alternate subsubtitle 1",
+                  "another alternate subsubtitle 1",
+                ],
+              },
+            ],
+            "values": [
+              "subtitle 1",
+              "alternate subtitle 1",
+              "another alternate subtitle 1",
+            ],
+          },
+        ],
+        "values": [
+          "title 1",
+          "alternate title 1",
+        ],
+      },
+    ],
+    "collectionName": "collection",
+  },
+]
+`;

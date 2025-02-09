@@ -35,13 +35,13 @@ describe("QuickSearch tests", () => {
         queryClient.clear();
     });
 
-    test("component renders correctly", async () => {        
+    it("should render quicksearch component", () => {           
         const {getByTestId} = renderPage(queryClient)
 
         expect(getByTestId("quickSearchComponent")).toBeInTheDocument()
     })
 
-    test("user adds query string parameter 'searchtext' with value from input field to the URL when search button is clicked", async () => {        
+    it("should add query string parameter 'searchtext' with value from input field to the URL when search button is clicked", async () => {        
         const {getByRole} = renderPage(queryClient)
 
         const inputField = getByRole("textbox")

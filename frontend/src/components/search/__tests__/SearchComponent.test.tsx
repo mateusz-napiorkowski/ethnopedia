@@ -40,7 +40,7 @@ describe("SearchComponent tests", () => {
         queryClient.clear();
     });
 
-    test("component renders correctly", async () => {        
+    it("should render loading state", () => {      
         const {getByTestId, queryByTestId} = renderPage(queryClient)
         
         expect(getByTestId("searchComponent")).toBeInTheDocument()
@@ -48,7 +48,7 @@ describe("SearchComponent tests", () => {
         expect(queryByTestId("quickSearchComponent")).not.toBeInTheDocument()
     })
 
-    test("component rerenders correctly when categoriesData is fetched from API", async () => {
+    it("should render advanced search component after categoriesData is fetched from API", async () => {
         mockGetAllCategories.mockReturnValue(fetchedCategories)
         const {getByTestId, queryByTestId} = renderPage(queryClient)
 
@@ -57,7 +57,7 @@ describe("SearchComponent tests", () => {
         expect(queryByTestId("quickSearchComponent")).not.toBeInTheDocument()
     })
 
-    test("quicksearch menu shows up when quicksearch button is clicked", async () => {
+    it("should render quicksearch component after quicksearch button is clicked", async () => {
         mockGetAllCategories.mockReturnValue(fetchedCategories)
         const {getByTestId, queryByTestId, getByText} = renderPage(queryClient)
 
@@ -68,7 +68,7 @@ describe("SearchComponent tests", () => {
         expect(queryByTestId("advancedSearchComponent")).not.toBeInTheDocument()
     })
 
-    test("advancedsearch menu shows up when quicksearch button is clicked", async () => {
+    it("should render advanced search component after advanced search button is clicked", async () => {
         mockGetAllCategories.mockReturnValue(fetchedCategories)
         const {getByTestId, queryByTestId, getByText} = renderPage(queryClient)
 

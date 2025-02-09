@@ -1,7 +1,33 @@
-name: Ethnopedia
+name: ethnopedia
 services:
-  mongodb-community-server:
-    container_name: mongodb
+  frontend:
+    container_name: ethnopedia-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - REACT_APP_API_URL=https://music-put.lab.dariah.pl/ethnopedia-api/
     ports:
-      - 27017:27017
-    image: mongodb/mongodb-community-server:latest
+      - "4050:80"
+    volumes:
+      - ./frontend:/app
+    depends_on:
+      - backend
+  backend:
+    container_name: ethnopedia-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "4051:3000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules # anonymous volume for node_modules only
+    depends_on:
+      - mongodb
+  mongodb:
+    container_name: ethnopedia-mongodb
+    ports:
+      - "27017:27017"
+#    image: mongodb/mongodb-community-server:latest # use this one instead on proper processor architecture
+    image: mongodb/mongodb-community-server:4.4-ubuntu2004  # fix for Xeon processor missing AVX instruction set https://www.mongodb.com/docs/manual/tutorial/install-mongodb-community-with-docker/

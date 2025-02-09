@@ -1,0 +1,132 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`RegisterPage tests should render register page 1`] = `
+<div>
+  <section
+    class="bg-gray-50 dark:bg-gray-900"
+  >
+    <div
+      class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0
+                dark:border-gray-600"
+    >
+      <div
+        class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800
+                    dark:border-gray-600 border border-gray-200"
+      >
+        <div
+          class="p-6 space-y-4 md:space-y-6 sm:p-8"
+        >
+          <h1
+            class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white"
+          >
+            Zarejestruj się
+          </h1>
+          <form
+            action="#"
+            class="space-y-4 md:space-y-6"
+          >
+            <div>
+              <label
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                for="firstName"
+              >
+                Imię
+              </label>
+              <input
+                class="bg-gray-50 border border-gray-300
+                                              text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600
+                                              focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700
+                                              dark:border-gray-600 dark:placeholder-gray-400 dark:text-white
+                                              dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                id="firstName"
+                name="firstName"
+                placeholder="Twoje imię"
+                type="text"
+                value=""
+              />
+            </div>
+            <div>
+              <label
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                for="username"
+              >
+                Nazwa użytkownika
+              </label>
+              <input
+                class="bg-gray-50 border border-gray-300
+                                                                                  text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600
+                                                                                  focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700
+                                                                                  dark:border-gray-600 dark:placeholder-gray-400 dark:text-white
+                                                                                  dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                id="username"
+                name="username"
+                placeholder="Nazwa użytkownika"
+                type="username"
+                value=""
+              />
+            </div>
+            <div>
+              <label
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                for="password"
+              >
+                Hasło
+              </label>
+              <input
+                class="bg-gray-50 border border-gray-300
+                                                                                  text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600
+                                                                                  focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700
+                                                                                  dark:border-gray-600 dark:placeholder-gray-400 dark:text-white
+                                                                                  dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                id="password"
+                name="password"
+                placeholder="••••••••"
+                type="password"
+                value=""
+              />
+            </div>
+            <div>
+              <label
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                for="confirmPassword"
+              >
+                Powtórz hasło
+              </label>
+              <input
+                class="bg-gray-50 border border-gray-300
+                                                                      text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600
+                                                                      focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700
+                                                                      dark:border-gray-600 dark:placeholder-gray-400 dark:text-white
+                                                                      dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                id="confirmPassword"
+                name="confirmPassword"
+                placeholder="••••••••"
+                type="password"
+                value=""
+              />
+            </div>
+            <button
+              class="w-full color-button"
+              type="submit"
+            >
+              Zarejestruj się
+            </button>
+          </form>
+          <p
+            class="text-sm font-light text-gray-500 dark:text-gray-400"
+          >
+            Masz już konto?
+             
+            <span
+              class="ml-1 font-medium text-primary-600 hover:underline dark:text-primary-500
+                             cursor-pointer"
+            >
+              Zaloguj się.
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+`;

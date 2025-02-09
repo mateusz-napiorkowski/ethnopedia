@@ -1,13 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ArtworkPage tests categories list renders correctly when there are no categories 1`] = `
-<ul
-  class="px-4 list-[circle]"
-  data-testid="details-list"
-/>
-`;
-
-exports[`ArtworkPage tests component rerenders correctly when data is fetched from API 1`] = `
+exports[`ArtworkPage tests should render artwork page component correctly after data is fetched from API when main categories are specified 1`] = `
 <div
   class="mt-2 flex-2 "
   data-testid="main-categories-container"
@@ -38,7 +31,7 @@ exports[`ArtworkPage tests component rerenders correctly when data is fetched fr
 </div>
 `;
 
-exports[`ArtworkPage tests component rerenders correctly when data is fetched from API and main categories are unspecified 1`] = `
+exports[`ArtworkPage tests should render artwork page component correctly after data is fetched from API when main categories are unspecified 1`] = `
 <div
   class="mt-2 flex-2 "
   data-testid="main-categories-container"
@@ -65,7 +58,14 @@ exports[`ArtworkPage tests component rerenders correctly when data is fetched fr
 </div>
 `;
 
-exports[`ArtworkPage tests nested categories list renders correctly 1`] = `
+exports[`ArtworkPage tests should render categories list correctly when there aren't any categories 1`] = `
+<ul
+  class="px-4 list-[circle]"
+  data-testid="details-list"
+/>
+`;
+
+exports[`ArtworkPage tests should render nested categories list correctly 1`] = `
 <ul
   class="px-4 list-[circle]"
   data-testid="details-list"

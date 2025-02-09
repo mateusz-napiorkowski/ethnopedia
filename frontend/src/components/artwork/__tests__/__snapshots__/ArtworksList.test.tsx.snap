@@ -1,0 +1,249 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ArtworksList tests should refetch artworks list when artwork page is changed: page 1 1`] = `
+<div
+  class="w-full flex-2 lg:px-6 max-w-screen-xl"
+  data-testid="artworks-listed"
+>
+  <div
+    class="px-4 max-w-screen-xl py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4
+                border border-gray-300 dark:border-gray-600 cursor-pointer"
+    data-testid="6752ddca46e3ca48231024dc"
+  >
+    <div
+      class="flex flex-row"
+    >
+      <span
+        class="mr-4 flex items-center"
+      >
+        <input
+          data-testid="6752ddca46e3ca48231024dc-checkbox"
+          type="checkbox"
+        />
+      </span>
+      <div>
+        <h3
+          class="text-lg font-semibold text-gray-800 dark:text-white"
+        >
+          Jakym jechoł koło dworu
+        </h3>
+        <p
+          class="text-gray-600 dark:text-gray-400 mb-1"
+        >
+          Józefa Piaskowska
+        </p>
+        <p
+          class=" text-gray-500 dark:text-gray-300"
+        >
+          1960
+        </p>
+      </div>
+    </div>
+  </div>
+  <div
+    class="px-4 max-w-screen-xl py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4
+                border border-gray-300 dark:border-gray-600 cursor-pointer"
+    data-testid="6752ddca46e3ca48231024aa"
+  >
+    <div
+      class="flex flex-row"
+    >
+      <span
+        class="mr-4 flex items-center"
+      >
+        <input
+          data-testid="6752ddca46e3ca48231024aa-checkbox"
+          type="checkbox"
+        />
+      </span>
+      <div>
+        <h3
+          class="text-lg font-semibold text-gray-800 dark:text-white"
+        >
+          Ojcze, ojcze, kup mi kónia
+        </h3>
+        <p
+          class="text-gray-600 dark:text-gray-400 mb-1"
+        >
+          Magdalena Figlak
+        </p>
+        <p
+          class=" text-gray-500 dark:text-gray-300"
+        >
+          1949
+        </p>
+      </div>
+    </div>
+  </div>
+  <div
+    class="px-4 max-w-screen-xl py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4
+                border border-gray-300 dark:border-gray-600 cursor-pointer"
+    data-testid="6752ddca46e3ca48231024bb"
+  >
+    <div
+      class="flex flex-row"
+    >
+      <span
+        class="mr-4 flex items-center"
+      >
+        <input
+          data-testid="6752ddca46e3ca48231024bb-checkbox"
+          type="checkbox"
+        />
+      </span>
+      <div>
+        <h3
+          class="text-lg font-semibold text-gray-800 dark:text-white"
+        >
+          Piękna jagoda
+        </h3>
+        <p
+          class="text-gray-600 dark:text-gray-400 mb-1"
+        >
+          Zespół Mazowsze
+        </p>
+        <p
+          class=" text-gray-500 dark:text-gray-300"
+        >
+          2005
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ArtworksList tests should refetch artworks list when artwork page is changed: page 2 1`] = `
+<div
+  class="w-full flex-2 lg:px-6 max-w-screen-xl"
+  data-testid="artworks-listed"
+>
+  <div
+    class="px-4 max-w-screen-xl py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4
+                border border-gray-300 dark:border-gray-600 cursor-pointer"
+    data-testid="6752aaaa46e3ca48231024dc"
+  >
+    <div
+      class="flex flex-row"
+    >
+      <span
+        class="mr-4 flex items-center"
+      >
+        <input
+          data-testid="6752aaaa46e3ca48231024dc-checkbox"
+          type="checkbox"
+        />
+      </span>
+      <div>
+        <h3
+          class="text-lg font-semibold text-gray-800 dark:text-white"
+        >
+          W górach, nad rzeką
+        </h3>
+        <p
+          class="text-gray-600 dark:text-gray-400 mb-1"
+        >
+          Józefa Piaskowska
+        </p>
+        <p
+          class=" text-gray-500 dark:text-gray-300"
+        >
+          1960
+        </p>
+      </div>
+    </div>
+  </div>
+  <div
+    class="px-4 max-w-screen-xl py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4
+                border border-gray-300 dark:border-gray-600 cursor-pointer"
+    data-testid="6752aaaa46e5db48231024dc"
+  >
+    <div
+      class="flex flex-row"
+    >
+      <span
+        class="mr-4 flex items-center"
+      >
+        <input
+          data-testid="6752aaaa46e5db48231024dc-checkbox"
+          type="checkbox"
+        />
+      </span>
+      <div>
+        <h3
+          class="text-lg font-semibold text-gray-800 dark:text-white"
+        >
+          Skrzypce na polu
+        </h3>
+        <p
+          class="text-gray-600 dark:text-gray-400 mb-1"
+        >
+          Magdalena Figlak
+        </p>
+        <p
+          class=" text-gray-500 dark:text-gray-300"
+        >
+          1949
+        </p>
+      </div>
+    </div>
+  </div>
+  <div
+    class="px-4 max-w-screen-xl py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4
+                border border-gray-300 dark:border-gray-600 cursor-pointer"
+    data-testid="1234aaca46e3ca48231024bb"
+  >
+    <div
+      class="flex flex-row"
+    >
+      <span
+        class="mr-4 flex items-center"
+      >
+        <input
+          data-testid="1234aaca46e3ca48231024bb-checkbox"
+          type="checkbox"
+        />
+      </span>
+      <div>
+        <h3
+          class="text-lg font-semibold text-gray-800 dark:text-white"
+        >
+          Pragnom uoczka, pragnom
+        </h3>
+        <p
+          class="text-gray-600 dark:text-gray-400 mb-1"
+        >
+          Zespół Mazowsze
+        </p>
+        <p
+          class=" text-gray-500 dark:text-gray-300"
+        >
+          2005
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ArtworksList tests should render artworks list component after data is fetched from API, collection name and description should be displayed 1`] = `
+<div
+  class="flex flex-row mb-4 mt-2"
+  data-testid="collection-name-and-description-container"
+>
+  <div
+    class="flex flex-col w-full"
+  >
+    <h2
+      class="text-4xl font-bold text-gray-800 dark:text-white mb-1"
+    >
+      example collection
+    </h2>
+    <p
+      class="text-xl text-gray-600 dark:text-gray-300"
+    >
+      example collection description
+    </p>
+  </div>
+</div>
+`;

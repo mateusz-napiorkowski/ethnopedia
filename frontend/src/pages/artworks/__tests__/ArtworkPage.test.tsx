@@ -13,15 +13,17 @@ jest.mock('react-router-dom', () => ({
 }));
 
 const mockGetArtwork = jest.fn()
-const mockDeleteArtwork = jest.fn()
+const mockDeleteArtworks = jest.fn()
 jest.mock('../../../api/artworks', () => ({
     getArtwork: () => mockGetArtwork(),
-    deleteArtwork: () => mockDeleteArtwork()
+    deleteArtworks: (artworkId: string, jwtToken: string) => mockDeleteArtworks(artworkId, jwtToken)
 }))
 
 const queryClient = new QueryClient();
 const user = userEvent.setup()
 
+const collection = "example collection"
+const artworkId = "670c2aecc29b79e5aaef1b9b"
 const renderPage = (
     queryClient: QueryClient, 
     userContextProps: any = {
@@ -47,12 +49,15 @@ const renderPage = (
         );
 };
 
-const collection = "example collection"
+const jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXN"
+    + "lcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaecc"
+    + "N-rDSjRS3kApqlA"
+
 const loggedInUserContextProps = {
     isUserLoggedIn: true,
     firstName: "123",
-    userId: "123",
-    jwtToken: "123",
+    userId: "66b6506fbb64df165e8a9ce6",
+    jwtToken: jwtToken,
     setUserData: jest.fn()
 };
 
@@ -138,14 +143,14 @@ describe("ArtworkPage tests", () => {
         queryClient.clear();
     });
 
-    test("component renders correctly", async () => {        
+    it("should render loading state", () => {           
         const {queryByTestId} = renderPage(queryClient)
         
         expect(queryByTestId("loading-page-container")).toBeInTheDocument()
         expect(queryByTestId("loaded-artwork-page-container")).not.toBeInTheDocument()
     })
 
-    test("component rerenders correctly when data is fetched from API", async () => {
+    it("should render artwork page component correctly after data is fetched from API when main categories are specified", async () => {
         mockGetArtwork.mockReturnValue(artworkData)
         const {getByTestId, queryByTestId} = renderPage(queryClient)
 
@@ -155,7 +160,7 @@ describe("ArtworkPage tests", () => {
         expect(getByTestId("main-categories-container")).toMatchSnapshot()
     })
 
-    test("component rerenders correctly when data is fetched from API and main categories are unspecified", async () => {
+    it("should render artwork page component correctly after data is fetched from API when main categories are unspecified", async () => {
         mockGetArtwork.mockReturnValue(artworkDataWithoutCategories)
         const {getByTestId, queryByTestId} = renderPage(queryClient)
 
@@ -165,7 +170,7 @@ describe("ArtworkPage tests", () => {
         expect(getByTestId("main-categories-container")).toMatchSnapshot()
     })
 
-    test("edit button is disabled when user is not logged in", async () => {
+    it("should render disabled edit button when user is not logged in", async () => {
         mockGetArtwork.mockReturnValue(artworkData)
         const {getByTestId, getByRole} = renderPage(queryClient)
 
@@ -176,7 +181,7 @@ describe("ArtworkPage tests", () => {
         })).toBeDisabled();
     })
 
-    test("logged in user navigates to edit artwork page when edit button is clicked", async () => {
+    it("should navigate to edit artwork page after enabled edit button is clicked", async () => {
         mockGetArtwork.mockReturnValue(artworkData)
         const {getByTestId, getByRole } = renderPage(queryClient, loggedInUserContextProps)
 
@@ -185,10 +190,13 @@ describe("ArtworkPage tests", () => {
             name: /edytuj/i
         }))
 
-        expect(mockUseNavigate.mock.calls[0][0]).toBe("edit-artwork")
+        expect(mockUseNavigate).toHaveBeenCalledWith(
+            "edit-artwork", 
+            {state: {categories: artworkData.artwork.categories}}
+        )
     })
 
-    test("delete button is disabled when user is not logged in", async () => {
+    it("should render disabled delete button when user is not logged in", async () => {
         mockGetArtwork.mockReturnValue(artworkData)
         const {getByTestId, getByRole} = renderPage(queryClient)
 
@@ -199,7 +207,7 @@ describe("ArtworkPage tests", () => {
         })).toBeDisabled();
     })
 
-    test("delete warning popup shows up when logged in user clicks delete button", async () => {
+    it("should render delete warning popup after enabled delete button is clicked", async () => {
         mockGetArtwork.mockReturnValue(artworkData)
         const {getByTestId, getByRole, getByText} = renderPage(queryClient, loggedInUserContextProps)
 
@@ -211,7 +219,7 @@ describe("ArtworkPage tests", () => {
         await expect(getByText(/czy na pewno chcesz usunąć rekord?/i)).toBeInTheDocument()
     })
 
-    test("delete warning popup disappears when user clicks cancel button", async () => {
+    it("should not render delete warning popup after user clicks cancel button", async () => {
         mockGetArtwork.mockReturnValue(artworkData)
         const {getByTestId, getByRole, queryByText} = renderPage(queryClient, loggedInUserContextProps)
 
@@ -226,35 +234,36 @@ describe("ArtworkPage tests", () => {
         await expect(queryByText(/czy na pewno chcesz usunąć rekord?/i)).not.toBeInTheDocument()
     })
 
-    test("delete warning popup disappears when user clicks exit button", async () => {
+    it("should not render delete warning popup after user clicks exit button", async () => {
         mockGetArtwork.mockReturnValue(artworkData)
-        const {getByTestId, getByRole, queryByText} = renderPage(queryClient, loggedInUserContextProps)
+        const {getByTestId, getByLabelText, getByRole, queryByText} = renderPage(queryClient, loggedInUserContextProps)
 
         await waitFor(() => getByTestId('loaded-artwork-page-container'))
         await user.click(getByRole("button", {
             name: /usuń/i
         }))
-        await user.click(getByTestId("exitButton"))
+        await user.click(getByLabelText("exit"))
 
         await expect(queryByText(/czy na pewno chcesz usunąć rekord?/i)).not.toBeInTheDocument()
     })
 
-    test("logged in user navigates to collection page when delete button in delete warning popup is clicked", async () => {
+    it("should call deleteArtworks with correct arguments and navigate to collection page" +
+        " after delete button in delete warning popup is clicked", async () => {
         mockGetArtwork.mockReturnValue(artworkData)
-        mockDeleteArtwork.mockImplementation(() => ({acknowledged: true, deletedCount: 1}))
-        const {getByTestId, getByRole } = renderPage(queryClient, loggedInUserContextProps)
+        mockDeleteArtworks.mockImplementation(() => ({acknowledged: true, deletedCount: 1}))
+        const {getByTestId, getByRole, getByLabelText } = renderPage(queryClient, loggedInUserContextProps)
 
         await waitFor(() => getByTestId('loaded-artwork-page-container'))
         await user.click(getByRole("button", {
             name: /usuń/i
         }))
-        user.click(getByTestId("deleteConfirmButton"))
+        user.click(getByLabelText("confirm"))
 
-        await waitFor(() => expect(mockDeleteArtwork).toHaveBeenCalled())
-        expect(mockUseNavigate.mock.calls[0][0]).toBe(`/collections/${collection}/artworks/`)
+        await waitFor(() => expect(mockDeleteArtworks).toHaveBeenCalledWith([artworkId], jwtToken))
+        expect(mockUseNavigate).toHaveBeenCalledWith(`/collections/${collection}/artworks/`)      
     })
 
-    test("show more button works correctly", async () => {
+    it("should render categories list after show more button is clicked", async () => {
         mockGetArtwork.mockReturnValue(artworkData)
         const {getByTestId, getByRole} = renderPage(queryClient)
 
@@ -269,7 +278,7 @@ describe("ArtworkPage tests", () => {
         expect(getByTestId("details-list")).toBeInTheDocument()
     })
 
-    test("show less button works correctly", async () => {
+    it("should not render categories list after show less button is clicked", async () => {
         mockGetArtwork.mockReturnValue(artworkData)
         const {getByTestId, getByRole, queryByTestId} = renderPage(queryClient)
 
@@ -287,7 +296,7 @@ describe("ArtworkPage tests", () => {
         expect(queryByTestId("details-list")).not.toBeInTheDocument()
     })
 
-    test("nested categories list renders correctly", async () => {
+    it("should render nested categories list correctly", async () => {
         mockGetArtwork.mockReturnValue(artworkData)
         const {getByTestId, getByRole} = renderPage(queryClient)
 
@@ -299,7 +308,7 @@ describe("ArtworkPage tests", () => {
         expect(getByTestId("details-list")).toMatchSnapshot()
     })
 
-    test("categories list renders correctly when there are no categories", async () => {
+    it("should render categories list correctly when there aren't any categories", async () => {
         mockGetArtwork.mockReturnValue(artworkDataWithoutCategories)
         const {getByTestId, getByRole} = renderPage(queryClient)
 

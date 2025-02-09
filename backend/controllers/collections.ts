@@ -3,7 +3,7 @@ import mongoose, { ClientSession, SortOrder } from "mongoose"
 import { authAsyncWrapper } from "../middleware/auth"
 import Artwork from "../models/artwork";
 import CollectionCollection from "../models/collection";
-import {hasValidCategoryFormat} from "../utils/controllers-utils/categories";
+import {hasValidCategoryFormat} from "../utils/categories";
 
 export const getAllCollections = async (req: Request, res: Response) => {
     try {
@@ -78,14 +78,14 @@ export const getCollection = async (req: Request, res: Response) => {
 }
 
 export const createCollection = authAsyncWrapper(async (req: Request, res: Response) => {
-    const collectionName = req.body.name;
-    const collectionDescription = req.body.description;
-    const categories = req.body.categories;
+    const collectionName = req.body.name
+    const collectionDescription = req.body.description
+    const categories = req.body.categories
     console.log("Otrzymane categories:", req.body.categories);
     try {
-        if (!collectionName || !collectionDescription || !categories || !hasValidCategoryFormat(categories))
-            throw new Error("Incorrect request body provided");
-        const session = await mongoose.startSession();
+        if(!collectionName || !collectionDescription || !categories || !hasValidCategoryFormat(categories))
+            throw new Error("Incorrect request body provided")
+        const session = await mongoose.startSession()
         await session.withTransaction(async (session: ClientSession) => {
             const duplicateCollection = await CollectionCollection.findOne({ name: collectionName }, null, { session }).exec();
             if (duplicateCollection)

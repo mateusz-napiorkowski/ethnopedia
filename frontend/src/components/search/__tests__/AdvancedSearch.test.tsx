@@ -49,14 +49,14 @@ describe("AdvancedSearch tests", () => {
         queryClient.clear();
     });
 
-    test("component renders correctly", async () => {        
+    it("should render loading state", () => {        
         const {getByTestId, queryByTestId} = renderPage(queryClient)
 
         expect(getByTestId("loading-advanced-search-container")).toBeInTheDocument()
         expect(queryByTestId("advancedSearchComponent")).not.toBeInTheDocument()
     })
 
-    test("component rerenders correctly when categoriesData is fetched from API", async () => {
+    it("should render advanced search component after categoriesData is fetched from API", async () => {
         mockGetAllCategories.mockReturnValue(fetchedCategories)
         const {getByTestId, queryByTestId} = renderPage(queryClient)
 
@@ -64,7 +64,7 @@ describe("AdvancedSearch tests", () => {
         expect(queryByTestId("loading-advanced-search-container")).not.toBeInTheDocument()
     })
 
-    test("rule adding works correctly", async () => {
+    it("should add and render search rules correctly", async () => {
         mockGetAllCategories.mockReturnValue(fetchedCategories)
         const {getByTestId, getByRole} = renderPage(queryClient)
         await waitFor(() => getByTestId("advancedSearchComponent"))
@@ -88,7 +88,7 @@ describe("AdvancedSearch tests", () => {
         expect(getByTestId("rules-container")).toMatchSnapshot()
     })
 
-    test("select and input elements clear out when rule is added", async () => {
+    it("should clear out select and input elements after new rule is added", async () => {
         mockGetAllCategories.mockReturnValue(fetchedCategories)
         const {getByTestId, getByRole, getByText} = renderPage(queryClient)
         await waitFor(() => getByTestId("advancedSearchComponent"))
@@ -107,9 +107,9 @@ describe("AdvancedSearch tests", () => {
         expect(inputField).toHaveValue("")
     })
 
-    test("rule deleting works correctly", async () => {
+    it("should delete appropriate search rules and render search rules correctly", async () => {
         mockGetAllCategories.mockReturnValue(fetchedCategories)
-        const {getByTestId, getByRole} = renderPage(queryClient)
+        const {getByTestId, getByRole, getByLabelText} = renderPage(queryClient)
         await waitFor(() => getByTestId("advancedSearchComponent"))
         const selectField = getByRole("combobox")
         const inputField = getByRole("textbox")
@@ -125,7 +125,7 @@ describe("AdvancedSearch tests", () => {
         await user.type(inputField, "1410")
         await user.click(addRuleButton)
 
-        await user.click(getByTestId("delete-Tytuł"))
+        await user.click(getByLabelText("delete Tytuł"))
 
         await user.selectOptions(selectField, "Artyści")
         await user.type(inputField, "Jan Nowak")
@@ -135,12 +135,12 @@ describe("AdvancedSearch tests", () => {
         await user.type(inputField, "Przykładowy podtytuł")
         await user.click(addRuleButton)
 
-        await user.click(getByTestId("delete-Tytuł.Podtytuł"))
+        await user.click(getByLabelText("delete Tytuł.Podtytuł"))
 
         expect(getByTestId("rules-container")).toMatchSnapshot()
     })
 
-    test("error message shows up when user tries to add rule with category name already present in another rule", async () => {
+    it("should render element with error message when user tries to add rule with category name already present in another rule", async () => {
         mockGetAllCategories.mockReturnValue(fetchedCategories)
         const {getByTestId, getByRole, getByText} = renderPage(queryClient)
         await waitFor(() => getByTestId("advancedSearchComponent"))
@@ -158,10 +158,10 @@ describe("AdvancedSearch tests", () => {
         await user.type(inputField, "Przykładowy tytuł 2")
         await user.click(addRuleButton)
 
-        expect(getByText(/reguła z tą nazwą kategorii już istnieje./i)).toMatchSnapshot()
+        expect(getByText(/reguła z tą nazwą kategorii już istnieje./i)).toBeInTheDocument()
     })
 
-    test("error message disappears when user selects another option from select element", async () => {
+    it("should not render element with error message after user selects any option from select element", async () => {
         mockGetAllCategories.mockReturnValue(fetchedCategories)
         const {getByTestId, getByRole, queryByText} = renderPage(queryClient)
         await waitFor(() => getByTestId("advancedSearchComponent"))
@@ -184,9 +184,9 @@ describe("AdvancedSearch tests", () => {
         expect(queryByText(/reguła z tą nazwą kategorii już istnieje./i)).not.toBeInTheDocument()
     })
 
-    test("user adds appropriate query string parameters to the url when search button is clicked", async () => {
+    it("should navigate to the same page with correctly altered query string and component state after search button is clicked", async () => {
         mockGetAllCategories.mockReturnValue(fetchedCategories)
-        const {getByTestId, getByRole, queryByText} = renderPage(queryClient)
+        const {getByTestId, getByRole } = renderPage(queryClient)
         await waitFor(() => getByTestId("advancedSearchComponent"))
         const selectField = getByRole("combobox")
         const inputField = getByRole("textbox")
@@ -207,7 +207,14 @@ describe("AdvancedSearch tests", () => {
 
         await user.click(searchButton)
 
-        expect(mockUseNavigate.mock.calls[0][0])
-        .toMatchInlineSnapshot(`"/collections/example collection/artworks?Tytuł=tytuł&Tytuł.Podtytuł=podtytuł"`)
+        expect(mockUseNavigate).toHaveBeenCalledWith(
+            `/collections/example collection/artworks?Tytuł=tytuł&Tytuł.Podtytuł=podtytuł`,
+            {"state":
+                {"rules": [
+                    {"field": "Tytuł", "id": expect.any(String), "value": "tytuł"},
+                    {"field": "Tytuł.Podtytuł", "id": expect.any(String), "value": "podtytuł"}
+                ]}
+            }
+        )
     })
 })
