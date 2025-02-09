@@ -3,7 +3,7 @@ import mongoose, { ClientSession, SortOrder } from "mongoose"
 import { authAsyncWrapper } from "../middleware/auth"
 import Artwork from "../models/artwork";
 import CollectionCollection from "../models/collection";
-import {hasValidCategoryFormat} from "../utils/categories";
+import {hasValidCategoryFormat} from "../utils/controllers-utils/categories";
 
 export const getAllCollections = async (req: Request, res: Response) => {
     try {

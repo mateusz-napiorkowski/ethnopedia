@@ -1,4 +1,3 @@
-// import CustomDropdown from "../../components/CustomDropdown"
 import LoadingPage from "../LoadingPage"
 import React, { useEffect, useState } from "react"
 import WarningPopup from "./WarningPopup"
@@ -13,6 +12,7 @@ import { useUser } from "../../providers/UserProvider"
 import Pagination from "../../components/Pagination"
 import { getXlsxWithCollectionData } from "../../api/dataExport"
 import FileDropzone from "../../components/FileDropzone"
+import CustomDropdown from "../../components/CustomDropdown"
 
 interface Option {
     value: string
