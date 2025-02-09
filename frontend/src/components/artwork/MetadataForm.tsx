@@ -24,22 +24,24 @@ function transformToNewStructure(data: Metadata[], collectionName: string): { ca
 
 interface MetadataFormProps {
   initialFormData: Metadata[];
-  setDataToInsert: any
+  collectionName: string;
+  setDataToInsert: (data: { categories: Metadata[]; collectionName: string }) => void;
 }
 
 
-const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, setDataToInsert }) => {
+const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, collectionName, setDataToInsert }) => {
   const [formDataList, setFormDataList] = React.useState<Metadata[]>(initialFormData); // Ustaw początkowe dane
 
+  useEffect(() => {
+    if (collectionName) {
+      setDataToInsert({ categories: formDataList, collectionName });
+    }
+  }, [formDataList, collectionName]);
+
   const createOrEdit = window.location.href.split("/")[window.location.href.split("/").length-1]
-  let collectionName = window.location.href.split("/")[window.location.href.split("/").length-2]
   if(createOrEdit === "edit-artwork") {
     collectionName = window.location.href.split("/")[window.location.href.split("/").length-4]
   }
-
-  useEffect(() => {
-    setDataToInsert(transformToNewStructure(formDataList, collectionName))
-  }, [formDataList, collectionName, setDataToInsert])
 
   // const [jsonOutput, setJsonOutput] = useState<string>('');
   // const handleShowJson = () => {
