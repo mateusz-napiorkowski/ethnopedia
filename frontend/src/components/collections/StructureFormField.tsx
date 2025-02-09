@@ -51,12 +51,12 @@ const StructureFormField: React.FC<FormFieldProps> = ({
                         className="p-2 border rounded"
                     />
                 </label>
-                <div className="actions">
+                <div className="actions ml-1 space-x-1">
                     {level < 5 && isHovered && (
                         <button
                             type="button"
                             onClick={() => handleAddSubcategory(index)}
-                            title={`Dodaj podkategorię dla [${index}]`}
+                            title={`Dodaj podkategorię`}
                         >
                             <PlusIcon />
                         </button>
@@ -65,7 +65,7 @@ const StructureFormField: React.FC<FormFieldProps> = ({
                         <button
                             type="button"
                             onClick={() => handleRemove(index)}
-                            title={`Usuń kategorię [${index}]`}
+                            title={`Usuń kategorię`}
                         >
                             <MinusIcon />
                         </button>

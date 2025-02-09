@@ -138,13 +138,17 @@ const StructureForm: React.FC<StructureFormProps> = ({ initialFormData, setField
                   handleAddSubcategory={handleAddSubcategory}
               />
           ))}
-          <div className="flex flex-col justify-between items-start mt-1 space-y-4">
-            <button type="button" onClick={handleAddCategory} title="Dodaj kategorię">
-              <PlusIcon />
+          <div className="actions mt-1">
+            <button
+                type="button"
+                onClick={handleAddCategory}
+                title="Dodaj kategorię"
+            >
+              <PlusIcon/>
             </button>
-            <button type="button" onClick={handleShowJson}>
-              Show JSON
-            </button>
+            {/*<button type="button" onClick={handleShowJson}>*/}
+            {/*  Show JSON*/}
+            {/*</button>*/}
           </div>
         </form>
         <pre>{jsonOutput}</pre>

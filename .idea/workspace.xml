@@ -6,8 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="2d029bd7-82b7-4397-bf3e-7fcfe7cda461" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/artwork/CreateArtwork.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/artwork/CreateArtwork.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/artwork/MetadataForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/artwork/MetadataForm.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/collections/StructureForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/collections/StructureForm.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/collections/StructureFormField.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/collections/StructureFormField.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/index.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -167,7 +168,7 @@
       <workItem from="1739040476745" duration="4084000" />
       <workItem from="1739048996956" duration="5102000" />
       <workItem from="1739115500842" duration="1122000" />
-      <workItem from="1739118376802" duration="9178000" />
+      <workItem from="1739118376802" duration="11091000" />
     </task>
     <servers />
   </component>

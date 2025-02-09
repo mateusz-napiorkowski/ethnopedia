@@ -176,7 +176,7 @@ const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, collection
                     handleAddSubcategory={handleAddSubcategory}
                 />
             ))}
-            <div className="flex flex-col justify-between items-start mt-4 space-y-4">
+            <div className="actions mt-1">
               <button type="button" onClick={handleAddCategory} title="Dodaj kategorię">
                 <PlusIcon />
               </button>
