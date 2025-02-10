@@ -45,9 +45,10 @@ const FormField: React.FC<FormFieldProps> = ({
                         type="text"
                         name="name"
                         value={formData.name}
-                        onChange={(e) => handleInputChange(index, e)}
-                        placeholder={`Podaj nazwę kategorii...`}
                         className="p-2 border rounded"
+                        onChange={(e) => handleInputChange(index, e)}
+                        // placeholder={`Podaj nazwę kategorii...`}
+                        disabled
                     />
                 </label>
                 <label className="flex items-center">
@@ -63,26 +64,26 @@ const FormField: React.FC<FormFieldProps> = ({
                         className="p-2 border rounded"
                     />
                 </label>
-                <div className="actions ml-1 space-x-1">
-                    {level < 5 && isHovered && (
-                        <button
-                            type="button"
-                            onClick={() => handleAddSubcategory(index)}
-                            title={`Dodaj podkategorię dla [${index}]`}
-                        >
-                            <PlusIcon/>
-                        </button>
-                    )}
-                    {isHovered && (
-                        <button
-                            type="button"
-                            onClick={() => handleRemove(index)}
-                            title={`Usuń kategorię [${index}]`}
-                        >
-                            <MinusIcon/>
-                        </button>
-                    )}
-                </div>
+                {/*<div className="actions ml-1 space-x-1">*/}
+                {/*    {level < 5 && isHovered && (*/}
+                {/*        <button*/}
+                {/*            type="button"*/}
+                {/*            onClick={() => handleAddSubcategory(index)}*/}
+                {/*            title={`Dodaj podkategorię dla [${index}]`}*/}
+                {/*        >*/}
+                {/*            <PlusIcon/>*/}
+                {/*        </button>*/}
+                {/*    )}*/}
+                {/*    {isHovered && (*/}
+                {/*        <button*/}
+                {/*            type="button"*/}
+                {/*            onClick={() => handleRemove(index)}*/}
+                {/*            title={`Usuń kategorię [${index}]`}*/}
+                {/*        >*/}
+                {/*            <MinusIcon/>*/}
+                {/*        </button>*/}
+                {/*    )}*/}
+                {/*</div>*/}
             </div>
             {/* Obszar renderowania podkategorii – oddzielony od obszaru pola */}
             <div className="children-container ml-8">

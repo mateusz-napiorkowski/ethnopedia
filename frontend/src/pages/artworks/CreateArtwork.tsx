@@ -124,14 +124,18 @@ const CreateArtwork: React.FC = () => {
                 {/* Formularz */}
                 <div className="mt-4">
                     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border dark:border-gray-600 p-8">
-                        <div className="flex items-start rounded-t border-b pb-2">
+                        <div className="flex-row items-start rounded-t border-b pb-2">
                             <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-                                {location.state ? "Edytuj rekord" : `Dodaj nowy rekord do kolekcji: ${collectionName}`}
+                                {/*{location.state ? "Edytuj rekord z kolekcji" : `Dodaj nowy rekord do kolekcji: ${collectionName}`}*/}
+                                {location.state ? "Edytuj rekord z kolekcji" : `Dodaj nowy rekord do kolekcji:`}
                             </h3>
+                            <h4 className="text-2xl text-gray-900 dark:text-white">
+                                {collectionName}
+                            </h4>
                         </div>
                         <Formik
-                            initialValues={{ formDataList: initialFormData }}
-                            onSubmit={(values, { setSubmitting }) => {
+                            initialValues={{formDataList: initialFormData}}
+                            onSubmit={(values, {setSubmitting}) => {
                                 handleSubmit(values.formDataList);
                                 setSubmitting(false);
                             }}

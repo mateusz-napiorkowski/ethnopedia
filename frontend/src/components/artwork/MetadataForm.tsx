@@ -17,7 +17,7 @@ const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, collection
     if (collectionName) {
       setDataToInsert({ categories: formDataList, collectionName });
     }
-  }, [formDataList, collectionName, setDataToInsert]);
+  }, [formDataList, collectionName]);
 
   const createOrEdit = window.location.href.split("/")[window.location.href.split("/").length-1]
   if(createOrEdit === "edit-artwork") {
@@ -151,14 +151,14 @@ const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, collection
                     handleAddSubcategory={handleAddSubcategory}
                 />
             ))}
-            <div className="actions mt-1">
-              <button type="button" onClick={handleAddCategory} title="Dodaj kategorię">
-                <PlusIcon />
-              </button>
-              {/*<button type="button" onClick={handleShowJson}>*/}
-              {/*  Show JSON*/}
-              {/*</button>*/}
-            </div>
+            {/*<div className="actions mt-1">*/}
+            {/*  <button type="button" onClick={handleAddCategory} title="Dodaj kategorię">*/}
+            {/*    <PlusIcon />*/}
+            {/*  </button>*/}
+            {/*  /!*<button type="button" onClick={handleShowJson}>*!/*/}
+            {/*  /!*  Show JSON*!/*/}
+            {/*  /!*</button>*!/*/}
+            {/*</div>*/}
           </form>
           {/* <pre>{jsonOutput}</pre> */}
         </div>
