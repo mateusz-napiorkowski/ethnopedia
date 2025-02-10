@@ -8,7 +8,7 @@ import Navigation from "../Navigation";
 import { Metadata } from '../../@types/Metadata';
 import { createArtwork, editArtwork } from "../../api/artworks";
 import MetadataForm from "./MetadataForm";
-import {getCollection} from "../../api/collections";
+// import {getCollection} from "../../api/collections";
 import LoadingPage from "../../pages/LoadingPage";
 import {getAllCategories} from "../../api/categories";
 
@@ -49,7 +49,7 @@ const convertToJson = (data: string[]): Metadata[] => {
 
 const CreateArtwork: React.FC = () => {
     const location = useLocation();
-    const { collectionId } = useParams<{ collectionId: string }>();
+    // const { collectionId } = useParams<{ collectionId: string }>();
     const queryClient = useQueryClient();
     const { jwtToken } = useUser();
     const navigate = useNavigate();

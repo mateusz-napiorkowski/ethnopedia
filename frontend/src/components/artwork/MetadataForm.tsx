@@ -1,25 +1,7 @@
 import React, { ChangeEvent, useEffect } from 'react';
 import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg"
-// import { ReactComponent as MinusIcon } from "../../assets/icons/minus.svg";
 import FormField from './FormField';
 import { Metadata } from '../../@types/Metadata';
-
-
-// let example_data: Category[] = [
-//   { name: "Tytuł", values: ["tytuł utworu"], subcategories: [] },
-//   { name: "Wykonawca", values: ["nazwa zespołu"], subcategories: [
-//     { name: "Wykonawca nr 1", values: ["Imię Nazwisko 1"] },
-//     { name: "Wykonawca nr 2", values: ["Imię Nazwisko 2"] } ] },
-//   { name: "Region", values: ["Wielkopolska"], subcategories: [
-//     { name: "Podregion", values: ["WielkopQolska Północna"] },
-//     { name: "Podregion etnograficzny", values: ["Szamotulskie"] },
-//     { name: "Powiat", values: ["Szamotulski"]} ] }
-// ]
-
-function transformToNewStructure(data: Metadata[], collectionName: string): { categories: Metadata[]; collectionName: string } {
-  return { categories: data, collectionName: collectionName };
-}
-
 
 
 interface MetadataFormProps {
@@ -28,7 +10,6 @@ interface MetadataFormProps {
   setDataToInsert: (data: { categories: Metadata[]; collectionName: string }) => void;
 }
 
-
 const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, collectionName, setDataToInsert }) => {
   const [formDataList, setFormDataList] = React.useState<Metadata[]>(initialFormData); // Ustaw początkowe dane
 
@@ -36,18 +17,12 @@ const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, collection
     if (collectionName) {
       setDataToInsert({ categories: formDataList, collectionName });
     }
-  }, [formDataList, collectionName]);
+  }, [formDataList, collectionName, setDataToInsert]);
 
   const createOrEdit = window.location.href.split("/")[window.location.href.split("/").length-1]
   if(createOrEdit === "edit-artwork") {
     collectionName = window.location.href.split("/")[window.location.href.split("/").length-4]
   }
-
-  // const [jsonOutput, setJsonOutput] = useState<string>('');
-  // const handleShowJson = () => {
-  //   let jsonData = transformToNewStructure(formDataList, collectionName);
-  //   setJsonOutput(JSON.stringify(jsonData, null, 2));
-  // };
 
   const handleInputChange = (index: string, e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

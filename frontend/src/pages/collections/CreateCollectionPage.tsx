@@ -12,11 +12,16 @@ let initial_structure: Category[] = [
     { name: "", subcategories: [] }
 ];
 
+interface FormValues {
+    name: string;
+    description: string;
+    categories: Category[];
+}
+
 const CreateCollectionPage = () => {
     const { jwtToken } = useUser();
     const [showErrorMessage, setShowErrorMessage] = useState(false);
     const navigate = useNavigate();
-    const [dataToInsert, setDataToInsert] = useState({});
     const location = useLocation();
 
     // Inicjalizacja danych formularza
@@ -24,6 +29,16 @@ const CreateCollectionPage = () => {
     if (location.state && location.state.categories) {
         initialFormData = location.state.categories;
     }
+
+    // Funkcja walidacyjna
+    const validate = (values: FormValues) => {
+        const errors: Partial<FormValues> = {};
+        if (!values.name) {
+            errors.name = "Nazwa jest wymagana";
+        }
+        // inne reguły walidacyjne
+        return errors;
+    };
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
@@ -45,6 +60,7 @@ const CreateCollectionPage = () => {
                         </div>
                         <Formik
                             initialValues={{ name: "", description: "", categories: initialFormData }}
+                            validate={validate}
                             onSubmit={async (values, { setSubmitting }) => {
                                 const { name, description, categories } = values;
 
@@ -63,11 +79,6 @@ const CreateCollectionPage = () => {
                         >
                             {({ isSubmitting, setFieldValue }) => (
                                 <Form>
-                                    {showErrorMessage && (
-                                        <p className="text-red-500 text-sm my-2">
-                                            Kolekcja o podanej nazwie już istnieje.
-                                        </p>
-                                    )}
                                     <label
                                         htmlFor="name"
                                         className="block text-sm font-bold text-gray-700 dark:text-white my-2"
@@ -80,6 +91,11 @@ const CreateCollectionPage = () => {
                                         type="text"
                                         className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none"
                                     />
+                                    {showErrorMessage && (
+                                        <p className="text-red-500 text-sm my-2">
+                                            Kolekcja o podanej nazwie już istnieje.
+                                        </p>
+                                    )}
                                     <ErrorMessage
                                         name="name"
                                         component="div"
@@ -111,6 +127,9 @@ const CreateCollectionPage = () => {
                                     >
                                         Struktura metadanych w kolekcji
                                     </label>
+                                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                                        Podaj strukturę metadanych, które chcesz przechowywać w tej kolekcji. Aby dodać kategorię, kliknij przycisk '+' na dole formularza. Po dodaniu kategorii możesz dodawać podkategorie, klikając przycisk '+' obok nazwy wybranej kategorii.
+                                    </p>
                                     <div className="flex-grow">
                                         <StructureForm
                                             initialFormData={initialFormData}

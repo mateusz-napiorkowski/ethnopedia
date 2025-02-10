@@ -6,9 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="2d029bd7-82b7-4397-bf3e-7fcfe7cda461" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/artwork/CreateArtwork.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/artwork/CreateArtwork.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/artwork/MetadataForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/artwork/MetadataForm.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/collections/StructureForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/collections/StructureForm.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/collections/StructureFormField.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/collections/StructureFormField.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/collections/CollectionsPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/collections/CollectionsPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/collections/CreateCollectionPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/collections/CreateCollectionPage.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,25 +50,25 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Jest.CollectionsPage.displays the correct number of artworks for each collection.executor": "Run",
-    "Jest.CollectionsPage.renders the CollectionsPage correctly.executor": "Debug",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "metadata-form",
-    "last_opened_file_path": "C:/Users/wikto/OneDrive/Dokumenty/PROJEKTY/PP/ethnopedia/backend",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs.jest.jest_package": "C:/Users/wikto/OneDrive/Dokumenty/PROJEKTY/PP/ethnopedia/frontend/node_modules/react-scripts",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "diff.external",
-    "ts.external.directory.path": "C:\\Users\\wikto\\OneDrive\\Dokumenty\\PROJEKTY\\PP\\ethnopedia\\backend\\node_modules\\typescript\\lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Jest.CollectionsPage.displays the correct number of artworks for each collection.executor&quot;: &quot;Run&quot;,
+    &quot;Jest.CollectionsPage.renders the CollectionsPage correctly.executor&quot;: &quot;Debug&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;metadata-form&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/wikto/OneDrive/Dokumenty/PROJEKTY/PP/ethnopedia/backend&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs.jest.jest_package&quot;: &quot;C:/Users/wikto/OneDrive/Dokumenty/PROJEKTY/PP/ethnopedia/frontend/node_modules/react-scripts&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;diff.external&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\wikto\\OneDrive\\Dokumenty\\PROJEKTY\\PP\\ethnopedia\\backend\\node_modules\\typescript\\lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\wikto\OneDrive\Dokumenty\PROJEKTY\PP\ethnopedia\backend" />
@@ -168,7 +170,8 @@
       <workItem from="1739040476745" duration="4084000" />
       <workItem from="1739048996956" duration="5102000" />
       <workItem from="1739115500842" duration="1122000" />
-      <workItem from="1739118376802" duration="11091000" />
+      <workItem from="1739118376802" duration="13328000" />
+      <workItem from="1739180898949" duration="626000" />
     </task>
     <servers />
   </component>

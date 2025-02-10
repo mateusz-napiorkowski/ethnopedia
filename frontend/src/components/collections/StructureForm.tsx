@@ -19,21 +19,11 @@ const StructureForm: React.FC<StructureFormProps> = ({ initialFormData, setField
     setFieldValue('categories', formDataList); // Update Formik's categories field whenever formDataList changes
   }, [formDataList, setFieldValue]);
 
-
-  // useEffect(() => {
-  //   const handleResize = () => {
-  //     setFormDataList((prev) => [...prev]);
-  //   };
-  //   window.addEventListener('resize', handleResize);
-  //   return () => window.removeEventListener('resize', handleResize);
-  // }, []);
-
-  const [jsonOutput, setJsonOutput] = useState<string>('');
-  const handleShowJson = () => {
-    // let jsonData = transformToNewStructure(formDataList, collectionName);
-    // setJsonOutput(JSON.stringify(jsonData, null, 2));
-    setJsonOutput(JSON.stringify(formDataList, null, 2));
-  };
+  const [jsonOutput] = useState<string>('');
+  // const [jsonOutput, setJsonOutput] = useState<string>('');
+  // const handleShowJson = () => {
+  //   setJsonOutput(JSON.stringify(formDataList, null, 2));
+  // };
 
   const handleInputChange = (index: string, e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
