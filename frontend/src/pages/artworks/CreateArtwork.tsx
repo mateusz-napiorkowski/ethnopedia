@@ -1,15 +1,15 @@
 import React, {useEffect, useState} from "react";
 import {useQuery, useQueryClient} from "react-query";
 import { Form, Formik } from "formik";
-import {useLocation, useNavigate, useParams} from "react-router-dom";
-import Navbar from "../navbar/Navbar";
+import {useLocation, useNavigate} from "react-router-dom";
+import Navbar from "../../components/navbar/Navbar";
 import { useUser } from "../../providers/UserProvider";
-import Navigation from "../Navigation";
+import Navigation from "../../components/Navigation";
 import { Metadata } from '../../@types/Metadata';
 import { createArtwork, editArtwork } from "../../api/artworks";
-import MetadataForm from "./MetadataForm";
+import MetadataForm from "../../components/artwork/MetadataForm";
 // import {getCollection} from "../../api/collections";
-import LoadingPage from "../../pages/LoadingPage";
+import LoadingPage from "../LoadingPage";
 import {getAllCategories} from "../../api/categories";
 
 let example_data: Metadata[] = [
