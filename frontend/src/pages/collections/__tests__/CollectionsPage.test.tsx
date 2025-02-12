@@ -1,18 +1,18 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react"
-import CollectionsPage from "../collections/CollectionsPage";
-import { getAllCollections } from "../../api/collections";
+import CollectionsPage from "../CollectionsPage";
+import { getAllCollections } from "../../../api/collections";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { MemoryRouter } from "react-router-dom";
-import { useUser } from "../../providers/UserProvider";
+import { useUser } from "../../../providers/UserProvider";
 
-jest.mock("../../api/collections", () => ({
+jest.mock("../../../api/collections", () => ({
     getAllCollections: jest.fn(),
     useBatchDeleteCollectionMutation: jest.fn(() => ({
         mutate: jest.fn(),
     })),
 }));
 
-jest.mock("../../providers/UserProvider", () => ({
+jest.mock("../../../providers/UserProvider", () => ({
     useUser: jest.fn(),
 }));
 

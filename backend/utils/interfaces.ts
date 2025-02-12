@@ -1,10 +1,15 @@
-export interface subcategoryData {
+export interface artworkCategory {
     name: string
     values: Array<string>
-    subcategories: Array<subcategoryData>
+    subcategories: Array<artworkCategory>
 }
 
 export interface record {
-    categories: Array<subcategoryData>,
+    categories: Array<artworkCategory>,
     collectionName: string
+}
+
+export interface collectionCategory {
+    name: string,
+    subcategories: Array<collectionCategory>
 }

@@ -6,10 +6,11 @@ import Home from "./pages/Home"
 import "./index.css"
 import ArtworkPage from "./pages/artworks/ArtworkPage"
 import NotFoundPage from "./pages/NotFoundPage"
-import Artworks from "./components/artwork/ArtworksList"
+import Artworks from "./pages/artworks/ArtworksList"
 import RegisterPage from "./pages/RegisterPage"
 import { UserProvider } from "./providers/UserProvider"
-import CreateArtwork from "./components/artwork/CreateArtwork"
+import CreateArtwork from "./pages/artworks/CreateArtwork"
+import CreateCollectionPage from "./pages/collections/CreateCollectionPage";
 
 const queryClient = new QueryClient()
 
@@ -22,6 +23,7 @@ const App = () => {
                         <Route path="/collections/:collection/artworks/:artworkId" element={<ArtworkPage />} />
                         <Route path="/collections/:collection/create-artwork" element={<CreateArtwork />} />
                         <Route path="/collections/:collection/artworks/:artworkId/edit-artwork" element={<CreateArtwork />} />
+                        <Route path="/create-collection" element={<CreateCollectionPage />} />
 
                         <Route path="/" element={<Home />} />
                         <Route path="/collections/:collection/artworks" element={<Artworks />} />

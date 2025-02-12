@@ -22,6 +22,11 @@ jest.mock('../../utils/artworks', () => ({
     sortRecordsByCategory: () => mockSortRecordsByCategory()
 }))
 
+const mockArtworkCategoriesHaveValidFormat = jest.fn() 
+jest.mock('../../utils/categories', () => ({
+    artworkCategoriesHaveValidFormat: () => mockArtworkCategoriesHaveValidFormat()
+}))
+
 const mockFindById = jest.fn()
 const mockArtworkFind = jest.fn()
 const mockCreate = jest.fn()
@@ -301,9 +306,13 @@ describe('artworks controller', () => {
                     _id: `${collectionId}`,
                     name: 'collection',
                     description: 'collection description',
+                    categories: [
+                        {name: 'Title', subcategories: []}
+                    ],
                     __v: 0
                 }])
             })
+            mockArtworkCategoriesHaveValidFormat.mockReturnValue(true)
             const payload = {
                 categories: [{name: 'Title', values: ['Title'], subcategories: []}],
                 collectionName: 'collection'
@@ -323,29 +332,53 @@ describe('artworks controller', () => {
         test.each([
             {
                 payload: {},
-                create: undefined, find: undefined, statusCode: 400, error: 'Incorrect request body provided'
+                create: undefined, find: undefined, artworkCategoriesHaveValidFormat: true,
+                statusCode: 400, error: 'Incorrect request body provided'
             },
             {
                 payload: {categories: [{name: 'Title', values: ['Title'], subcategories: []}]},
-                create: undefined, find: undefined, statusCode: 400, error: 'Incorrect request body provided'
+                create: undefined, find: undefined, artworkCategoriesHaveValidFormat: true,
+                statusCode: 400, error: 'Incorrect request body provided'
             },
             {
                 payload: {collectionName: 'collection'},
-                create: undefined, find: undefined, statusCode: 400, error: 'Incorrect request body provided'
+                create: undefined, find: undefined, artworkCategoriesHaveValidFormat: true,
+                statusCode: 400, error: 'Incorrect request body provided'
+            },  
+            {
+                payload: {
+                    categories: [{name: 'Title', values: ['Title'], subcategories: []}],
+                    collectionName: 'collection'
+                },
+                create: undefined, find: {exec: () => {throw Error()}}, artworkCategoriesHaveValidFormat: true,
+                statusCode: 503, error: 'Database unavailable'
             },
             {
                 payload: {
                     categories: [{name: 'Title', values: ['Title'], subcategories: []}],
                     collectionName: 'collection'
                 },
-                create: undefined, find: {exec: () => {throw Error()}}, statusCode: 503, error: 'Database unavailable'
+                create: () => Promise.reject(), find: undefined, artworkCategoriesHaveValidFormat: true,
+                statusCode: 503, error: 'Database unavailable'
             },
             {
                 payload: {
                     categories: [{name: 'Title', values: ['Title'], subcategories: []}],
                     collectionName: 'collection'
                 },
-                create: () => Promise.reject(), find: undefined, statusCode: 503, error: 'Database unavailable'
+                create: undefined,
+                find: {exec: () => Promise.resolve([{
+                    _id: `${collectionId}`,
+                    name: 'collection',
+                    description: 'collection description',
+                    categories: [
+                        {name: 'Title', subcategories: []}
+                    ],
+                    __v: 0
+                }])},
+                artworkCategoriesHaveValidFormat: false,
+                statusCode: 400,
+                error: "Incorrect request body provided"
             },
             {
                 payload: {
@@ -354,6 +387,7 @@ describe('artworks controller', () => {
                 },
                 create: undefined,
                 find: {exec: () => Promise.resolve([])},
+                artworkCategoriesHaveValidFormat: true,
                 statusCode: 404,
                 error: "Collection not found"
             }
@@ -362,11 +396,13 @@ describe('artworks controller', () => {
                        payload,
                        create,
                        find,
+                       artworkCategoriesHaveValidFormat,
                        statusCode,
                        error
                    }) => {
                 mockCreate.mockReturnValue(create)
                 mockFind.mockReturnValue(find)
+                mockArtworkCategoriesHaveValidFormat.mockReturnValue(artworkCategoriesHaveValidFormat)
 
                 const res = await request(app)
                     .post('/create')

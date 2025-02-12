@@ -3,6 +3,7 @@ import mongoose, { ClientSession, SortOrder } from "mongoose"
 import { authAsyncWrapper } from "../middleware/auth"
 import Artwork from "../models/artwork";
 import CollectionCollection from "../models/collection";
+import {hasValidCategoryFormat} from "../utils/categories";
 
 export const getAllCollections = async (req: Request, res: Response) => {
     try {
@@ -79,29 +80,39 @@ export const getCollection = async (req: Request, res: Response) => {
 export const createCollection = authAsyncWrapper(async (req: Request, res: Response) => {
     const collectionName = req.body.name
     const collectionDescription = req.body.description
+    const categories = req.body.categories
+    console.log("Otrzymane categories:", req.body.categories);
     try {
-        if(!collectionName || !collectionDescription)
+        if(!collectionName || !collectionDescription || !categories || !hasValidCategoryFormat(categories))
             throw new Error("Incorrect request body provided")
         const session = await mongoose.startSession()
         await session.withTransaction(async (session: ClientSession) => {
-            const duplicateCollection = await CollectionCollection.findOne({name: collectionName}, null, {session}).exec()
-            if(duplicateCollection)
-                throw new Error("Collection with provided name already exists")
-            const newCollection = await CollectionCollection.create([{name: req.body.name, description: req.body.description}], {session})
-            res.status(201).json(newCollection)
-        })
-        session.endSession()
-    } catch(error) {
-        const err = error as Error
-        console.error(error)
+            const duplicateCollection = await CollectionCollection.findOne({ name: collectionName }, null, { session }).exec();
+            if (duplicateCollection)
+                throw new Error("Collection with provided name already exists");
+            const newCollection = await CollectionCollection.create(
+                [{
+                    name: req.body.name,
+                    description: req.body.description,
+                    categories: req.body.categories
+                }],
+                { session }
+            );
+            res.status(201).json(newCollection);
+        });
+        session.endSession();
+    } catch (error) {
+        const err = error as Error;
+        console.error(error);
         if (err.message === "Incorrect request body provided")
-            res.status(400).json({ error: err.message })
+            res.status(400).json({ error: err.message });
         else if (err.message === "Collection with provided name already exists")
-            res.status(409).json({ error: err.message })
-        else 
-            res.status(503).json( { error: "Database unavailable" })
+            res.status(409).json({ error: err.message });
+        else
+            res.status(503).json({ error: "Database unavailable" });
     }
-})
+});
+
 
 export const deleteCollections = authAsyncWrapper(async (req: Request, res: Response) => {
     const collectionsToDelete = req.body.ids

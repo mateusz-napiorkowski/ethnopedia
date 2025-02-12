@@ -245,5 +245,14 @@ exports[`ArtworksList tests should render artworks list component after data is 
       example collection description
     </p>
   </div>
+  <div
+    class="flex items-center"
+  >
+    <button
+      class="text-sm mr-2 h-fit font-semibold ml-4 whitespace-nowrap"
+    >
+      Edytuj kolekcję
+    </button>
+  </div>
 </div>
 `;
