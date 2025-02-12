@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {useQuery, useQueryClient} from "react-query";
 import { Form, Formik } from "formik";
 import {useLocation, useNavigate} from "react-router-dom";
@@ -45,8 +45,6 @@ const convertToJson = (data: string[]): Metadata[] => {
 
 
 
-
-
 const CreateArtwork: React.FC = () => {
     const location = useLocation();
     // const { collectionId } = useParams<{ collectionId: string }>();
@@ -54,6 +52,10 @@ const CreateArtwork: React.FC = () => {
     const { jwtToken } = useUser();
     const navigate = useNavigate();
     const [dataToInsert, setDataToInsert] = useState({});
+
+    const memoizedSetDataToInsert = useCallback((data: any) => {
+        setDataToInsert(data);
+    }, []);
 
     // TODO
     // // Pobranie danych kolekcji na podstawie collectionId
@@ -146,7 +148,7 @@ const CreateArtwork: React.FC = () => {
                                         <MetadataForm
                                             initialFormData={initialFormData}
                                             collectionName={collectionName}
-                                            setDataToInsert={(dataToInsert: any) => setDataToInsert(dataToInsert)} />
+                                            setDataToInsert={memoizedSetDataToInsert} />
                                     </div>
                                     <div className="flex justify-end mt-6">
                                         <button

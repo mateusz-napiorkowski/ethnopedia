@@ -2,13 +2,14 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import { getArtworksForCollectionPage, deleteArtworks } from "../../api/artworks";
 import { getCollection } from "../../api/collections";
 import LoadingPage from "../LoadingPage";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "../../components/navbar/Navbar";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import SearchComponent from "../../components/search/SearchComponent";
-import ImportOptions from "../../components/ImportOptions";
-import ExportOptions from "../../components/ExportOptions";
+// import ImportOptions from "../../components/ImportOptions";
+// import ExportOptions from "../../components/ExportOptions";
 import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg";
+import { HiOutlineCollection } from "react-icons/hi";
 import { ReactComponent as FileImportIcon } from "../../assets/icons/fileImport.svg";
 import { ReactComponent as FileExportIcon } from "../../assets/icons/fileExport.svg";
 import WarningPopup from "../collections/WarningPopup";
@@ -19,10 +20,13 @@ import { useUser } from "../../providers/UserProvider";
 import { getAllCategories } from "../../api/categories";
 import Select from "react-select";
 
+
 const ArtworksList = ({ pageSize = 10 }) => {
     const [selectedArtworks, setSelectedArtworks] = useState<{ [key: string]: boolean }>({});
-    const [showImportOptions, setShowImportOptions] = useState<boolean>(false);
-    const [showExportOptions, setShowExportOptions] = useState<boolean>(false);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [showImportOptions, setShowImportOptions] = useState<boolean>(false); //TODO
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [showExportOptions, setShowExportOptions] = useState<boolean>(false);  //TODO
     const [showDeleteRecordsWarning, setShowDeleteRecordsWarning] = useState(false);
     const [sortOrder, setSortOrder] = useState<string>("Tytuł-asc");
     // Stan dla multiselect – kategorie, które mają być wyświetlane
@@ -110,7 +114,7 @@ const ArtworksList = ({ pageSize = 10 }) => {
         {
             onSuccess: () => {
                 queryClient.invalidateQueries("artwork");
-                setShowDeleteRecordsWarning(!showDeleteRecordsWarning);
+                setShowDeleteRecordsWarning((prev) => !prev);
                 deselectAll();
             },
         }
@@ -124,6 +128,34 @@ const ArtworksList = ({ pageSize = 10 }) => {
         );
     }
 
+    // Komponent wyświetlany, gdy kolekcja jest pusta
+    const EmptyCollectionMessage = () => (
+        <div className="px-4 max-w-screen-xl pt-10 pb-10 py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4 border border-gray-300 dark:border-gray-600 cursor-pointer text-center">
+            <HiOutlineCollection className="mx-auto w-16 h-16 mb-4 text-gray-400" />
+            <p className="text-xl mb-4">Ta kolekcja jest pusta.</p>
+            <p className="text-md">
+                <button
+                    type="button"
+                    className="text-blue-600 cursor-pointer bg-transparent border-0 p-0"
+                    onClick={() => navigate(`/collections/${collection}/create-artwork`)}
+                >
+                    Dodawaj nowe rekordy
+                </button>
+                {" "}
+                ręcznie lub{" "}
+                <button
+                    type="button"
+                    className="text-blue-600 cursor-pointer bg-transparent border-0 p-0"
+                    onClick={() => setShowImportOptions((prev) => !prev)}
+                >
+                    zaimportuj
+                </button>
+                {" "}
+                dane z pliku Excel, aby rozpocząć organizację swojej kolekcji.
+            </p>
+        </div>
+    );
+
     const allArtworks = artworkData.artworks.map((artwork: any) => (
         <div
             className="px-4 max-w-screen-xl py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4 border border-gray-300 dark:border-gray-600 cursor-pointer"
@@ -132,15 +164,15 @@ const ArtworksList = ({ pageSize = 10 }) => {
             onClick={() => navigate(`/collections/${collection}/artworks/${artwork._id}`)}
         >
             <div className="flex flex-row">
-        <span className="mr-4 flex items-center">
-          <input
-              type="checkbox"
-              data-testid={`${artwork._id}-checkbox`}
-              checked={selectedArtworks[artwork._id] || false}
-              onClick={(e) => e.stopPropagation()}
-              onChange={() => handleCheck(artwork._id)}
-          />
-        </span>
+                <span className="mr-4 flex items-center">
+                    <input
+                        type="checkbox"
+                        data-testid={`${artwork._id}-checkbox`}
+                        checked={selectedArtworks[artwork._id] || false}
+                        onClick={(e) => e.stopPropagation()}
+                        onChange={() => handleCheck(artwork._id)}
+                    />
+                </span>
                 <div>
                     {selectedDisplayCategories.length > 0 ? (
                         selectedDisplayCategories.map((catName) => {
@@ -148,7 +180,7 @@ const ArtworksList = ({ pageSize = 10 }) => {
                             const label = catName.includes('.') ? catName.split('.').pop() : catName;
                             return (
                                 <div key={label} className="text-lg text-gray-800 dark:text-white">
-                                    <p className="text-gray-400 display: inline">{label}: </p>
+                                    <p className="text-gray-400 inline">{label}: </p>
                                     {findValue(artwork, catName)}
                                 </div>
                             );
@@ -171,7 +203,8 @@ const ArtworksList = ({ pageSize = 10 }) => {
         </div>
     ));
 
-    // Przygotowanie opcji dla react-select – opcje pochodzą z backendu (categoriesData.categories)
+    // Przygotowanie opcji dla multiselect (categoriesData.categories)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const categoryOptions =
         categoriesData?.categories?.map((cat: string) => ({
             value: cat,
@@ -217,9 +250,9 @@ const ArtworksList = ({ pageSize = 10 }) => {
                                 type="button"
                                 onClick={() => navigate(`/collections/${collection}/create-artwork`)}
                             >
-                <span className="mr-2 text-white dark:text-gray-400">
-                  <PlusIcon />
-                </span>
+                                <span className="mr-2 text-white dark:text-gray-400">
+                                    <PlusIcon />
+                                </span>
                                 Nowy rekord
                             </button>
                             <button
@@ -229,9 +262,9 @@ const ArtworksList = ({ pageSize = 10 }) => {
                                     setShowExportOptions((prev) => !prev);
                                 }}
                             >
-                <span className="text-white dark:text-gray-400">
-                  <FileExportIcon />
-                </span>
+                                <span className="text-white dark:text-gray-400">
+                                    <FileExportIcon />
+                                </span>
                                 Eksportuj plik
                             </button>
                             <button
@@ -244,9 +277,9 @@ const ArtworksList = ({ pageSize = 10 }) => {
                                 type="button"
                                 onClick={() => setShowImportOptions((prev) => !prev)}
                             >
-                <span className="text-white dark:text-gray-400">
-                  <FileImportIcon />
-                </span>
+                                <span className="text-white dark:text-gray-400">
+                                    <FileImportIcon />
+                                </span>
                                 Importuj plik
                             </button>
                             <button
@@ -283,7 +316,7 @@ const ArtworksList = ({ pageSize = 10 }) => {
                             </button>
                         </div>
                     </div>
-                    <div className="flex w-full md:w-auto pt-4 items-center">
+                    <div className="flex w-full md:w-auto pt-4 flex-row items-center">
                         <p className="pr-2 text-sm">Wyświetl:</p>
                         <Select
                             isMulti
@@ -328,7 +361,7 @@ const ArtworksList = ({ pageSize = 10 }) => {
             <div className="flex flex-row">
                 <div className="flex mx-auto flex-1 justify-end w-full"></div>
                 <div data-testid="artworks-listed" className="w-full flex-2 lg:px-6 max-w-screen-xl">
-                    {allArtworks}
+                    {artworkData.artworks.length === 0 ? <EmptyCollectionMessage /> : allArtworks}
                 </div>
                 <div className="mx-auto w-full flex-1"></div>
             </div>

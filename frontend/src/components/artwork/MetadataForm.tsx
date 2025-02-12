@@ -1,5 +1,5 @@
 import React, { ChangeEvent, useEffect } from 'react';
-import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg"
+// import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg"
 import FormField from './FormField';
 import { Metadata } from '../../@types/Metadata';
 
@@ -12,6 +12,12 @@ interface MetadataFormProps {
 
 const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, collectionName, setDataToInsert }) => {
   const [formDataList, setFormDataList] = React.useState<Metadata[]>(initialFormData); // Ustaw początkowe dane
+
+  // useEffect(() => {
+  //   if (collectionName) {
+  //     setDataToInsert({ categories: formDataList, collectionName });
+  //   }
+  // }, [formDataList, collectionName]);
 
   useEffect(() => {
     if (collectionName) {
@@ -62,9 +68,9 @@ const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, collection
     });
   };
 
-  const handleAddCategory = () => {
-    setFormDataList((prevDataList) => [...prevDataList, { name: '', values: [''], subcategories: [] }]);
-  };
+  // const handleAddCategory = () => {
+  //   setFormDataList((prevDataList) => [...prevDataList, { name: '', values: [''], subcategories: [] }]);
+  // };
 
   const handleAddSubcategory = (index: string) => {
     const indexParts = index.split('-').map(Number);  // e.g. index '2-0-1' -> [2, 0, 1]

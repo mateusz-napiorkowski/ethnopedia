@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
+// import { useState } from 'react';
 import { Metadata } from '../../@types/Metadata';
-import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg";
-import { ReactComponent as MinusIcon } from "../../assets/icons/minus.svg";
+// import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg";
+// import { ReactComponent as MinusIcon } from "../../assets/icons/minus.svg";
 
 interface FormFieldProps {
     formData: Metadata;
@@ -22,15 +23,15 @@ const FormField: React.FC<FormFieldProps> = ({
                                                  handleRemove,
                                                  handleAddSubcategory,
                                              }) => {
-    const [isHovered, setIsHovered] = useState(false);
+    // const [isHovered, setIsHovered] = useState(false);
 
     return (
         <div className="relative flex flex-col mt-1">
             {/* Obszar dla pola kategorii i przycisków */}
             <div
                 className="field-container relative flex items-center"
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
+                // onMouseEnter={() => setIsHovered(true)}
+                // onMouseLeave={() => setIsHovered(false)}
             >
                 {level > 0 && (
                     <>
