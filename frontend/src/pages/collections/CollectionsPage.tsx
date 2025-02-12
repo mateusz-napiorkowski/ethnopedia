@@ -318,7 +318,7 @@ const CollectionsPage = () => {
                 </div>
 
 
-                <div className="flex justify-center">
+                <div className="flex justify-center mt-4">
                     <Pagination
                         currentPage={currentPage}
                         totalPages={Math.ceil(fetchedData.total / pageSize)}

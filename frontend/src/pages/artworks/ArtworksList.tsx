@@ -1,158 +1,189 @@
-import { useMutation, useQuery, useQueryClient } from "react-query"
-import { getArtworksForCollectionPage, deleteArtworks } from "../../api/artworks"
-import { getCollection } from "../../api/collections"
-import LoadingPage from "../LoadingPage"
-import { useEffect, useMemo, useState} from "react"
-import Navbar from "../../components/navbar/Navbar"
-import { useLocation, useNavigate, useParams } from "react-router-dom"
-import SearchComponent from "../../components/search/SearchComponent"
-import ImportOptions from "../../components/ImportOptions"
-import ExportOptions from "../../components/ExportOptions"
-import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg"
-import { ReactComponent as FileImportIcon } from "../../assets/icons/fileImport.svg"
-import { ReactComponent as FileExportIcon } from "../../assets/icons/fileExport.svg"
-import WarningPopup from "../collections/WarningPopup"
-import SortOptions from "../../components/SortOptions"
-import Navigation from "../../components/Navigation"
-import Pagination from "../../components/Pagination"
-import { useUser } from "../../providers/UserProvider"
-import { getAllCategories } from "../../api/categories"
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import { getArtworksForCollectionPage, deleteArtworks } from "../../api/artworks";
+import { getCollection } from "../../api/collections";
+import LoadingPage from "../LoadingPage";
+import React, { useEffect, useMemo, useState } from "react";
+import Navbar from "../../components/navbar/Navbar";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import SearchComponent from "../../components/search/SearchComponent";
+import ImportOptions from "../../components/ImportOptions";
+import ExportOptions from "../../components/ExportOptions";
+import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg";
+import { ReactComponent as FileImportIcon } from "../../assets/icons/fileImport.svg";
+import { ReactComponent as FileExportIcon } from "../../assets/icons/fileExport.svg";
+import WarningPopup from "../collections/WarningPopup";
+import SortOptions from "../../components/SortOptions";
+import Navigation from "../../components/Navigation";
+import Pagination from "../../components/Pagination";
+import { useUser } from "../../providers/UserProvider";
+import { getAllCategories } from "../../api/categories";
+import Select from "react-select";
 
-const ArtworksList = ({pageSize = 10}) => {
-    const [selectedArtworks, setSelectedArtworks] = useState<{ [key: string]: boolean }>({})
-    const [showImportOptions, setShowImportOptions] = useState<boolean>(false)
-    const [showExportOptions, setShowExportOptions] = useState<boolean>(false)
-    const [showDeleteRecordsWarning, setShowDeleteRecordsWarning] = useState(false)
-    const [showEditCollection, setShowEditCollection] = useState<boolean>(false)
-    const [sortOrder, setSortOrder] = useState<string>("Tytuł-asc")
+const ArtworksList = ({ pageSize = 10 }) => {
+    const [selectedArtworks, setSelectedArtworks] = useState<{ [key: string]: boolean }>({});
+    const [showImportOptions, setShowImportOptions] = useState<boolean>(false);
+    const [showExportOptions, setShowExportOptions] = useState<boolean>(false);
+    const [showDeleteRecordsWarning, setShowDeleteRecordsWarning] = useState(false);
+    const [sortOrder, setSortOrder] = useState<string>("Tytuł-asc");
+    // Stan dla multiselect – kategorie, które mają być wyświetlane
+    const [selectedDisplayCategories, setSelectedDisplayCategories] = useState<string[]>([]);
     const { jwtToken } = useUser();
-    const location = useLocation()
-    useEffect(() => {
+    const location = useLocation();
+    const [currentPage, setCurrentPage] = useState(1);
+    const { collection } = useParams();
+    const queryClient = useQueryClient();
+    const navigate = useNavigate();
 
-    }, [location]);
-
-    const queryParameters = new URLSearchParams(window.location.search)
-    const searchText = queryParameters.get("searchText")
-    const [currentPage, setCurrentPage] = useState(1)
-
-    const { collection } = useParams()
-    const queryClient = useQueryClient()
-
+    // Funkcja wyszukująca wartość dla danej kategorii
     const findValue = (artwork: any, categoryName: string) => {
-        let val = ""
+        let val = "";
         artwork.categories.forEach((category: any) => {
-            if(category.name === categoryName) {
-                val = category.values.toString()
-                return
+            if (category.name === categoryName) {
+                val = category.values.toString();
+                return;
             }
         });
-        return val
-    }
+        return val;
+    };
 
-    const { data: artworkData} = useQuery({
-        queryKey: ["artwork", currentPage, searchText, queryParameters, location, sortOrder],
-        queryFn: () => getArtworksForCollectionPage(collection as string, currentPage, pageSize, sortOrder, searchText, Object.fromEntries(queryParameters.entries())),
+    const { data: artworkData } = useQuery({
+        queryKey: ["artwork", currentPage, location.search, location, sortOrder],
+        queryFn: () =>
+            getArtworksForCollectionPage(
+                collection as string,
+                currentPage,
+                pageSize,
+                sortOrder,
+                new URLSearchParams(location.search).get("searchText"),
+                Object.fromEntries(new URLSearchParams(location.search).entries())
+            ),
         enabled: !!collection,
-    })
+    });
 
     const { data: collectionData } = useQuery({
-        queryKey: [`${collection}`],
+        queryKey: [collection],
         enabled: !!collection,
         queryFn: () => getCollection(collection as string),
-    })
+    });
 
     const { data: categoriesData } = useQuery({
-        queryKey: ["allCategories"],
+        queryKey: ["allCategories", collection],
         queryFn: () => getAllCategories(collection as string),
         enabled: !!collection,
-    })
+    });
 
     const sortOptions = categoriesData?.categories?.flatMap((category: string) => [
         { value: `${category}-asc`, label: `${category} rosnąco` },
         { value: `${category}-desc`, label: `${category} malejąco` },
-    ])
+    ]);
 
     const selectAll = () => {
         const newSelection = artworkData?.artworks.reduce((acc: any, artwork: any) => {
-            acc[artwork._id] = true
-            return acc
-        }, {})
-        setSelectedArtworks(newSelection)
-    }
-
-    const sortArtworks = (artworks: any[], order: string) => {
-        return artworks
-    }
-
-    const sortedArtworks = useMemo(() => {
-        return sortArtworks([...(artworkData?.artworks || [])], sortOrder)
-    }, [artworkData, sortOrder])
-
-    const handleCheck = (id: string) => {
-        setSelectedArtworks((prev) => (
-            { ...prev, [id]: !prev[id] }
-        ))
-    }
+            acc[artwork._id] = true;
+            return acc;
+        }, {});
+        setSelectedArtworks(newSelection);
+    };
 
     const deselectAll = () => {
-        setSelectedArtworks({})
-    }
+        setSelectedArtworks({});
+    };
 
-    const deleteArtworksMutation = useMutation(() => deleteArtworks(Object.keys(selectedArtworks).filter(id => selectedArtworks[id]), jwtToken as string), {
-        onSuccess: () => {
-            queryClient.invalidateQueries("artwork")
-            setShowDeleteRecordsWarning(!showDeleteRecordsWarning)
-            deselectAll()
+    const handleCheck = (id: string) => {
+        setSelectedArtworks((prev) => ({ ...prev, [id]: !prev[id] }));
+    };
+
+    const deleteArtworksMutation = useMutation(
+        () =>
+            deleteArtworks(
+                Object.keys(selectedArtworks).filter((id) => selectedArtworks[id]),
+                jwtToken as string
+            ),
+        {
+            onSuccess: () => {
+                queryClient.invalidateQueries("artwork");
+                setShowDeleteRecordsWarning(!showDeleteRecordsWarning);
+                deselectAll();
+            },
         }
-    })
+    );
 
-    const navigate = useNavigate()
-
-    if (!artworkData || !sortedArtworks || !collectionData) {
-        return <div data-testid="loading-page-container">
+    if (!artworkData || !collectionData) {
+        return (
+            <div data-testid="loading-page-container">
                 <LoadingPage />
             </div>
-    } else {
-        const allArtworks = sortedArtworks.map((artwork: any) => (
-            <div className="px-4 max-w-screen-xl py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4
-                border border-gray-300 dark:border-gray-600 cursor-pointer"
-                 key={artwork._id}
-                 data-testid={artwork._id}
-                 onClick={() => navigate(`/collections/${collection}/artworks/${artwork._id}`)}>
+        );
+    }
 
-                <div className="flex flex-row">
-                        <span className="mr-4 flex items-center">
-                            <input 
-                                type="checkbox"
-                                data-testid={`${artwork._id}-checkbox`}
-                                checked={selectedArtworks[artwork._id!] || false}
-                                onClick={(e) => e.stopPropagation()}
-                                onChange={() => {
-                                    handleCheck(artwork._id!)
-                                }}
-                            />
-                        </span>
-
-                    <div>
-                        <h3 className="text-lg font-semibold text-gray-800 dark:text-white">{findValue(artwork, "Tytuł")}</h3>
-                        <p className="text-gray-600 dark:text-gray-400 mb-1">{findValue(artwork, "Artyści")}</p>
-                        <p className=" text-gray-500 dark:text-gray-300">{findValue(artwork, "Rok")}</p>
-                    </div>
+    const allArtworks = artworkData.artworks.map((artwork: any) => (
+        <div
+            className="px-4 max-w-screen-xl py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4 border border-gray-300 dark:border-gray-600 cursor-pointer"
+            key={artwork._id}
+            data-testid={artwork._id}
+            onClick={() => navigate(`/collections/${collection}/artworks/${artwork._id}`)}
+        >
+            <div className="flex flex-row">
+        <span className="mr-4 flex items-center">
+          <input
+              type="checkbox"
+              data-testid={`${artwork._id}-checkbox`}
+              checked={selectedArtworks[artwork._id] || false}
+              onClick={(e) => e.stopPropagation()}
+              onChange={() => handleCheck(artwork._id)}
+          />
+        </span>
+                <div>
+                    {selectedDisplayCategories.length > 0 ? (
+                        selectedDisplayCategories.map((catName) => (
+                            <div key={catName} className="mb-1">
+                                <strong>{catName}: </strong>
+                                {findValue(artwork, catName)}
+                            </div>
+                        ))
+                    ) : (
+                        <>
+                            <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+                                {findValue(artwork, "Tytuł")}
+                            </h3>
+                            <p className="text-gray-600 dark:text-gray-400 mb-1">
+                                {findValue(artwork, "Artyści")}
+                            </p>
+                            <p className="text-gray-500 dark:text-gray-300">
+                                {findValue(artwork, "Rok")}
+                            </p>
+                        </>
+                    )}
                 </div>
             </div>
-        ))
+        </div>
+    ));
 
-        return <><div data-testid="loaded-artwork-page-container">
-            <Navbar />
-            {showDeleteRecordsWarning &&
-                <WarningPopup onClose={() => setShowDeleteRecordsWarning(false)}
-                              deleteSelected={() => deleteArtworksMutation.mutate()}
-                              warningMessage={"Czy na pewno chcesz usunąć zaznaczone rekordy?"} />}
+    // Przygotowanie opcji dla react-select – opcje pochodzą z backendu (categoriesData.categories)
+    const categoryOptions =
+        categoriesData?.categories?.map((cat: string) => ({
+            value: cat,
+            label: cat,
+        })) || [];
+
+    return (
+        <>
+            <Navbar/>
+            {showDeleteRecordsWarning && (
+                <WarningPopup
+                    onClose={() => setShowDeleteRecordsWarning(false)}
+                    deleteSelected={() => deleteArtworksMutation.mutate()}
+                    warningMessage={"Czy na pewno chcesz usunąć zaznaczone rekordy?"}
+                />
+            )}
             <div className="flex flex-col w-full items-center bg-gray-50 dark:bg-gray-900 p-2 sm:p-4">
                 <div className="flex flex-col max-w-screen-xl w-full lg:px-6">
-                    <Navigation />
+                    <Navigation/>
 
-                    <div data-testid="collection-name-and-description-container" className="flex flex-row mb-4 mt-2">
+                    <div
+                        data-testid="collection-name-and-description-container"
+                        className="flex flex-row mb-4 mt-2"
+                    >
                         <div className="flex flex-col w-full">
                             <h2 className="text-4xl font-bold text-gray-800 dark:text-white mb-1">
                                 {collectionData?.name}
@@ -162,112 +193,144 @@ const ArtworksList = ({pageSize = 10}) => {
                             </p>
                         </div>
 
-                        {/* Edytuj kolekcję */}
-                        <div className="flex items-center">
-                            <button className="text-sm mr-2 h-fit font-semibold ml-4 whitespace-nowrap"
-                                    onClick={() => setShowEditCollection(true)}>
-                                Edytuj kolekcję
-                            </button>
-                        </div>
-
-
+                        {/*/!* Edytuj kolekcję *!/*/}
+                        {/*<div className="flex items-center">*/}
+                        {/*    <button*/}
+                        {/*        className="text-sm mr-2 h-fit font-semibold ml-4 whitespace-nowrap"*/}
+                        {/*        onClick={() => setShowEditCollection(true)}*/}
+                        {/*    >*/}
+                        {/*        Edytuj kolekcję*/}
+                        {/*    </button>*/}
+                        {/*</div>*/}
                     </div>
 
-                    {collection && <SearchComponent collectionName={collection} />}
+                    {collection && <SearchComponent collectionName={collection}/>}
                     <div className="flex w-full md:w-auto">
                         <div className="flex flex-1 space-x-2">
                             <button
-                                disabled={jwtToken ? false : true} 
-                                className={`flex items-center justify-center dark:text-white
-                                        hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2
-                                        dark:focus:ring-primary-800 font-semibold text-white ${jwtToken ?
-                                            "bg-gray-800 hover:bg-gray-700 border-gray-800" : "bg-gray-600 hover:bg-gray-600 border-gray-800"}`}
+                                disabled={jwtToken ? false : true}
+                                className={`flex items-center justify-center dark:text-white hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2 dark:focus:ring-primary-800 font-semibold text-white ${
+                                    jwtToken
+                                        ? "bg-gray-800 hover:bg-gray-700 border-gray-800"
+                                        : "bg-gray-600 hover:bg-gray-600 border-gray-800"
+                                }`}
                                 type="button"
                                 onClick={() => navigate(`/collections/${collection}/create-artwork`)}
                             >
-                                <span className="mr-2 text-white dark:text-gray-400">
-                                    <PlusIcon />
-                                </span>
+                <span className="mr-2 text-white dark:text-gray-400">
+                  <PlusIcon/>
+                </span>
                                 Nowy rekord
                             </button>
-                            <button className="flex items-center justify-center dark:text-white
-                                            hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium px-4 py-2
-                                            dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
-                                    type="button"
-                                    onClick={async () => {
-                                        setShowExportOptions(showExportOptions => !showExportOptions)
-                                    }}
+                            <button
+                                className="flex items-center justify-center dark:text-white hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium px-4 py-2 dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
+                                type="button"
+                                onClick={async () => {
+                                    setShowExportOptions((prev) => !prev);
+                                }}
                             >
-                                <span className="text-white dark:text-gray-400">
-                                    <FileExportIcon />
-                                </span>
+                <span className="text-white dark:text-gray-400">
+                  <FileExportIcon/>
+                </span>
                                 Eksportuj plik
                             </button>
                             <button
-                                disabled={jwtToken ? false : true} 
-                                className={`flex items-center justify-center dark:text-white
-                                        hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2
-                                        dark:focus:ring-primary-800 font-semibold text-white ${jwtToken ?
-                                            "bg-gray-800 hover:bg-gray-700 border-gray-800" : "bg-gray-600 hover:bg-gray-600 border-gray-800"}`}                                type="button"
-                                onClick={() => setShowImportOptions(showImportOptions => !showImportOptions)}
+                                disabled={jwtToken ? false : true}
+                                className={`flex items-center justify-center dark:text-white hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2 dark:focus:ring-primary-800 font-semibold text-white ${
+                                    jwtToken
+                                        ? "bg-gray-800 hover:bg-gray-700 border-gray-800"
+                                        : "bg-gray-600 hover:bg-gray-600 border-gray-800"
+                                }`}
+                                type="button"
+                                onClick={() => setShowImportOptions((prev) => !prev)}
                             >
-                                <span className="text-white dark:text-gray-400">
-                                    <FileImportIcon />
-                                </span>
+                <span className="text-white dark:text-gray-400">
+                  <FileImportIcon/>
+                </span>
                                 Importuj plik
                             </button>
-                            <button className="flex items-center justify-center dark:text-white
-                                        hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2
-                                        dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
-                                    type="button"
-                                    onClick={selectAll}
+                            <button
+                                className="flex items-center justify-center dark:text-white hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2 dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
+                                type="button"
+                                onClick={selectAll}
                             >
                                 Zaznacz wszystkie
                             </button>
-
-                            <button className="flex items-center justify-center dark:text-white
-                                        hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2
-                                        dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
-                                    type="button"
-                                    onClick={deselectAll}
+                            <button
+                                className="flex items-center justify-center dark:text-white hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2 dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
+                                type="button"
+                                onClick={deselectAll}
                             >
                                 Odznacz wszystkie
                             </button>
                             <button
-                                disabled={jwtToken && !Object.values(selectedArtworks).every(value => value === false) ? false : true}
-                                className={`flex items-center justify-center dark:text-white
-                                        hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2
-                                        dark:focus:ring-primary-800 font-semibold text-white ${jwtToken && !Object.values(selectedArtworks).every(value => value === false) ?
-                                            "bg-gray-800 hover:bg-gray-700 border-gray-800" : "bg-gray-600 hover:bg-gray-600 border-gray-800"}`}               
+                                disabled={
+                                    jwtToken && !Object.values(selectedArtworks).every((value) => value === false)
+                                        ? false
+                                        : true
+                                }
+                                className={`flex items-center justify-center dark:text-white hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2 dark:focus:ring-primary-800 font-semibold text-white ${
+                                    jwtToken && !Object.values(selectedArtworks).every((value) => value === false)
+                                        ? "bg-gray-800 hover:bg-gray-700 border-gray-800"
+                                        : "bg-gray-600 hover:bg-gray-600 border-gray-800"
+                                }`}
                                 type="button"
-                                onClick={() => { setShowDeleteRecordsWarning(!showDeleteRecordsWarning)}}
+                                onClick={() => {
+                                    setShowDeleteRecordsWarning((prev) => !prev);
+                                }}
                             >
                                 Usuń zaznaczone
                             </button>
                         </div>
                     </div>
-                    <div className="flex w-full md:w-auto pt-4 flex-col items-end">
-                        {sortOptions && <SortOptions
-                            options={sortOptions}
-                            onSelect={(value) => setSortOrder(value)}
-                            sortOrder={sortOrder}
-                            setCurrentPage={setCurrentPage}
-                        />}
+                    <div className="flex w-full md:w-auto pt-4 items-center">
+                        <p className="pr-2 text-sm">Wyświetl:</p>
+                        <Select
+                            isMulti
+                            options={
+                                categoriesData?.categories?.map((cat: string) => ({
+                                    value: cat,
+                                    label: cat,
+                                })) || []
+                            }
+                            value={selectedDisplayCategories.map((cat) => ({value: cat, label: cat}))}
+                            onChange={(selectedOptions) =>
+                                setSelectedDisplayCategories(
+                                    selectedOptions ? selectedOptions.map((option) => option.value) : []
+                                )
+                            }
+                            styles={{
+                                control: (provided) => ({
+                                    ...provided,
+                                    minWidth: 250,
+                                    maxWidth: 250,
+                                    fontSize: "0.875rem",
+                                    border: "1px solid #D1D5DB",
+                                    borderRadius: "0.5rem",
+                                    cursor: "pointer",
+                                }),
+                                multiValue: (provided) => ({...provided, fontSize: "0.75rem"}),
+                            }}
+                            placeholder="Wybierz kategorie"
+                        />
+                        {sortOptions && (
+                            <SortOptions
+                                options={sortOptions}
+                                onSelect={(value) => setSortOrder(value)}
+                                sortOrder={sortOrder}
+                                setCurrentPage={setCurrentPage}
+                            />
+                        )}
                     </div>
-                    {showImportOptions && <ImportOptions onClose={() => setShowImportOptions(false)} collectionData={collectionData}/>}
-                    {showExportOptions && <ExportOptions selectedArtworks={selectedArtworks} onClose={() => setShowExportOptions(false)} />}
                 </div>
             </div>
 
             <div className="flex flex-row">
-                <div
-                    className="flex mx-auto flex-1 justify-end w-full">
-                </div>
+                <div className="flex mx-auto flex-1 justify-end w-full"></div>
                 <div data-testid="artworks-listed" className="w-full flex-2 lg:px-6 max-w-screen-xl">
                     {allArtworks}
                 </div>
-                <div className="mx-auto w-full flex-1">
-                </div>
+                <div className="mx-auto w-full flex-1"></div>
             </div>
             <div className="flex justify-center mb-2">
                 <Pagination
@@ -276,7 +339,8 @@ const ArtworksList = ({pageSize = 10}) => {
                     setCurrentPage={(page) => setCurrentPage(page)}
                 />
             </div>
-        </div></>
-    }
-}
-export default ArtworksList
+        </>
+    );
+};
+
+export default ArtworksList;
