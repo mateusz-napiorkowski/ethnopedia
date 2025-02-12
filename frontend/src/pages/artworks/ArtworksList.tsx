@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import { getArtworksForCollectionPage, deleteArtworks } from "../../api/artworks";
 import { getCollection } from "../../api/collections";
 import LoadingPage from "../LoadingPage";
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Navbar from "../../components/navbar/Navbar";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import SearchComponent from "../../components/search/SearchComponent";
@@ -77,6 +77,14 @@ const ArtworksList = ({ pageSize = 10 }) => {
         { value: `${category}-desc`, label: `${category} malejąco` },
     ]);
 
+    // Ustaw domyślnie pierwsze 3 kategorie, jeśli jeszcze nie wybrano żadnych
+    useEffect(() => {
+        if (categoriesData && categoriesData.categories && selectedDisplayCategories.length === 0) {
+            // Wyciągamy pierwsze 3 kategorie z listy
+            setSelectedDisplayCategories(categoriesData.categories.slice(0, 3));
+        }
+    }, [categoriesData, selectedDisplayCategories]);
+
     const selectAll = () => {
         const newSelection = artworkData?.artworks.reduce((acc: any, artwork: any) => {
             acc[artwork._id] = true;
@@ -135,12 +143,16 @@ const ArtworksList = ({ pageSize = 10 }) => {
         </span>
                 <div>
                     {selectedDisplayCategories.length > 0 ? (
-                        selectedDisplayCategories.map((catName) => (
-                            <div key={catName} className="mb-1">
-                                <strong>{catName}: </strong>
-                                {findValue(artwork, catName)}
-                            </div>
-                        ))
+                        selectedDisplayCategories.map((catName) => {
+                            // Jeśli nazwa zawiera kropkę, pobieramy ostatnią część
+                            const label = catName.includes('.') ? catName.split('.').pop() : catName;
+                            return (
+                                <div key={label} className="text-lg text-gray-800 dark:text-white">
+                                    <p className="text-gray-400 display: inline">{label}: </p>
+                                    {findValue(artwork, catName)}
+                                </div>
+                            );
+                        })
                     ) : (
                         <>
                             <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
@@ -168,7 +180,7 @@ const ArtworksList = ({ pageSize = 10 }) => {
 
     return (
         <>
-            <Navbar/>
+            <Navbar />
             {showDeleteRecordsWarning && (
                 <WarningPopup
                     onClose={() => setShowDeleteRecordsWarning(false)}
@@ -178,8 +190,7 @@ const ArtworksList = ({ pageSize = 10 }) => {
             )}
             <div className="flex flex-col w-full items-center bg-gray-50 dark:bg-gray-900 p-2 sm:p-4">
                 <div className="flex flex-col max-w-screen-xl w-full lg:px-6">
-                    <Navigation/>
-
+                    <Navigation />
                     <div
                         data-testid="collection-name-and-description-container"
                         className="flex flex-row mb-4 mt-2"
@@ -192,19 +203,8 @@ const ArtworksList = ({ pageSize = 10 }) => {
                                 {collectionData?.description}
                             </p>
                         </div>
-
-                        {/*/!* Edytuj kolekcję *!/*/}
-                        {/*<div className="flex items-center">*/}
-                        {/*    <button*/}
-                        {/*        className="text-sm mr-2 h-fit font-semibold ml-4 whitespace-nowrap"*/}
-                        {/*        onClick={() => setShowEditCollection(true)}*/}
-                        {/*    >*/}
-                        {/*        Edytuj kolekcję*/}
-                        {/*    </button>*/}
-                        {/*</div>*/}
                     </div>
-
-                    {collection && <SearchComponent collectionName={collection}/>}
+                    {collection && <SearchComponent collectionName={collection} />}
                     <div className="flex w-full md:w-auto">
                         <div className="flex flex-1 space-x-2">
                             <button
@@ -218,7 +218,7 @@ const ArtworksList = ({ pageSize = 10 }) => {
                                 onClick={() => navigate(`/collections/${collection}/create-artwork`)}
                             >
                 <span className="mr-2 text-white dark:text-gray-400">
-                  <PlusIcon/>
+                  <PlusIcon />
                 </span>
                                 Nowy rekord
                             </button>
@@ -230,7 +230,7 @@ const ArtworksList = ({ pageSize = 10 }) => {
                                 }}
                             >
                 <span className="text-white dark:text-gray-400">
-                  <FileExportIcon/>
+                  <FileExportIcon />
                 </span>
                                 Eksportuj plik
                             </button>
@@ -245,7 +245,7 @@ const ArtworksList = ({ pageSize = 10 }) => {
                                 onClick={() => setShowImportOptions((prev) => !prev)}
                             >
                 <span className="text-white dark:text-gray-400">
-                  <FileImportIcon/>
+                  <FileImportIcon />
                 </span>
                                 Importuj plik
                             </button>
@@ -293,7 +293,7 @@ const ArtworksList = ({ pageSize = 10 }) => {
                                     label: cat,
                                 })) || []
                             }
-                            value={selectedDisplayCategories.map((cat) => ({value: cat, label: cat}))}
+                            value={selectedDisplayCategories.map((cat) => ({ value: cat, label: cat }))}
                             onChange={(selectedOptions) =>
                                 setSelectedDisplayCategories(
                                     selectedOptions ? selectedOptions.map((option) => option.value) : []
@@ -309,7 +309,7 @@ const ArtworksList = ({ pageSize = 10 }) => {
                                     borderRadius: "0.5rem",
                                     cursor: "pointer",
                                 }),
-                                multiValue: (provided) => ({...provided, fontSize: "0.75rem"}),
+                                multiValue: (provided) => ({ ...provided, fontSize: "0.75rem" }),
                             }}
                             placeholder="Wybierz kategorie"
                         />
