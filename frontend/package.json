@@ -29,7 +29,7 @@
         "yup": "^1.3.2"
     },
     "main": "main.js",
-    "homepage": ".",
+    "homepage": "/ethnopedia",
     "scripts": {
         "start": "react-scripts start",
         "build": "react-scripts build",
