@@ -24,7 +24,7 @@ const App = () => {
     return <div className="dark:text-white min-h-screen bg-gray-50 dark:bg-gray-900">
         <UserProvider>
             <QueryClientProvider client={queryClient}>
-                <BrowserRouter>
+                <BrowserRouter basename="/ethnopedia">
                     <Routes>
                         <Route path="/collections/:collection/artworks/:artworkId" element={<ArtworkPage />} />
                         <Route path="/collections/:collection/create-artwork" element={<CreateArtwork />} />
