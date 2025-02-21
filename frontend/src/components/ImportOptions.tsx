@@ -19,6 +19,7 @@ const ImportOptions = ({ onClose, collectionData }: Props) => {
     const [dataToSend, setDataToSend] = useState<any>()
     const [collectionName, setCollectionName] = useState("")
     const [description, setDescription] = useState("")
+    const [errorMessage, setErrorMessage] = useState("")
 
     const { jwtToken } = useUser();
     const queryClient = useQueryClient()
@@ -61,7 +62,8 @@ const ImportOptions = ({ onClose, collectionData }: Props) => {
         setDescription(event.target.value)
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = (event: any) => {
+        event.preventDefault()
         importDataMutation.mutate()
     }
 
@@ -72,7 +74,10 @@ const ImportOptions = ({ onClose, collectionData }: Props) => {
     const importDataMutation = useMutation(() => importData(dataToSend, jwtToken, collectionData?.name), {
         onSuccess: () => {
             queryClient.invalidateQueries("artwork")
-            setShowDropzoneForm(false)
+            onClose()
+        },
+        onError: (error: any) => {
+            setErrorMessage(error.response.data.cause)
         }
     })
 
@@ -131,8 +136,9 @@ const ImportOptions = ({ onClose, collectionData }: Props) => {
                             />
                         </label>
                         <div className="w-full flex flex-col">
-                            <div className="flex p-4 text-base">
-                                <p><span className="font-medium">Plik do przesłania:</span> {filename ? filename : "-"}</p>
+                            <div className="flex p-4 text-base flex-col">
+                                <p className="break-words"><span className="font-medium">Plik do przesłania:</span> {filename ? filename : "-"}</p>
+                                <p className="break-words text-red-500">{errorMessage}</p>
                             </div>
                             <form onSubmit={handleSubmit} className="flex flex-col items-end p-4">
                                 <div>

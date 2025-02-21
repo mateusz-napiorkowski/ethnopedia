@@ -15,7 +15,7 @@ export const importData = authAsyncWrapper(async (req: Request, res: Response) =
             const foundCollections = await CollectionCollection.find({name: collectionName}, null, {session}).exec()
             if (foundCollections.length !== 1)
                 throw new Error(`Collection not found`)
-            const records = prepRecords(req.body.importData, collectionName)
+            const records = await prepRecords(req.body.importData, collectionName)
             const result = await Artwork.insertMany(records, {session})
             return res.status(201).json(result)
         });
@@ -28,7 +28,7 @@ export const importData = authAsyncWrapper(async (req: Request, res: Response) =
         else if (err.message === `Collection not found`)
             res.status(404).json({ error: err.message })
         else if (err.message === "Invalid data in the spreadsheet file"){
-            res.status(400).json({ error: err.message, cause: err.cause })}
+            res.status(400).json({ error: err.message, cause: err.cause?.toString()})}
         else
             res.status(503).json({ error: `Database unavailable` })
     }

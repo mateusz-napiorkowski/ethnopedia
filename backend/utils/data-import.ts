@@ -1,8 +1,15 @@
+import { getAllCategories } from "./categories"
 import { artworkCategory, record } from "./interfaces"
 
-export const prepRecords = (data: Array<Array<string>>, collectionName: string) => {
+export const prepRecords = async (data: Array<Array<string>>, collectionName: string) => {
     try {
         const header = data[0].map(categoryName => categoryName.trim().replace(/\s*\.\s*/g, '.'))
+        const categories = await getAllCategories(collectionName)
+        let missingCategories = categories.filter((category: string) => !header.includes(category))
+        let unnecessaryCategories = header.filter((category: string) => !categories.includes(category))
+        if(missingCategories.length != 0 || unnecessaryCategories.length != 0) {
+            throw new Error(`Brakujące kategorie: ${missingCategories}, Nadmiarowe kategorie: ${unnecessaryCategories}`)
+        }
         if(header.length !== new Set(header).size)
             throw new Error ("Header has duplicate values")
         if(header[header.length - 1] == '')

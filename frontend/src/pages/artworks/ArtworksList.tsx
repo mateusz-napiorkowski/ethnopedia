@@ -6,8 +6,8 @@ import { useEffect, useState } from "react";
 import Navbar from "../../components/navbar/Navbar";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import SearchComponent from "../../components/search/SearchComponent";
-// import ImportOptions from "../../components/ImportOptions";
-// import ExportOptions from "../../components/ExportOptions";
+import ImportOptions from "../../components/ImportOptions";
+import ExportOptions from "../../components/ExportOptions";
 import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg";
 import { HiOutlineCollection } from "react-icons/hi";
 import { ReactComponent as FileImportIcon } from "../../assets/icons/fileImport.svg";
@@ -20,13 +20,10 @@ import { useUser } from "../../providers/UserProvider";
 import { getAllCategories } from "../../api/categories";
 import Select from "react-select";
 
-
 const ArtworksList = ({ pageSize = 10 }) => {
     const [selectedArtworks, setSelectedArtworks] = useState<{ [key: string]: boolean }>({});
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [showImportOptions, setShowImportOptions] = useState<boolean>(false); //TODO
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [showExportOptions, setShowExportOptions] = useState<boolean>(false);  //TODO
+    const [showImportOptions, setShowImportOptions] = useState<boolean>(false);
+    const [showExportOptions, setShowExportOptions] = useState<boolean>(false);
     const [showDeleteRecordsWarning, setShowDeleteRecordsWarning] = useState(false);
     const [sortOrder, setSortOrder] = useState<string>("Tytuł-asc");
     // Stan dla multiselect – kategorie, które mają być wyświetlane
@@ -316,6 +313,8 @@ const ArtworksList = ({ pageSize = 10 }) => {
                             </button>
                         </div>
                     </div>
+                    {showImportOptions && <ImportOptions onClose={() => setShowImportOptions(false)} collectionData={collectionData}/>}
+                    {showExportOptions && <ExportOptions onClose={() => setShowExportOptions(false)} selectedArtworks={selectedArtworks} />}
                     <div className="flex w-full md:w-auto pt-4 flex-row items-center">
                         <p className="pr-2 text-sm">Wyświetl:</p>
                         <Select
