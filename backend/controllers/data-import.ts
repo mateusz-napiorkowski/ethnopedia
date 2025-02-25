@@ -4,6 +4,7 @@ import { authAsyncWrapper } from "../middleware/auth"
 import { prepRecords } from "../utils/data-import";
 import CollectionCollection from "../models/collection";
 import mongoose, { ClientSession } from "mongoose";
+import { transformCategoriesArrayToCategoriesObject } from "../utils/categories";
 
 export const importData = authAsyncWrapper(async (req: Request, res: Response) => {
     try {
@@ -15,7 +16,7 @@ export const importData = authAsyncWrapper(async (req: Request, res: Response) =
             const foundCollections = await CollectionCollection.find({name: collectionName}, null, {session}).exec()
             if (foundCollections.length !== 1)
                 throw new Error(`Collection not found`)
-            const records = await prepRecords(req.body.importData, collectionName)
+            const records = await prepRecords(req.body.importData, collectionName, false)
             const result = await Artwork.insertMany(records, {session})
             return res.status(201).json(result)
         });
@@ -43,10 +44,11 @@ export const importDataAsCollection = authAsyncWrapper(async (req: Request, res:
         const session = await mongoose.startSession()
         await session.withTransaction(async (session: ClientSession) => {
             const collectionName = req.body.collectionName
-            const newCollection = await CollectionCollection.create([{name: req.body.collectionName, description: req.body.description}], {session})
-            const records = prepRecords(req.body.importData, collectionName)
+            const categories = transformCategoriesArrayToCategoriesObject(req.body.importData[0])
+            const newCollection = await CollectionCollection.create([{name: req.body.collectionName, description: req.body.description, categories: categories}], {session})
+            const records = await prepRecords(req.body.importData, collectionName, true)
             const result = await Artwork.insertMany(records, {session})
-            return res.status(201).json(result)
+            return res.status(201).json({newCollection, result})
         });
         session.endSession()
     } catch (error) {
