@@ -4,7 +4,7 @@ import { authAsyncWrapper } from "../middleware/auth"
 import { prepRecords } from "../utils/data-import";
 import CollectionCollection from "../models/collection";
 import mongoose, { ClientSession } from "mongoose";
-import { transformCategoriesArrayToCategoriesObject } from "../utils/categories";
+import { findMissingParentCategories, transformCategoriesArrayToCategoriesObject } from "../utils/categories";
 
 export const importData = authAsyncWrapper(async (req: Request, res: Response) => {
     try {
@@ -34,9 +34,7 @@ export const importData = authAsyncWrapper(async (req: Request, res: Response) =
             res.status(503).json({ error: `Database unavailable` })
     }
 })
-
-
-// TODO fix error handling and write tests 
+ 
 export const importDataAsCollection = authAsyncWrapper(async (req: Request, res: Response) => {
     try {
         if(!req.body.importData || req.body.importData.length < 2 || !req.body.collectionName || !req.body.description )
@@ -44,8 +42,17 @@ export const importDataAsCollection = authAsyncWrapper(async (req: Request, res:
         const session = await mongoose.startSession()
         await session.withTransaction(async (session: ClientSession) => {
             const collectionName = req.body.collectionName
-            const categories = transformCategoriesArrayToCategoriesObject(req.body.importData[0])
-            const newCollection = await CollectionCollection.create([{name: req.body.collectionName, description: req.body.description, categories: categories}], {session})
+            const categoriesArray = req.body.importData[0]
+            const missingCategories = findMissingParentCategories(categoriesArray)
+            if(missingCategories.length !== 0)
+                throw new Error(
+                    "Invalid data in the spreadsheet file",
+                    {cause: `Brakujące kategorie nadrzędne: ${missingCategories.toString()}`}
+                )
+            const categories = transformCategoriesArrayToCategoriesObject(categoriesArray)
+            const newCollection = await CollectionCollection.create([
+                {name: req.body.collectionName, description: req.body.description, categories: categories}
+            ], {session})
             const records = await prepRecords(req.body.importData, collectionName, true)
             const result = await Artwork.insertMany(records, {session})
             return res.status(201).json({newCollection, result})

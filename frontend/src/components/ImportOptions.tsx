@@ -52,6 +52,7 @@ const ImportOptions = ({ onClose, collectionData }: Props) => {
         reader.readAsArrayBuffer(file)
         
         setFilename(file.name)
+        setErrorMessage("")
     }
 
     const handleNameChange = (event: any) => {
@@ -67,7 +68,8 @@ const ImportOptions = ({ onClose, collectionData }: Props) => {
         importDataMutation.mutate()
     }
 
-    const handleCollectionSubmit = () => {
+    const handleCollectionSubmit = (event: any) => {
+        event.preventDefault()
         importCollectionMutation.mutate()
     }
 
@@ -84,8 +86,10 @@ const ImportOptions = ({ onClose, collectionData }: Props) => {
     const importCollectionMutation = useMutation(() => importDataAsCollection(dataToSend, collectionName, description, jwtToken), {
         onSuccess: () => {
             queryClient.invalidateQueries("collection")
-            setShowDropzoneForm(false)
-            setShowCollectionForm(false)
+            onClose()
+        },
+        onError: (error: any) => {
+            setErrorMessage(error.response.data.cause)
         }
     })
 
@@ -190,6 +194,7 @@ const ImportOptions = ({ onClose, collectionData }: Props) => {
                                     className="w-full resize-y min-h-[12rem] px-4 py-2 border rounded-lg
                                     focus:outline-none dark:border-gray-600 dark:bg-gray-800"
                                 />
+                                <p className="break-words text-red-500">{errorMessage}</p>
                             </div>
                             <div className="flex justify-end px-4 pb-4">
                                 <button
