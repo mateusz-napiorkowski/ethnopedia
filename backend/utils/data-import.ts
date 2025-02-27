@@ -36,12 +36,11 @@ export const prepRecords = async (data: Array<Array<string>>, collectionName: st
                     const directSubcategoriesNames = header.filter(columnName => 
                         columnName.startsWith(`${header[columnIndex]}.`) && columnName.split(".").length === 2
                     )
-                    if(cellValues.length !== 0 || directSubcategoriesNames.length > 0)
-                        newRecord.categories.push({
-                            name: header[columnIndex],
-                            values: cellValues,
-                            subcategories: fillSubcategories(directSubcategoriesNames, 2, header, rowValues)
-                        })      
+                    newRecord.categories.push({
+                        name: header[columnIndex],
+                        values: cellValues,
+                        subcategories: fillSubcategories(directSubcategoriesNames, 2, header, rowValues)
+                    })      
                 }
             });
             records.push(newRecord)
@@ -59,12 +58,11 @@ const fillSubcategories = (fields: Array<string>, depth: number, header: Array<s
         const allSubcategoriesNames = header.filter(columnName => (columnName.startsWith(`${field}.`)))
         const directSubcategoriesNames = allSubcategoriesNames.filter(columnName => columnName.split(".").length === depth + 1)
         const subcategoryValues = rowValues[header.indexOf(field)].toString().split(";").map(value => value.trim()).filter(value => value !== "")
-        if(subcategoryValues.length !== 0 || allSubcategoriesNames.length > 0)
-            subcategories.push({
-                name: field.split(".").slice(-1)[0],
-                values: subcategoryValues,
-                subcategories: fillSubcategories(directSubcategoriesNames, depth + 1, header, rowValues)
-            })        
+        subcategories.push({
+            name: field.split(".").slice(-1)[0],
+            values: subcategoryValues,
+            subcategories: fillSubcategories(directSubcategoriesNames, depth + 1, header, rowValues)
+        })        
     });
     return subcategories
 }
