@@ -4,12 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2d029bd7-82b7-4397-bf3e-7fcfe7cda461" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/artwork/FormField.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/artwork/FormField.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/artwork/MetadataForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/artwork/MetadataForm.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/artworks/CreateArtwork.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/artworks/CreateArtwork.tsx" afterDir="false" />
-    </list>
+    <list default="true" id="2d029bd7-82b7-4397-bf3e-7fcfe7cda461" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -180,7 +175,7 @@
       <workItem from="1741009399471" duration="1188000" />
       <workItem from="1741072861527" duration="6612000" />
       <workItem from="1741084507665" duration="3122000" />
-      <workItem from="1741171245937" duration="2847000" />
+      <workItem from="1741171245937" duration="3628000" />
     </task>
     <servers />
   </component>
