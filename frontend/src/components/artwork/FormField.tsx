@@ -59,7 +59,8 @@ const FormField: React.FC<FormFieldProps> = ({
                     <input
                         type="text"
                         name="values"
-                        value={formData.values[0]}
+                        // value={formData.values[0]}
+                        value={formData.values?.[0] || ''}
                         onChange={(e) => handleInputChange(index, e)}
                         // placeholder={`Podaj wartość kategorii...`}
                         className="p-2 border rounded"

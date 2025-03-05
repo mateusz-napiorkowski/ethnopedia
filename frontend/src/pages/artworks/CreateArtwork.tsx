@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useQuery, useQueryClient} from "react-query";
 import { Form, Formik } from "formik";
 import {useLocation, useNavigate} from "react-router-dom";
@@ -6,7 +6,7 @@ import Navbar from "../../components/navbar/Navbar";
 import { useUser } from "../../providers/UserProvider";
 import Navigation from "../../components/Navigation";
 import { Metadata } from '../../@types/Metadata';
-import { createArtwork, editArtwork } from "../../api/artworks";
+import {createArtwork, editArtwork, getArtwork} from "../../api/artworks";
 import MetadataForm from "../../components/artwork/MetadataForm";
 // import {getCollection} from "../../api/collections";
 import LoadingPage from "../LoadingPage";
@@ -44,20 +44,16 @@ const convertToJson = (data: string[]): Metadata[] => {
 };
 
 
-
 const CreateArtwork: React.FC = () => {
     const location = useLocation();
     // const { collectionId } = useParams<{ collectionId: string }>();
     const queryClient = useQueryClient();
     const { jwtToken } = useUser();
     const navigate = useNavigate();
-    const [dataToInsert, setDataToInsert] = useState({});
+    const [dataToInsert, setDataToInsert] = useState({});  // Przechowywanie danych do wysłania
+    const [initialFormData, setInitialFormData] = useState<Metadata[]>(example_data);  // Stan dla początkowych danych formularza
 
-    const memoizedSetDataToInsert = useCallback((data: any) => {
-        setDataToInsert(data);
-    }, []);
-
-    // TODO
+    // TODO skąd biore collectionId?
     // // Pobranie danych kolekcji na podstawie collectionId
     // const { data: collectionData } = useQuery(
     //     ['collection', collectionId],
@@ -78,19 +74,28 @@ const CreateArtwork: React.FC = () => {
     });
 
     useEffect(() => {
-        console.log("categoriesData:", categoriesData, Array.isArray(categoriesData?.categories));
-    }, [categoriesData]);
+        if (!location.state && categoriesData?.categories) {
+            console.log("create");
+            setInitialFormData(convertToJson(categoriesData.categories));  // Ustawienie danych po załadowaniu
+        } else if (location.state) {
+            console.log("edit");
+            const artworkID = window.location.href.split("/")[window.location.href.split("/").length - 2];
+            getArtwork(artworkID).then((artworkData) => {
+                if (artworkData?.artwork?.categories) {
+                    setInitialFormData(artworkData.artwork.categories);  // Ustawienie danych dla edycji
+                }
+            }).catch((error) => {
+                console.error("Error fetching artwork data:", error);
+            });
+        }
+    }, [categoriesData, location.state]);
+
 
     if (isLoading) {
         return <LoadingPage />;
     }
     if (error) {
         return <div>Error loading categories</div>;
-    }
-
-    let initialFormData: Metadata[] = example_data;
-    if (categoriesData?.categories && Array.isArray(categoriesData.categories)) {
-        initialFormData = convertToJson(categoriesData.categories);
     }
 
 
@@ -148,7 +153,7 @@ const CreateArtwork: React.FC = () => {
                                         <MetadataForm
                                             initialFormData={initialFormData}
                                             collectionName={collectionName}
-                                            setDataToInsert={memoizedSetDataToInsert} />
+                                            setDataToInsert={(dataToInsert: any) => setDataToInsert(dataToInsert)} />
                                     </div>
                                     <div className="flex justify-end mt-6">
                                         <button

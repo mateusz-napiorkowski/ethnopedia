@@ -11,24 +11,24 @@ interface MetadataFormProps {
 }
 
 const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, collectionName, setDataToInsert }) => {
-  const [formDataList, setFormDataList] = React.useState<Metadata[]>(initialFormData); // Ustaw początkowe dane
+  // Inicjalizujemy stan tylko raz przy pierwszym renderze lub gdy initialFormData się zmieni.
+  const [formDataList, setFormDataList] = React.useState<Metadata[]>(initialFormData);
 
-  // useEffect(() => {
-  //   if (collectionName) {
-  //     setDataToInsert({ categories: formDataList, collectionName });
-  //   }
-  // }, [formDataList, collectionName]);
 
+  // Ustaw stan formularza, gdy initialFormData się zmieni (np. przy pierwszym pobraniu)
+  useEffect(() => {
+    setFormDataList(initialFormData);
+    console.log('Initial Form Data:', initialFormData);
+  }, [initialFormData]);
+
+
+  // Każdorazowo, gdy zmieni się formDataList lub collectionName, przekażemy zmodyfikowane dane do rodzica.
   useEffect(() => {
     if (collectionName) {
       setDataToInsert({ categories: formDataList, collectionName });
     }
-  }, [formDataList, collectionName]);
+  }, [formDataList, collectionName, setDataToInsert]);
 
-  const createOrEdit = window.location.href.split("/")[window.location.href.split("/").length-1]
-  if(createOrEdit === "edit-artwork") {
-    collectionName = window.location.href.split("/")[window.location.href.split("/").length-4]
-  }
 
   const handleInputChange = (index: string, e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
