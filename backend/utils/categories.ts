@@ -72,7 +72,7 @@ export const transformCategoriesArrayToCategoriesObject = (categoriesArray: Arra
 }
 
 export const findMissingParentCategories = ((categoriesArray: Array<string>) => {
-    let missingCategories: Array<string> = []
+    const missingCategories: Array<string> = []
     categoriesArray.forEach((category: string) => {
         const parentCategory = category.split(".").slice(0, -1).join(".")
         if(category.includes(".") && !categoriesArray.includes(parentCategory))

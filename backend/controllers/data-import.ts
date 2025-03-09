@@ -46,7 +46,7 @@ export const importDataAsCollection = authAsyncWrapper(async (req: Request, res:
             const missingCategories = findMissingParentCategories(categoriesArray)
             if(missingCategories.length !== 0)
                 throw new Error(
-                    "Invalid data in the spreadsheet file",
+                    "Invalid categories data",
                     {cause: `Brakujące kategorie nadrzędne: ${missingCategories.toString()}`}
                 )
             const categories = transformCategoriesArrayToCategoriesObject(categoriesArray)
@@ -63,9 +63,7 @@ export const importDataAsCollection = authAsyncWrapper(async (req: Request, res:
         console.error(error)
         if (err.message === `Incorrect request body provided`)
             res.status(400).json({ error: err.message })
-        else if (err.message === `Collection not found`)
-            res.status(404).json({ error: err.message })
-        else if (err.message === "Invalid data in the spreadsheet file"){
+        else if (err.message === "Invalid data in the spreadsheet file" || err.message === "Invalid categories data"){
             res.status(400).json({ error: err.message, cause: err.cause })}
         else
             res.status(503).json({ error: `Database unavailable` })

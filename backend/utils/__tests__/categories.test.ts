@@ -1,5 +1,5 @@
 import {describe, expect, test, jest, beforeEach} from "@jest/globals"
-import { getAllCategories, hasValidCategoryFormat, artworkCategoriesHaveValidFormat, transformCategoriesArrayToCategoriesObject } from "../categories"
+import { getAllCategories, hasValidCategoryFormat, artworkCategoriesHaveValidFormat, transformCategoriesArrayToCategoriesObject, findMissingParentCategories } from "../categories"
 
 const mockCollectionFind = jest.fn()
 jest.mock('../../models/collection', () => ({
@@ -238,4 +238,26 @@ describe('categories util functions tests', () => {
 					expect(transformCategoriesArrayToCategoriesObject(categoryData)).toEqual(returnValue)
 				}
 		)
+
+		test.each([
+			{
+				testName: 'findMissingParentCategories test - no subcategories',
+				categoryData: ["Tytuł", "Artyści", "Rok"],
+				returnValue: []
+			},
+			{
+				testName: 'findMissingParentCategories test - correct subcategory names',
+				categoryData: ["Rok.Miesiąc.Dzień", "Tytuł", "Rok.Miesiąc", "Artyści", "Rok", "Tytuł.Podtytuł"],
+				returnValue: []
+			},
+			{
+				testName: 'findMissingParentCategories test - correct subcategory names',
+				categoryData: ["Rok.Miesiąc.Dzień", "Tytuł", "Tytuł.Podtytuł.Podpodpodtytuł.Podpodpodtytuł", "Rok.Miesiąc", "Artyści", "Tytuł.Podtytuł"],
+				returnValue: ["Tytuł.Podtytuł.Podpodpodtytuł", "Rok"]
+			},
+		])(`$testName`,
+				({categoryData, returnValue}) => {
+					expect(findMissingParentCategories(categoryData)).toEqual(returnValue)
+				}
+		)		
 })
