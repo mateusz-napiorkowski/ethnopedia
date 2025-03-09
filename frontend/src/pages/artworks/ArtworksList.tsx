@@ -369,6 +369,7 @@ const ArtworksList = ({ pageSize = 10 }) => {
                     currentPage={currentPage}
                     totalPages={Math.ceil(artworkData.total / pageSize)}
                     setCurrentPage={(page) => setCurrentPage(page)}
+                    onPageChange={deselectAll}
                 />
             </div>
         </div></>

@@ -323,6 +323,7 @@ const CollectionsPage = () => {
                         currentPage={currentPage}
                         totalPages={Math.ceil(fetchedData.total / pageSize)}
                         setCurrentPage={(page) => setCurrentPage(page)}
+                        onPageChange={uncheckAll}
                     />
                 </div>
             </div>

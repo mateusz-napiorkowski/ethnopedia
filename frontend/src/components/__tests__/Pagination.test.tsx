@@ -7,12 +7,13 @@ import userEvent from "@testing-library/user-event";
 const user = userEvent.setup()
 
 const mockSetCurrentPage = jest.fn()
+const mockOnPageChange = jest.fn()
 
 const renderComponent = ( currentPage: number, totalPages: number ) => {
     return render(
         <MemoryRouter initialEntries={[`/`]}>
             <Routes>
-                <Route path="/" element={<Pagination currentPage={currentPage} totalPages={totalPages} setCurrentPage={mockSetCurrentPage}/>}/>
+                <Route path="/" element={<Pagination currentPage={currentPage} totalPages={totalPages} setCurrentPage={mockSetCurrentPage} onPageChange={mockOnPageChange}/>}/>
             </Routes>  
         </MemoryRouter>
     );
@@ -47,6 +48,7 @@ describe("Pagination tests", () => {
         await user.click(nthPageButton)
         
         expect(mockSetCurrentPage).toHaveBeenCalledWith(pageToGoTo)
+        expect(mockOnPageChange).toHaveBeenCalled()
     })
 
     test("Next page button works correctly when there is a next page", async () => {     
@@ -56,6 +58,7 @@ describe("Pagination tests", () => {
         await user.click(nextPageButton)
         
         expect(mockSetCurrentPage).toHaveBeenCalledWith(3)
+        expect(mockOnPageChange).toHaveBeenCalled()
     })
 
     test("Next page button works correctly when there is no next page", async () => {
@@ -65,6 +68,7 @@ describe("Pagination tests", () => {
         await user.click(nextPageButton)
         
         expect(mockSetCurrentPage).not.toHaveBeenCalled()
+        expect(mockOnPageChange).not.toHaveBeenCalled()
     })
 
     test("Previous page button works correctly when there is a previous page", async () => {        
@@ -74,6 +78,7 @@ describe("Pagination tests", () => {
         await user.click(nextPageButton)
         
         expect(mockSetCurrentPage).toHaveBeenCalledWith(1)
+        expect(mockOnPageChange).toHaveBeenCalled()
     })
 
     test("Previous page button works correctly when there is no previous page", async () => {   
@@ -83,6 +88,7 @@ describe("Pagination tests", () => {
         await user.click(nextPageButton)
         
         expect(mockSetCurrentPage).not.toHaveBeenCalled()
+        expect(mockOnPageChange).not.toHaveBeenCalled()
     })
 
     test("input element works correctly and user goes to inputed page when button is clicked", async () => {   
@@ -98,6 +104,7 @@ describe("Pagination tests", () => {
 
         expect(inputPageElement).toHaveValue(5)
         expect(mockSetCurrentPage).toHaveBeenCalledWith(5)
+        expect(mockOnPageChange).toHaveBeenCalled()
     })
 
     test("button is disabled when inputed page is out of pages range", async () => {   
