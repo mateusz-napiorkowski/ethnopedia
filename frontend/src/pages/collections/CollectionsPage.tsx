@@ -160,8 +160,14 @@ const CollectionsPage = () => {
 
                     <div className="flex items-center justify-end w-full">
                     <button
+                        disabled={jwtToken ? false : true}
                         type="button"
-                        className="flex items-center justify-center dark:text-white text-sm px-4 py-2 mb-2 hover:bg-gray-700 bg-gray-800 text-white border-gray-800 font-semibold mr-2"
+                        className={`flex items-center justify-center dark:text-white text-sm px-4 py-2 mb-2
+                              text-white border-gray-800 font-semibold mr-2 ${
+                                jwtToken
+                                    ? "bg-gray-800 hover:bg-gray-700"
+                                    : "bg-gray-600 hover:bg-gray-600"
+                              }`}
                         onClick={() => navigate("/create-collection")}
                     >
                         <span className="mr-2">
