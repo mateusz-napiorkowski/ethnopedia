@@ -55,3 +55,28 @@ export const getAllCategories = async (collectionName: string) => {
             throw new Error("Database unavailable")
     }
 }
+
+export const transformCategoriesArrayToCategoriesObject = (categoriesArray: Array<string>, depth = 1) => {
+    const categories: Array<any> = []
+    categoriesArray.forEach(field => {
+        const allSubcategoriesNames = categoriesArray
+            .filter(columnName => (columnName.startsWith(`${field}.`)))
+            .map(item => item.split('.').slice(1).join('.'));
+        if(!field.includes("."))
+            categories.push({
+                name: field,
+                subcategories: transformCategoriesArrayToCategoriesObject(allSubcategoriesNames, depth + 1)
+            })        
+    })
+    return categories
+}
+
+export const findMissingParentCategories = ((categoriesArray: Array<string>) => {
+    const missingCategories: Array<string> = []
+    categoriesArray.forEach((category: string) => {
+        const parentCategory = category.split(".").slice(0, -1).join(".")
+        if(category.includes(".") && !categoriesArray.includes(parentCategory))
+            missingCategories.push(parentCategory)
+    });
+    return missingCategories
+})

@@ -19,6 +19,7 @@ const ImportOptions = ({ onClose, collectionData }: Props) => {
     const [dataToSend, setDataToSend] = useState<any>()
     const [collectionName, setCollectionName] = useState("")
     const [description, setDescription] = useState("")
+    const [errorMessage, setErrorMessage] = useState("")
 
     const { jwtToken } = useUser();
     const queryClient = useQueryClient()
@@ -51,6 +52,7 @@ const ImportOptions = ({ onClose, collectionData }: Props) => {
         reader.readAsArrayBuffer(file)
         
         setFilename(file.name)
+        setErrorMessage("")
     }
 
     const handleNameChange = (event: any) => {
@@ -61,26 +63,33 @@ const ImportOptions = ({ onClose, collectionData }: Props) => {
         setDescription(event.target.value)
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = (event: any) => {
+        event.preventDefault()
         importDataMutation.mutate()
     }
 
-    const handleCollectionSubmit = () => {
+    const handleCollectionSubmit = (event: any) => {
+        event.preventDefault()
         importCollectionMutation.mutate()
     }
 
     const importDataMutation = useMutation(() => importData(dataToSend, jwtToken, collectionData?.name), {
         onSuccess: () => {
             queryClient.invalidateQueries("artwork")
-            setShowDropzoneForm(false)
+            onClose()
+        },
+        onError: (error: any) => {
+            setErrorMessage(error.response.data.cause)
         }
     })
 
     const importCollectionMutation = useMutation(() => importDataAsCollection(dataToSend, collectionName, description, jwtToken), {
         onSuccess: () => {
             queryClient.invalidateQueries("collection")
-            setShowDropzoneForm(false)
-            setShowCollectionForm(false)
+            onClose()
+        },
+        onError: (error: any) => {
+            setErrorMessage(error.response.data.cause)
         }
     })
 
@@ -131,8 +140,9 @@ const ImportOptions = ({ onClose, collectionData }: Props) => {
                             />
                         </label>
                         <div className="w-full flex flex-col">
-                            <div className="flex p-4 text-base">
-                                <p><span className="font-medium">Plik do przesłania:</span> {filename ? filename : "-"}</p>
+                            <div className="flex p-4 text-base flex-col">
+                                <p className="break-words"><span className="font-medium">Plik do przesłania:</span> {filename ? filename : "-"}</p>
+                                <p className="break-words text-red-500">{errorMessage}</p>
                             </div>
                             <form onSubmit={handleSubmit} className="flex flex-col items-end p-4">
                                 <div>
@@ -184,6 +194,7 @@ const ImportOptions = ({ onClose, collectionData }: Props) => {
                                     className="w-full resize-y min-h-[12rem] px-4 py-2 border rounded-lg
                                     focus:outline-none dark:border-gray-600 dark:bg-gray-800"
                                 />
+                                <p className="break-words text-red-500">{errorMessage}</p>
                             </div>
                             <div className="flex justify-end px-4 pb-4">
                                 <button

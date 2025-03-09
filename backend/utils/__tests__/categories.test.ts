@@ -1,5 +1,5 @@
 import {describe, expect, test, jest, beforeEach} from "@jest/globals"
-import { getAllCategories, hasValidCategoryFormat, artworkCategoriesHaveValidFormat } from "../categories"
+import { getAllCategories, hasValidCategoryFormat, artworkCategoriesHaveValidFormat, transformCategoriesArrayToCategoriesObject, findMissingParentCategories } from "../categories"
 
 const mockCollectionFind = jest.fn()
 jest.mock('../../models/collection', () => ({
@@ -210,4 +210,54 @@ describe('categories util functions tests', () => {
 						expect(() => getAllCategories("collection")).rejects.toThrow(error);
 				}
 		)
+
+		test.each([
+			{
+				testName: 'transformCategoriesArrayToCategoriesObject test - return correct category object when there are no nested subcategories',
+				categoryData: ["Tytuł", "Artyści", "Rok"],
+				returnValue: [
+					{name: "Tytuł", subcategories: []},
+					{name: "Artyści", subcategories: []},
+					{name: "Rok", subcategories: []}
+				]
+			},
+			{
+				testName: 'transformCategoriesArrayToCategoriesObject test - return correct category object when there are nested subcategories and categories are arranged in an ambiguous order',
+				categoryData: ["Tytuł.Podtytuł.Podpodtytuł", "Tytuł", "Tytuł.Podtytuł", "Rok.Miesiąc.Dzień", "Artyści", "Tytuł.Podtytuł alternatywny", "Rok", "Rok.Miesiąc"],
+				returnValue: [
+					{name: "Tytuł", subcategories: [
+						{name: "Podtytuł", subcategories: [{name: "Podpodtytuł", subcategories: []}]},
+						{name: "Podtytuł alternatywny", subcategories: []},
+					]},
+					{name: "Artyści", subcategories: []},
+					{name: "Rok", subcategories: [{name: "Miesiąc", subcategories: [{name: "Dzień", subcategories: []}]}]}
+				]
+			},
+		])(`$testName`,
+				({categoryData, returnValue}) => {
+					expect(transformCategoriesArrayToCategoriesObject(categoryData)).toEqual(returnValue)
+				}
+		)
+
+		test.each([
+			{
+				testName: 'findMissingParentCategories test - no subcategories',
+				categoryData: ["Tytuł", "Artyści", "Rok"],
+				returnValue: []
+			},
+			{
+				testName: 'findMissingParentCategories test - correct subcategory names',
+				categoryData: ["Rok.Miesiąc.Dzień", "Tytuł", "Rok.Miesiąc", "Artyści", "Rok", "Tytuł.Podtytuł"],
+				returnValue: []
+			},
+			{
+				testName: 'findMissingParentCategories test - correct subcategory names',
+				categoryData: ["Rok.Miesiąc.Dzień", "Tytuł", "Tytuł.Podtytuł.Podpodpodtytuł.Podpodpodtytuł", "Rok.Miesiąc", "Artyści", "Tytuł.Podtytuł"],
+				returnValue: ["Tytuł.Podtytuł.Podpodpodtytuł", "Rok"]
+			},
+		])(`$testName`,
+				({categoryData, returnValue}) => {
+					expect(findMissingParentCategories(categoryData)).toEqual(returnValue)
+				}
+		)		
 })

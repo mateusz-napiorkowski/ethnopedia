@@ -72,10 +72,21 @@ exports[`data-import controller util functions tests prepRecords test - skip all
     "categories": [
       {
         "name": "Title",
-        "subcategories": [],
+        "subcategories": [
+          {
+            "name": "Subtitle",
+            "subcategories": [],
+            "values": [],
+          },
+        ],
         "values": [
           "title 1",
         ],
+      },
+      {
+        "name": "Artists",
+        "subcategories": [],
+        "values": [],
       },
     ],
     "collectionName": "collection",
@@ -98,7 +109,13 @@ exports[`data-import controller util functions tests prepRecords test - skip sub
                 "subcategories": [
                   {
                     "name": "Subsubsubtitle",
-                    "subcategories": [],
+                    "subcategories": [
+                      {
+                        "name": "Subsubsubsubtitle",
+                        "subcategories": [],
+                        "values": [],
+                      },
+                    ],
                     "values": [
                       "subsubsubtitle 1",
                     ],
@@ -168,6 +185,11 @@ exports[`data-import controller util functions tests prepRecords test - skipped 
         ],
       },
       {
+        "name": "Artists",
+        "subcategories": [],
+        "values": [],
+      },
+      {
         "name": "Release Year",
         "subcategories": [],
         "values": [
@@ -179,6 +201,11 @@ exports[`data-import controller util functions tests prepRecords test - skipped 
   },
   {
     "categories": [
+      {
+        "name": "Title",
+        "subcategories": [],
+        "values": [],
+      },
       {
         "name": "Artists",
         "subcategories": [],
@@ -204,6 +231,16 @@ exports[`data-import controller util functions tests prepRecords test - skipped 
         "values": [
           "title 3",
         ],
+      },
+      {
+        "name": "Artists",
+        "subcategories": [],
+        "values": [],
+      },
+      {
+        "name": "Release Year",
+        "subcategories": [],
+        "values": [],
       },
     ],
     "collectionName": "collection",
