@@ -209,7 +209,7 @@ const ArtworksList = ({ pageSize = 10 }) => {
         })) || [];
 
     return (
-        <>
+        <><div data-testid="loaded-artwork-page-container">
             <Navbar />
             {showDeleteRecordsWarning && (
                 <WarningPopup
@@ -371,7 +371,7 @@ const ArtworksList = ({ pageSize = 10 }) => {
                     setCurrentPage={(page) => setCurrentPage(page)}
                 />
             </div>
-        </>
+        </div></>
     );
 };
 
