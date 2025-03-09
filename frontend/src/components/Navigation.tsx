@@ -1,6 +1,6 @@
-import React from "react"
-import { Link, useLocation } from "react-router-dom"
-import { ReactComponent as AngleRightIcon } from "../assets/icons/angleRight.svg"
+import React from "react";
+import { Link, useLocation } from "react-router-dom";
+import { ReactComponent as AngleRightIcon } from "../assets/icons/angleRight.svg";
 
 interface NavigationProps {
     artworkTitle?: string,
@@ -53,4 +53,4 @@ const Navigation: React.FC<NavigationProps> = ({artworkTitle}) => {
     </nav>
 }
 
-export default Navigation
+export default Navigation;

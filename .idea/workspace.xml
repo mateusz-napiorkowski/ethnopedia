@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="2d029bd7-82b7-4397-bf3e-7fcfe7cda461" name="Changes" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="TypeScript JSX File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;WiktoriaSzymanska2&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/mateusz-napiorkowski/ethnopedia.git&quot;,
+    &quot;accountId&quot;: &quot;07ff98c9-abb4-4230-9a2d-427e277cda5b&quot;
+  }
+}</component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 7
+}</component>
+  <component name="ProjectId" id="2nsiCIqlwcbuSbuC6w3qpyslE6b" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Jest.CollectionsPage.displays the correct number of artworks for each collection.executor&quot;: &quot;Run&quot;,
+    &quot;Jest.CollectionsPage.renders the CollectionsPage correctly.executor&quot;: &quot;Debug&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;metadata-form&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/wikto/OneDrive/Dokumenty/PROJEKTY/PP/ethnopedia/backend&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs.jest.jest_package&quot;: &quot;C:/Users/wikto/OneDrive/Dokumenty/PROJEKTY/PP/ethnopedia/frontend/node_modules/react-scripts&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;diff.external&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\wikto\\OneDrive\\Dokumenty\\PROJEKTY\\PP\\ethnopedia\\backend\\node_modules\\typescript\\lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\wikto\OneDrive\Dokumenty\PROJEKTY\PP\ethnopedia\backend" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\wikto\OneDrive\Dokumenty\PROJEKTY\PP\ethnopedia\frontend\src\pages\collections\__tests__" />
+      <recent name="C:\Users\wikto\OneDrive\Dokumenty\PROJEKTY\PP\ethnopedia\frontend\src\pages\artworks\__tests__" />
+      <recent name="C:\Users\wikto\OneDrive\Dokumenty\PROJEKTY\PP\ethnopedia\frontend\src\pages\artworks" />
+      <recent name="C:\Users\wikto\OneDrive\Dokumenty\PROJEKTY\PP\ethnopedia\frontend\src\components\artwork" />
+      <recent name="C:\Users\wikto\OneDrive\Dokumenty\PROJEKTY\PP\ethnopedia\frontend\src\components\collections" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Jest.CollectionsPage.renders the CollectionsPage correctly">
+    <configuration name="CollectionsPage.displays the correct number of artworks for each collection" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <jest-package value="$PROJECT_DIR$/frontend/node_modules/react-scripts" />
+      <working-dir value="$PROJECT_DIR$/frontend" />
+      <envs />
+      <scope-kind value="TEST" />
+      <test-file value="$PROJECT_DIR$/frontend/src/pages/__tests__/CollectionsPage.test.tsx" />
+      <test-names>
+        <test-name value="CollectionsPage" />
+        <test-name value="displays the correct number of artworks for each collection" />
+      </test-names>
+      <method v="2" />
+    </configuration>
+    <configuration name="CollectionsPage.renders the CollectionsPage correctly" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <jest-package value="$PROJECT_DIR$/frontend/node_modules/react-scripts" />
+      <working-dir value="$PROJECT_DIR$/frontend" />
+      <envs />
+      <scope-kind value="TEST" />
+      <test-file value="$PROJECT_DIR$/frontend/src/pages/__tests__/CollectionsPage.test.tsx" />
+      <test-names>
+        <test-name value="CollectionsPage" />
+        <test-name value="renders the CollectionsPage correctly" />
+      </test-names>
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Jest.CollectionsPage.renders the CollectionsPage correctly" />
+        <item itemvalue="Jest.CollectionsPage.displays the correct number of artworks for each collection" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-deb605915726-JavaScript-WS-243.22562.222" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="2d029bd7-82b7-4397-bf3e-7fcfe7cda461" name="Changes" comment="" />
+      <created>1729768054355</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1729768054355</updated>
+      <workItem from="1729768055549" duration="671000" />
+      <workItem from="1729768867400" duration="2690000" />
+      <workItem from="1729884260607" duration="1347000" />
+      <workItem from="1730202751395" duration="4268000" />
+      <workItem from="1730247275717" duration="710000" />
+      <workItem from="1730301720059" duration="2967000" />
+      <workItem from="1730718223234" duration="5588000" />
+      <workItem from="1730902909844" duration="3391000" />
+      <workItem from="1730907189432" duration="2343000" />
+      <workItem from="1731499152439" duration="5151000" />
+      <workItem from="1731504489239" duration="2433000" />
+      <workItem from="1731926462524" duration="9455000" />
+      <workItem from="1732098696059" duration="4933000" />
+      <workItem from="1732114794766" duration="13294000" />
+      <workItem from="1732363065212" duration="7861000" />
+      <workItem from="1732703305716" duration="3312000" />
+      <workItem from="1733229426250" duration="6419000" />
+      <workItem from="1733268692774" duration="1045000" />
+      <workItem from="1733308801353" duration="83000" />
+      <workItem from="1733322156429" duration="2167000" />
+      <workItem from="1733327658892" duration="2802000" />
+      <workItem from="1733398292537" duration="7406000" />
+      <workItem from="1733481124577" duration="3076000" />
+      <workItem from="1733916427283" duration="3461000" />
+      <workItem from="1734533533356" duration="944000" />
+      <workItem from="1736350576103" duration="682000" />
+      <workItem from="1736351352076" duration="24000" />
+      <workItem from="1736351418518" duration="1827000" />
+      <workItem from="1736507975777" duration="8055000" />
+      <workItem from="1736767692353" duration="6148000" />
+      <workItem from="1736780371832" duration="4000" />
+      <workItem from="1736864306734" duration="1365000" />
+      <workItem from="1736948087704" duration="877000" />
+      <workItem from="1736953482447" duration="7915000" />
+      <workItem from="1737387959988" duration="2903000" />
+      <workItem from="1738016224752" duration="1580000" />
+      <workItem from="1738069823946" duration="2015000" />
+      <workItem from="1738756310104" duration="5791000" />
+      <workItem from="1738848051020" duration="22189000" />
+      <workItem from="1739040476745" duration="4084000" />
+      <workItem from="1739048996956" duration="5102000" />
+      <workItem from="1739115500842" duration="1122000" />
+      <workItem from="1739118376802" duration="13328000" />
+      <workItem from="1739180898949" duration="6408000" />
+      <workItem from="1739193527382" duration="4481000" />
+      <workItem from="1739279371197" duration="7030000" />
+      <workItem from="1739366533004" duration="8292000" />
+      <workItem from="1739724430880" duration="5343000" />
+      <workItem from="1740581909065" duration="2674000" />
+      <workItem from="1741009399471" duration="1188000" />
+      <workItem from="1741072861527" duration="6612000" />
+      <workItem from="1741084507665" duration="3122000" />
+      <workItem from="1741171245937" duration="3628000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

@@ -1,8 +1,15 @@
-import { subcategoryData, record } from "./interfaces"
+import { getAllCategories } from "./categories"
+import { artworkCategory, record } from "./interfaces"
 
-export const prepRecords = (data: Array<Array<string>>, collectionName: string) => {
+export const prepRecords = async (data: Array<Array<string>>, collectionName: string, asCollection: boolean) => {
     try {
         const header = data[0].map(categoryName => categoryName.trim().replace(/\s*\.\s*/g, '.'))
+        const categories = asCollection ? data[0] : await getAllCategories(collectionName)
+        let missingCategories = categories.filter((category: string) => !header.includes(category))
+        let unnecessaryCategories = header.filter((category: string) => !categories.includes(category))
+        if(missingCategories.length != 0 || unnecessaryCategories.length != 0) {
+            throw new Error(`Brakujące kategorie: ${missingCategories}, Nadmiarowe kategorie: ${unnecessaryCategories}`)
+        }
         if(header.length !== new Set(header).size)
             throw new Error ("Header has duplicate values")
         if(header[header.length - 1] == '')
@@ -29,12 +36,11 @@ export const prepRecords = (data: Array<Array<string>>, collectionName: string) 
                     const directSubcategoriesNames = header.filter(columnName => 
                         columnName.startsWith(`${header[columnIndex]}.`) && columnName.split(".").length === 2
                     )
-                    if(cellValues.length !== 0 || directSubcategoriesNames.length > 0)
-                        newRecord.categories.push({
-                            name: header[columnIndex],
-                            values: cellValues,
-                            subcategories: fillSubcategories(directSubcategoriesNames, 2, header, rowValues)
-                        })      
+                    newRecord.categories.push({
+                        name: header[columnIndex],
+                        values: cellValues,
+                        subcategories: fillSubcategories(directSubcategoriesNames, 2, header, rowValues)
+                    })      
                 }
             });
             records.push(newRecord)
@@ -47,17 +53,16 @@ export const prepRecords = (data: Array<Array<string>>, collectionName: string) 
 }
 
 const fillSubcategories = (fields: Array<string>, depth: number, header: Array<string>, rowValues: Array<string>) => {
-    const subcategories: Array<subcategoryData> = []
+    const subcategories: Array<artworkCategory> = []
     fields.forEach(field => {
         const allSubcategoriesNames = header.filter(columnName => (columnName.startsWith(`${field}.`)))
         const directSubcategoriesNames = allSubcategoriesNames.filter(columnName => columnName.split(".").length === depth + 1)
         const subcategoryValues = rowValues[header.indexOf(field)].toString().split(";").map(value => value.trim()).filter(value => value !== "")
-        if(subcategoryValues.length !== 0 || allSubcategoriesNames.length > 0)
-            subcategories.push({
-                name: field.split(".").slice(-1)[0],
-                values: subcategoryValues,
-                subcategories: fillSubcategories(directSubcategoriesNames, depth + 1, header, rowValues)
-            })        
+        subcategories.push({
+            name: field.split(".").slice(-1)[0],
+            values: subcategoryValues,
+            subcategories: fillSubcategories(directSubcategoriesNames, depth + 1, header, rowValues)
+        })        
     });
     return subcategories
 }

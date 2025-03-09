@@ -1,51 +1,34 @@
 import React, { ChangeEvent, useEffect } from 'react';
-import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg"
-// import { ReactComponent as MinusIcon } from "../../assets/icons/minus.svg";
+// import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg"
 import FormField from './FormField';
-import { Category } from '../../@types/Category';
-
-
-// let example_data: Category[] = [
-//   { name: "Tytuł", values: ["tytuł utworu"], subcategories: [] },
-//   { name: "Wykonawca", values: ["nazwa zespołu"], subcategories: [
-//     { name: "Wykonawca nr 1", values: ["Imię Nazwisko 1"] },
-//     { name: "Wykonawca nr 2", values: ["Imię Nazwisko 2"] } ] },
-//   { name: "Region", values: ["Wielkopolska"], subcategories: [
-//     { name: "Podregion", values: ["WielkopQolska Północna"] },
-//     { name: "Podregion etnograficzny", values: ["Szamotulskie"] },
-//     { name: "Powiat", values: ["Szamotulski"]} ] }
-// ]
-
-function transformToNewStructure(data: Category[], collectionName: string): { categories: Category[]; collectionName: string } {
-  return { categories: data, collectionName: collectionName };
-}
-
+import { Metadata } from '../../@types/Metadata';
 
 
 interface MetadataFormProps {
-  initialFormData: Category[];
-  setDataToInsert: any
+  initialFormData: Metadata[];
+  collectionName: string;
+  setDataToInsert: (data: { categories: Metadata[]; collectionName: string }) => void;
 }
 
+const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, collectionName, setDataToInsert }) => {
+  // Inicjalizujemy stan tylko raz przy pierwszym renderze lub gdy initialFormData się zmieni.
+  const [formDataList, setFormDataList] = React.useState<Metadata[]>(initialFormData);
 
-const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, setDataToInsert }) => {
-  const [formDataList, setFormDataList] = React.useState<Category[]>(initialFormData); // Ustaw początkowe dane
 
-  const createOrEdit = window.location.href.split("/")[window.location.href.split("/").length-1]
-  let collectionName = window.location.href.split("/")[window.location.href.split("/").length-2]
-  if(createOrEdit === "edit-artwork") {
-    collectionName = window.location.href.split("/")[window.location.href.split("/").length-4]
-  }
-
+  // Ustaw stan formularza, gdy initialFormData się zmieni (np. przy pierwszym pobraniu)
   useEffect(() => {
-    setDataToInsert(transformToNewStructure(formDataList, collectionName))
-  }, [formDataList, collectionName, setDataToInsert])
+    setFormDataList(initialFormData);
+    console.log('Initial Form Data:', initialFormData);
+  }, [initialFormData]);
 
-  // const [jsonOutput, setJsonOutput] = useState<string>('');
-  // const handleShowJson = () => {
-  //   let jsonData = transformToNewStructure(formDataList, collectionName);
-  //   setJsonOutput(JSON.stringify(jsonData, null, 2));
-  // };
+
+  // Każdorazowo, gdy zmieni się formDataList lub collectionName, przekażemy zmodyfikowane dane do rodzica.
+  useEffect(() => {
+    if (collectionName) {
+      setDataToInsert({ categories: formDataList, collectionName });
+    }
+  }, [formDataList, collectionName, setDataToInsert]);
+
 
   const handleInputChange = (index: string, e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -57,7 +40,7 @@ const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, setDataToI
   };
 
   // recursively update the value of a nested object
-  const updateNestedValue = (dataList: Category[], indexParts: number[], name: string, value: string): Category[] => {
+  const updateNestedValue = (dataList: Metadata[], indexParts: number[], name: string, value: string): Metadata[] => {
     if (indexParts.length === 0) {
       return dataList;
     }
@@ -85,9 +68,9 @@ const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, setDataToI
     });
   };
 
-  const handleAddCategory = () => {
-    setFormDataList((prevDataList) => [...prevDataList, { name: '', values: [''], subcategories: [] }]);
-  };
+  // const handleAddCategory = () => {
+  //   setFormDataList((prevDataList) => [...prevDataList, { name: '', values: [''], subcategories: [] }]);
+  // };
 
   const handleAddSubcategory = (index: string) => {
     const indexParts = index.split('-').map(Number);  // e.g. index '2-0-1' -> [2, 0, 1]
@@ -97,7 +80,7 @@ const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, setDataToI
     );
   };
 
-  const addSubcategory = (dataList: Category[], indexParts: number[]): Category[] => {
+  const addSubcategory = (dataList: Metadata[], indexParts: number[]): Metadata[] => {
     if (indexParts.length === 0) {
       return [...dataList, { name: '', values: [''], subcategories: [] }];
     }
@@ -135,7 +118,7 @@ const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, setDataToI
     );
   };
 
-  const removeCategory = (dataList: Category[], indexParts: number[]): Category[] => {
+  const removeCategory = (dataList: Metadata[], indexParts: number[]): Metadata[] => {
     if (indexParts.length === 0) {
       return dataList;
     }
@@ -155,7 +138,7 @@ const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, setDataToI
       } else {
         return item;
       }
-    }).filter(item => item !== null) as Category[];
+    }).filter(item => item !== null) as Metadata[];
   };
 
   return (
@@ -174,14 +157,14 @@ const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, setDataToI
                     handleAddSubcategory={handleAddSubcategory}
                 />
             ))}
-            <div className="flex flex-col justify-between items-start mt-4 space-y-4">
-              <button type="button" onClick={handleAddCategory} title="Dodaj kategorię">
-                <PlusIcon />
-              </button>
-              {/*<button type="button" onClick={handleShowJson}>*/}
-              {/*  Show JSON*/}
-              {/*</button>*/}
-            </div>
+            {/*<div className="actions mt-1">*/}
+            {/*  <button type="button" onClick={handleAddCategory} title="Dodaj kategorię">*/}
+            {/*    <PlusIcon />*/}
+            {/*  </button>*/}
+            {/*  /!*<button type="button" onClick={handleShowJson}>*!/*/}
+            {/*  /!*  Show JSON*!/*/}
+            {/*  /!*</button>*!/*/}
+            {/*</div>*/}
           </form>
           {/* <pre>{jsonOutput}</pre> */}
         </div>

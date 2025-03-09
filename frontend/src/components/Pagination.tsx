@@ -4,9 +4,10 @@ interface PaginationProps {
     currentPage: number
     setCurrentPage: (page: number) => void
     totalPages: number
+    onPageChange: () => void
 }
 
-const Pagination: React.FC<PaginationProps> = ({ currentPage, setCurrentPage, totalPages }) => {
+const Pagination: React.FC<PaginationProps> = ({ currentPage, setCurrentPage, totalPages, onPageChange }) => {
     const [inputedPage, setInputedPage] = useState(currentPage)
     const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1)
 
@@ -14,27 +15,32 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, setCurrentPage, to
         if (currentPage > 1) {
             setCurrentPage(currentPage - 1)
             setInputedPage(currentPage-1)
+            onPageChange()
         }
     }
 
     const handlePageChange = (pageNumber: number) => {
         setCurrentPage(pageNumber)
         setInputedPage(pageNumber)
+        onPageChange()
     }
 
     const handleNext = () => {
         if (currentPage < totalPages) {
             setCurrentPage(currentPage + 1)
             setInputedPage(currentPage + 1)
+            onPageChange()
         }
     }
 
     const handleInputed = (event: ChangeEvent<HTMLInputElement>) => {
         setInputedPage(Number(event.target.value))
+        onPageChange()
     }
 
     const handleGoToPageButtonClick = () => {
         setCurrentPage(inputedPage)
+        onPageChange()
     }
 
     const buttonDisabled = inputedPage > totalPages || inputedPage < 1

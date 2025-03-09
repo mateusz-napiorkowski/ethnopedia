@@ -6,8 +6,7 @@ exports[`ArtworksList tests should refetch artworks list when artwork page is ch
   data-testid="artworks-listed"
 >
   <div
-    class="px-4 max-w-screen-xl py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4
-                border border-gray-300 dark:border-gray-600 cursor-pointer"
+    class="px-4 max-w-screen-xl py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4 border border-gray-300 dark:border-gray-600 cursor-pointer"
     data-testid="6752ddca46e3ca48231024dc"
   >
     <div
@@ -22,27 +21,22 @@ exports[`ArtworksList tests should refetch artworks list when artwork page is ch
         />
       </span>
       <div>
-        <h3
-          class="text-lg font-semibold text-gray-800 dark:text-white"
+        <div
+          class="text-lg text-gray-800 dark:text-white"
         >
+          <p
+            class="text-gray-400 inline"
+          >
+            Tytuł
+            : 
+          </p>
           Jakym jechoł koło dworu
-        </h3>
-        <p
-          class="text-gray-600 dark:text-gray-400 mb-1"
-        >
-          Józefa Piaskowska
-        </p>
-        <p
-          class=" text-gray-500 dark:text-gray-300"
-        >
-          1960
-        </p>
+        </div>
       </div>
     </div>
   </div>
   <div
-    class="px-4 max-w-screen-xl py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4
-                border border-gray-300 dark:border-gray-600 cursor-pointer"
+    class="px-4 max-w-screen-xl py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4 border border-gray-300 dark:border-gray-600 cursor-pointer"
     data-testid="6752ddca46e3ca48231024aa"
   >
     <div
@@ -57,27 +51,22 @@ exports[`ArtworksList tests should refetch artworks list when artwork page is ch
         />
       </span>
       <div>
-        <h3
-          class="text-lg font-semibold text-gray-800 dark:text-white"
+        <div
+          class="text-lg text-gray-800 dark:text-white"
         >
+          <p
+            class="text-gray-400 inline"
+          >
+            Tytuł
+            : 
+          </p>
           Ojcze, ojcze, kup mi kónia
-        </h3>
-        <p
-          class="text-gray-600 dark:text-gray-400 mb-1"
-        >
-          Magdalena Figlak
-        </p>
-        <p
-          class=" text-gray-500 dark:text-gray-300"
-        >
-          1949
-        </p>
+        </div>
       </div>
     </div>
   </div>
   <div
-    class="px-4 max-w-screen-xl py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4
-                border border-gray-300 dark:border-gray-600 cursor-pointer"
+    class="px-4 max-w-screen-xl py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4 border border-gray-300 dark:border-gray-600 cursor-pointer"
     data-testid="6752ddca46e3ca48231024bb"
   >
     <div
@@ -92,21 +81,17 @@ exports[`ArtworksList tests should refetch artworks list when artwork page is ch
         />
       </span>
       <div>
-        <h3
-          class="text-lg font-semibold text-gray-800 dark:text-white"
+        <div
+          class="text-lg text-gray-800 dark:text-white"
         >
+          <p
+            class="text-gray-400 inline"
+          >
+            Tytuł
+            : 
+          </p>
           Piękna jagoda
-        </h3>
-        <p
-          class="text-gray-600 dark:text-gray-400 mb-1"
-        >
-          Zespół Mazowsze
-        </p>
-        <p
-          class=" text-gray-500 dark:text-gray-300"
-        >
-          2005
-        </p>
+        </div>
       </div>
     </div>
   </div>
@@ -119,8 +104,7 @@ exports[`ArtworksList tests should refetch artworks list when artwork page is ch
   data-testid="artworks-listed"
 >
   <div
-    class="px-4 max-w-screen-xl py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4
-                border border-gray-300 dark:border-gray-600 cursor-pointer"
+    class="px-4 max-w-screen-xl py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4 border border-gray-300 dark:border-gray-600 cursor-pointer"
     data-testid="6752aaaa46e3ca48231024dc"
   >
     <div
@@ -135,27 +119,22 @@ exports[`ArtworksList tests should refetch artworks list when artwork page is ch
         />
       </span>
       <div>
-        <h3
-          class="text-lg font-semibold text-gray-800 dark:text-white"
+        <div
+          class="text-lg text-gray-800 dark:text-white"
         >
+          <p
+            class="text-gray-400 inline"
+          >
+            Tytuł
+            : 
+          </p>
           W górach, nad rzeką
-        </h3>
-        <p
-          class="text-gray-600 dark:text-gray-400 mb-1"
-        >
-          Józefa Piaskowska
-        </p>
-        <p
-          class=" text-gray-500 dark:text-gray-300"
-        >
-          1960
-        </p>
+        </div>
       </div>
     </div>
   </div>
   <div
-    class="px-4 max-w-screen-xl py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4
-                border border-gray-300 dark:border-gray-600 cursor-pointer"
+    class="px-4 max-w-screen-xl py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4 border border-gray-300 dark:border-gray-600 cursor-pointer"
     data-testid="6752aaaa46e5db48231024dc"
   >
     <div
@@ -170,27 +149,22 @@ exports[`ArtworksList tests should refetch artworks list when artwork page is ch
         />
       </span>
       <div>
-        <h3
-          class="text-lg font-semibold text-gray-800 dark:text-white"
+        <div
+          class="text-lg text-gray-800 dark:text-white"
         >
+          <p
+            class="text-gray-400 inline"
+          >
+            Tytuł
+            : 
+          </p>
           Skrzypce na polu
-        </h3>
-        <p
-          class="text-gray-600 dark:text-gray-400 mb-1"
-        >
-          Magdalena Figlak
-        </p>
-        <p
-          class=" text-gray-500 dark:text-gray-300"
-        >
-          1949
-        </p>
+        </div>
       </div>
     </div>
   </div>
   <div
-    class="px-4 max-w-screen-xl py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4
-                border border-gray-300 dark:border-gray-600 cursor-pointer"
+    class="px-4 max-w-screen-xl py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4 border border-gray-300 dark:border-gray-600 cursor-pointer"
     data-testid="1234aaca46e3ca48231024bb"
   >
     <div
@@ -205,21 +179,17 @@ exports[`ArtworksList tests should refetch artworks list when artwork page is ch
         />
       </span>
       <div>
-        <h3
-          class="text-lg font-semibold text-gray-800 dark:text-white"
+        <div
+          class="text-lg text-gray-800 dark:text-white"
         >
+          <p
+            class="text-gray-400 inline"
+          >
+            Tytuł
+            : 
+          </p>
           Pragnom uoczka, pragnom
-        </h3>
-        <p
-          class="text-gray-600 dark:text-gray-400 mb-1"
-        >
-          Zespół Mazowsze
-        </p>
-        <p
-          class=" text-gray-500 dark:text-gray-300"
-        >
-          2005
-        </p>
+        </div>
       </div>
     </div>
   </div>

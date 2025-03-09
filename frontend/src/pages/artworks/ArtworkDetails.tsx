@@ -79,7 +79,7 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
                         "text-lg font-semibold h-fit border-red-700 text-red-700 bg-red-50 hover:bg-white" : 
                         "text-lg font-semibold h-fit border-red-700 text-red-700 bg-red-50 hover:bg-red-50"
                     }
-                    onClick={() => setShowDeleteArtworkWarning(true)}
+                    onClick={() => setShowDeleteArtworkWarning(true)}  //TODO jakiś warning w consoli w przeglądarce?
                 >
                     <span className="flex-row flex items-center">
                         <TrashBinIcon />

@@ -4,6 +4,7 @@ import { authAsyncWrapper } from "../middleware/auth"
 import { prepRecords } from "../utils/data-import";
 import CollectionCollection from "../models/collection";
 import mongoose, { ClientSession } from "mongoose";
+import { findMissingParentCategories, transformCategoriesArrayToCategoriesObject } from "../utils/categories";
 
 export const importData = authAsyncWrapper(async (req: Request, res: Response) => {
     try {
@@ -15,7 +16,7 @@ export const importData = authAsyncWrapper(async (req: Request, res: Response) =
             const foundCollections = await CollectionCollection.find({name: collectionName}, null, {session}).exec()
             if (foundCollections.length !== 1)
                 throw new Error(`Collection not found`)
-            const records = prepRecords(req.body.importData, collectionName)
+            const records = await prepRecords(req.body.importData, collectionName, false)
             const result = await Artwork.insertMany(records, {session})
             return res.status(201).json(result)
         });
@@ -28,14 +29,12 @@ export const importData = authAsyncWrapper(async (req: Request, res: Response) =
         else if (err.message === `Collection not found`)
             res.status(404).json({ error: err.message })
         else if (err.message === "Invalid data in the spreadsheet file"){
-            res.status(400).json({ error: err.message, cause: err.cause })}
+            res.status(400).json({ error: err.message, cause: err.cause?.toString()})}
         else
             res.status(503).json({ error: `Database unavailable` })
     }
 })
-
-
-// TODO fix error handling and write tests 
+ 
 export const importDataAsCollection = authAsyncWrapper(async (req: Request, res: Response) => {
     try {
         if(!req.body.importData || req.body.importData.length < 2 || !req.body.collectionName || !req.body.description )
@@ -43,11 +42,20 @@ export const importDataAsCollection = authAsyncWrapper(async (req: Request, res:
         const session = await mongoose.startSession()
         await session.withTransaction(async (session: ClientSession) => {
             const collectionName = req.body.collectionName
-            const newCollection = await CollectionCollection.create([{name: req.body.collectionName, description: req.body.description}], {session})
-            const records = prepRecords(req.body.importData, collectionName)
-            console.log(records.length)
+            const categoriesArray = req.body.importData[0]
+            const missingCategories = findMissingParentCategories(categoriesArray)
+            if(missingCategories.length !== 0)
+                throw new Error(
+                    "Invalid categories data",
+                    {cause: `Brakujące kategorie nadrzędne: ${missingCategories.toString()}`}
+                )
+            const categories = transformCategoriesArrayToCategoriesObject(categoriesArray)
+            const newCollection = await CollectionCollection.create([
+                {name: req.body.collectionName, description: req.body.description, categories: categories}
+            ], {session})
+            const records = await prepRecords(req.body.importData, collectionName, true)
             const result = await Artwork.insertMany(records, {session})
-            return res.status(201).json(result)
+            return res.status(201).json({newCollection, result})
         });
         session.endSession()
     } catch (error) {
@@ -55,9 +63,7 @@ export const importDataAsCollection = authAsyncWrapper(async (req: Request, res:
         console.error(error)
         if (err.message === `Incorrect request body provided`)
             res.status(400).json({ error: err.message })
-        else if (err.message === `Collection not found`)
-            res.status(404).json({ error: err.message })
-        else if (err.message === "Invalid data in the spreadsheet file"){
+        else if (err.message === "Invalid data in the spreadsheet file" || err.message === "Invalid categories data"){
             res.status(400).json({ error: err.message, cause: err.cause })}
         else
             res.status(503).json({ error: `Database unavailable` })

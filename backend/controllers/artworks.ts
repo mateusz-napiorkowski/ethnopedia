@@ -4,6 +4,7 @@ import { authAsyncWrapper } from "../middleware/auth"
 import Artwork from "../models/artwork";
 import CollectionCollection from "../models/collection"
 import { constructQuickSearchFilter, constructAdvSearchFilter, sortRecordsByCategory } from "../utils/artworks"
+import { artworkCategoriesHaveValidFormat } from "../utils/categories";
 
 export const getArtwork = async (req: Request, res: Response) => {
     try {
@@ -76,6 +77,9 @@ export const createArtwork = authAsyncWrapper((async (req: Request, res: Respons
         const foundCollections = await CollectionCollection.find({name: collectionName}).exec()
         if (foundCollections.length !== 1)
             throw new Error(`Collection not found`)
+        const collectionCategories = foundCollections[0].categories
+        if(!artworkCategoriesHaveValidFormat(req.body.categories, collectionCategories))
+            throw new Error(`Incorrect request body provided`)
         const newArtwork = await Artwork.create(req.body)
         res.status(201).json(newArtwork)
     } catch (error) {

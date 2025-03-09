@@ -1,12 +1,11 @@
-import React from 'react';
-// import { useState } from 'react';
-import { Metadata } from '../../@types/Metadata';
-// import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg";
-// import { ReactComponent as MinusIcon } from "../../assets/icons/minus.svg";
+import React, { useState } from 'react';
+import { Category } from '../../@types/Category';
+import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg";
+import { ReactComponent as MinusIcon } from "../../assets/icons/minus.svg";
 
 interface FormFieldProps {
-    formData: Metadata;
-    formDataList: Metadata[];
+    formData: Category;
+    formDataList: Category[];
     index: string;
     level: number;
     handleInputChange: (index: string, e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -14,7 +13,7 @@ interface FormFieldProps {
     handleAddSubcategory: (index: string) => void;
 }
 
-const FormField: React.FC<FormFieldProps> = ({
+const StructureFormField: React.FC<FormFieldProps> = ({
                                                  formData,
                                                  formDataList,
                                                  index,
@@ -23,15 +22,15 @@ const FormField: React.FC<FormFieldProps> = ({
                                                  handleRemove,
                                                  handleAddSubcategory,
                                              }) => {
-    // const [isHovered, setIsHovered] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);
 
     return (
         <div className="relative flex flex-col mt-1">
             {/* Obszar dla pola kategorii i przycisków */}
             <div
                 className="field-container relative flex items-center"
-                // onMouseEnter={() => setIsHovered(true)}
-                // onMouseLeave={() => setIsHovered(false)}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
             >
                 {level > 0 && (
                     <>
@@ -46,46 +45,32 @@ const FormField: React.FC<FormFieldProps> = ({
                         type="text"
                         name="name"
                         value={formData.name}
-                        className="p-2 border rounded"
                         onChange={(e) => handleInputChange(index, e)}
-                        // placeholder={`Podaj nazwę kategorii...`}
-                        disabled
-                    />
-                </label>
-                <label className="flex items-center">
-                    <span className="ml-1 mr-1">
-                        :
-                    </span>
-                    <input
-                        type="text"
-                        name="values"
-                        // value={formData.values[0]}
-                        value={formData.values?.[0] || ''}
-                        onChange={(e) => handleInputChange(index, e)}
-                        // placeholder={`Podaj wartość kategorii...`}
+                        // placeholder={`[${index}] Podaj nazwę kategorii...`}
+                        placeholder={`Podaj nazwę kategorii...`}
                         className="p-2 border rounded"
                     />
                 </label>
-                {/*<div className="actions ml-1 space-x-1">*/}
-                {/*    {level < 5 && isHovered && (*/}
-                {/*        <button*/}
-                {/*            type="button"*/}
-                {/*            onClick={() => handleAddSubcategory(index)}*/}
-                {/*            title={`Dodaj podkategorię dla [${index}]`}*/}
-                {/*        >*/}
-                {/*            <PlusIcon/>*/}
-                {/*        </button>*/}
-                {/*    )}*/}
-                {/*    {isHovered && (*/}
-                {/*        <button*/}
-                {/*            type="button"*/}
-                {/*            onClick={() => handleRemove(index)}*/}
-                {/*            title={`Usuń kategorię [${index}]`}*/}
-                {/*        >*/}
-                {/*            <MinusIcon/>*/}
-                {/*        </button>*/}
-                {/*    )}*/}
-                {/*</div>*/}
+                <div className="actions ml-1 space-x-1">
+                    {level < 5 && isHovered && (
+                        <button
+                            type="button"
+                            onClick={() => handleAddSubcategory(index)}
+                            title={`Dodaj podkategorię`}
+                        >
+                            <PlusIcon />
+                        </button>
+                    )}
+                    {isHovered && (
+                        <button
+                            type="button"
+                            onClick={() => handleRemove(index)}
+                            title={`Usuń kategorię`}
+                        >
+                            <MinusIcon />
+                        </button>
+                    )}
+                </div>
             </div>
             {/* Obszar renderowania podkategorii – oddzielony od obszaru pola */}
             <div className="children-container ml-8">
@@ -95,7 +80,7 @@ const FormField: React.FC<FormFieldProps> = ({
                         return (
                             <div key={uniqueSubIndex} className="relative">
                                 <div className="tree-line vertical-helper" />
-                                <FormField
+                                <StructureFormField
                                     index={uniqueSubIndex}
                                     level={level + 1}
                                     formData={subCategory}
@@ -112,4 +97,4 @@ const FormField: React.FC<FormFieldProps> = ({
     );
 };
 
-export default React.memo(FormField);
+export default React.memo(StructureFormField);

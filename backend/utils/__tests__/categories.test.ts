@@ -1,152 +1,263 @@
 import {describe, expect, test, jest, beforeEach} from "@jest/globals"
-import { getAllCategories } from "../categories"
-
-const mockArtworkFind = jest.fn()
-jest.mock('../../models/artwork', () => ({
-    find: () => mockArtworkFind()
-}))
+import { getAllCategories, hasValidCategoryFormat, artworkCategoriesHaveValidFormat, transformCategoriesArrayToCategoriesObject, findMissingParentCategories } from "../categories"
 
 const mockCollectionFind = jest.fn()
 jest.mock('../../models/collection', () => ({
-    find: () => mockCollectionFind()
+		find: () => mockCollectionFind()
 }))
 
 describe('categories util functions tests', () => {
-    beforeEach(() => {
-        jest.resetAllMocks()
-    })
+		beforeEach(() => {
+				jest.resetAllMocks()
+		})
 
-    test.each([
-        {
-            testName: 'getAllColletions test - artworks present in collection',
-            artworkFind: () => {return {exec: () => Promise.resolve([
-                {
-                  _id: "6717d4c0666e8575d873ee69",
-                  createdAt: '2024-10-22T20:12:12.209Z',
-                  updatedAt: '2024-10-22T20:12:12.209Z',
-                  __v: 0,
-                  categories: [
-                    {
-                      name: 'Tytuł',
-                      values: [ 'testowy' ],
-                      subcategories: [
-                        {
-                          name: 'Podtytuł',
-                          values: [ 'podtytuł testowy' ],
-                          subcategories: [
-                            {
-                              name: 'Podpodtytuł',
-                              values: [ 'podpodtytuł testowy' ]
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    { name: 'Artyści', values: [ 'testowi' ], subcategories: [] },
-                    {
-                      name: 'Rok',
-                      values: [ '966' ],
-                      subcategories: [
-                        {
-                          name: 'Miesiąc',
-                          values: [ '12' ],
-                          subcategories: [ { name: 'Dzień', values: [ '13' ] } ]
-                        }
-                      ]
-                    }
-                  ],
-                  collectionName: 'collection'
-                },
-                {
-                  _id: "6718078ad4821e244dd54b84",
-                  createdAt: '2024-10-22T20:14:13.773Z',
-                  updatedAt: '2024-10-22T20:14:13.773Z',
-                  __v: 0,
-                  categories: [
-                    {
-                      name: 'Tytuł',
-                      values: [ 'testowy 2' ],
-                      subcategories: [ { name: 'Znaczenie tytułu', values: [ 'testowe' ] } ]
-                    },
-                    {
-                      name: 'Artyści',
-                      values: [ 'artysta testowy' ],
-                      subcategories: []
-                    },
-                    {
-                      name: 'Rok',
-                      values: [ '955' ],
-                      subcategories: [
-                        {
-                          name: 'Kwartał',
-                          values: [ 'III' ],
-                          subcategories: [
-                            {
-                              name: 'Miesiąc',
-                              values: [ 'Wrzesień' ],
-                              subcategories: [ { name: 'Dzień', values: [ '1' ] } ]
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ],
-                  collectionName: 'collection'
-                }
-              ])}},
-        },
-        {
-            testName: 'getAllColletions test - no artworks in collection',
-            artworkFind: () => {return {exec: () => Promise.resolve([])}},
-        },
-    ])(`$testName`,
-        async ({artworkFind}) => {
-            mockCollectionFind.mockImplementation(() => {return {exec: () => Promise.resolve([
-                {
-                    _id: "6717d46c666e8575d873ee57",
-                    name: 'collection',
-                    description: 'collection description',
-                    __v: 0
-                }
-            ])}})
-            mockArtworkFind.mockImplementation(artworkFind)
-    
-            expect(await getAllCategories("collection")).toMatchSnapshot();
-        }
-    )
+		test.each([
+			{
+				testName: 'hasValidCategoryFormat test - return false when no categories in array',
+				categoryData: [],
+				returnValue: false
+			},
+			{
+				testName: 'hasValidCategoryFormat test - return true when category data format is correct',
+				categoryData: [
+					{name: "Tytuł", subcategories: [
+						{name: "Podtytuł", subcategories: [{name: "Podpodtytuł", subcategories: []}]},
+						{name: "Podtytuł alternatywny", subcategories: []},
+					]},
+					{name: "Rok", subcategories: [{name: "Miesiąc", subcategories: [{name: "Dzień", subcategories: []}]}]}
+				],
+				returnValue: true
+			},
+		])(`$testName`,
+				({categoryData, returnValue}) => {
+					expect(hasValidCategoryFormat(categoryData)).toBe(returnValue)
+				}
+		)
 
-    test.each([
-        {
-            testName: 'getAllColletions test - throw error when collection not found',
-            collectionFind: () => {return {exec: () => Promise.resolve([])}},
-            artworkFind: () => {},
-            error: "Collection not found"
-        },
-        {
-            testName: 'getAllColletions test - Collection.find() throws error',
-            collectionFind: () => {throw Error()},
-            artworkFind: () => {},
-            error: "Database unavailable"
-        },
-        {
-            testName: 'getAllColletions test - Artwork.find() throws error',
-            collectionFind: () => {return {exec: () => Promise.resolve([
-                {
-                    _id: "6717d46c666e8575d873ee57",
-                    name: 'collection',
-                    description: 'collection description',
-                    __v: 0
-                }
-                ])}},
-            artworkFind: () => {throw Error()},
-            error: "Database unavailable"
-        },
-    ])(`$testName`,
-        async ({collectionFind, artworkFind, error}) => {
-            mockCollectionFind.mockImplementation(collectionFind)
-            mockArtworkFind.mockImplementation(artworkFind)
+		test.each([
+			{
+				testName: 'artworkCategoriesHaveValidFormat test - return false when collection and artwork category arrays are empty',
+				collectionCategories: [],
+				artworkCategories: [],
+				returnValue: false
+			},
+			{
+				testName: 'artworkCategoriesHaveValidFormat test - return false when collection and artwork category names do not match',
+				collectionCategories: [
+					{name: "Tytuł", subcategories: []},
+					{name: "Artyści", subcategories: []}
+				],
+				artworkCategories: [
+					{name: "Tytuł", values: ["example title"], subcategories: []},
+					{name: "Rok", values: ["1999"], subcategories: []}
+				],
+				returnValue: false
+			},
+			{
+				testName: 'artworkCategoriesHaveValidFormat test - return false when collection and artwork subcategory names do not match',
+				collectionCategories: [
+					{name: "Tytuł", subcategories: [
+						{name: "Podtytuł", subcategories: [
+							{name: "Podpodtytuł", subcategories: []},
+							{name: "Podpodtytuł alternatywny", subcategories: []},
+						]}
+					]},
+				],
+				artworkCategories: [
+					{name: "Tytuł", values: ["example title"], subcategories: [
+						{name: "Podtytuł", values: ["example subtitle"], subcategories: [
+							{name: "Podpodtytuł", values: ["example subsubtitle"], subcategories: []},
+							{name: "Podpodtytuł inny", values: ["alternative subsubtitle"], subcategories: []},
+						]}
+					]},
+				],
+				returnValue: false
+			},
+			{
+				testName: 'artworkCategoriesHaveValidFormat test - return false when collection and artwork categories do not follow the same order',
+				collectionCategories: [
+					{name: "Tytuł", subcategories: []},
+					{name: "Rok", subcategories: []}
+				],
+				artworkCategories: [
+					{name: "Rok", values: ["1999"], subcategories: []},
+					{name: "Tytuł", values: ["example title"], subcategories: []}
+					
+				],
+				returnValue: false
+			},
+			{
+				testName: 'artworkCategoriesHaveValidFormat test - return false when collection and artwork subcategories do not follow the same order',
+				collectionCategories: [
+					{name: "Tytuł", subcategories: [
+						{name: "Podtytuł", subcategories: [
+							{name: "Podpodtytuł", subcategories: []},
+							{name: "Podpodtytuł alternatywny", subcategories: []},
+						]}
+					]},
+				],
+				artworkCategories: [
+					{name: "Tytuł", values: ["example title"], subcategories: [
+						{name: "Podtytuł", values: ["example subtitle"], subcategories: [
+							{name: "Podpodtytuł alternatywny", values: ["alternative subsubtitle"], subcategories: []},
+							{name: "Podpodtytuł", values: ["example subsubtitle"], subcategories: []}
+						]}
+					]},
+				],
+				returnValue: false
+			},
+			{
+				testName: 'artworkCategoriesHaveValidFormat test - return false when category object is missing in artwork categories array',
+				collectionCategories: [
+					{name: "Tytuł", subcategories: []},
+					{name: "Artyści", subcategories: []}
+				],
+				artworkCategories: [
+					{name: "Tytuł", values: ["example title"], subcategories: []}
+				],
+				returnValue: false
+			},
+			{
+				testName: 'artworkCategoriesHaveValidFormat test - return false when category object is missing in artwork subcategories array',
+				collectionCategories: [
+					{name: "Tytuł", subcategories: [
+						{name: "Podtytuł", subcategories: [
+							{name: "Podpodtytuł", subcategories: []},
+							{name: "Podpodtytuł alternatywny", subcategories: []},
+						]}
+					]},
+				],
+				artworkCategories: [
+					{name: "Tytuł", values: ["example title"], subcategories: [
+						{name: "Podtytuł", values: ["example subtitle"], subcategories: [
+							{name: "Podpodtytuł alternatywny", values: ["alternative subsubtitle"], subcategories: []},
+						]}
+					]},
+				],
+				returnValue: false
+			},
+			{
+				testName: 'artworkCategoriesHaveValidFormat test - return true when collection and artwork categories match',
+				collectionCategories: [
+					{name: "Tytuł", subcategories: [
+						{name: "Podtytuł", subcategories: [{name: "Podpodtytuł", subcategories: []}]},
+						{name: "Podtytuł alternatywny", subcategories: []},
+					]},
+					{name: "Rok", subcategories: [{name: "Miesiąc", subcategories: [{name: "Dzień", subcategories: []}]}]}
+				],
+				artworkCategories: [
+					{name: "Tytuł", values: ["example title"], subcategories: [
+						{name: "Podtytuł", values: ["subtitle"], subcategories: [{name: "Podpodtytuł", values: ["subsubtitle"], subcategories: []}]},
+						{name: "Podtytuł alternatywny", values: ["alternative subtitle"], subcategories: []},
+					]},
+					{name: "Rok", values: ["1999"], subcategories: [{name: "Miesiąc", values: ["styczeń"], subcategories: [{name: "Dzień", values: ["3"], subcategories: []}]}]}
+				],
+				returnValue: true
+			},
+		])(`$testName`,
+				({collectionCategories, artworkCategories, returnValue}) => {
+					expect(artworkCategoriesHaveValidFormat(artworkCategories, collectionCategories)).toBe(returnValue)
+				}
+		)
 
-            expect(() => getAllCategories("collection")).rejects.toThrow(error);
-        }
-    )
+		test.each([
+				{
+						testName: 'getAllCategories test - categories present in collection',
+						categories: [
+							{name: "Tytuł", subcategories: [
+								{name: "Podtytuł", subcategories: [{name: "Podpodtytuł", subcategories: []}]},
+								{name: "Podtytuł alternatywny", subcategories: []},
+							]},
+							{name: "Artyści", subcategories: []},
+							{name: "Rok", subcategories: [{name: "Miesiąc", subcategories: [{name: "Dzień", subcategories: []}]}]}
+						],
+				},
+				{
+						testName: 'getAllCategories test - no categories in collection',
+						categories: []
+				},
+		])(`$testName`,
+				async ({categories}) => {
+						mockCollectionFind.mockImplementation(() => {return {exec: () => Promise.resolve([
+								{
+										_id: "6717d46c666e8575d873ee57",
+										name: 'collection',
+										description: 'collection description',
+										categories: categories,
+										__v: 0
+								}
+						])}})
+		
+						expect(await getAllCategories("collection")).toMatchSnapshot();
+				}
+		)
+
+		test.each([
+				{
+						testName: 'getAllCategories test - throw error when collection not found',
+						collectionFind: () => {return {exec: () => Promise.resolve([])}},
+						error: "Collection not found"
+				},
+				{
+						testName: 'getAllCategories test - Collection.find() throws error',
+						collectionFind: () => {throw Error()},
+						error: "Database unavailable"
+				}
+		])(`$testName`,
+				async ({collectionFind, error}) => {
+						mockCollectionFind.mockImplementation(collectionFind)
+
+						expect(() => getAllCategories("collection")).rejects.toThrow(error);
+				}
+		)
+
+		test.each([
+			{
+				testName: 'transformCategoriesArrayToCategoriesObject test - return correct category object when there are no nested subcategories',
+				categoryData: ["Tytuł", "Artyści", "Rok"],
+				returnValue: [
+					{name: "Tytuł", subcategories: []},
+					{name: "Artyści", subcategories: []},
+					{name: "Rok", subcategories: []}
+				]
+			},
+			{
+				testName: 'transformCategoriesArrayToCategoriesObject test - return correct category object when there are nested subcategories and categories are arranged in an ambiguous order',
+				categoryData: ["Tytuł.Podtytuł.Podpodtytuł", "Tytuł", "Tytuł.Podtytuł", "Rok.Miesiąc.Dzień", "Artyści", "Tytuł.Podtytuł alternatywny", "Rok", "Rok.Miesiąc"],
+				returnValue: [
+					{name: "Tytuł", subcategories: [
+						{name: "Podtytuł", subcategories: [{name: "Podpodtytuł", subcategories: []}]},
+						{name: "Podtytuł alternatywny", subcategories: []},
+					]},
+					{name: "Artyści", subcategories: []},
+					{name: "Rok", subcategories: [{name: "Miesiąc", subcategories: [{name: "Dzień", subcategories: []}]}]}
+				]
+			},
+		])(`$testName`,
+				({categoryData, returnValue}) => {
+					expect(transformCategoriesArrayToCategoriesObject(categoryData)).toEqual(returnValue)
+				}
+		)
+
+		test.each([
+			{
+				testName: 'findMissingParentCategories test - no subcategories',
+				categoryData: ["Tytuł", "Artyści", "Rok"],
+				returnValue: []
+			},
+			{
+				testName: 'findMissingParentCategories test - correct subcategory names',
+				categoryData: ["Rok.Miesiąc.Dzień", "Tytuł", "Rok.Miesiąc", "Artyści", "Rok", "Tytuł.Podtytuł"],
+				returnValue: []
+			},
+			{
+				testName: 'findMissingParentCategories test - correct subcategory names',
+				categoryData: ["Rok.Miesiąc.Dzień", "Tytuł", "Tytuł.Podtytuł.Podpodpodtytuł.Podpodpodtytuł", "Rok.Miesiąc", "Artyści", "Tytuł.Podtytuł"],
+				returnValue: ["Tytuł.Podtytuł.Podpodpodtytuł", "Rok"]
+			},
+		])(`$testName`,
+				({categoryData, returnValue}) => {
+					expect(findMissingParentCategories(categoryData)).toEqual(returnValue)
+				}
+		)		
 })
