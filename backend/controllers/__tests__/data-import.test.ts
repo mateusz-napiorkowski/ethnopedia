@@ -77,7 +77,7 @@ describe('data-import controller', () => {
             mockInsertMany.mockReturnValue([
                 {
                   _id: `${artworkId}`,
-                  categories: [ { name: 'Title', values: [ 'An artwork title' ], subcategories: [] } ],
+                  categories: [ { name: 'Title', value:  'An artwork title', subcategories: [] } ],
                   collectionName: 'collection',
                   __v: 0,
                   createdAt: '2024-09-25T02:43:33.416Z',
@@ -148,7 +148,7 @@ describe('data-import controller', () => {
                 statusCode: 404, error: 'Collection not found',
                 startSession: () => startSessionDefaultReturnValue,
                 find: {exec: () => Promise.resolve([])},
-                prepRecords: () => [ { categories: [ { name: 'Title', values: [ 'An artwork title' ], subcategories: [] } ], collectionName: 'collection' } ] 
+                prepRecords: () => [ { categories: [ { name: 'Title', value: 'An artwork title', subcategories: [] } ], collectionName: 'collection' } ] 
             },
             {
                 payload: {importData: [["Title"], ["An artwork title"]],collectionName: 'collection'},
@@ -176,7 +176,7 @@ describe('data-import controller', () => {
                       __v: 0
                     }
                   ])},
-                prepRecords: () => [ { categories: [ { name: 'Title', values: [ 'An artwork title' ], subcategories: [] } ], collectionName: 'collection' } ] 
+                prepRecords: () => [ { categories: [ { name: 'Title', value: 'An artwork title', subcategories: [] } ], collectionName: 'collection' } ] 
             },
         ])(`importData should respond with status $statusCode and correct error message`,
             async ({ payload, statusCode, error, startSession, find, prepRecords }) => {
@@ -215,7 +215,7 @@ describe('data-import controller', () => {
             mockFindMissingParentCategories.mockImplementation(() => [])
             mockTransformCategoriesArrayToCategoriesObject.mockImplementation(() => ([{name: "Title", subcategories: [{name: "subtitle", subcategories: []}]}]))
             mockCollectionCreate.mockImplementation(() => collectionCreatePromise)
-            mockPrepRecords.mockImplementation(() => [ { categories: [ { name: 'Title', values: [ 'An artwork title' ], subcategories: [{ name: 'subtitle', values: [ 'An artwork subtitle' ], subcategories: [] }] } ], collectionName: 'collection' } ])
+            mockPrepRecords.mockImplementation(() => [ { categories: [ { name: 'Title', value: 'An artwork title', subcategories: [{ name: 'subtitle', value: 'An artwork subtitle', subcategories: [] }] } ], collectionName: 'collection' } ])
             mockInsertMany.mockImplementation(() => {})
             
             const res = await request(app)
@@ -349,7 +349,7 @@ describe('data-import controller', () => {
                 findMissingParentCategories: () => [],
                 transformCategoriesArrayToCategoriesObject: () => ([{name: "Title", subcategories: [{name: "subtitle", subcategories: []}]}]),
                 create: () => collectionCreatePromise,
-                prepRecords: () => [ { categories: [ { name: 'Title', values: [ 'An artwork title' ], subcategories: [{ name: 'subtitle', values: [ 'An artwork subtitle' ], subcategories: [] }] } ], collectionName: 'collection' } ],
+                prepRecords: () => [ { categories: [ { name: 'Title', value: 'An artwork title', subcategories: [{ name: 'subtitle', value: 'An artwork subtitle', subcategories: [] }] } ], collectionName: 'collection' } ],
                 insertMany: () => {throw Error()},
                 statusCode: 503, error: 'Database unavailable',
             },

@@ -82,11 +82,11 @@ describe('artworks util functions tests', () => {
                   categories: [
                     {
                       name: 'Tytuł',
-                      values: [ 'Tytułowy' ],
-                      subcategories: [ { name: 'Podtytuł', values: [ 'podtytuł' ] } ]
+                      value: 'Tytułowy',
+                      subcategories: [ { name: 'Podtytuł', value: 'podtytuł' } ]
                     },
-                    { name: 'Artyści', values: [ 'Jan Nowak' ], subcategories: [] },
-                    { name: 'Rok', values: [ '567' ], subcategories: [] }
+                    { name: 'Artyści', value: 'Jan Nowak', subcategories: [] },
+                    { name: 'Rok', value: '567', subcategories: [] }
                   ],
                   collectionName: 'nowa',
                   createdAt: '2024-10-23T12:56:18.209Z',
@@ -96,13 +96,13 @@ describe('artworks util functions tests', () => {
                 {
                   _id: "6718f28bc89e4d053eebb5df",
                   categories: [
-                    { name: 'Tytuł', values: [ 'Inny tytuł' ], subcategories: [] },
+                    { name: 'Tytuł', value: 'Inny tytuł', subcategories: [] },
                     {
                       name: 'Artyści',
-                      values: [ 'Inny artysta' ],
+                      value: 'Inny artysta',
                       subcategories: []
                     },
-                    { name: 'Rok', values: [ '1410' ], subcategories: [] }
+                    { name: 'Rok', value: '1410', subcategories: [] }
                   ],
                   collectionName: 'nowa',
                   createdAt: '2024-10-23T12:56:43.182Z',
@@ -114,11 +114,11 @@ describe('artworks util functions tests', () => {
                   categories: [
                     {
                       name: 'Tytuł',
-                      values: [ 'Kolejny tytuł' ],
-                      subcategories: [ { name: 'Podtytuł', values: [ 'Jakiś podtytuł' ] } ]
+                      value: 'Kolejny tytuł',
+                      subcategories: [ { name: 'Podtytuł', value: 'Jakiś podtytuł' } ]
                     },
-                    { name: 'Artyści', values: [ 'Pierwsi' ], subcategories: [] },
-                    { name: 'Rok', values: [ '444' ], subcategories: [] }
+                    { name: 'Artyści', value: 'Pierwsi', subcategories: [] },
+                    { name: 'Rok', value: '444', subcategories: [] }
                   ],
                   collectionName: 'nowa',
                   createdAt: '2024-10-23T12:57:35.366Z',
@@ -136,11 +136,11 @@ describe('artworks util functions tests', () => {
                   categories: [
                     {
                       name: 'Tytuł',
-                      values: [ 'Tytułowy' ],
-                      subcategories: [ { name: 'Podtytuł', values: [ 'podtytuł' ] } ]
+                      value: 'Tytułowy',
+                      subcategories: [ { name: 'Podtytuł', value: 'podtytuł' } ]
                     },
-                    { name: 'Artyści', values: [ 'Jan Nowak' ], subcategories: [] },
-                    { name: 'Rok', values: [ '567' ], subcategories: [] }
+                    { name: 'Artyści', value: 'Jan Nowak', subcategories: [] },
+                    { name: 'Rok', value: '567', subcategories: [] }
                   ],
                   collectionName: 'nowa',
                   createdAt: '2024-10-23T12:56:18.209Z',
@@ -150,13 +150,13 @@ describe('artworks util functions tests', () => {
                 {
                   _id: "6718f28bc89e4d053eebb5df",
                   categories: [
-                    { name: 'Tytuł', values: [ 'Inny tytuł' ], subcategories: [] },
+                    { name: 'Tytuł', value: 'Inny tytuł', subcategories: [] },
                     {
                       name: 'Artyści',
-                      values: [ 'Inny artysta' ],
+                      value: 'Inny artysta',
                       subcategories: []
                     },
-                    { name: 'Rok', values: [ '1410' ], subcategories: [] }
+                    { name: 'Rok', value: '1410', subcategories: [] }
                   ],
                   collectionName: 'nowa',
                   createdAt: '2024-10-23T12:56:43.182Z',
@@ -168,11 +168,11 @@ describe('artworks util functions tests', () => {
                   categories: [
                     {
                       name: 'Tytuł',
-                      values: [ 'Kolejny tytuł' ],
-                      subcategories: [ { name: 'Podtytuł', values: [ 'Jakiś podtytuł' ] } ]
+                      value: 'Kolejny tytuł',
+                      subcategories: [ { name: 'Podtytuł', value: 'Jakiś podtytuł' } ]
                     },
-                    { name: 'Artyści', values: [ 'Pierwsi' ], subcategories: [] },
-                    { name: 'Rok', values: [ '444' ], subcategories: [] }
+                    { name: 'Artyści', value: 'Pierwsi', subcategories: [] },
+                    { name: 'Rok', value: '444', subcategories: [] }
                   ],
                   collectionName: 'nowa',
                   createdAt: '2024-10-23T12:57:35.366Z',
@@ -190,11 +190,11 @@ describe('artworks util functions tests', () => {
                   categories: [
                     {
                       name: 'Tytuł',
-                      values: [ 'Tytułowy' ],
-                      subcategories: [ { name: 'Podtytuł', values: [ 'podtytuł' ] } ]
+                      value: 'Tytułowy',
+                      subcategories: [ { name: 'Podtytuł', value: 'podtytuł' } ]
                     },
-                    { name: 'Artyści', values: [ 'Jan Nowak' ], subcategories: [] },
-                    { name: 'Rok', values: [ '567' ], subcategories: [] }
+                    { name: 'Artyści', value: 'Jan Nowak', subcategories: [] },
+                    { name: 'Rok', value: '567', subcategories: [] }
                   ],
                   collectionName: 'nowa',
                   createdAt: '2024-10-23T12:56:18.209Z',
@@ -204,13 +204,13 @@ describe('artworks util functions tests', () => {
                 {
                   _id: "6718f28bc89e4d053eebb5df",
                   categories: [
-                    { name: 'Tytuł', values: [ 'Inny tytuł' ], subcategories: [] },
+                    { name: 'Tytuł', value: 'Inny tytuł', subcategories: [] },
                     {
                       name: 'Artyści',
-                      values: [ 'Inny artysta' ],
+                      value: 'Inny artysta',
                       subcategories: []
                     },
-                    { name: 'Rok', values: [ '1410' ], subcategories: [] }
+                    { name: 'Rok', value: '1410', subcategories: [] }
                   ],
                   collectionName: 'nowa',
                   createdAt: '2024-10-23T12:56:43.182Z',
@@ -222,11 +222,11 @@ describe('artworks util functions tests', () => {
                   categories: [
                     {
                       name: 'Tytuł',
-                      values: [ 'Kolejny tytuł' ],
-                      subcategories: [ { name: 'Podtytuł', values: [ 'Jakiś podtytuł' ] } ]
+                      value: 'Kolejny tytuł',
+                      subcategories: [ { name: 'Podtytuł', value: 'Jakiś podtytuł' } ]
                     },
-                    { name: 'Artyści', values: [ 'Pierwsi' ], subcategories: [] },
-                    { name: 'Rok', values: [ '444' ], subcategories: [] }
+                    { name: 'Artyści', value: 'Pierwsi', subcategories: [] },
+                    { name: 'Rok', value: '444', subcategories: [] }
                   ],
                   collectionName: 'nowa',
                   createdAt: '2024-10-23T12:57:35.366Z',
@@ -244,11 +244,11 @@ describe('artworks util functions tests', () => {
                   categories: [
                     {
                       name: 'Tytuł',
-                      values: [ 'Tytułowy' ],
-                      subcategories: [ { name: 'Podtytuł', values: [ 'podtytuł' ] } ]
+                      value: 'Tytułowy',
+                      subcategories: [ { name: 'Podtytuł', value: 'podtytuł' } ]
                     },
-                    { name: 'Artyści', values: [ 'Jan Nowak' ], subcategories: [] },
-                    { name: 'Rok', values: [ '567' ], subcategories: [] }
+                    { name: 'Artyści', value: 'Jan Nowak', subcategories: [] },
+                    { name: 'Rok', value: '567', subcategories: [] }
                   ],
                   collectionName: 'nowa',
                   createdAt: '2024-10-23T12:56:18.209Z',
@@ -258,13 +258,13 @@ describe('artworks util functions tests', () => {
                 {
                   _id: "6718f28bc89e4d053eebb5df",
                   categories: [
-                    { name: 'Tytuł', values: [ 'Inny tytuł' ], subcategories: [] },
+                    { name: 'Tytuł', value: 'Inny tytuł', subcategories: [] },
                     {
                       name: 'Artyści',
-                      values: [ 'Inny artysta' ],
+                      value: 'Inny artysta',
                       subcategories: []
                     },
-                    { name: 'Rok', values: [ '1410' ], subcategories: [] }
+                    { name: 'Rok', value: '1410', subcategories: [] }
                   ],
                   collectionName: 'nowa',
                   createdAt: '2024-10-23T12:56:43.182Z',
@@ -276,11 +276,11 @@ describe('artworks util functions tests', () => {
                   categories: [
                     {
                       name: 'Tytuł',
-                      values: [ 'Kolejny tytuł' ],
-                      subcategories: [ { name: 'Podtytuł', values: [ 'Jakiś podtytuł' ] } ]
+                      value: 'Kolejny tytuł',
+                      subcategories: [ { name: 'Podtytuł', value: 'Jakiś podtytuł' } ]
                     },
-                    { name: 'Artyści', values: [ 'Pierwsi' ], subcategories: [] },
-                    { name: 'Rok', values: [ '444' ], subcategories: [] }
+                    { name: 'Artyści', value: 'Pierwsi', subcategories: [] },
+                    { name: 'Rok', value: '444', subcategories: [] }
                   ],
                   collectionName: 'nowa',
                   createdAt: '2024-10-23T12:57:35.366Z',
@@ -298,11 +298,11 @@ describe('artworks util functions tests', () => {
                   categories: [
                     {
                       name: 'Tytuł',
-                      values: [ 'Tytułowy' ],
-                      subcategories: [ { name: 'Podtytuł', values: [ 'podtytuł' ] } ]
+                      value: 'Tytułowy',
+                      subcategories: [ { name: 'Podtytuł', value: 'podtytuł' } ]
                     },
-                    { name: 'Artyści', values: [ 'Jan Nowak' ], subcategories: [] },
-                    { name: 'Rok', values: [ '567' ], subcategories: [] }
+                    { name: 'Artyści', value: 'Jan Nowak', subcategories: [] },
+                    { name: 'Rok', value: '567', subcategories: [] }
                   ],
                   collectionName: 'nowa',
                   createdAt: '2024-10-23T12:56:18.209Z',
@@ -312,8 +312,8 @@ describe('artworks util functions tests', () => {
                 {
                   _id: "6718f2bfc89e4d053eebb5e6",
                   categories: [
-                    { name: 'Artyści', values: [ 'Pierwsi' ], subcategories: [] },
-                    { name: 'Rok', values: [ '444' ], subcategories: [] }
+                    { name: 'Artyści', value: 'Pierwsi', subcategories: [] },
+                    { name: 'Rok', value: '444', subcategories: [] }
                   ],
                   collectionName: 'nowa',
                   createdAt: '2024-10-23T12:57:35.366Z',
@@ -323,13 +323,13 @@ describe('artworks util functions tests', () => {
                 {
                   _id: "6718f28bc89e4d053eebb5df",
                   categories: [
-                    { name: 'Tytuł', values: [ 'Inny tytuł' ], subcategories: [] },
+                    { name: 'Tytuł', value: 'Inny tytuł', subcategories: [] },
                     {
                       name: 'Artyści',
-                      values: [ 'Inny artysta' ],
+                      value: 'Inny artysta',
                       subcategories: []
                     },
-                    { name: 'Rok', values: [ '1410' ], subcategories: [] }
+                    { name: 'Rok', value: '1410', subcategories: [] }
                   ],
                   collectionName: 'nowa',
                   createdAt: '2024-10-23T12:56:43.182Z',
@@ -339,8 +339,8 @@ describe('artworks util functions tests', () => {
                 {
                   _id: "6718f2bfc89e4d053eebb5e6",
                   categories: [
-                    { name: 'Artyści', values: [ 'Pierwsi' ], subcategories: [] },
-                    { name: 'Rok', values: [ '444' ], subcategories: [] }
+                    { name: 'Artyści', value: 'Pierwsi', subcategories: [] },
+                    { name: 'Rok', value: '444', subcategories: [] }
                   ],
                   collectionName: 'nowa',
                   createdAt: '2024-10-23T12:57:35.366Z',

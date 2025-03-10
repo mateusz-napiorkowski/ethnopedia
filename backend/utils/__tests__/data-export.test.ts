@@ -25,24 +25,24 @@ describe('data-export util functions tests', () => {
             categories: [
                 {
                   name: 'Tytuł',
-                  values: [ 'testowy' ],
+                  value: 'testowy',
                   subcategories: [
                     {
                       name: 'Podtytuł',
-                      values: [ 'podtytuł testowy' ],
-                      subcategories: [ { name: 'Podpodtytuł', values: [ 'podpodtytuł testowy' ], subcategories: [] } ]
+                      value: 'podtytuł testowy',
+                      subcategories: [ { name: 'Podpodtytuł', value: 'podpodtytuł testowy', subcategories: [] } ]
                     }
                   ]
                 },
-                { name: 'Artyści', values: [ 'testowi' ], subcategories: [] },
+                { name: 'Artyści', value: 'testowi', subcategories: [] },
                 {
                   name: 'Rok',
-                  values: [ '966' ],
+                  value: '966',
                   subcategories: [
                     {
                       name: 'Miesiąc',
-                      values: [ '12' ],
-                      subcategories: [ { name: 'Dzień', values: [ '13' ], subcategories: [] } ]
+                      value: '12',
+                      subcategories: [ { name: 'Dzień', value: '13', subcategories: [] } ]
                     }
                   ]
                 }

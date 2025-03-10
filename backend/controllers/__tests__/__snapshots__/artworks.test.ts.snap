@@ -16,9 +16,7 @@ exports[`artworks controller GET endpoints getArtwork should respond with status
       {
         "name": "Title",
         "subcategories": [],
-        "values": [
-          "Title",
-        ],
+        "value": "Title",
       },
     ],
     "collectionName": "collection",
@@ -38,9 +36,7 @@ exports[`artworks controller GET endpoints getArtworksForCollectionPage should r
         {
           "name": "Tytuł",
           "subcategories": [],
-          "values": [
-            "testowy",
-          ],
+          "value": "testowy",
         },
       ],
       "collectionName": "collection",
@@ -64,9 +60,7 @@ exports[`artworks controller GET endpoints getArtworksForCollectionPage should r
         {
           "name": "Tytuł",
           "subcategories": [],
-          "values": [
-            "testowy",
-          ],
+          "value": "testowy",
         },
       ],
       "collectionName": "collection",
@@ -90,9 +84,7 @@ exports[`artworks controller GET endpoints getArtworksForCollectionPage should r
         {
           "name": "Tytuł",
           "subcategories": [],
-          "values": [
-            "testowy",
-          ],
+          "value": "testowy",
         },
       ],
       "collectionName": "collection",
@@ -114,9 +106,7 @@ exports[`artworks controller POST endpoints createArtwork should respond with st
     {
       "name": "Title",
       "subcategories": [],
-      "values": [
-        "Title",
-      ],
+      "value": "Title",
     },
   ],
   "collectionName": "collection",

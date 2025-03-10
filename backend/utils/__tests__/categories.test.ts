@@ -48,8 +48,8 @@ describe('categories util functions tests', () => {
 					{name: "Artyści", subcategories: []}
 				],
 				artworkCategories: [
-					{name: "Tytuł", values: ["example title"], subcategories: []},
-					{name: "Rok", values: ["1999"], subcategories: []}
+					{name: "Tytuł", value: "example title", subcategories: []},
+					{name: "Rok", value: "1999", subcategories: []}
 				],
 				returnValue: false
 			},
@@ -64,10 +64,10 @@ describe('categories util functions tests', () => {
 					]},
 				],
 				artworkCategories: [
-					{name: "Tytuł", values: ["example title"], subcategories: [
-						{name: "Podtytuł", values: ["example subtitle"], subcategories: [
-							{name: "Podpodtytuł", values: ["example subsubtitle"], subcategories: []},
-							{name: "Podpodtytuł inny", values: ["alternative subsubtitle"], subcategories: []},
+					{name: "Tytuł", value: "example title", subcategories: [
+						{name: "Podtytuł", value: "example subtitle", subcategories: [
+							{name: "Podpodtytuł", value: "example subsubtitle", subcategories: []},
+							{name: "Podpodtytuł inny", value: "alternative subsubtitle", subcategories: []},
 						]}
 					]},
 				],
@@ -80,8 +80,8 @@ describe('categories util functions tests', () => {
 					{name: "Rok", subcategories: []}
 				],
 				artworkCategories: [
-					{name: "Rok", values: ["1999"], subcategories: []},
-					{name: "Tytuł", values: ["example title"], subcategories: []}
+					{name: "Rok", value: "1999", subcategories: []},
+					{name: "Tytuł", value: "example title", subcategories: []}
 					
 				],
 				returnValue: false
@@ -97,10 +97,10 @@ describe('categories util functions tests', () => {
 					]},
 				],
 				artworkCategories: [
-					{name: "Tytuł", values: ["example title"], subcategories: [
-						{name: "Podtytuł", values: ["example subtitle"], subcategories: [
-							{name: "Podpodtytuł alternatywny", values: ["alternative subsubtitle"], subcategories: []},
-							{name: "Podpodtytuł", values: ["example subsubtitle"], subcategories: []}
+					{name: "Tytuł", value: "example title", subcategories: [
+						{name: "Podtytuł", value: "example subtitle", subcategories: [
+							{name: "Podpodtytuł alternatywny", value: "alternative subsubtitle", subcategories: []},
+							{name: "Podpodtytuł", value: "example subsubtitle", subcategories: []}
 						]}
 					]},
 				],
@@ -113,7 +113,7 @@ describe('categories util functions tests', () => {
 					{name: "Artyści", subcategories: []}
 				],
 				artworkCategories: [
-					{name: "Tytuł", values: ["example title"], subcategories: []}
+					{name: "Tytuł", value: "example title", subcategories: []}
 				],
 				returnValue: false
 			},
@@ -128,9 +128,9 @@ describe('categories util functions tests', () => {
 					]},
 				],
 				artworkCategories: [
-					{name: "Tytuł", values: ["example title"], subcategories: [
-						{name: "Podtytuł", values: ["example subtitle"], subcategories: [
-							{name: "Podpodtytuł alternatywny", values: ["alternative subsubtitle"], subcategories: []},
+					{name: "Tytuł", value: "example title", subcategories: [
+						{name: "Podtytuł", value: "example subtitle", subcategories: [
+							{name: "Podpodtytuł alternatywny", value: "alternative subsubtitle", subcategories: []},
 						]}
 					]},
 				],
@@ -146,11 +146,11 @@ describe('categories util functions tests', () => {
 					{name: "Rok", subcategories: [{name: "Miesiąc", subcategories: [{name: "Dzień", subcategories: []}]}]}
 				],
 				artworkCategories: [
-					{name: "Tytuł", values: ["example title"], subcategories: [
-						{name: "Podtytuł", values: ["subtitle"], subcategories: [{name: "Podpodtytuł", values: ["subsubtitle"], subcategories: []}]},
-						{name: "Podtytuł alternatywny", values: ["alternative subtitle"], subcategories: []},
+					{name: "Tytuł", value: "example title", subcategories: [
+						{name: "Podtytuł", value: "subtitle", subcategories: [{name: "Podpodtytuł", value: "subsubtitle", subcategories: []}]},
+						{name: "Podtytuł alternatywny", value: "alternative subtitle", subcategories: []},
 					]},
-					{name: "Rok", values: ["1999"], subcategories: [{name: "Miesiąc", values: ["styczeń"], subcategories: [{name: "Dzień", values: ["3"], subcategories: []}]}]}
+					{name: "Rok", value: "1999", subcategories: [{name: "Miesiąc", value: "styczeń", subcategories: [{name: "Dzień", value: "3", subcategories: []}]}]}
 				],
 				returnValue: true
 			},

@@ -69,7 +69,7 @@ describe('artworks controller', () => {
             mockFindById.mockReturnValue({
                 exec: jest.fn().mockReturnValue(Promise.resolve({
                     _id: `${artworkId}`,
-                    categories: [{name: 'Title', values: ["Title"], subcategories: []}],
+                    categories: [{name: 'Title', value: "Title", subcategories: []}],
                     collectionName: 'collection',
                     createdAt: new Date("2024-09-10T12:17:12.821Z"),
                     updatedAt: new Date("2024-09-10T12:17:12.821Z"),
@@ -130,7 +130,7 @@ describe('artworks controller', () => {
                       categories: [
                         {
                           name: 'Tytuł',
-                          values: [ 'testowy' ],
+                          value: 'testowy',
                           subcategories: []
                         },
                       ],
@@ -146,7 +146,7 @@ describe('artworks controller', () => {
                       categories: [
                         {
                           name: 'Tytuł',
-                          values: [ 'testowy' ],
+                          value: 'testowy',
                           subcategories: []
                         },
                       ],
@@ -169,7 +169,7 @@ describe('artworks controller', () => {
                       categories: [
                         {
                           name: 'Tytuł',
-                          values: [ 'testowy' ],
+                          value: 'testowy',
                           subcategories: []
                         },
                       ],
@@ -185,7 +185,7 @@ describe('artworks controller', () => {
                       categories: [
                         {
                           name: 'Tytuł',
-                          values: [ 'testowy' ],
+                          value: 'testowy',
                           subcategories: []
                         },
                       ],
@@ -208,7 +208,7 @@ describe('artworks controller', () => {
                       categories: [
                         {
                           name: 'Tytuł',
-                          values: [ 'testowy' ],
+                          value: 'testowy',
                           subcategories: []
                         },
                       ],
@@ -224,7 +224,7 @@ describe('artworks controller', () => {
                       categories: [
                         {
                           name: 'Tytuł',
-                          values: [ 'testowy' ],
+                          value: 'testowy',
                           subcategories: []
                         },
                       ],
@@ -295,7 +295,7 @@ describe('artworks controller', () => {
         test("createArtwork should respond with status 201 and correct body", async () => {
             mockCreate.mockReturnValue(Promise.resolve({
                 _id: `${artworkId}`,
-                categories: [{name: 'Title', values: ['Title'], subcategories: []}],
+                categories: [{name: 'Title', value: 'Title', subcategories: []}],
                 collectionName: 'collection',
                 createdAt: '2024-08-27T17:25:05.352Z',
                 updatedAt: '2024-08-27T17:25:05.352Z',
@@ -314,7 +314,7 @@ describe('artworks controller', () => {
             })
             mockArtworkCategoriesHaveValidFormat.mockReturnValue(true)
             const payload = {
-                categories: [{name: 'Title', values: ['Title'], subcategories: []}],
+                categories: [{name: 'Title', value: 'Title', subcategories: []}],
                 collectionName: 'collection'
             }
 
@@ -336,7 +336,7 @@ describe('artworks controller', () => {
                 statusCode: 400, error: 'Incorrect request body provided'
             },
             {
-                payload: {categories: [{name: 'Title', values: ['Title'], subcategories: []}]},
+                payload: {categories: [{name: 'Title', value: 'Title', subcategories: []}]},
                 create: undefined, find: undefined, artworkCategoriesHaveValidFormat: true,
                 statusCode: 400, error: 'Incorrect request body provided'
             },
@@ -347,7 +347,7 @@ describe('artworks controller', () => {
             },  
             {
                 payload: {
-                    categories: [{name: 'Title', values: ['Title'], subcategories: []}],
+                    categories: [{name: 'Title', value: 'Title', subcategories: []}],
                     collectionName: 'collection'
                 },
                 create: undefined, find: {exec: () => {throw Error()}}, artworkCategoriesHaveValidFormat: true,
@@ -355,7 +355,7 @@ describe('artworks controller', () => {
             },
             {
                 payload: {
-                    categories: [{name: 'Title', values: ['Title'], subcategories: []}],
+                    categories: [{name: 'Title', value: 'Title', subcategories: []}],
                     collectionName: 'collection'
                 },
                 create: () => Promise.reject(), find: undefined, artworkCategoriesHaveValidFormat: true,
@@ -363,7 +363,7 @@ describe('artworks controller', () => {
             },
             {
                 payload: {
-                    categories: [{name: 'Title', values: ['Title'], subcategories: []}],
+                    categories: [{name: 'Title', value: 'Title', subcategories: []}],
                     collectionName: 'collection'
                 },
                 create: undefined,
@@ -382,7 +382,7 @@ describe('artworks controller', () => {
             },
             {
                 payload: {
-                    categories: [{name: 'Title', values: ['Title'], subcategories: []}],
+                    categories: [{name: 'Title', value: 'Title', subcategories: []}],
                     collectionName: 'collection'
                 },
                 create: undefined,
@@ -429,7 +429,7 @@ describe('artworks controller', () => {
                 })
             })
             const payload = {
-                categories: [{name: 'Title', values: ['New Title'], subcategories: []}],
+                categories: [{name: 'Title', value: 'New Title', subcategories: []}],
                 collectionName: 'collection'
             }
 
@@ -460,7 +460,7 @@ describe('artworks controller', () => {
                 replaceOne: undefined, statusCode: 400, error: 'Incorrect request body provided'
             },
             {
-                payload: {categories: [{name: 'Title', values: ['New Title'], subcategories: []}]},
+                payload: {categories: [{name: 'Title', value: 'New Title', subcategories: []}]},
                 replaceOne: undefined, statusCode: 400, error: 'Incorrect request body provided'
             },
             {
@@ -469,14 +469,14 @@ describe('artworks controller', () => {
             },
             {
                 payload: {
-                    categories: [{name: 'Title', values: ['New Title'], subcategories: []}],
+                    categories: [{name: 'Title', value: 'New Title', subcategories: []}],
                     collectionName: 'collection'
                 },
                 replaceOne: {exec: () => {throw Error()}}, statusCode: 503, error: 'Database unavailable'
             },
             {
                 payload: {
-                    categories: [{name: 'Title', values: ['New Title'], subcategories: []}],
+                    categories: [{name: 'Title', value: 'New Title', subcategories: []}],
                     collectionName: 'collection'
                 },
                 replaceOne: replaceOneNoMatchResponse, statusCode: 404, error: 'Artwork not found'

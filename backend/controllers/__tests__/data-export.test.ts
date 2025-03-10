@@ -34,7 +34,7 @@ describe('data-export controller', () => {
             mockFind.mockReturnValue({exec: () => Promise.resolve([
                 {
                     _id: "66f3829cfaa77054d286dbe8",
-                    categories: [ { name: 'Title', values: [ 'An artwork title' ], subcategories: [] } ],
+                    categories: [ { name: 'Title', value: 'An artwork title', subcategories: [] } ],
                     collectionName: 'collection',
                     __v: 0,
                     createdAt: '2024-09-25T03:25:16.376Z',
@@ -70,7 +70,7 @@ describe('data-export controller', () => {
                 find: () => {return {exec: () => Promise.resolve([
                     {
                         _id: "66f3829cfaa77054d286dbe8",
-                        categories: [ { name: 'Title', values: [ 'An artwork title' ], subcategories: [] } ],
+                        categories: [ { name: 'Title', value: 'An artwork title', subcategories: [] } ],
                         collectionName: 'collection',
                         __v: 0,
                         createdAt: '2024-09-25T03:25:16.376Z',
@@ -104,8 +104,8 @@ describe('data-export controller', () => {
                     find: () => {return {exec: () => Promise.resolve([
                         {
                             _id: "66f3829cfaa77054d286dbe8",
-                            categories: [ { name: 'Title', values: [ 'An artwork title' ], subcategories: [] },
-                                { name: 'Year', values: [ '1410' ], subcategories: [] } ],
+                            categories: [ { name: 'Title', value: 'An artwork title', subcategories: [] },
+                                { name: 'Year', value: '1410', subcategories: [] } ],
                             collectionName: 'collection',
                             __v: 0,
                             createdAt: '2024-09-25T03:25:16.376Z',
@@ -121,8 +121,8 @@ describe('data-export controller', () => {
                     find: () => {return {exec: () => Promise.resolve([
                         {
                             _id: "66faa0e88b8813759f44caf4",
-                            categories: [ { name: 'Title', values: [ 'An artwork title' ], subcategories: [] },
-                                { name: 'Year', values: [ '1410' ], subcategories: [] } ],
+                            categories: [ { name: 'Title', value: 'An artwork title', subcategories: [] },
+                                { name: 'Year', value: '1410', subcategories: [] } ],
                             collectionName: 'collection',
                             __v: 0,
                             createdAt: '2024-09-25T03:25:16.376Z',
@@ -130,8 +130,8 @@ describe('data-export controller', () => {
                         },
                         {
                             _id: "66fbb0e88b8813759f44cae3",
-                            categories: [ { name: 'Title2', values: [ 'An artwork title2' ], subcategories: [] },
-                                { name: 'Year', values: [ '1410' ], subcategories: [] } ],
+                            categories: [ { name: 'Title2', value: 'An artwork title2', subcategories: [] },
+                                { name: 'Year', value: '1410', subcategories: [] } ],
                             collectionName: 'collection',
                             __v: 0,
                             createdAt: '2024-09-25T03:25:16.376Z',
@@ -147,7 +147,7 @@ describe('data-export controller', () => {
                     find: () => {return {exec: () => Promise.resolve([
                         {
                             _id: "66faa0e88b8813759f44caf4",
-                            categories: [ { name: 'Title', values: [ 'An artwork title' ], subcategories: [] },
+                            categories: [ { name: 'Title', value: 'An artwork title', subcategories: [] },
                                 ],
                             collectionName: 'collection',
                             __v: 0,
@@ -156,7 +156,7 @@ describe('data-export controller', () => {
                         },
                         {
                             _id: "66fbb0e88b8813759f44cae3",
-                            categories: [ { name: 'Title2', values: [ 'An artwork title2' ], subcategories: [] },
+                            categories: [ { name: 'Title2', value: 'An artwork title2', subcategories: [] },
                                 ],
                             collectionName: 'collection',
                             __v: 0,
@@ -226,8 +226,8 @@ describe('data-export controller', () => {
                 find: () => {return {exec: () => Promise.resolve([
                     {
                         _id: "66f3829cfaa77054d286dbe8",
-                        categories: [ { name: 'Title', values: [ 'An artwork title' ], subcategories: [] },
-                            { name: 'Year', values: [ '1410' ], subcategories: [] } ],
+                        categories: [ { name: 'Title', value: 'An artwork title', subcategories: [] },
+                            { name: 'Year', value: '1410', subcategories: [] } ],
                         collectionName: 'collection',
                         __v: 0,
                         createdAt: '2024-09-25T03:25:16.376Z',
@@ -252,8 +252,8 @@ describe('data-export controller', () => {
                 find: () => {return {exec: () => Promise.resolve([
                     {
                         _id: "66faa0e88b8813759f44caf4",
-                        categories: [ { name: 'Title', values: [ 'An artwork title' ], subcategories: [] },
-                            { name: 'Year', values: [ '1410' ], subcategories: [] } ],
+                        categories: [ { name: 'Title', value: 'An artwork title', subcategories: [] },
+                            { name: 'Year', value: '1410', subcategories: [] } ],
                         collectionName: 'collection',
                         __v: 0,
                         createdAt: '2024-09-25T03:25:16.376Z',
@@ -261,8 +261,8 @@ describe('data-export controller', () => {
                     },
                     {
                         _id: "66fbb0e88b8813759f44cae3",
-                        categories: [ { name: 'Title2', values: [ 'An artwork title2' ], subcategories: [] },
-                            { name: 'Year', values: [ '1410' ], subcategories: [] } ],
+                        categories: [ { name: 'Title2', value: 'An artwork title2', subcategories: [] },
+                            { name: 'Year', value: '1410', subcategories: [] } ],
                         collectionName: 'collection',
                         __v: 0,
                         createdAt: '2024-09-25T03:25:16.376Z',

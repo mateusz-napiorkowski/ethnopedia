@@ -9,9 +9,7 @@ exports[`data-import controller POST endpoints importData should respond with st
       {
         "name": "Title",
         "subcategories": [],
-        "values": [
-          "An artwork title",
-        ],
+        "value": "An artwork title",
       },
     ],
     "collectionName": "collection",

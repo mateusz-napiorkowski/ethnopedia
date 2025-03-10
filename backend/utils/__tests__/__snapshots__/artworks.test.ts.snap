@@ -31,9 +31,7 @@ exports[`artworks util functions tests constructAdvSearchFilter test - standard 
                               {
                                 "$elemMatch": {
                                   "name": "Podpodpodtytuł",
-                                  "values": [
-                                    "testowy podpodpodtytuł",
-                                  ],
+                                  "value": "testowy podpodpodtytuł",
                                 },
                               },
                             ],
@@ -42,24 +40,18 @@ exports[`artworks util functions tests constructAdvSearchFilter test - standard 
                       },
                     ],
                   },
-                  "values": [
-                    "testowy podtytuł",
-                  ],
+                  "value": "testowy podtytuł",
                 },
               },
             ],
           },
-          "values": [
-            "testowy",
-          ],
+          "value": "testowy",
         },
       },
       {
         "$elemMatch": {
           "name": "Artyści",
-          "values": [
-            "testowi",
-          ],
+          "value": "testowi",
         },
       },
       {
@@ -70,16 +62,12 @@ exports[`artworks util functions tests constructAdvSearchFilter test - standard 
               {
                 "$elemMatch": {
                   "name": "Miesiąc",
-                  "values": [
-                    "Luty",
-                  ],
+                  "value": "Luty",
                 },
               },
             ],
           },
-          "values": [
-            "966",
-          ],
+          "value": "966",
         },
       },
     ],
@@ -101,9 +89,7 @@ exports[`artworks util functions tests constructQuickSearchFilter test - maxDept
     "$elemMatch": {
       "$or": [
         {
-          "values": [
-            "text to find",
-          ],
+          "value": "text to find",
         },
       ],
     },
@@ -118,36 +104,28 @@ exports[`artworks util functions tests constructQuickSearchFilter test - maxDept
     "$elemMatch": {
       "$or": [
         {
-          "values": [
-            "text to find",
-          ],
+          "value": "text to find",
         },
         {
           "subcategories": {
             "$elemMatch": {
               "$or": [
                 {
-                  "values": [
-                    "text to find",
-                  ],
+                  "value": "text to find",
                 },
                 {
                   "subcategories": {
                     "$elemMatch": {
                       "$or": [
                         {
-                          "values": [
-                            "text to find",
-                          ],
+                          "value": "text to find",
                         },
                         {
                           "subcategories": {
                             "$elemMatch": {
                               "$or": [
                                 {
-                                  "values": [
-                                    "text to find",
-                                  ],
+                                  "value": "text to find",
                                 },
                               ],
                             },
@@ -177,23 +155,17 @@ exports[`artworks util functions tests sortRecordsByCategory test - category to 
       {
         "name": "Tytuł",
         "subcategories": [],
-        "values": [
-          "Inny tytuł",
-        ],
+        "value": "Inny tytuł",
       },
       {
         "name": "Artyści",
         "subcategories": [],
-        "values": [
-          "Inny artysta",
-        ],
+        "value": "Inny artysta",
       },
       {
         "name": "Rok",
         "subcategories": [],
-        "values": [
-          "1410",
-        ],
+        "value": "1410",
       },
     ],
     "collectionName": "nowa",
@@ -209,28 +181,20 @@ exports[`artworks util functions tests sortRecordsByCategory test - category to 
         "subcategories": [
           {
             "name": "Podtytuł",
-            "values": [
-              "podtytuł",
-            ],
+            "value": "podtytuł",
           },
         ],
-        "values": [
-          "Tytułowy",
-        ],
+        "value": "Tytułowy",
       },
       {
         "name": "Artyści",
         "subcategories": [],
-        "values": [
-          "Jan Nowak",
-        ],
+        "value": "Jan Nowak",
       },
       {
         "name": "Rok",
         "subcategories": [],
-        "values": [
-          "567",
-        ],
+        "value": "567",
       },
     ],
     "collectionName": "nowa",
@@ -244,16 +208,12 @@ exports[`artworks util functions tests sortRecordsByCategory test - category to 
       {
         "name": "Artyści",
         "subcategories": [],
-        "values": [
-          "Pierwsi",
-        ],
+        "value": "Pierwsi",
       },
       {
         "name": "Rok",
         "subcategories": [],
-        "values": [
-          "444",
-        ],
+        "value": "444",
       },
     ],
     "collectionName": "nowa",
@@ -267,16 +227,12 @@ exports[`artworks util functions tests sortRecordsByCategory test - category to 
       {
         "name": "Artyści",
         "subcategories": [],
-        "values": [
-          "Pierwsi",
-        ],
+        "value": "Pierwsi",
       },
       {
         "name": "Rok",
         "subcategories": [],
-        "values": [
-          "444",
-        ],
+        "value": "444",
       },
     ],
     "collectionName": "nowa",
@@ -297,28 +253,20 @@ exports[`artworks util functions tests sortRecordsByCategory test - nonexistent 
         "subcategories": [
           {
             "name": "Podtytuł",
-            "values": [
-              "podtytuł",
-            ],
+            "value": "podtytuł",
           },
         ],
-        "values": [
-          "Tytułowy",
-        ],
+        "value": "Tytułowy",
       },
       {
         "name": "Artyści",
         "subcategories": [],
-        "values": [
-          "Jan Nowak",
-        ],
+        "value": "Jan Nowak",
       },
       {
         "name": "Rok",
         "subcategories": [],
-        "values": [
-          "567",
-        ],
+        "value": "567",
       },
     ],
     "collectionName": "nowa",
@@ -332,23 +280,17 @@ exports[`artworks util functions tests sortRecordsByCategory test - nonexistent 
       {
         "name": "Tytuł",
         "subcategories": [],
-        "values": [
-          "Inny tytuł",
-        ],
+        "value": "Inny tytuł",
       },
       {
         "name": "Artyści",
         "subcategories": [],
-        "values": [
-          "Inny artysta",
-        ],
+        "value": "Inny artysta",
       },
       {
         "name": "Rok",
         "subcategories": [],
-        "values": [
-          "1410",
-        ],
+        "value": "1410",
       },
     ],
     "collectionName": "nowa",
@@ -364,28 +306,20 @@ exports[`artworks util functions tests sortRecordsByCategory test - nonexistent 
         "subcategories": [
           {
             "name": "Podtytuł",
-            "values": [
-              "Jakiś podtytuł",
-            ],
+            "value": "Jakiś podtytuł",
           },
         ],
-        "values": [
-          "Kolejny tytuł",
-        ],
+        "value": "Kolejny tytuł",
       },
       {
         "name": "Artyści",
         "subcategories": [],
-        "values": [
-          "Pierwsi",
-        ],
+        "value": "Pierwsi",
       },
       {
         "name": "Rok",
         "subcategories": [],
-        "values": [
-          "444",
-        ],
+        "value": "444",
       },
     ],
     "collectionName": "nowa",
@@ -404,23 +338,17 @@ exports[`artworks util functions tests sortRecordsByCategory test - sort by Arty
       {
         "name": "Tytuł",
         "subcategories": [],
-        "values": [
-          "Inny tytuł",
-        ],
+        "value": "Inny tytuł",
       },
       {
         "name": "Artyści",
         "subcategories": [],
-        "values": [
-          "Inny artysta",
-        ],
+        "value": "Inny artysta",
       },
       {
         "name": "Rok",
         "subcategories": [],
-        "values": [
-          "1410",
-        ],
+        "value": "1410",
       },
     ],
     "collectionName": "nowa",
@@ -436,28 +364,20 @@ exports[`artworks util functions tests sortRecordsByCategory test - sort by Arty
         "subcategories": [
           {
             "name": "Podtytuł",
-            "values": [
-              "podtytuł",
-            ],
+            "value": "podtytuł",
           },
         ],
-        "values": [
-          "Tytułowy",
-        ],
+        "value": "Tytułowy",
       },
       {
         "name": "Artyści",
         "subcategories": [],
-        "values": [
-          "Jan Nowak",
-        ],
+        "value": "Jan Nowak",
       },
       {
         "name": "Rok",
         "subcategories": [],
-        "values": [
-          "567",
-        ],
+        "value": "567",
       },
     ],
     "collectionName": "nowa",
@@ -473,28 +393,20 @@ exports[`artworks util functions tests sortRecordsByCategory test - sort by Arty
         "subcategories": [
           {
             "name": "Podtytuł",
-            "values": [
-              "Jakiś podtytuł",
-            ],
+            "value": "Jakiś podtytuł",
           },
         ],
-        "values": [
-          "Kolejny tytuł",
-        ],
+        "value": "Kolejny tytuł",
       },
       {
         "name": "Artyści",
         "subcategories": [],
-        "values": [
-          "Pierwsi",
-        ],
+        "value": "Pierwsi",
       },
       {
         "name": "Rok",
         "subcategories": [],
-        "values": [
-          "444",
-        ],
+        "value": "444",
       },
     ],
     "collectionName": "nowa",
@@ -513,23 +425,17 @@ exports[`artworks util functions tests sortRecordsByCategory test - sort by Tytu
       {
         "name": "Tytuł",
         "subcategories": [],
-        "values": [
-          "Inny tytuł",
-        ],
+        "value": "Inny tytuł",
       },
       {
         "name": "Artyści",
         "subcategories": [],
-        "values": [
-          "Inny artysta",
-        ],
+        "value": "Inny artysta",
       },
       {
         "name": "Rok",
         "subcategories": [],
-        "values": [
-          "1410",
-        ],
+        "value": "1410",
       },
     ],
     "collectionName": "nowa",
@@ -545,28 +451,20 @@ exports[`artworks util functions tests sortRecordsByCategory test - sort by Tytu
         "subcategories": [
           {
             "name": "Podtytuł",
-            "values": [
-              "Jakiś podtytuł",
-            ],
+            "value": "Jakiś podtytuł",
           },
         ],
-        "values": [
-          "Kolejny tytuł",
-        ],
+        "value": "Kolejny tytuł",
       },
       {
         "name": "Artyści",
         "subcategories": [],
-        "values": [
-          "Pierwsi",
-        ],
+        "value": "Pierwsi",
       },
       {
         "name": "Rok",
         "subcategories": [],
-        "values": [
-          "444",
-        ],
+        "value": "444",
       },
     ],
     "collectionName": "nowa",
@@ -582,28 +480,20 @@ exports[`artworks util functions tests sortRecordsByCategory test - sort by Tytu
         "subcategories": [
           {
             "name": "Podtytuł",
-            "values": [
-              "podtytuł",
-            ],
+            "value": "podtytuł",
           },
         ],
-        "values": [
-          "Tytułowy",
-        ],
+        "value": "Tytułowy",
       },
       {
         "name": "Artyści",
         "subcategories": [],
-        "values": [
-          "Jan Nowak",
-        ],
+        "value": "Jan Nowak",
       },
       {
         "name": "Rok",
         "subcategories": [],
-        "values": [
-          "567",
-        ],
+        "value": "567",
       },
     ],
     "collectionName": "nowa",
@@ -624,28 +514,20 @@ exports[`artworks util functions tests sortRecordsByCategory test - sort by Tytu
         "subcategories": [
           {
             "name": "Podtytuł",
-            "values": [
-              "podtytuł",
-            ],
+            "value": "podtytuł",
           },
         ],
-        "values": [
-          "Tytułowy",
-        ],
+        "value": "Tytułowy",
       },
       {
         "name": "Artyści",
         "subcategories": [],
-        "values": [
-          "Jan Nowak",
-        ],
+        "value": "Jan Nowak",
       },
       {
         "name": "Rok",
         "subcategories": [],
-        "values": [
-          "567",
-        ],
+        "value": "567",
       },
     ],
     "collectionName": "nowa",
@@ -661,28 +543,20 @@ exports[`artworks util functions tests sortRecordsByCategory test - sort by Tytu
         "subcategories": [
           {
             "name": "Podtytuł",
-            "values": [
-              "Jakiś podtytuł",
-            ],
+            "value": "Jakiś podtytuł",
           },
         ],
-        "values": [
-          "Kolejny tytuł",
-        ],
+        "value": "Kolejny tytuł",
       },
       {
         "name": "Artyści",
         "subcategories": [],
-        "values": [
-          "Pierwsi",
-        ],
+        "value": "Pierwsi",
       },
       {
         "name": "Rok",
         "subcategories": [],
-        "values": [
-          "444",
-        ],
+        "value": "444",
       },
     ],
     "collectionName": "nowa",
@@ -696,23 +570,17 @@ exports[`artworks util functions tests sortRecordsByCategory test - sort by Tytu
       {
         "name": "Tytuł",
         "subcategories": [],
-        "values": [
-          "Inny tytuł",
-        ],
+        "value": "Inny tytuł",
       },
       {
         "name": "Artyści",
         "subcategories": [],
-        "values": [
-          "Inny artysta",
-        ],
+        "value": "Inny artysta",
       },
       {
         "name": "Rok",
         "subcategories": [],
-        "values": [
-          "1410",
-        ],
+        "value": "1410",
       },
     ],
     "collectionName": "nowa",
