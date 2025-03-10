@@ -31,14 +31,13 @@ export const prepRecords = async (data: Array<Array<string>>, collectionName: st
             const newRecord: record = {categories: [], collectionName: collectionName}
             rowValues.forEach((rowValue, columnIndex) => {
                 const isNotSubcategoryColumn = header[columnIndex].split(".").length === 1
-                const cellValues = rowValue
                 if(isNotSubcategoryColumn) {
                     const directSubcategoriesNames = header.filter(columnName => 
                         columnName.startsWith(`${header[columnIndex]}.`) && columnName.split(".").length === 2
                     )
                     newRecord.categories.push({
                         name: header[columnIndex],
-                        value: cellValues,
+                        value: rowValue.trim(),
                         subcategories: fillSubcategories(directSubcategoriesNames, 2, header, rowValues)
                     })      
                 }
@@ -57,10 +56,9 @@ const fillSubcategories = (fields: Array<string>, depth: number, header: Array<s
     fields.forEach(field => {
         const allSubcategoriesNames = header.filter(columnName => (columnName.startsWith(`${field}.`)))
         const directSubcategoriesNames = allSubcategoriesNames.filter(columnName => columnName.split(".").length === depth + 1)
-        const subcategoryValues = rowValues[header.indexOf(field)]
         subcategories.push({
             name: field.split(".").slice(-1)[0],
-            value: subcategoryValues,
+            value: rowValues[header.indexOf(field)].trim(),
             subcategories: fillSubcategories(directSubcategoriesNames, depth + 1, header, rowValues)
         })        
     });

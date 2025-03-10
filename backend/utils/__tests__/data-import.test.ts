@@ -16,16 +16,16 @@ describe('data-import controller util functions tests', () => {
             testName: 'prepRecords test - three levels deep data',
             data: [
                 ['Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Artists'],
-                ['title 1;alternate title 1', 'subtitle 1;alternate subtitle 1;another alternate subtitle 1',
-                'subsubtitle 1;alternate subsubtitle 1;another alternate subsubtitle 1'],
+                ['title 1', 'subtitle 1',
+                'subsubtitle 1'],
             ],
             getAllCategories: ['Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Artists']
         },
         {
             testName: 'prepRecords test - unusual column order',
             data: [ ['Title.Subtitle', 'Title', 'Title.Subtitle.Subsubtitle'],
-            ['subtitle 1;alternate subtitle 1;another alternate subtitle 1', 'title 1;alternate title 1', 
-                'subsubtitle 1;alternate subsubtitle 1;another alternate subsubtitle 1']],
+            ['subtitle 1', 'title 1', 
+                'subsubtitle 1']],
             getAllCategories: ['Title.Subtitle', 'Title', 'Title.Subtitle.Subsubtitle']
         },
         {
@@ -39,20 +39,10 @@ describe('data-import controller util functions tests', () => {
             getAllCategories: ['Title', 'Artists', 'Release Year']
         },
         {
-            testName: 'prepRecords test - skip subcategory with empty values only if there are no deeper subcategories',
-            data: [
-                ['Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Title.Subtitle.Subsubtitle.Subsubsubtitle', 'Title.Subtitle.Subsubtitle.Subsubsubtitle.Subsubsubsubtitle'],
-                ['', 'subtitle 1', '', 'subsubsubtitle 1', ''],
-                ['', '', '', '', 'subsubsubsubtitle 1']
-
-            ],
-            getAllCategories: ['Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Title.Subtitle.Subsubtitle.Subsubsubtitle', 'Title.Subtitle.Subsubtitle.Subsubsubtitle.Subsubsubsubtitle']
-        },
-        {
-            testName: 'prepRecords test - skip all whitespace category values',
+            testName: 'prepRecords test - trim all whitespace category values to empty string',
             data: [
                 ['Title', 'Title.Subtitle', 'Artists'],
-                ['title 1; ;', ' ', ' ',]
+                ['title 1', ' ', ' ',]
 
             ],
             getAllCategories: ['Title', 'Title.Subtitle', 'Artists']
@@ -70,7 +60,7 @@ describe('data-import controller util functions tests', () => {
             testName: 'prepRecords test - remove leading/trailing whitespace in category values',
             data: [
                 ['Title', 'Title.Subtitle', 'Artists'],
-                ['  title 1;  alternate title 1   ', '  subtitle 1; alternate subtitle 1   ', '    artists 1    ',]
+                ['  title 1   ', '  subtitle 1   ', '    artists 1    ',]
 
             ],
             getAllCategories: ['Title', 'Title.Subtitle', 'Artists']
