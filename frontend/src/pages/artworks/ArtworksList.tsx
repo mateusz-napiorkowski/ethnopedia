@@ -40,7 +40,7 @@ const ArtworksList = ({ pageSize = 10 }) => {
         let val = "";
         artwork.categories.forEach((category: any) => {
             if (category.name === categoryName) {
-                val = category.values.toString();
+                val = category.value;
                 return;
             }
         });

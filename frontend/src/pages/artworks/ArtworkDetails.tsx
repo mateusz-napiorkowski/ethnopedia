@@ -34,7 +34,7 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
     const Sublist: React.FC<SublistProps> = ({subcategories, depth}) => {
         return <ul className={bulletClassnames[depth % 3]}>
             {subcategories.map((category: any) => {
-                return <li>{category.name}: {category.values.join(", ")}
+                return <li>{category.name}: {category.value}
                     { category.subcategories.length > 0 && <Sublist subcategories={category.subcategories} depth={depth+1}/> }          
                 </li>
             })}
@@ -51,7 +51,7 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
                 {detailsToShow.categories && 
                     <ul data-testid="details-list" className={bulletClassnames[0]}>
                         {detailsToShow.categories.map((category: any) => {
-                            return <li>{category.name}: {category.values.join(", ")}
+                            return <li>{category.name}: {category.value}
                                 <Sublist subcategories={category.subcategories} depth={1}/>
                             </li>
                         })}

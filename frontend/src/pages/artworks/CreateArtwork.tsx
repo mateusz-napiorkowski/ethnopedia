@@ -13,9 +13,9 @@ import LoadingPage from "../LoadingPage";
 import {getAllCategories} from "../../api/categories";
 
 let example_data: Metadata[] = [
-    { name: "Tytuł", values: [""], subcategories: [] },
-    { name: "Artyści", values: [""], subcategories: [] },
-    { name: "Rok", values: [""], subcategories: [] }
+    { name: "Tytuł", value: "", subcategories: [] },
+    { name: "Artyści", value: "", subcategories: [] },
+    { name: "Rok", value: "", subcategories: [] }
 ];
 
 
@@ -32,7 +32,7 @@ const convertToJson = (data: string[]): Metadata[] => {
             if (existingCategory) {
                 currentLevel = existingCategory.subcategories!;
             } else {
-                const newCategory: Metadata = { name: part, values: [], subcategories: [] };
+                const newCategory: Metadata = { name: part, value: "", subcategories: [] };
                 currentLevel.push(newCategory);
                 map[part] = newCategory;
                 currentLevel = newCategory.subcategories!;

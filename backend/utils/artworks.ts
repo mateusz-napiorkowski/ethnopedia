@@ -5,9 +5,9 @@ const fillSubcategoriesFilterPart: any = (searchText: string, currentDepth: numb
     return {
         $elemMatch: {
             $or: currentDepth === maxDepth 
-                ? [{ values: [searchText] }] 
+                ? [{ value: searchText }] 
                 : [
-                    { values: [searchText] },
+                    { value: searchText },
                     { subcategories: fillSubcategoriesFilterPart(searchText, currentDepth + 1, maxDepth) }
                 ]
         }
@@ -43,7 +43,7 @@ const constructAdvSearchSubcategoriesFilter = (searchRules: Array<Array<string>>
         };
 
         if(subcategoryValue)
-            newFilterPart.$elemMatch.values = [subcategoryValue]
+            newFilterPart.$elemMatch.value = subcategoryValue
 
         if(deeperSubcategoriesSearchRules.length != 0)
             newFilterPart.$elemMatch.subcategories = constructAdvSearchSubcategoriesFilter(deeperSubcategoriesSearchRules, depth + 1)
@@ -92,7 +92,7 @@ export const constructAdvSearchFilter = (requestQuery: any, collectionName: stri
         };
 
         if(categoryValue)
-            categoryFilter.$elemMatch.values = [categoryValue];
+            categoryFilter.$elemMatch.value = categoryValue;
         
         if(currentCategorySubcategoriesSearchRules.length > 0)
             categoryFilter.$elemMatch.subcategories = constructAdvSearchSubcategoriesFilter(currentCategorySubcategoriesSearchRules, 2);
@@ -119,12 +119,12 @@ export const sortRecordsByCategory = (records: any, order: string) => {
 
     const recordAndCategoryValuePairs = records.map((record: any) => {
         const matchingCategory = findMatchingCategory(categoryToSortBy, record)
-        const categoryValue = matchingCategory ? matchingCategory.values.join(", ") : null;
+        const categoryValue = matchingCategory ? matchingCategory.value : null;
         return [record, categoryValue];
     })
     .sort((a: any, b: any) => {
         if (a[1] && b[1])
-            return a[1].toUpperCase().localeCompare(b[1].toUpperCase())
+            return a[1].toString().toUpperCase().localeCompare(b[1].toString().toUpperCase())
         
         //records which have the category to sort by come first
         if (a[1]) return -1;

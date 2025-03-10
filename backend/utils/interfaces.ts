@@ -1,6 +1,6 @@
 export interface artworkCategory {
     name: string
-    values: Array<string>
+    value: string
     subcategories: Array<artworkCategory>
 }
 

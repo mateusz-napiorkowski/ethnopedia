@@ -8,7 +8,7 @@ const findValue: any = (subcategories: Array<artworkCategory>, categoryNameSplit
         return matchingSubcategory ? findValue(matchingSubcategory.subcategories, categoryNameWithoutTopmostPart) : '';
     }
     const matchingCategory = subcategories.find(category => category.name === topmostParentCategoryName);
-    return matchingCategory ? matchingCategory.values.join(';') : '';
+    return matchingCategory ? matchingCategory.value : ""
 }
 
 export const fillRow = (keys: Array<string>, categories: Array<artworkCategory>) => {

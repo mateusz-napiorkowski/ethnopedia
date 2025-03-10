@@ -20,7 +20,7 @@ export const artworkCategoriesHaveValidFormat = (artworkCategories: Array<artwor
 
         return (
             category.name === artworkCategory.name &&
-            !!artworkCategory.values &&
+            !!artworkCategory.value &&
             artworkCategoriesHaveValidFormat(artworkCategory.subcategories, category.subcategories, false)
         );
     });

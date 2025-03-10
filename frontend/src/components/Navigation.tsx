@@ -8,7 +8,7 @@ interface NavigationProps {
 
 interface categoryData {
     name: string
-    values: Array<string>
+    value: string
     subcategories: Array<categoryData>
 }
 
@@ -34,7 +34,7 @@ const Navigation: React.FC<NavigationProps> = ({artworkTitle}) => {
 
     const titleLabel = 
         artworkTitle || 
-        location.state?.categories?.find((category: categoryData) => category.name === "Tytuł")?.values[0] ||
+        location.state?.categories?.find((category: categoryData) => category.name === "Tytuł")?.value ||
         "Utwór bez tytułu"
 
     return <nav className="flex">

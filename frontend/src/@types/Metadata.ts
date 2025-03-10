@@ -1,6 +1,6 @@
 export interface Metadata {
     name: string;
-    values: string[];
+    value: string;
     subcategories?: Metadata[];
     isSelectable?: boolean;
 }

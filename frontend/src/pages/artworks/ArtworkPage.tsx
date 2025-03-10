@@ -25,7 +25,7 @@ const ArtworkPage = () => {
 
     const findCategoryValue = (artwork: any, categoryName: string) => {
         const foundCategory = artwork.categories.find((category: any) => category.name === categoryName);
-        return foundCategory ? foundCategory.values.toString() : "";
+        return foundCategory ? foundCategory.value : "";
     }
 
     const deleteArtworksMutation = useMutation(() => deleteArtworks([artworkId as string], jwtToken as string), {

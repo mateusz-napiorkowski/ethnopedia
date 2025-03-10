@@ -50,11 +50,13 @@ const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, collection
     return dataList.map((item, i) => {
       if (i === currentIndex) {
         if (remainingIndexParts.length === 0) {
-          if (name === 'values') {
+          if (name === 'value') {
             // If it is a value field
-            return { ...item, [name]: [value] };
+            console.log("D")
+            return { ...item, [name]: value };
           } else {
             // If it is a name field
+            console.log("GI")
             return { ...item, [name]: value };
           }
         } else {
@@ -69,7 +71,7 @@ const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, collection
   };
 
   // const handleAddCategory = () => {
-  //   setFormDataList((prevDataList) => [...prevDataList, { name: '', values: [''], subcategories: [] }]);
+  //   setFormDataList((prevDataList) => [...prevDataList, { name: '', value: '', subcategories: [] }]);
   // };
 
   const handleAddSubcategory = (index: string) => {
@@ -82,7 +84,7 @@ const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, collection
 
   const addSubcategory = (dataList: Metadata[], indexParts: number[]): Metadata[] => {
     if (indexParts.length === 0) {
-      return [...dataList, { name: '', values: [''], subcategories: [] }];
+      return [...dataList, { name: '', value: '', subcategories: [] }];
     }
 
     const [currentIndex, ...remainingIndexParts] = indexParts;
@@ -95,7 +97,7 @@ const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, collection
             ...item,
             subcategories: [
               ...(item.subcategories || []),
-              { name: '', values: [''], subcategories: [] }
+              { name: '', value: '', subcategories: [] }
             ]
           };
         } else {
