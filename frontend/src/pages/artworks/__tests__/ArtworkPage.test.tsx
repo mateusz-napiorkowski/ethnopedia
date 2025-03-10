@@ -70,52 +70,52 @@ const artworkData = {
         "categories": [
             {
                 "name": "Tytuł",
-                "values": [
+                "value": 
                     "testowy"
-                ],
+                ,
                 "subcategories": [
                     {
                         "name": "Podtytuł",
-                        "values": [
+                        "value": 
                             "testowy podtytuł"
-                        ],
+                        ,
                         "subcategories": []
                     }
                 ]
             },
             {
                 "name": "Artyści",
-                "values": [
+                "value": 
                     "testowi"
-                ],
+                ,
                 "subcategories": []
             },
             {
                 "name": "Rok",
-                "values": [
+                "value": 
                     "966"
-                ],
+                ,
                 "subcategories": [
                     {
                         "name": "Miesiąc",
-                        "values": [
+                        "value": 
                             "Wrzesień"
-                        ],
+                        ,
                         "subcategories": [
                             {
                                 "name": "Dzień",
-                                "values": [
+                                "value": 
                                     "13"
-                                ],
+                                ,
                                 "subcategories": []
                             }
                         ]
                     },
                     {
                         "name": "Pora roku",
-                        "values": [
+                        "value": 
                             "lato"
-                        ],
+                        ,
                         "subcategories": []
                     }
                 ]

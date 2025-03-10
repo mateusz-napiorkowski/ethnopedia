@@ -6,7 +6,7 @@ import { MemoryRouter, Routes, Route } from "react-router-dom";
 interface locationState {
     categories: Array<{
         name: string,
-        values: Array<string>
+        value: string
     }>
 }
 
@@ -55,7 +55,7 @@ describe("Navigation tests", () => {
 
     test("component renders correctly on edit artwork page", async () => {        
         const url = "/collections/example-collection/artworks/674386b32a2908778c0ad471/edit-artwork"
-        const state = {categories: [{name: "Tytuł", values: ['Example artwork title']}]}
+        const state = {categories: [{name: "Tytuł", value: 'Example artwork title'}]}
         const { container } = renderComponent(url, undefined, state)
         
         expect(container).toMatchSnapshot()

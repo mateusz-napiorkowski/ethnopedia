@@ -27,23 +27,23 @@ export const artworksData = {
             "categories": [
                 {
                     "name": "Tytuł",
-                    "values": [
+                    "value": 
                         artworkTitles[0]
-                    ],
+                    ,
                     "subcategories": []
                 },
                 {
                     "name": "Artyści",
-                    "values": [
+                    "value": 
                         "Józefa Piaskowska"
-                    ],
+                    ,
                     "subcategories": []
                 },
                 {
                     "name": "Rok",
-                    "values": [
+                    "value": 
                         "1960"
-                    ],
+                    ,
                     "subcategories": []
                 },
             ],
@@ -57,23 +57,23 @@ export const artworksData = {
             "categories": [
                 {
                     "name": "Tytuł",
-                    "values": [
+                    "value": 
                         artworkTitles[1]
-                    ],
+                    ,
                     "subcategories": []
                 },
                 {
                     "name": "Artyści",
-                    "values": [
+                    "value": 
                         "Magdalena Figlak"
-                    ],
+                    ,
                     "subcategories": []
                 },
                 {
                     "name": "Rok",
-                    "values": [
+                    "value": 
                         "1949"
-                    ],
+                    ,
                     "subcategories": []
                 },
             ],
@@ -87,23 +87,23 @@ export const artworksData = {
             "categories": [
                 {
                     "name": "Tytuł",
-                    "values": [
+                    "value": 
                         artworkTitles[2]
-                    ],
+                    ,
                     "subcategories": []
                 },
                 {
                     "name": "Artyści",
-                    "values": [
+                    "value": 
                         "Zespół Mazowsze"
-                    ],
+                    ,
                     "subcategories": []
                 },
                 {
                     "name": "Rok",
-                    "values": [
+                    "value": 
                         "2005"
-                    ],
+                    ,
                     "subcategories": []
                 },
             ],
@@ -125,23 +125,23 @@ export const artworksDataSecondPage = {
             "categories": [
                 {
                     "name": "Tytuł",
-                    "values": [
+                    "value": 
                         "W górach, nad rzeką"
-                    ],
+                    ,
                     "subcategories": []
                 },
                 {
                     "name": "Artyści",
-                    "values": [
+                    "value": 
                         "Józefa Piaskowska"
-                    ],
+                    ,
                     "subcategories": []
                 },
                 {
                     "name": "Rok",
-                    "values": [
+                    "value": 
                         "1960"
-                    ],
+                    ,
                     "subcategories": []
                 },
             ],
@@ -155,23 +155,23 @@ export const artworksDataSecondPage = {
             "categories": [
                 {
                     "name": "Tytuł",
-                    "values": [
+                    "value": 
                         "Skrzypce na polu"
-                    ],
+                    ,
                     "subcategories": []
                 },
                 {
                     "name": "Artyści",
-                    "values": [
+                    "value": 
                         "Magdalena Figlak"
-                    ],
+                    ,
                     "subcategories": []
                 },
                 {
                     "name": "Rok",
-                    "values": [
+                    "value": 
                         "1949"
-                    ],
+                    ,
                     "subcategories": []
                 },
             ],
@@ -185,23 +185,23 @@ export const artworksDataSecondPage = {
             "categories": [
                 {
                     "name": "Tytuł",
-                    "values": [
+                    "value": 
                         "Pragnom uoczka, pragnom"
-                    ],
+                    ,
                     "subcategories": []
                 },
                 {
                     "name": "Artyści",
-                    "values": [
+                    "value": 
                         "Zespół Mazowsze"
-                    ],
+                    ,
                     "subcategories": []
                 },
                 {
                     "name": "Rok",
-                    "values": [
+                    "value": 
                         "2005"
-                    ],
+                    ,
                     "subcategories": []
                 },
             ],
