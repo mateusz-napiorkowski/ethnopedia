@@ -30,4 +30,7 @@ services:
     ports:
       - "27017:27017"
 #    image: mongodb/mongodb-community-server:latest # use this one instead on proper processor architecture
-    image: mongodb/mongodb-community-server:4.4-ubuntu2004  # fix for Xeon processor missing AVX instruction set https://www.mongodb.com/docs/manual/tutorial/install-mongodb-community-with-docker/
+    image: bitnami/mongodb:4.5  # fix for Xeon processor missing AVX instruction set https://www.mongodb.com/docs/manual/tutorial/install-mongodb-community-with-docker/
+    environment:
+      MONGODB_REPLICA_SET_MODE: primary
+      ALLOW_EMPTY_PASSWORD: 'yes'
