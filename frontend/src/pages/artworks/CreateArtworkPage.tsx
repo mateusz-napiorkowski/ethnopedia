@@ -44,7 +44,7 @@ const convertToJson = (data: string[]): Metadata[] => {
 };
 
 
-const CreateArtwork: React.FC = () => {
+const CreateArtworkPage: React.FC = () => {
     const location = useLocation();
     // const { collectionId } = useParams<{ collectionId: string }>();
     const queryClient = useQueryClient();
@@ -181,4 +181,4 @@ const CreateArtwork: React.FC = () => {
     );
 };
 
-export default CreateArtwork;
+export default CreateArtworkPage;

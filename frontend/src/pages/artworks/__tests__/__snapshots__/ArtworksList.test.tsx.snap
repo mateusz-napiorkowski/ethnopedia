@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ArtworksList tests should refetch artworks list when artwork page is changed: page 1 1`] = `
+exports[`ArtworksListPage tests should refetch artworks list when artwork page is changed: page 1 1`] = `
 <div
   class="w-full flex-2 lg:px-6 max-w-screen-xl"
   data-testid="artworks-listed"
@@ -98,7 +98,7 @@ exports[`ArtworksList tests should refetch artworks list when artwork page is ch
 </div>
 `;
 
-exports[`ArtworksList tests should refetch artworks list when artwork page is changed: page 2 1`] = `
+exports[`ArtworksListPage tests should refetch artworks list when artwork page is changed: page 2 1`] = `
 <div
   class="w-full flex-2 lg:px-6 max-w-screen-xl"
   data-testid="artworks-listed"
@@ -196,7 +196,7 @@ exports[`ArtworksList tests should refetch artworks list when artwork page is ch
 </div>
 `;
 
-exports[`ArtworksList tests should render artworks list component after data is fetched from API, collection name and description should be displayed 1`] = `
+exports[`ArtworksListPage tests should render artworks list component after data is fetched from API, collection name and description should be displayed 1`] = `
 <div
   class="flex flex-row mb-4 mt-2"
   data-testid="collection-name-and-description-container"

@@ -20,7 +20,7 @@ import { useUser } from "../../providers/UserProvider";
 import { getAllCategories } from "../../api/categories";
 import Select from "react-select";
 
-const ArtworksList = ({ pageSize = 10 }) => {
+const ArtworksListPage = ({ pageSize = 10 }) => {
     const [selectedArtworks, setSelectedArtworks] = useState<{ [key: string]: boolean }>({});
     const [showImportOptions, setShowImportOptions] = useState<boolean>(false);
     const [showExportOptions, setShowExportOptions] = useState<boolean>(false);
@@ -376,4 +376,4 @@ const ArtworksList = ({ pageSize = 10 }) => {
     );
 };
 
-export default ArtworksList;
+export default ArtworksListPage;

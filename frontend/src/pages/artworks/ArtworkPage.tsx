@@ -7,7 +7,7 @@ import { deleteArtworks, getArtwork } from "../../api/artworks"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { useNavigate, useParams } from "react-router-dom"
 import { useUser } from "../../providers/UserProvider"
-import ArtworkDetails from "./ArtworkDetails"
+import ArtworkDetails from "../../components/artwork/ArtworkDetails"
 
 const ArtworkPage = () => {
     const { jwtToken } = useUser()
