@@ -10,9 +10,10 @@ import { Category } from '../../@types/Category';
 interface StructureFormProps {
   initialFormData: Category[];
   setFieldValue: (field: string, value: any, shouldValidate?: boolean) => void;
+  isEditMode: boolean;
 }
 
-const StructureForm: React.FC<StructureFormProps> = ({ initialFormData, setFieldValue }) => {
+const StructureForm: React.FC<StructureFormProps> = ({ initialFormData, setFieldValue, isEditMode }) => {
   const [formDataList, setFormDataList] = useState<Category[]>(initialFormData);
 
   useEffect(() => {
@@ -20,10 +21,6 @@ const StructureForm: React.FC<StructureFormProps> = ({ initialFormData, setField
   }, [formDataList, setFieldValue]);
 
   const [jsonOutput] = useState<string>('');
-  // const [jsonOutput, setJsonOutput] = useState<string>('');
-  // const handleShowJson = () => {
-  //   setJsonOutput(JSON.stringify(formDataList, null, 2));
-  // };
 
   const handleInputChange = (index: string, e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -126,6 +123,7 @@ const StructureForm: React.FC<StructureFormProps> = ({ initialFormData, setField
                   handleInputChange={handleInputChange}
                   handleRemove={handleRemove}
                   handleAddSubcategory={handleAddSubcategory}
+                  isEditMode={isEditMode}
               />
           ))}
           <div className="actions mt-1">

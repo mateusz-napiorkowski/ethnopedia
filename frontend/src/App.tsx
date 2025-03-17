@@ -24,6 +24,7 @@ const App = () => {
                         <Route path="/collections/:collection/create-artwork" element={<CreateArtworkPage />} />
                         <Route path="/collections/:collection/artworks/:artworkId/edit-artwork" element={<CreateArtworkPage />} />
                         <Route path="/create-collection" element={<CreateCollectionPage />} />
+                        <Route path="/collections/:collection/edit" element={<CreateCollectionPage />} />
 
                         <Route path="/" element={<Home />} />
                         <Route path="/collections/:collection/artworks" element={<Artworks />} />

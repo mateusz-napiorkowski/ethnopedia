@@ -11,16 +11,18 @@ interface FormFieldProps {
     handleInputChange: (index: string, e: React.ChangeEvent<HTMLInputElement>) => void;
     handleRemove: (index: string) => void;
     handleAddSubcategory: (index: string) => void;
+    isEditMode: boolean;
 }
 
 const StructureFormField: React.FC<FormFieldProps> = ({
-                                                 formData,
-                                                 formDataList,
-                                                 index,
-                                                 level,
-                                                 handleInputChange,
-                                                 handleRemove,
-                                                 handleAddSubcategory,
+                                                          formData,
+                                                          formDataList,
+                                                          index,
+                                                          level,
+                                                          handleInputChange,
+                                                          handleRemove,
+                                                          handleAddSubcategory,
+                                                          isEditMode,
                                              }) => {
     const [isHovered, setIsHovered] = useState(false);
 
@@ -65,6 +67,7 @@ const StructureFormField: React.FC<FormFieldProps> = ({
                         <button
                             type="button"
                             onClick={() => handleRemove(index)}
+                            disabled={isEditMode}
                             title={`Usuń kategorię`}
                         >
                             <MinusIcon />
@@ -88,6 +91,7 @@ const StructureFormField: React.FC<FormFieldProps> = ({
                                     handleInputChange={handleInputChange}
                                     handleRemove={handleRemove}
                                     handleAddSubcategory={handleAddSubcategory}
+                                    isEditMode={isEditMode}
                                 />
                             </div>
                         );

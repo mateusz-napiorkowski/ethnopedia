@@ -8,9 +8,7 @@ import StructureForm from "../../components/collections/StructureForm";
 import { Category } from "../../@types/Category";
 import { useLocation, useNavigate } from "react-router-dom";
 
-let initial_structure: Category[] = [
-    { name: "", subcategories: [] }
-];
+let initial_structure: Category[] = [{ name: "", subcategories: [] }];
 
 interface FormValues {
     name: string;
@@ -24,51 +22,59 @@ const CreateCollectionPage = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Inicjalizacja danych formularza
+    // Sprawdzenie, czy mamy tryb edycji
+    const isEditMode = location.state && location.state.mode === "edit";
+
+    // Pobranie wartości początkowych dla nazwy i opisu, jeśli edycja
+    const initialName = isEditMode && location.state.name ? location.state.name : "";
+    const initialDescription =
+        isEditMode && location.state.description ? location.state.description : "";
+
+    // Ustawiamy inicjalne dane formularza – w trybie edycji pobieramy też strukturę kategorii
     let initialFormData: Category[] = initial_structure;
-    if (location.state && location.state.categories) {
+    if (isEditMode && location.state.categories) {
+        initialFormData = location.state.categories;
+    } else if (location.state && location.state.categories) {
         initialFormData = location.state.categories;
     }
 
-    // Funkcja walidacyjna
-    const validate = (values: FormValues) => {
-        const errors: Partial<FormValues> = {};
-        if (!values.name) {
-            errors.name = "Nazwa jest wymagana";
-        }
-        // inne reguły walidacyjne
-        return errors;
-    };
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
-            {/* Pasek nawigacyjny aplikacji */}
             <Navbar />
-
-            {/* Główny kontener treści */}
             <div className="container mx-auto px-24 sm:px-32 md:px-40 lg:px-48 mt-4 max-w-screen-lg">
-                {/* Nawigacja */}
                 <Navigation />
-
-                {/* Formularz */}
                 <div className="mt-4">
                     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border dark:border-gray-600 p-8">
                         <div className="flex items-start rounded-t border-b pb-2">
                             <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-                                Dodaj nową kolekcję
+                                {isEditMode ? "Edytuj kolekcję" : "Dodaj nową kolekcję"}
                             </h3>
                         </div>
                         <Formik
-                            initialValues={{ name: "", description: "", categories: initialFormData }}
-                            validate={validate}
+                            initialValues={{
+                                name: initialName,
+                                description: initialDescription,
+                                categories: initialFormData,
+                            }}
+                            validate={(values: FormValues) => {
+                                const errors: Partial<FormValues> = {};
+                                if (!values.name) {
+                                    errors.name = "Nazwa jest wymagana";
+                                }
+                                return errors;
+                            }}
                             onSubmit={async (values, { setSubmitting }) => {
                                 const { name, description, categories } = values;
-
-                                console.log("Dane wysyłane do API:", values);
                                 try {
-                                    await createCollection(name, description, categories, jwtToken);
+                                    if (isEditMode) {
+                                        // Tu dodaj logikę aktualizacji kolekcji
+                                        console.log("Aktualizacja kolekcji:", values);
+                                    } else {
+                                        await createCollection(name, description, categories, jwtToken);
+                                    }
                                     setShowErrorMessage(false);
-                                    navigate("/"); // Redirect to the collection list after successful creation
+                                    navigate("/"); // Po udanym zapisie przekieruj użytkownika
                                 } catch (error) {
                                     console.error(error);
                                     setShowErrorMessage(true);
@@ -122,18 +128,17 @@ const CreateCollectionPage = () => {
                                     />
 
                                     <hr />
-                                    <label
-                                        className="block text-sm mt-4 font-bold text-gray-700 dark:text-white my-2"
-                                    >
+                                    <label className="block text-sm mt-4 font-bold text-gray-700 dark:text-white my-2">
                                         Struktura metadanych w kolekcji
                                     </label>
                                     <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                                        Podaj strukturę metadanych, które chcesz przechowywać w tej kolekcji. Aby dodać kategorię, kliknij przycisk '+' na dole formularza. Po dodaniu kategorii możesz dodawać podkategorie, klikając przycisk '+' obok nazwy wybranej kategorii.
+                                        Podaj strukturę metadanych, które chcesz przechowywać w tej kolekcji...
                                     </p>
                                     <div className="flex-grow">
                                         <StructureForm
                                             initialFormData={initialFormData}
                                             setFieldValue={setFieldValue}
+                                            isEditMode={isEditMode}
                                         />
                                     </div>
 
@@ -150,7 +155,7 @@ const CreateCollectionPage = () => {
                                             disabled={isSubmitting}
                                             className="px-4 py-2 color-button"
                                         >
-                                            Utwórz
+                                            {isEditMode ? "Zapisz zmiany" : "Utwórz"}
                                         </button>
                                     </div>
                                 </Form>

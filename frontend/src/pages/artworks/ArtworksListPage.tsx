@@ -19,6 +19,7 @@ import Pagination from "../../components/Pagination";
 import { useUser } from "../../providers/UserProvider";
 import { getAllCategories } from "../../api/categories";
 import Select from "react-select";
+import { ReactComponent as EditIcon } from "../../assets/icons/edit.svg"
 
 const ArtworksListPage = ({ pageSize = 10 }) => {
     const [selectedArtworks, setSelectedArtworks] = useState<{ [key: string]: boolean }>({});
@@ -233,8 +234,31 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                                 {collectionData?.description}
                             </p>
                         </div>
+                        {/* Edytuj kolekcję */}
+                        <div>
+                            <button
+                                disabled={jwtToken ? false : true}
+                                className={
+                                    jwtToken
+                                        ? "text-sm font-semibold h-fit mr-4 flex items-center"
+                                        : "text-sm font-semibold h-fit mr-4 bg-gray-100 hover:bg-gray-100 flex items-center"
+                                }
+                                onClick={() =>  navigate(`/collections/${collection}/edit`, {
+                                    state: {
+                                        mode: 'edit',
+                                        name: collectionData?.name,
+                                        description: collectionData?.description,
+                                        categories: collectionData?.categories
+                                    }
+                                })}
+                            >
+                                <EditIcon/>
+                                <p className="ml-1">Edytuj</p>
+                            </button>
+
+                        </div>
                     </div>
-                    {collection && <SearchComponent collectionName={collection} />}
+                    {collection && <SearchComponent collectionName={collection}/>}
                     <div className="flex w-full md:w-auto">
                         <div className="flex flex-1 space-x-2">
                             <button
