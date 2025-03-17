@@ -5,7 +5,7 @@ import { ReactComponent as UserIcon } from "../../assets/icons/user-icon.svg"
 import { deleteAccount } from "../../api/auth"
 import { useMutation } from "react-query"
 import { useUser } from "../../providers/UserProvider"
-import WarningPopup from "../../pages/collections/WarningPopup"
+import WarningPopup from "../../pages/WarningPopup"
 
 const Navbar = () => {
     const location = useLocation()

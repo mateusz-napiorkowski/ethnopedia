@@ -12,7 +12,7 @@ import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg";
 import { HiOutlineCollection } from "react-icons/hi";
 import { ReactComponent as FileImportIcon } from "../../assets/icons/fileImport.svg";
 import { ReactComponent as FileExportIcon } from "../../assets/icons/fileExport.svg";
-import WarningPopup from "../collections/WarningPopup";
+import WarningPopup from "../WarningPopup";
 import SortOptions from "../../components/SortOptions";
 import Navigation from "../../components/Navigation";
 import Pagination from "../../components/Pagination";

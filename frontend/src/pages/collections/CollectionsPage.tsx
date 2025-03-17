@@ -1,7 +1,7 @@
 import SortOptions from "../../components/SortOptions"
 import LoadingPage from "../LoadingPage"
 import React, { useEffect, useState } from "react"
-import WarningPopup from "./WarningPopup"
+import WarningPopup from "../WarningPopup"
 import { Collection } from "../../@types/Collection"
 import { ReactComponent as FileExportIcon } from "../../assets/icons/fileExport.svg"
 import { ReactComponent as FileImportIcon } from "../../assets/icons/fileImport.svg"
