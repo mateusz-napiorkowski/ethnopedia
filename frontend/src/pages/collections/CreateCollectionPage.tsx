@@ -1,5 +1,5 @@
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import { createCollection } from "../../api/collections";
+import { createCollection, updateCollection } from "../../api/collections";
 import { useUser } from "../../providers/UserProvider";
 import React, { useState } from "react";
 import Navbar from "../../components/navbar/Navbar";
@@ -16,6 +16,12 @@ interface FormValues {
     categories: Category[];
 }
 
+interface FormErrors {
+    name?: string;
+    description?: string;
+    categories?: string;
+}
+
 const CreateCollectionPage = () => {
     const { jwtToken } = useUser();
     const [showErrorMessage, setShowErrorMessage] = useState(false);
@@ -24,6 +30,8 @@ const CreateCollectionPage = () => {
 
     // Sprawdzenie, czy mamy tryb edycji
     const isEditMode = location.state && location.state.mode === "edit";
+
+    const collectionId = location.state && location.state.collectionId;
 
     // Pobranie wartości początkowych dla nazwy i opisu, jeśli edycja
     const initialName = isEditMode && location.state.name ? location.state.name : "";
@@ -38,6 +46,16 @@ const CreateCollectionPage = () => {
         initialFormData = location.state.categories;
     }
 
+    // Funkcja do usunięcia flagi isNew z kategorii (rekurencyjnie)
+    const removeIsNewFlag = (categories: Category[]): Category[] => {
+        return categories.map((category) => {
+            const { isNew, subcategories, ...rest } = category;
+            return {
+                ...rest,
+                subcategories: subcategories ? removeIsNewFlag(subcategories) : [],
+            };
+        });
+    };
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
@@ -57,33 +75,60 @@ const CreateCollectionPage = () => {
                                 description: initialDescription,
                                 categories: initialFormData,
                             }}
-                            validate={(values: FormValues) => {
-                                const errors: Partial<FormValues> = {};
+                            validate={(values: FormValues): FormErrors => {
+                                const errors: FormErrors = {};
                                 if (!values.name) {
                                     errors.name = "Nazwa jest wymagana";
                                 }
+                                if (!values.description) {
+                                    errors.description = "Opis jest wymagany";
+                                }
+                                if (!values.categories || values.categories.length === 0) {
+                                    errors.categories = "Struktura metadanych jest wymagana";
+                                }
                                 return errors;
                             }}
-                            onSubmit={async (values, { setSubmitting }) => {
+                            onSubmit={async (values, { setSubmitting, setErrors, setStatus }) => {
                                 const { name, description, categories } = values;
                                 try {
                                     if (isEditMode) {
-                                        // Tu dodaj logikę aktualizacji kolekcji
-                                        console.log("Aktualizacja kolekcji:", values);
+                                        // Usuń flagi isNew przed aktualizacją
+                                        const updatedCategories = removeIsNewFlag(categories);
+                                        console.log("Data to update: id:", collectionId, "name:", name, description, updatedCategories);
+                                        await updateCollection(
+                                            collectionId,
+                                            name,
+                                            description,
+                                            updatedCategories,
+                                            jwtToken
+                                        );
                                     } else {
                                         await createCollection(name, description, categories, jwtToken);
                                     }
                                     setShowErrorMessage(false);
                                     navigate("/"); // Po udanym zapisie przekieruj użytkownika
-                                } catch (error) {
+                                } catch (error: any) {
                                     console.error(error);
                                     setShowErrorMessage(true);
+                                    // Obsługa błędów po stronie backendu
+                                    if (error.response && error.response.data && error.response.data.error) {
+                                        const serverError = error.response.data.error;
+                                        if (serverError === "Collection with provided name already exists") {
+                                            setErrors({ name: serverError });
+                                        } else if (serverError === "Incorrect request body provided") {
+                                            setStatus({ generalError: "Niepoprawne dane formularza" });
+                                        } else {
+                                            setStatus({ generalError: "Błąd serwera" });
+                                        }
+                                    } else {
+                                        setStatus({ generalError: "Nieoczekiwany błąd" });
+                                    }
                                 } finally {
                                     setSubmitting(false);
                                 }
                             }}
                         >
-                            {({ isSubmitting, setFieldValue }) => (
+                            {({ isSubmitting, setFieldValue, status }) => (
                                 <Form>
                                     <label
                                         htmlFor="name"
@@ -97,11 +142,6 @@ const CreateCollectionPage = () => {
                                         type="text"
                                         className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none"
                                     />
-                                    {showErrorMessage && (
-                                        <p className="text-red-500 text-sm my-2">
-                                            Kolekcja o podanej nazwie już istnieje.
-                                        </p>
-                                    )}
                                     <ErrorMessage
                                         name="name"
                                         component="div"
@@ -141,6 +181,10 @@ const CreateCollectionPage = () => {
                                             isEditMode={isEditMode}
                                         />
                                     </div>
+
+                                    {showErrorMessage && status && status.generalError && (
+                                        <p className="text-red-500 text-sm my-2">{status.generalError}</p>
+                                    )}
 
                                     <div className="flex justify-end mt-6">
                                         <button

@@ -54,19 +54,24 @@ const StructureForm: React.FC<StructureFormProps> = ({ initialFormData, setField
 
 
   const handleAddCategory = () => {
-    setFormDataList((prevDataList) => [...prevDataList, { name: '', subcategories: [] }]);
+    setFormDataList((prevDataList) => [
+      ...prevDataList,
+      { name: '', subcategories: [], isNew: true },
+    ]);
   };
+
 
   const handleAddSubcategory = (index: string) => {
     const indexParts = index.split('-').map(Number);
     setFormDataList((prevDataList) =>
-        addSubcategory(prevDataList, indexParts)
+        addSubcategory(prevDataList, indexParts, true) // Flaga dla nowych subkategorii
     );
   };
 
-  const addSubcategory = (dataList: Category[], indexParts: number[]): Category[] => {
+
+  const addSubcategory = (dataList: Category[], indexParts: number[], isNew: boolean): Category[] => {
     if (indexParts.length === 0) {
-      return [...dataList, { name: '', subcategories: [] }];
+      return [...dataList, { name: '', subcategories: [], isNew }];
     }
     const [currentIndex, ...remainingIndexParts] = indexParts;
     return dataList.map((item, i) => {
@@ -74,10 +79,10 @@ const StructureForm: React.FC<StructureFormProps> = ({ initialFormData, setField
         if (remainingIndexParts.length === 0) {
           return {
             ...item,
-            subcategories: [...(item.subcategories || []), { name: '', subcategories: [] }]
+            subcategories: [...(item.subcategories || []), { name: '', subcategories: [], isNew }],
           };
         } else {
-          const updatedSubcategories = addSubcategory(item.subcategories || [], remainingIndexParts);
+          const updatedSubcategories = addSubcategory(item.subcategories || [], remainingIndexParts, isNew);
           return { ...item, subcategories: updatedSubcategories };
         }
       } else {
@@ -85,6 +90,7 @@ const StructureForm: React.FC<StructureFormProps> = ({ initialFormData, setField
       }
     });
   };
+
 
   const handleRemove = (index: string) => {
     const indexParts = index.split('-').map(Number);

@@ -148,3 +148,63 @@ export const deleteCollections = authAsyncWrapper(async (req: Request, res: Resp
             res.status(503).json( { error: "Database unavailable" })
     }   
 })
+
+
+export const updateCollection = authAsyncWrapper(async (req: Request, res: Response) => {
+    const collectionId = req.params.id; // Id kolekcji do zaktualizowania
+    const { name, description, categories } = req.body; // Dane do zaktualizowania
+
+    console.log("Id kolekcji do aktualizacji:", collectionId);
+    console.log("Otrzymane dane do aktualizacji:", req.body);
+
+    let objectId;
+    try {
+        // Stworzenie ObjectId z ID w formacie string
+        objectId = mongoose.Types.ObjectId.createFromHexString(collectionId);
+    } catch (error) {
+        return res.status(400).json({ error: "Invalid ObjectId format" });
+    }
+
+    try {
+        // Walidacja danych wejściowych
+        if (!name || !description || !categories || !hasValidCategoryFormat(categories)) {
+            throw new Error("Incorrect request body provided");
+        }
+
+        const session = await mongoose.startSession();
+
+        await session.withTransaction(async (session: ClientSession) => {
+            // Znajdujemy kolekcję według id
+            const collection = await CollectionCollection.findById(objectId, null, { session }).exec();
+            if (!collection) {
+                throw new Error("Collection not found");
+            }
+
+            // Aktualizujemy dane kolekcji
+            collection.name = name;
+            collection.description = description;
+            collection.categories = categories;
+
+            // Zapisujemy zmiany
+            await collection.save({ session });
+
+            // Zwracamy zaktualizowaną kolekcję
+            res.status(200).json(collection);
+        });
+
+        session.endSession();
+    } catch (error) {
+        const err = error as Error;
+        console.error(error);
+
+        // Obsługa błędów
+        if (err.message === "Incorrect request body provided") {
+            res.status(400).json({ error: err.message });
+        } else if (err.message === "Collection not found") {
+            res.status(404).json({ error: err.message });
+        } else {
+            res.status(503).json({ error: "Database unavailable" });
+        }
+    }
+});
+

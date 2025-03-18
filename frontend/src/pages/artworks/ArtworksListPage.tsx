@@ -245,6 +245,7 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                                 }
                                 onClick={() =>  navigate(`/collections/${collection}/edit`, {
                                     state: {
+                                        collectionId: collection,
                                         mode: 'edit',
                                         name: collectionData?.name,
                                         description: collectionData?.description,

@@ -50,7 +50,10 @@ const StructureFormField: React.FC<FormFieldProps> = ({
                         onChange={(e) => handleInputChange(index, e)}
                         // placeholder={`[${index}] Podaj nazwę kategorii...`}
                         placeholder={`Podaj nazwę kategorii...`}
-                        className="p-2 border rounded"
+                        // className="p-2 border rounded"
+                        className={`p-2 border rounded ${
+                            formData.isNew ? 'border-green-500' : 'border-gray-300'
+                        }`}
                     />
                 </label>
                 <div className="actions ml-1 space-x-1">
@@ -63,11 +66,10 @@ const StructureFormField: React.FC<FormFieldProps> = ({
                             <PlusIcon />
                         </button>
                     )}
-                    {isHovered && (
+                    {isHovered && formData.isNew && (
                         <button
                             type="button"
                             onClick={() => handleRemove(index)}
-                            disabled={isEditMode}
                             title={`Usuń kategorię`}
                         >
                             <MinusIcon />
