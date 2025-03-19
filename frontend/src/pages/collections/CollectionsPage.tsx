@@ -248,7 +248,8 @@ const CollectionsPage = () => {
                             <div
                                 key={collection.id}
                                 className="relative group px-4 py-3 bg-white dark:bg-gray-800 shadow-md rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                                onClick={() => navigate(`/collections/${collection.name}/artworks`)}
+                                // onClick={() => navigate(`/collections/${collection.name}/artworks`)}
+                                onClick={() => navigate(`/collections/${collection.name}/artworks`, { state: { collectionId: collection.id } })}
                             >
                                 {/* Checkbox - widoczny stale, jeśli zaznaczony, lub na hover gdy niezaznaczony */}
                                 <div

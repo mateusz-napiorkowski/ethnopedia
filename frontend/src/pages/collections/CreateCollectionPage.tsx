@@ -35,8 +35,7 @@ const CreateCollectionPage = () => {
 
     // Pobranie wartości początkowych dla nazwy i opisu, jeśli edycja
     const initialName = isEditMode && location.state.name ? location.state.name : "";
-    const initialDescription =
-        isEditMode && location.state.description ? location.state.description : "";
+    const initialDescription = isEditMode && location.state.description ? location.state.description : "";
 
     // Ustawiamy inicjalne dane formularza – w trybie edycji pobieramy też strukturę kategorii
     let initialFormData: Category[] = initial_structure;
@@ -95,6 +94,7 @@ const CreateCollectionPage = () => {
                                         // Usuń flagi isNew przed aktualizacją
                                         const updatedCategories = removeIsNewFlag(categories);
                                         console.log("Data to update: id:", collectionId, "name:", name, description, updatedCategories);
+                                        console.log("Type of collectionId:", typeof collectionId);
                                         await updateCollection(
                                             collectionId,
                                             name,

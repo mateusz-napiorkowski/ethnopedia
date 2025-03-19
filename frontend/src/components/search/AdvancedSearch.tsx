@@ -28,10 +28,12 @@ const AdvancedSearch: React.FC<SearchComponentProps> = ({ collectionName }) => {
     const [showErrorMessage, setShowErrorMessage] = useState(false)
 
     useEffect(() => {
-        if(location.state) {  
-            setRules(location.state.rules)
+        if (location.state && location.state.rules) {
+            setRules(location.state.rules);
+        } else {
+            setRules([]); // ustawienie domyślnej wartości, jeśli nie ma rules
         }
-      }, [location]);
+    }, [location]);
     
     const { data: categoriesData } = useQuery({
         queryKey: ["allCategories"],

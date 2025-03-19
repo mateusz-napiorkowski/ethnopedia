@@ -8,11 +8,10 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/controllers/collections.ts" beforeDir="false" afterPath="$PROJECT_DIR$/backend/controllers/collections.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/routes/collection.ts" beforeDir="false" afterPath="$PROJECT_DIR$/backend/routes/collection.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/@types/Category.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/@types/Category.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/api/collections.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/collections.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/collections/StructureForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/collections/StructureForm.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/collections/StructureFormField.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/collections/StructureFormField.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/search/AdvancedSearch.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/search/AdvancedSearch.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/pages/artworks/ArtworksListPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/artworks/ArtworksListPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/collections/CollectionsPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/collections/CollectionsPage.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/pages/collections/CreateCollectionPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/collections/CreateCollectionPage.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -191,7 +190,9 @@
       <workItem from="1741704989347" duration="1808000" />
       <workItem from="1741785582215" duration="7205000" />
       <workItem from="1742214668101" duration="12967000" />
-      <workItem from="1742296207417" duration="6992000" />
+      <workItem from="1742296207417" duration="8033000" />
+      <workItem from="1742313989942" duration="5540000" />
+      <workItem from="1742387018204" duration="7646000" />
     </task>
     <servers />
   </component>

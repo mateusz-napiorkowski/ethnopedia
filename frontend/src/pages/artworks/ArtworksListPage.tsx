@@ -30,11 +30,18 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
     // Stan dla multiselect – kategorie, które mają być wyświetlane
     const [selectedDisplayCategories, setSelectedDisplayCategories] = useState<string[]>([]);
     const { jwtToken } = useUser();
+
     const location = useLocation();
+
+    const { collectionId } = location.state as { collectionId?: string } || {};
+
     const [currentPage, setCurrentPage] = useState(1);
-    const { collection } = useParams();
+    const { collection } = useParams<string>();
     const queryClient = useQueryClient();
     const navigate = useNavigate();
+
+    console.log("id:", collectionId, "name:", collection);
+
 
     // Funkcja wyszukująca wartość dla danej kategorii
     const findValue = (artwork: any, categoryName: string) => {
@@ -245,7 +252,7 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                                 }
                                 onClick={() =>  navigate(`/collections/${collection}/edit`, {
                                     state: {
-                                        collectionId: collection,
+                                        collectionId: collectionId,
                                         mode: 'edit',
                                         name: collectionData?.name,
                                         description: collectionData?.description,

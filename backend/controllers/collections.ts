@@ -155,15 +155,8 @@ export const updateCollection = authAsyncWrapper(async (req: Request, res: Respo
     const { name, description, categories } = req.body; // Dane do zaktualizowania
 
     console.log("Id kolekcji do aktualizacji:", collectionId);
+    console.log("Type of collectionId:", typeof collectionId);
     console.log("Otrzymane dane do aktualizacji:", req.body);
-
-    let objectId;
-    try {
-        // Stworzenie ObjectId z ID w formacie string
-        objectId = mongoose.Types.ObjectId.createFromHexString(collectionId);
-    } catch (error) {
-        return res.status(400).json({ error: "Invalid ObjectId format" });
-    }
 
     try {
         // Walidacja danych wejściowych
@@ -175,7 +168,7 @@ export const updateCollection = authAsyncWrapper(async (req: Request, res: Respo
 
         await session.withTransaction(async (session: ClientSession) => {
             // Znajdujemy kolekcję według id
-            const collection = await CollectionCollection.findById(objectId, null, { session }).exec();
+            const collection = await CollectionCollection.findById(collectionId, null, { session }).exec();
             if (!collection) {
                 throw new Error("Collection not found");
             }

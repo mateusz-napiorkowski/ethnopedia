@@ -45,15 +45,16 @@ export const updateCollection = async (
     jwtToken: string
 ) => {
     console.log("Frontend API: id:", id, "name:", name, description, categories);
+    console.log("Type of collectionId:", typeof id);
     const config = {
         headers: { Authorization: `Bearer ${jwtToken}` },
     };
-    const response = await axios.put(
-        `${API_URL}v1/collection/${id}`,
+    const res = await axios.put(
+        `${API_URL}v1/collection/edit/${id}`,
         { name, description, categories },
         config
     );
-    return response.data;
+    return res.data;
 };
 
 export const useBatchDeleteCollectionMutation = () => {
