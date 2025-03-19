@@ -1,6 +1,6 @@
 import { useState, ChangeEvent } from "react"
 import { ReactComponent as Close } from "../assets/icons/close.svg"
-import { useParams } from "react-router-dom"
+import { useLocation, useParams } from "react-router-dom"
 import { getXlsxWithArtworksData } from "../api/dataExport"
 import { useQuery } from "react-query"
 import { getAllCategories } from "../api/categories"
@@ -11,10 +11,18 @@ type Props = {
     selectedArtworks: { [key: string]: boolean }
 }
 
+enum ExportExtent {
+    all = "all",
+    selected = "selected",
+    searchResult = "searchResult"
+}
+
 const ExportOptions = ({onClose, selectedArtworks}: Props) => {
+    const location = useLocation()
+    const searchParams = new URLSearchParams(location.search)
     const { collection } = useParams()
     const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
-    const [exportSelectedRecords, setExportSelectedRecords] = useState(false)
+    const [exportExtent, setExportExtent] = useState<ExportExtent>(ExportExtent.all)
     const [filename, setFilename] = useState(`${collection}.xlsx`);
 
     const { data: categoriesData } = useQuery({
@@ -34,8 +42,14 @@ const ExportOptions = ({onClose, selectedArtworks}: Props) => {
         });
     }
 
-    const handleExportSelectedRecordsChange = (event: ChangeEvent<HTMLInputElement>) => {
-        setExportSelectedRecords(event.target.value === "onlyChecked");
+    const handleExportExtentRadioInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+        if((event.target.value) === "onlyChecked") {
+            setExportExtent(ExportExtent.selected)
+        } else if ((event.target.value) === "onlySearchResult") {
+            setExportExtent(ExportExtent.searchResult)
+        } else {
+            setExportExtent(ExportExtent.all)
+        }
     }
 
     const handleSelectAll = () => setSelectedKeys(categoriesData.categories);
@@ -120,9 +134,19 @@ const ExportOptions = ({onClose, selectedArtworks}: Props) => {
                                             id="onlyChecked"
                                             name="onlyChecked"
                                             value="onlyChecked"
-                                            onChange={handleExportSelectedRecordsChange}
-                                            checked={exportSelectedRecords}/>
+                                            onChange={handleExportExtentRadioInputChange}
+                                            checked={exportExtent === ExportExtent.selected}/>
                                         <label> Eksportuj metadane zaznaczonych utworów</label>
+                                    </span>
+                                    <span className="py-1">
+                                        <input
+                                            type="radio"
+                                            id="onlySearchResult"
+                                            name="onlySearchResult"
+                                            value="onlySearchResult"
+                                            onChange={handleExportExtentRadioInputChange}
+                                            checked={exportExtent === ExportExtent.searchResult}/>
+                                        <label> Eksportuj wyniki wyszukiwania</label>
                                     </span>
                                     <span className="py-1">
                                         <input 
@@ -130,10 +154,10 @@ const ExportOptions = ({onClose, selectedArtworks}: Props) => {
                                             id="exportAll"
                                             name="exportAll"
                                             value="exportAll"
-                                            onChange={handleExportSelectedRecordsChange}
-                                            checked={!exportSelectedRecords}/>
+                                            onChange={handleExportExtentRadioInputChange}
+                                            checked={exportExtent === ExportExtent.all}/>
                                         <label> Eksportuj metadane wszystkich utworów</label>
-                                    </span>  
+                                    </span>
                             </div>
                             <div className="flex flex-row space-x-2 text-sm px-4 py-2">
                                 <label className="px-1 py-1">
@@ -152,9 +176,10 @@ const ExportOptions = ({onClose, selectedArtworks}: Props) => {
                                     type="submit"
                                     onClick={() => getXlsxWithArtworksData(
                                         collection as string, 
-                                        selectedKeys, 
-                                        selectedArtworks, 
-                                        exportSelectedRecords, 
+                                        selectedKeys,
+                                        exportExtent,
+                                        selectedArtworks,
+                                        searchParams,      
                                         filename)}
                                 >
                                     Eksportuj metadane
