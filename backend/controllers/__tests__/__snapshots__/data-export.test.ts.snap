@@ -2,6 +2,10 @@
 
 exports[`data-export controller GET endpoints getXlsxWithArtworksData should respond with status 200 and correct body - export all artworks from collection 1`] = `{}`;
 
+exports[`data-export controller GET endpoints getXlsxWithArtworksData should respond with status 200 and correct body - export artworks advanced search result from collection 1`] = `{}`;
+
+exports[`data-export controller GET endpoints getXlsxWithArtworksData should respond with status 200 and correct body - export artworks quicksearch result from collection 1`] = `{}`;
+
 exports[`data-export controller GET endpoints getXlsxWithArtworksData should respond with status 200 and correct body - export selected artworks from collection 1`] = `{}`;
 
 exports[`data-export controller GET endpoints getXlsxWithArtworksData should respond with status 200 and correct body - req.query.columnNames is of type string (not Array<string>) 1`] = `{}`;
