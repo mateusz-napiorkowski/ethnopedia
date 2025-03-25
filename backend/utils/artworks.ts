@@ -53,10 +53,11 @@ const constructAdvSearchSubcategoriesFilter = (searchRules: Array<Array<string>>
     return subcategoryFilter
 }
 
-const getOnlySearchRulesArray = (reqQuery: any) => {
+const getOnlySearchRulesArray = (reqQuery: any, forArtworkPage = true) => {
     let rulesArray: any = []
+    const keywordsToSkip = forArtworkPage ? ["page", "pageSize", "sortOrder", "search"] : ["columnNames", "selectedArtworks", "exportExtent"]
     for(const categoryName in reqQuery) {
-        if(!["page", "pageSize", "sortOrder", "search"].includes(categoryName)) {
+        if(!keywordsToSkip.includes(categoryName)) {
             rulesArray.push([categoryName, reqQuery[categoryName]])
             const categoryNameSplitByDot = categoryName.split('.')
             while(categoryNameSplitByDot.length !== 1) {
@@ -70,8 +71,8 @@ const getOnlySearchRulesArray = (reqQuery: any) => {
     return rulesArray
 }
 
-export const constructAdvSearchFilter = (requestQuery: any, collectionName: string) => {
-    const searchRules = getOnlySearchRulesArray(requestQuery)
+export const constructAdvSearchFilter = (requestQuery: any, collectionName: string, forArtworkPage = true) => {
+    const searchRules = getOnlySearchRulesArray(requestQuery, forArtworkPage)
 
     const queryFilter: any = {
         collectionName: collectionName,

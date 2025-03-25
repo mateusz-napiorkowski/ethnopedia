@@ -1,7 +1,13 @@
 import axios from "axios"
 import { API_URL } from "../config"
 
-export const getXlsxWithArtworksData = async (collectionName: string, keysToInclude: Array<string>, selectedArtworksIds: { [key: string]: boolean }, exportSelectedRecords: boolean, filename: string) => {
+enum ExportExtent {
+    all = "all",
+    selected = "selected",
+    searchResult = "searchResult"
+}
+
+export const getXlsxWithArtworksData = async (collectionName: string, keysToInclude: Array<string>, exportExtent: ExportExtent, selectedArtworksIds: { [key: string]: boolean }, searchParams: URLSearchParams, filename: string) => {
     const params = new URLSearchParams();
     keysToInclude.forEach((value, index) => { 
         params.append(`columnNames`, value); 
@@ -9,7 +15,10 @@ export const getXlsxWithArtworksData = async (collectionName: string, keysToIncl
     for(const v in selectedArtworksIds) {
         params.append(`selectedArtworks`, v);
     }
-    params.append(`exportSelectedRecords`, exportSelectedRecords.toString())
+    params.append(`exportExtent`, exportExtent.toString())
+    for(const [key, value] of searchParams.entries()) {
+        params.append(key, value);
+    }
     return await axios({
         url: `${API_URL}v1/dataExport/${collectionName}`,
         method: 'GET',

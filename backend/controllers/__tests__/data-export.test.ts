@@ -13,6 +13,13 @@ jest.mock("../../utils/categories", () => ({
     getAllCategories: () => mockGetAllCategories(),
 }))
 
+const mockConstructAdvSearchFilter = jest.fn()
+const mockConstructQuickSearchFilter = jest.fn()
+jest.mock("../../utils/artworks", () => ({
+    constructAdvSearchFilter: () => mockConstructAdvSearchFilter(),
+    constructQuickSearchFilter: () => mockConstructQuickSearchFilter()
+}))
+
 const mockFillRow = jest.fn()
 jest.mock("../../utils/data-export", () => ({
     fillRow: () => mockFillRow()
@@ -100,7 +107,9 @@ describe('data-export controller', () => {
                     testName: "export all artworks from collection",
                     columnNamesQuery: '&columnNames=Title&columnNames=Year',
                     selectedArtworksQuery: undefined,
-                    exportSelectedRecordsQuery: '&exportSelectedRecords=false',
+                    exportExtentQuery: '&exportExtent=all',
+                    searchQuery: undefined,
+                    quickSearchCalls: 0, advSearchCalls: 0,
                     find: () => {return {exec: () => Promise.resolve([
                         {
                             _id: "66f3829cfaa77054d286dbe8",
@@ -117,7 +126,65 @@ describe('data-export controller', () => {
                     testName: "export selected artworks from collection",
                     columnNamesQuery: '&columnNames=Title&columnNames=Year',
                     selectedArtworksQuery: '&selectedArtworks=66faa0e88b8813759f44caf4&selectedArtworks=66fbb0e88b8813759f44cae3',
-                    exportSelectedRecordsQuery: '&exportSelectedRecords=true',
+                    exportExtentQuery: '&exportExtent=selected',
+                    searchQuery: undefined,
+                    quickSearchCalls: 0, advSearchCalls: 0,
+                    find: () => {return {exec: () => Promise.resolve([
+                        {
+                            _id: "66faa0e88b8813759f44caf4",
+                            categories: [ { name: 'Title', value: 'An artwork title', subcategories: [] },
+                                { name: 'Year', value: '1410', subcategories: [] } ],
+                            collectionName: 'collection',
+                            __v: 0,
+                            createdAt: '2024-09-25T03:25:16.376Z',
+                            updatedAt: '2024-09-25T03:25:16.376Z'
+                        },
+                        {
+                            _id: "66fbb0e88b8813759f44cae3",
+                            categories: [ { name: 'Title2', value: 'An artwork title2', subcategories: [] },
+                                { name: 'Year', value: '1410', subcategories: [] } ],
+                            collectionName: 'collection',
+                            __v: 0,
+                            createdAt: '2024-09-25T03:25:16.376Z',
+                            updatedAt: '2024-09-25T03:25:16.376Z'
+                        },
+                        ])}}
+                },
+                {
+                    testName: "export artworks quicksearch result from collection",
+                    columnNamesQuery: '&columnNames=Title&columnNames=Year',
+                    selectedArtworksQuery: undefined,
+                    exportExtentQuery: '&exportExtent=searchResult',
+                    searchQuery: '&searchText=1410',
+                    quickSearchCalls: 1, advSearchCalls: 0,
+                    find: () => {return {exec: () => Promise.resolve([
+                        {
+                            _id: "66faa0e88b8813759f44caf4",
+                            categories: [ { name: 'Title', value: 'An artwork title', subcategories: [] },
+                                { name: 'Year', value: '1410', subcategories: [] } ],
+                            collectionName: 'collection',
+                            __v: 0,
+                            createdAt: '2024-09-25T03:25:16.376Z',
+                            updatedAt: '2024-09-25T03:25:16.376Z'
+                        },
+                        {
+                            _id: "66fbb0e88b8813759f44cae3",
+                            categories: [ { name: 'Title2', value: 'An artwork title2', subcategories: [] },
+                                { name: 'Year', value: '1410', subcategories: [] } ],
+                            collectionName: 'collection',
+                            __v: 0,
+                            createdAt: '2024-09-25T03:25:16.376Z',
+                            updatedAt: '2024-09-25T03:25:16.376Z'
+                        },
+                        ])}}
+                },
+                {
+                    testName: "export artworks advanced search result from collection",
+                    columnNamesQuery: '&columnNames=Title&columnNames=Year',
+                    selectedArtworksQuery: undefined,
+                    exportExtentQuery: '&exportExtent=searchResult',
+                    searchQuery: '&Year=1410',
+                    quickSearchCalls: 0, advSearchCalls: 1,
                     find: () => {return {exec: () => Promise.resolve([
                         {
                             _id: "66faa0e88b8813759f44caf4",
@@ -143,7 +210,9 @@ describe('data-export controller', () => {
                     testName: "req.query.columnNames is of type string (not Array<string>)",
                     columnNamesQuery: '&columnNames=Title',
                     selectedArtworksQuery: '&selectedArtworks=66faa0e88b8813759f44caf4&selectedArtworks=66fbb0e88b8813759f44cae3',
-                    exportSelectedRecordsQuery: '&exportSelectedRecords=true',
+                    exportExtentQuery: '&exportExtent=selected',
+                    searchQuery: undefined,
+                    quickSearchCalls: 0, advSearchCalls: 0,
                     find: () => {return {exec: () => Promise.resolve([
                         {
                             _id: "66faa0e88b8813759f44caf4",
@@ -166,20 +235,23 @@ describe('data-export controller', () => {
                         ])}}
                 },
             ])(`getXlsxWithArtworksData should respond with status 200 and correct body - $testName`,
-                    async ({ columnNamesQuery, selectedArtworksQuery, exportSelectedRecordsQuery, find}) => {
+                    async ({ columnNamesQuery, selectedArtworksQuery, exportExtentQuery, searchQuery, quickSearchCalls, advSearchCalls, find}) => {
                         mockFind.mockImplementation(find)
                         mockFillRow.mockImplementation(() => {})
                         
                         let queryString = '/collection?'
                         if (columnNamesQuery) queryString += columnNamesQuery
                         if (selectedArtworksQuery) queryString += selectedArtworksQuery
-                        if (exportSelectedRecordsQuery) queryString += exportSelectedRecordsQuery
+                        if (exportExtentQuery) queryString += exportExtentQuery
+                        if (searchQuery) queryString += searchQuery
                         const res = await request(app)
                         .get(queryString)
                         .set('Accept', 'application/json')
     
                         expect(res.status).toBe(200)
                         expect(res.body).toMatchSnapshot()
+                        expect(mockConstructQuickSearchFilter).toHaveBeenCalledTimes(quickSearchCalls)
+                        expect(mockConstructAdvSearchFilter).toHaveBeenCalledTimes(advSearchCalls)
                     }
                 )
 
@@ -190,7 +262,7 @@ describe('data-export controller', () => {
                 statusCode: 400, error: 'Request is missing query params',
                 columnNamesQuery: undefined,
                 selectedArtworksQuery: '&selectedArtworks=66faa0e88b8813759f44caf4&selectedArtworks=66fbb0e88b8813759f44cae3',
-                exportSelectedRecordsQuery: '&exportSelectedRecords=true',
+                exportExtentQuery: '&exportExtent=selected',
                 find: () => {throw new Error("")},
                 fillRow: () => {}
             },
@@ -198,7 +270,7 @@ describe('data-export controller', () => {
                 statusCode: 400, error: 'Request is missing query params',
                 columnNamesQuery: '&columnNames=Title&columnNames=Year',
                 selectedArtworksQuery: '&selectedArtworks=66faa0e88b8813759f44caf4&selectedArtworks=66fbb0e88b8813759f44cae3',
-                exportSelectedRecordsQuery: undefined,
+                exportExtentQuery: undefined,
                 find: () => {throw new Error("")},
                 fillRow: () => {}
             },
@@ -206,7 +278,7 @@ describe('data-export controller', () => {
                 statusCode: 400, error: 'Request is missing query params',
                 columnNamesQuery: '&columnNames=Title&columnNames=Year',
                 selectedArtworksQuery: undefined,
-                exportSelectedRecordsQuery: '&exportSelectedRecords=true',
+                exportExtentQuery: '&exportExtent=selected',
                 find: () => {throw new Error("")},
                 fillRow: () => {}
             },
@@ -214,7 +286,7 @@ describe('data-export controller', () => {
                 statusCode: 503, error: 'Database unavailable',
                 columnNamesQuery: '&columnNames=Title&columnNames=Year',
                 selectedArtworksQuery: undefined,
-                exportSelectedRecordsQuery: '&exportSelectedRecords=false',
+                exportExtentQuery: '&exportExtent=all',
                 find: () => {throw Error("")},
                 fillRow: () => {}
             },
@@ -222,7 +294,7 @@ describe('data-export controller', () => {
                 statusCode: 500, error: 'Error preparing data for xlsx file',
                 columnNamesQuery: '&columnNames=Title&columnNames=Year',
                 selectedArtworksQuery: undefined,
-                exportSelectedRecordsQuery: '&exportSelectedRecords=false',
+                exportExtentQuery: '&exportExtent=all',
                 find: () => {return {exec: () => Promise.resolve([
                     {
                         _id: "66f3829cfaa77054d286dbe8",
@@ -240,7 +312,15 @@ describe('data-export controller', () => {
                 statusCode: 503, error: 'Database unavailable',
                 columnNamesQuery: '&columnNames=Title&columnNames=Year',
                 selectedArtworksQuery: '&selectedArtworks=66faa0e88b8813759f44caf4&selectedArtworks=66fbb0e88b8813759f44cae3',
-                exportSelectedRecordsQuery: '&exportSelectedRecords=true',
+                exportExtentQuery: '&exportExtent=selected',
+                find: () => {throw Error("")},
+                fillRow: () => {}
+            },
+            {
+                statusCode: 503, error: 'Database unavailable',
+                columnNamesQuery: '&columnNames=Title&columnNames=Year',
+                selectedArtworksQuery: '&selectedArtworks=66faa0e88b8813759f44caf4&selectedArtworks=66fbb0e88b8813759f44cae3',
+                exportExtentQuery: '&exportExtent=searchResult&searchText=Year',
                 find: () => {throw Error("")},
                 fillRow: () => {}
             },
@@ -248,7 +328,7 @@ describe('data-export controller', () => {
                 statusCode: 500, error: 'Error preparing data for xlsx file',
                 columnNamesQuery: '&columnNames=Title&columnNames=Year',
                 selectedArtworksQuery: '&selectedArtworks=66faa0e88b8813759f44caf4&selectedArtworks=66fbb0e88b8813759f44cae3',
-                exportSelectedRecordsQuery: '&exportSelectedRecords=true',
+                exportExtentQuery: '&exportExtent=selected',
                 find: () => {return {exec: () => Promise.resolve([
                     {
                         _id: "66faa0e88b8813759f44caf4",
@@ -272,14 +352,14 @@ describe('data-export controller', () => {
                 fillRow: () => {throw new Error("Error preparing data for xlsx file")}
             },
         ])(`getXlsxWithArtworksData should respond with status $statusCode and correct error message`,
-                async ({ statusCode, error, columnNamesQuery, selectedArtworksQuery, exportSelectedRecordsQuery, find, fillRow}) => {
+                async ({ statusCode, error, columnNamesQuery, selectedArtworksQuery, exportExtentQuery, find, fillRow}) => {
                     mockFind.mockImplementation(find)
                     mockFillRow.mockImplementation(fillRow)
                     
                     let queryString = '/collection?'
                     if (columnNamesQuery) queryString += columnNamesQuery
                     if (selectedArtworksQuery) queryString += selectedArtworksQuery
-                    if (exportSelectedRecordsQuery) queryString += exportSelectedRecordsQuery
+                    if (exportExtentQuery) queryString += exportExtentQuery
                     const res = await request(app)
                     .get(queryString)
                     .set('Accept', 'application/json')
