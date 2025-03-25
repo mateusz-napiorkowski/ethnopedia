@@ -1,93 +1,108 @@
-import React from "react"
-import { ReactComponent as EditIcon } from "../../assets/icons/edit.svg"
-import { ReactComponent as TrashBinIcon } from "../../assets/icons/trashBin.svg"
-import { useUser } from "../../providers/UserProvider"
+import React, { useState } from "react";
+import { ReactComponent as Expand } from "../../assets/icons/plus.svg";
+import { ReactComponent as Fold } from "../../assets/icons/minus.svg";
+import { ReactComponent as EditIcon } from "../../assets/icons/edit.svg";
+import { ReactComponent as TrashBinIcon } from "../../assets/icons/trashBin.svg";
+import { useUser } from "../../providers/UserProvider";
+
+interface Category {
+    name: string;
+    value?: string;
+    subcategories?: Category[];
+}
 
 interface ArtworkDetailsProps {
-    Tytuł: string;
-    Artyści: string;
-    Rok: string;
     collectionName: string;
-    detailsToShow: { [key: string]: any };
+    detailsToShow: { categories: Category[];};
     handleEditClick: () => void;
     setShowDeleteArtworkWarning: (value: boolean) => void;
 }
 
-interface SublistProps {
-    subcategories: any;
-    depth: number;
-}
-
 const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
-                                                           Tytuł,
-                                                           Artyści,
-                                                           Rok,
                                                            collectionName,
                                                            detailsToShow,
                                                            handleEditClick,
                                                            setShowDeleteArtworkWarning,
                                                        }) => {
-    
     const { jwtToken } = useUser();
-    const bulletClassnames = ["px-4 list-[circle]", "px-4 list-[square]", "px-4 list-[disc]"]
+    const [expanded, setExpanded] = useState<{ [key: string]: boolean }>({});
 
-    const Sublist: React.FC<SublistProps> = ({subcategories, depth}) => {
-        return <ul className={bulletClassnames[depth % 3]}>
-            {subcategories.map((category: any) => {
-                return <li>{category.name}: {category.value}
-                    { category.subcategories.length > 0 && <Sublist subcategories={category.subcategories} depth={depth+1}/> }          
+    const toggle = (key: string) => {
+        setExpanded(prev => ({ ...prev, [key]: !prev[key] }));
+    };
+
+    const renderTree = (categories: Category[], level = 0) => (
+        <ul className="ml-0">
+            {categories.map((category) => (
+                <li
+                    key={category.name}
+                    style={{ marginLeft: `${(level + 1) * 16}px` }}
+                    // className="py-2 border border-gray-200 rounded mb-2 bg-gray-50"
+                    className="mb-2 bg-gray-50"
+                >
+                    <div className="flex justify-between items-center p-2">
+                      <span>
+                          {category.name}: {category.value}
+                      </span>
+                        {category.subcategories && category.subcategories.length > 0 && (
+                            <button
+                                onClick={() => toggle(category.name)}
+                                className="text-blue-500 hover:text-blue-700 transition-colors p-1"
+                            >
+                                {expanded[category.name] ? (
+                                    <Fold className="w-4 h-4" />
+                                ) : (
+                                    <Expand className="w-4 h-4" />
+                                )}
+                            </button>
+                        )}
+                    </div>
+                    {expanded[category.name] && category.subcategories && (
+                        <div>
+                            {renderTree(category.subcategories, level + 1)}
+                        </div>
+                    )}
                 </li>
-            })}
+            ))}
         </ul>
-    } 
+    );
+
 
     return (
-        <div className="flex flex-row">
-            <div className="mt-2 flex-2 " data-testid="main-categories-container">
-                <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-2">{Tytuł}</h1>
-                <p className="text-xl text-gray-600 dark:text-gray-400 mt-1">Artyści: {Artyści}</p>
-                <p className="text-lg text-gray-500 dark:text-gray-300 mt-1">Rok: {Rok}</p>
-                <p className="text-lg text-gray-500 dark:text-gray-300 mt-1">Kolekcja: {collectionName}</p>
-                {detailsToShow.categories && 
-                    <ul data-testid="details-list" className={bulletClassnames[0]}>
-                        {detailsToShow.categories.map((category: any) => {
-                            return <li>{category.name}: {category.value}
-                                <Sublist subcategories={category.subcategories} depth={1}/>
-                            </li>
-                        })}
-                    </ul>
-                }
+        <div className="max-w-3xl mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+            {/* Nagłówek */}
+            <div className="mb-4 border-b pb-2">
+                <p className="text-lg text-gray-500 dark:text-gray-300">
+                    Kolekcja: {collectionName}
+                </p>
             </div>
-
-            <div className="flex-1 mt-4 flex justify-end text-gray-700">
+            {/* Drzewo kategorii */}
+            <div>{detailsToShow.categories && renderTree(detailsToShow.categories)}</div>
+            {/* Przyciski akcji */}
+            <div className="mt-6 flex justify-end space-x-4">
                 <button
-                    disabled={jwtToken ? false : true} 
-                    className={jwtToken ? 
-                        "text-lg font-semibold h-fit mr-4" : 
-                        "text-lg font-semibold h-fit mr-4 bg-gray-100 hover:bg-gray-100"
-                    }
+                    disabled={!jwtToken}
                     onClick={handleEditClick}
+                    className={`flex items-center px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors ${
+                        !jwtToken ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
                 >
-                    <span className="flex-row flex items-center">
-                        <EditIcon />
-                        <p className="ml-2">Edytuj</p>
-                    </span>
+                    <EditIcon className="w-5 h-5" />
+                    <span className="ml-2">Edytuj</span>
                 </button>
                 <button
-                    disabled={jwtToken ? false : true}
-                    className={jwtToken ?
-                        "text-lg font-semibold h-fit border-red-700 text-red-700 bg-red-50 hover:bg-white" : 
-                        "text-lg font-semibold h-fit border-red-700 text-red-700 bg-red-50 hover:bg-red-50"
-                    }
-                    onClick={() => setShowDeleteArtworkWarning(true)}  //TODO jakiś warning w consoli w przeglądarce?
+                    disabled={!jwtToken}
+                    onClick={() => setShowDeleteArtworkWarning(true)}
+                    className={`flex items-center px-4 py-2 rounded border border-red-700 text-red-700 bg-red-50 hover:bg-red-100 transition-colors ${
+                        !jwtToken ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
                 >
-                    <span className="flex-row flex items-center">
-                        <TrashBinIcon />
-                        <p className="ml-2">Usuń</p>
-                    </span>
+                    <TrashBinIcon className="w-5 h-5" />
+                    <span className="ml-2">Usuń</span>
                 </button>
             </div>
         </div>
-    )
-}
-export default ArtworkDetails
+    );
+};
+
+export default ArtworkDetails;

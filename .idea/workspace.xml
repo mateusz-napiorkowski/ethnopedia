@@ -6,13 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="2d029bd7-82b7-4397-bf3e-7fcfe7cda461" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/controllers/collections.ts" beforeDir="false" afterPath="$PROJECT_DIR$/backend/controllers/collections.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/routes/collection.ts" beforeDir="false" afterPath="$PROJECT_DIR$/backend/routes/collection.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/api/collections.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/collections.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/search/AdvancedSearch.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/search/AdvancedSearch.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/artworks/ArtworksListPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/artworks/ArtworksListPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/collections/CollectionsPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/collections/CollectionsPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/collections/CreateCollectionPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/collections/CreateCollectionPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/assets/icons/angleDown.svg" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/assets/icons/angleDown.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/artwork/ArtworkDetails.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/artwork/ArtworkDetails.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/artworks/ArtworkPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/artworks/ArtworkPage.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -76,11 +72,11 @@
       <recent name="C:\Users\wikto\OneDrive\Dokumenty\PROJEKTY\PP\ethnopedia\backend" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\wikto\OneDrive\Dokumenty\PROJEKTY\PP\ethnopedia\frontend\src\assets\icons" />
       <recent name="C:\Users\wikto\OneDrive\Dokumenty\PROJEKTY\PP\ethnopedia\frontend\src\pages\__tests__" />
       <recent name="C:\Users\wikto\OneDrive\Dokumenty\PROJEKTY\PP\ethnopedia\frontend\src\pages" />
       <recent name="C:\Users\wikto\OneDrive\Dokumenty\PROJEKTY\PP\ethnopedia\frontend\src\components\artwork" />
       <recent name="C:\Users\wikto\OneDrive\Dokumenty\PROJEKTY\PP\ethnopedia\frontend\src\pages\collections\__tests__" />
-      <recent name="C:\Users\wikto\OneDrive\Dokumenty\PROJEKTY\PP\ethnopedia\frontend\src\pages\artworks\__tests__" />
     </key>
   </component>
   <component name="RunManager" selected="Jest.CollectionsPage.renders the CollectionsPage correctly">
@@ -192,7 +188,10 @@
       <workItem from="1742214668101" duration="12967000" />
       <workItem from="1742296207417" duration="8033000" />
       <workItem from="1742313989942" duration="5540000" />
-      <workItem from="1742387018204" duration="7646000" />
+      <workItem from="1742387018204" duration="10008000" />
+      <workItem from="1742589203537" duration="618000" />
+      <workItem from="1742895340012" duration="10134000" />
+      <workItem from="1742922625528" duration="323000" />
     </task>
     <servers />
   </component>
