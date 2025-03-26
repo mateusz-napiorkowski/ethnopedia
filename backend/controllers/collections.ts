@@ -151,15 +151,10 @@ export const deleteCollections = authAsyncWrapper(async (req: Request, res: Resp
 
 
 export const updateCollection = authAsyncWrapper(async (req: Request, res: Response) => {
-    const collectionId = req.params.id; // Id kolekcji do zaktualizowania
-    const { name, description, categories } = req.body; // Dane do zaktualizowania
-
-    console.log("Id kolekcji do aktualizacji:", collectionId);
-    console.log("Type of collectionId:", typeof collectionId);
-    console.log("Otrzymane dane do aktualizacji:", req.body);
+    const collectionId = req.params.id;
+    const { name, description, categories } = req.body;
 
     try {
-        // Walidacja danych wejściowych
         if (!name || !description || !categories || !hasValidCategoryFormat(categories)) {
             throw new Error("Incorrect request body provided");
         }
@@ -167,21 +162,32 @@ export const updateCollection = authAsyncWrapper(async (req: Request, res: Respo
         const session = await mongoose.startSession();
 
         await session.withTransaction(async (session: ClientSession) => {
-            // Znajdujemy kolekcję według id
             const collection = await CollectionCollection.findById(collectionId, null, { session }).exec();
             if (!collection) {
                 throw new Error("Collection not found");
             }
 
-            // Aktualizujemy dane kolekcji
+            const artworks = await Artwork.find({ collectionName: collection.name }, null, { session });
+            await Promise.all(artworks.map(async (artwork: any) => {
+                artwork.collectionName = name;
+                const newArtworkCategories: any = []
+                for(const [categoryIndex, category] of categories.entries()) {
+                    if(!artwork.categories[categoryIndex]) {
+                        newArtworkCategories.push({name: category.name, value: "", subcategories: []})
+                    } else {
+                        newArtworkCategories.push({name: category.name, value: artwork.categories[categoryIndex].value, subcategories: artwork.categories[categoryIndex].subcategories})
+                    }
+                }
+                artwork.categories = newArtworkCategories
+                await artwork.save({ session });
+            }));
+
             collection.name = name;
             collection.description = description;
             collection.categories = categories;
 
-            // Zapisujemy zmiany
             await collection.save({ session });
 
-            // Zwracamy zaktualizowaną kolekcję
             res.status(200).json(collection);
         });
 
@@ -189,8 +195,6 @@ export const updateCollection = authAsyncWrapper(async (req: Request, res: Respo
     } catch (error) {
         const err = error as Error;
         console.error(error);
-
-        // Obsługa błędów
         if (err.message === "Incorrect request body provided") {
             res.status(400).json({ error: err.message });
         } else if (err.message === "Collection not found") {
