@@ -32,13 +32,13 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
     };
 
     const renderTree = (categories: Category[], level = 0) => (
-        <ul className="ml-0">
+        <ul>
             {categories.map((category) => (
                 <li
                     key={category.name}
-                    style={{ marginLeft: `${(level + 1) * 16}px` }}
+                    style={{ marginLeft: `${level * 16}px` }}
                     // className="py-2 border border-gray-200 rounded mb-2 bg-gray-50"
-                    className="mb-2 bg-gray-50"
+                    className="mb-2 bg-gray-50 dark:bg-gray-700"
                 >
                     <div className="flex justify-between items-center p-2">
                       <span>
@@ -79,7 +79,7 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
             {/* Drzewo kategorii */}
             <div>{detailsToShow.categories && renderTree(detailsToShow.categories)}</div>
             {/* Przyciski akcji */}
-            <div className="mt-6 flex justify-end space-x-4">
+            <div className="mt-10 flex justify-end space-x-4">
                 <button
                     disabled={!jwtToken}
                     onClick={handleEditClick}
