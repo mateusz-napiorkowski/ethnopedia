@@ -61,7 +61,7 @@ export const getAllCollections = async (req: Request, res: Response) => {
 
 export const getCollection = async (req: Request, res: Response) => {
     try {
-        const collectionName = Buffer.from(req.params.name, 'latin1').toString("utf-8")
+        const collectionName = req.params.name
         const collection = await CollectionCollection.findOne({ name: collectionName }).exec()
         if (!collection) {
             throw new Error("Collection not found")

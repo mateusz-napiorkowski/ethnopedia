@@ -23,7 +23,9 @@ export const getAllCollections = async (page: number = 1, pageSize: number = 10)
 }
 
 export const getCollection = async (id: string) => {
-    const response = await axios.get(`${API_URL}v1/collection/${id}`)
+    const response = await axios.get(`${API_URL}v1/collection/${id}`, {headers: {
+        'Content-Type': 'application/json; charset=UTF-8'
+    }})
     return response.data as Collection
 }
 
