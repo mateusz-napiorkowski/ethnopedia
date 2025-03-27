@@ -3,7 +3,10 @@ import { getAllCategories } from "../utils/categories"
 
 export const getCollectionCategories = async (req: Request, res: Response) => {
     try {
+        req.setEncoding("utf-8")
         const collectionName = req.params.collectionName
+        console.log("categories collection name:")
+        console.log(collectionName)
         const categories = await getAllCategories(collectionName)
         res.status(200).json({categories: categories})
     } catch (error) {
