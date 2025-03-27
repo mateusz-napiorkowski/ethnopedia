@@ -17,6 +17,11 @@ app.use(cors())
 app.use(express.urlencoded({ extended: true })); 
 app.use(express.json()); 
 
+app.use((req, res, next) => {
+    console.log(req.url)
+    next()
+})
+
 app.use("/api/v1/auth", auth)
 app.use("/api/v1/artworks", artworks)
 app.use("/api/v1/collection", collections)

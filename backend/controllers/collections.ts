@@ -61,12 +61,7 @@ export const getAllCollections = async (req: Request, res: Response) => {
 
 export const getCollection = async (req: Request, res: Response) => {
     try {
-        const encodedtoutf8 = req.setEncoding("utf-8")
         const collectionName = req.params.name
-        console.log("get collection collection name:")
-        console.log(collectionName)
-        console.log("encoded:")
-        console.log(encodedtoutf8.params)
         const collection = await CollectionCollection.findOne({ name: collectionName }).exec()
         if (!collection) {
             throw new Error("Collection not found")
