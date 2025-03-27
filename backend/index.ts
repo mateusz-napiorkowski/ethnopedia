@@ -17,12 +17,6 @@ app.use(cors())
 app.use(express.urlencoded({ extended: true })); 
 app.use(express.json()); 
 
-// Force UTF-8 for incoming requests
-app.use((req, res, next) => {
-    req.url = decodeURIComponent(req.url);
-    next();
-});
-
 app.use("/api/v1/auth", auth)
 app.use("/api/v1/artworks", artworks)
 app.use("/api/v1/collection", collections)
