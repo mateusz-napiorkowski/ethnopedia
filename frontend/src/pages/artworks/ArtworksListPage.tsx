@@ -383,6 +383,7 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                             customOptions={customOptions}     // wcześniej zdefiniowana tablica z opcjami specjalnymi i zwykłymi
                             formatOptionLabel={formatOptionLabel} // funkcja wyróżniająca opcje specjalne
                         />
+                        <p className="pl-2 pr-2 text-sm">Sortuj według:</p>
                         {sortOptions && (
                             <SortOptions
                                 options={sortOptions}
