@@ -18,7 +18,7 @@ import Navigation from "../../components/Navigation";
 import Pagination from "../../components/Pagination";
 import { useUser } from "../../providers/UserProvider";
 import { getAllCategories } from "../../api/categories";
-import Select from "react-select";
+import DisplayCategoriesSelect, { Option } from "../../components/DisplayCategoriesSelect";
 import { ReactComponent as EditIcon } from "../../assets/icons/edit.svg"
 
 const ArtworksListPage = ({ pageSize = 10 }) => {
@@ -75,11 +75,29 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
         queryFn: () => getCollection(collection as string),
     });
 
+    const formatOptionLabel = (option: Option, { context }: { context: string }) => {
+        if (context === "menu") {
+            if (option.value === "select_all" || option.value === "deselect_all") {
+                return (
+                    <div
+                        className="text-gray-500 dark:text-gray-300 underline"
+                    >
+                        {option.label}
+                    </div>
+                );
+            }
+        }
+        return option.label;
+    };
+
+
+
     const { data: categoriesData } = useQuery({
         queryKey: ["allCategories", collection],
         queryFn: () => getAllCategories(collection as string),
         enabled: !!collection,
     });
+
 
     const sortOptions = categoriesData?.categories?.flatMap((category: string) => [
         { value: `${category}-asc`, label: `${category} rosnąco` },
@@ -208,13 +226,24 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
         </div>
     ));
 
-    // Przygotowanie opcji dla multiselect (categoriesData.categories)
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const categoryOptions =
+    type Option = {
+        value: string;
+        label: string;
+    };
+
+    // Przygotowanie opcji z kategorii
+    const categoryOptions: Option[] =
         categoriesData?.categories?.map((cat: string) => ({
             value: cat,
             label: cat,
         })) || [];
+
+    // Dodanie opcji specjalnych na początku listy
+    const customOptions = [
+        { value: "select_all", label: "Zaznacz wszystkie" },
+        { value: "deselect_all", label: "Odznacz wszystkie" },
+        ...categoryOptions,
+    ];
 
     return (
         <><div data-testid="loaded-artwork-page-container">
@@ -327,9 +356,7 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                             </button>
                             <button
                                 disabled={
-                                    jwtToken && !Object.values(selectedArtworks).every((value) => value === false)
-                                        ? false
-                                        : true
+                                    !(jwtToken && !Object.values(selectedArtworks).every((value) => value === false))
                                 }
                                 className={`flex items-center justify-center dark:text-white hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2 dark:focus:ring-primary-800 font-semibold text-white ${
                                     jwtToken && !Object.values(selectedArtworks).every((value) => value === false)
@@ -348,34 +375,13 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                     {showImportOptions && <ImportOptions onClose={() => setShowImportOptions(false)} collectionData={collectionData}/>}
                     {showExportOptions && <ExportOptions onClose={() => setShowExportOptions(false)} selectedArtworks={selectedArtworks} />}
                     <div className="flex w-full md:w-auto pt-4 flex-row items-center">
-                        <p className="pr-2 text-sm">Wyświetl:</p>
-                        <Select
-                            isMulti
-                            options={
-                                categoriesData?.categories?.map((cat: string) => ({
-                                    value: cat,
-                                    label: cat,
-                                })) || []
-                            }
-                            value={selectedDisplayCategories.map((cat) => ({ value: cat, label: cat }))}
-                            onChange={(selectedOptions) =>
-                                setSelectedDisplayCategories(
-                                    selectedOptions ? selectedOptions.map((option) => option.value) : []
-                                )
-                            }
-                            styles={{
-                                control: (provided) => ({
-                                    ...provided,
-                                    minWidth: 250,
-                                    maxWidth: 250,
-                                    fontSize: "0.875rem",
-                                    border: "1px solid #D1D5DB",
-                                    borderRadius: "0.5rem",
-                                    cursor: "pointer",
-                                }),
-                                multiValue: (provided) => ({ ...provided, fontSize: "0.75rem" }),
-                            }}
-                            placeholder="Wybierz kategorie"
+                        <p className="pr-2 text-sm">Wyświetlane kategorie:</p>
+                        <DisplayCategoriesSelect
+                            selectedDisplayCategories={selectedDisplayCategories}
+                            setSelectedDisplayCategories={setSelectedDisplayCategories}
+                            categoryOptions={categoryOptions} // wcześniej zdefiniowana tablica opcji
+                            customOptions={customOptions}     // wcześniej zdefiniowana tablica z opcjami specjalnymi i zwykłymi
+                            formatOptionLabel={formatOptionLabel} // funkcja wyróżniająca opcje specjalne
                         />
                         {sortOptions && (
                             <SortOptions
