@@ -35,9 +35,9 @@ const getNestedCategories = ((prefix: string, subcategories: Array<artworkCatego
     return nestedCategories
 })
 
-export const getAllCategories = async (collectionName: string) => {
+export const getAllCategories = async (collectionId: string) => {
     try {
-        const collections = await CollectionCollection.find({name: collectionName}).exec()
+        const collections = await CollectionCollection.find({_id: collectionId}).exec()
         if(collections.length !== 1)
             throw new Error("Collection not found")
         const allCategories: Array<string> = []

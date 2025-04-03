@@ -185,7 +185,7 @@ const CollectionsPage = () => {
                                 if (Object.keys(checkedCollections).length === 1) {
                                     for (const key in fetchedData.collections) {
                                         if (fetchedData.collections[key].id === Object.keys(checkedCollections)[0]) {
-                                            getXlsxWithCollectionData(fetchedData.collections[key].name)
+                                            getXlsxWithCollectionData(fetchedData.collections[key].id)
                                             setExportErrorMessage("")
                                         }
                                     }
@@ -193,14 +193,14 @@ const CollectionsPage = () => {
                                     if (Object.keys(checkedCollections).length === 0) {
                                         setExportErrorMessage("Najpierw należy zaznaczyć kolekcję do wyeksportowania.")
                                     } else {
-                                        const checkedCollectionsNames = Object.keys(checkedCollections)
+                                        const checkedCollectionsIds = Object.keys(checkedCollections)
                                             .filter((checkedCollection) => checkedCollections[checkedCollection])
                                             .map((checkedCollection) => {
                                                 const collection = fetchedData.collections.find((col) => col.id === checkedCollection);
-                                                return collection!.name;
+                                                return collection!.id;
                                             })
-                                        for(const collectionName of checkedCollectionsNames) {
-                                            getXlsxWithCollectionData(collectionName)
+                                        for(const collectionId of checkedCollectionsIds) {
+                                            getXlsxWithCollectionData(collectionId)
                                         }
                                         setExportErrorMessage("")
                                     }
@@ -287,7 +287,7 @@ const CollectionsPage = () => {
                             <div
                                 key={collection.id}
                                 className="relative group px-4 py-3 bg-white dark:bg-gray-800 shadow-md rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                                onClick={() => navigate(`/collections/${collection.name}/artworks`)}
+                                onClick={() => navigate(`/collections/${collection.id}/artworks`)}
                             >
                                 {/* Checkbox - widoczny stale, jeśli zaznaczony, lub na hover gdy niezaznaczony */}
                                 <div

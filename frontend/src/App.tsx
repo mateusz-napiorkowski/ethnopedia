@@ -1,4 +1,3 @@
-import React from "react"
 import { Route, BrowserRouter, Routes } from "react-router-dom"
 import { QueryClient, QueryClientProvider } from "react-query"
 import LoginPage from "./pages/LoginPage"
@@ -20,13 +19,13 @@ const App = () => {
             <QueryClientProvider client={queryClient}>
                 <BrowserRouter basename="/ethnopedia">
                     <Routes>
-                        <Route path="/collections/:collection/artworks/:artworkId" element={<ArtworkPage />} />
-                        <Route path="/collections/:collection/create-artwork" element={<CreateArtwork />} />
-                        <Route path="/collections/:collection/artworks/:artworkId/edit-artwork" element={<CreateArtwork />} />
+                        <Route path="/collections/:collectionId/artworks/:artworkId" element={<ArtworkPage />} />
+                        <Route path="/collections/:collectionId/create-artwork" element={<CreateArtwork />} />
+                        <Route path="/collections/:collectionId/artworks/:artworkId/edit-artwork" element={<CreateArtwork />} />
                         <Route path="/create-collection" element={<CreateCollectionPage />} />
 
                         <Route path="/" element={<Home />} />
-                        <Route path="/collections/:collection/artworks" element={<Artworks />} />
+                        <Route path="/collections/:collectionId/artworks" element={<Artworks />} />
 
                         <Route path="/login" element={<LoginPage />} />
                         <Route path="/register" element={<RegisterPage />} />

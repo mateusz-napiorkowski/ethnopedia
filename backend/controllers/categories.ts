@@ -3,8 +3,8 @@ import { getAllCategories } from "../utils/categories"
 
 export const getCollectionCategories = async (req: Request, res: Response) => {
     try {
-        const collectionName = req.params.collectionName
-        const categories = await getAllCategories(collectionName)
+        const collectionId = req.params.collectionId
+        const categories = await getAllCategories(collectionId)
         res.status(200).json({categories: categories})
     } catch (error) {
         const err = error as Error

@@ -61,8 +61,8 @@ export const getAllCollections = async (req: Request, res: Response) => {
 
 export const getCollection = async (req: Request, res: Response) => {
     try {
-        const collectionName = req.params.name
-        const collection = await CollectionCollection.findOne({ name: collectionName }).exec()
+        const collectionId = req.params.collectionId
+        const collection = await CollectionCollection.findOne({ _id: collectionId }).exec()
         if (!collection) {
             throw new Error("Collection not found")
         }

@@ -4,10 +4,10 @@ import { ReactComponent as SearchLoopIcon } from "../../assets/icons/searchLoop.
 import { useNavigate } from "react-router-dom"
 
 interface SearchComponentProps {
-    collectionName: string;
+    collectionId: string;
 }
 
-const QuickSearch: React.FC<SearchComponentProps> = ({collectionName}) => {
+const QuickSearch: React.FC<SearchComponentProps> = ({collectionId}) => {
     const navigate = useNavigate()
 
     const handleSearch = (searchText: string) => {
@@ -16,7 +16,7 @@ const QuickSearch: React.FC<SearchComponentProps> = ({collectionName}) => {
 
     const formik = useFormik({
         initialValues: {
-            collectionName: collectionName,
+            collectionId: collectionId,
             searchText: "",
         },
         onSubmit: (values, { resetForm }) => {

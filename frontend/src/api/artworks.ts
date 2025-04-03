@@ -6,8 +6,8 @@ export const getArtwork = async (id: string) => {
         .then(res => res.data)
 }
 
-export const getArtworksForCollectionPage = async (collection: string, page: number, pageSize: number, sortOrder: string, searchText: string | null, queryParams: any) => {
-    return await axios.get(`${API_URL}v1/artworks/${collection}/artworks/${sortOrder}`, {
+export const getArtworksForCollectionPage = async (collectionId: string, page: number, pageSize: number, sortOrder: string, searchText: string | null, queryParams: any) => {
+    return await axios.get(`${API_URL}v1/artworks/${collectionId}/artworks/${sortOrder}`, {
         params: {
             page: page,
             pageSize: pageSize,

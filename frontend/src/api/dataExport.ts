@@ -7,7 +7,7 @@ enum ExportExtent {
     searchResult = "searchResult"
 }
 
-export const getXlsxWithArtworksData = async (collectionName: string, keysToInclude: Array<string>, exportExtent: ExportExtent, selectedArtworksIds: { [key: string]: boolean }, searchParams: URLSearchParams, filename: string) => {
+export const getXlsxWithArtworksData = async (collectionId: string, keysToInclude: Array<string>, exportExtent: ExportExtent, selectedArtworksIds: { [key: string]: boolean }, searchParams: URLSearchParams, filename: string) => {
     const params = new URLSearchParams();
     keysToInclude.forEach((value, index) => { 
         params.append(`columnNames`, value); 
@@ -20,7 +20,7 @@ export const getXlsxWithArtworksData = async (collectionName: string, keysToIncl
         params.append(key, value);
     }
     return await axios({
-        url: `${API_URL}v1/dataExport/${collectionName}`,
+        url: `${API_URL}v1/dataExport/${collectionId}`,
         method: 'GET',
         responseType: 'blob',
         params: params
@@ -41,10 +41,10 @@ export const getXlsxWithArtworksData = async (collectionName: string, keysToIncl
     });
 }
 
-export const getXlsxWithCollectionData = async (collectionName: string) => {
+export const getXlsxWithCollectionData = async (collectionId: string | undefined) => {
     const params = new URLSearchParams();
     return await axios({
-        url: `${API_URL}v1/dataExport/collection/${collectionName}`,
+        url: `${API_URL}v1/dataExport/collection/${collectionId}`,
         method: 'GET',
         responseType: 'blob',
         params: params
@@ -55,7 +55,7 @@ export const getXlsxWithCollectionData = async (collectionName: string) => {
         // create "a" HTML element with href to file & click
         const link = document.createElement('a');
         link.href = href;
-        link.setAttribute('download', `${collectionName}.xlsx`);
+        link.setAttribute('download', `${collectionId}.xlsx`);
         document.body.appendChild(link);
         link.click();
     

@@ -4,10 +4,16 @@ import Artwork from "../models/artwork";
 import { fillRow } from "../utils/data-export"
 import { getAllCategories } from "../utils/categories";
 import { constructAdvSearchFilter, constructQuickSearchFilter } from "../utils/artworks";
+import CollectionCollection from "../models/collection";
 
 export const getXlsxWithArtworksData = async (req: Request, res: Response) => {
     try {
-        const collectionName = req.params.collectionName
+        const collectionId = req.params.collectionId
+
+        //TODO refactor or handle errors
+        const collection = await CollectionCollection.findOne({_id: collectionId}).exec()
+        const collectionName = collection?.name as string
+
         const columnNames = typeof req.query.columnNames === "string" ? Array(req.query.columnNames) : req.query.columnNames as Array<string>
         const exportExtent = req.query.exportExtent
         
@@ -26,7 +32,7 @@ export const getXlsxWithArtworksData = async (req: Request, res: Response) => {
             records.forEach((record: any) => sheet.addRow(fillRow(columnNames, record.categories)))
         } else if(exportExtent === "searchResult") {
             const searchText = req.query.searchText
-            const queryFilter = searchText ? await constructQuickSearchFilter(searchText, collectionName) :
+            const queryFilter = searchText ? await constructQuickSearchFilter(searchText, collectionId, collectionName) :
                 await constructAdvSearchFilter(req.query, collectionName, false)
             const records = await Artwork.find(queryFilter).exec()
             records.forEach((record: any) => sheet.addRow(fillRow(columnNames, record.categories)))
@@ -67,11 +73,16 @@ export const getXlsxWithArtworksData = async (req: Request, res: Response) => {
 
 export const getXlsxWithCollectionData = async (req: Request, res: Response) => {
     try {
-        const collectionName = req.params.collectionName
+        const collectionId = req.params.collectionId
+
+        //TODO refactor or handle errors
+        const collection = await CollectionCollection.findOne({_id: collectionId}).exec()
+        const collectionName = collection?.name as string
+
         const workbook = new excelJS.Workbook()
         const sheet = workbook.addWorksheet(collectionName)
 
-        const columnNames = await getAllCategories(collectionName)
+        const columnNames = await getAllCategories(collectionId)
         sheet.columns = columnNames.map((name :string) => {return {header: name, key: name}})
         
         const records = await Artwork.find({collectionName: collectionName}).exec()
