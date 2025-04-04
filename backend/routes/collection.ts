@@ -10,7 +10,7 @@ import {
 const router = express.Router()
 
 router.route("/").get(getAllCollections)
-router.route("/:name").get(getCollection)
+router.route("/:collectionId").get(getCollection)
 router.route("/create").post(createCollection)
 router.route("/delete").delete(deleteCollections)
 

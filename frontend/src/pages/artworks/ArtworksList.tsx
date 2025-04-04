@@ -31,7 +31,7 @@ const ArtworksList = ({ pageSize = 10 }) => {
     const { jwtToken } = useUser();
     const location = useLocation();
     const [currentPage, setCurrentPage] = useState(1);
-    const { collection } = useParams();
+    const { collectionId } = useParams();
     const queryClient = useQueryClient();
     const navigate = useNavigate();
 
@@ -51,26 +51,27 @@ const ArtworksList = ({ pageSize = 10 }) => {
         queryKey: ["artwork", currentPage, location.search, location, sortOrder],
         queryFn: () =>
             getArtworksForCollectionPage(
-                collection as string,
+                collectionId as string,
                 currentPage,
                 pageSize,
                 sortOrder,
                 new URLSearchParams(location.search).get("searchText"),
                 Object.fromEntries(new URLSearchParams(location.search).entries())
             ),
-        enabled: !!collection,
+        enabled: !!collectionId,
     });
 
+
     const { data: collectionData } = useQuery({
-        queryKey: [collection],
-        enabled: !!collection,
-        queryFn: () => getCollection(collection as string),
+        queryKey: [collectionId],
+        enabled: !!collectionId,
+        queryFn: () => getCollection(collectionId as string),
     });
 
     const { data: categoriesData } = useQuery({
-        queryKey: ["allCategories", collection],
-        queryFn: () => getAllCategories(collection as string),
-        enabled: !!collection,
+        queryKey: ["allCategories", collectionId],
+        queryFn: () => getAllCategories(collectionId as string),
+        enabled: !!collectionId,
     });
 
     const sortOptions = categoriesData?.categories?.flatMap((category: string) => [
@@ -134,7 +135,7 @@ const ArtworksList = ({ pageSize = 10 }) => {
                 <button
                     type="button"
                     className="text-blue-600 cursor-pointer bg-transparent border-0 p-0"
-                    onClick={() => navigate(`/collections/${collection}/create-artwork`)}
+                    onClick={() => navigate(`/collections/${collectionId}/create-artwork`)}
                 >
                     Dodawaj nowe rekordy
                 </button>
@@ -158,7 +159,7 @@ const ArtworksList = ({ pageSize = 10 }) => {
             className="px-4 max-w-screen-xl py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4 border border-gray-300 dark:border-gray-600 cursor-pointer"
             key={artwork._id}
             data-testid={artwork._id}
-            onClick={() => navigate(`/collections/${collection}/artworks/${artwork._id}`)}
+            onClick={() => navigate(`/collections/${collectionId}/artworks/${artwork._id}`)}
         >
             <div className="flex flex-row">
                 <span className="mr-4 flex items-center">
@@ -234,7 +235,7 @@ const ArtworksList = ({ pageSize = 10 }) => {
                             </p>
                         </div>
                     </div>
-                    {collection && <SearchComponent collectionName={collection} />}
+                    {collectionId && <SearchComponent collectionId={collectionId} />}
                     <div className="flex w-full md:w-auto">
                         <div className="flex flex-1 space-x-2">
                             <button
@@ -245,7 +246,7 @@ const ArtworksList = ({ pageSize = 10 }) => {
                                         : "bg-gray-600 hover:bg-gray-600 border-gray-800"
                                 }`}
                                 type="button"
-                                onClick={() => navigate(`/collections/${collection}/create-artwork`)}
+                                onClick={() => navigate(`/collections/${collectionId}/create-artwork`)}
                             >
                                 <span className="mr-2 text-white dark:text-gray-400">
                                     <PlusIcon />

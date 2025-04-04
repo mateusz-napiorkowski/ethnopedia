@@ -10,7 +10,7 @@ import { useLocation, useNavigate } from "react-router-dom"
 import { v4 as uuidv4 } from "uuid"
 
 interface SearchComponentProps {
-    collectionName: string;
+    collectionId: string;
 }
 
 interface Rule {
@@ -19,7 +19,7 @@ interface Rule {
     id: string
 }
 
-const AdvancedSearch: React.FC<SearchComponentProps> = ({ collectionName }) => {
+const AdvancedSearch: React.FC<SearchComponentProps> = ({ collectionId }) => {
     const navigate = useNavigate()
     const location = useLocation()
     const [rules, setRules] = useState<Rule[]>([])
@@ -35,15 +35,15 @@ const AdvancedSearch: React.FC<SearchComponentProps> = ({ collectionName }) => {
     
     const { data: categoriesData } = useQuery({
         queryKey: ["allCategories"],
-        queryFn: () => getAllCategories(collectionName as string),
-        enabled: !!collectionName,
+        queryFn: () => getAllCategories(collectionId as string),
+        enabled: !!collectionId,
     })
 
     const formik = useFormik({
         initialValues: {},
         onSubmit: () => {
             const queryString = rules.map(rule => `${rule.field}=${rule.value}`).join("&")
-            navigate(`/collections/${collectionName}/artworks?${queryString}`, {state: {rules: rules}})
+            navigate(`/collections/${collectionId}/artworks?${queryString}`, {state: {rules: rules}})
         }
     })
 

@@ -5,7 +5,7 @@ import {createArtwork, deleteArtworks, editArtwork, getArtwork, getArtworksForCo
 const router = express.Router()
 
 router.route("/:artworkId").get(getArtwork)
-router.route("/:collectionName/artworks/:sortOrder").get(getArtworksForCollectionPage)
+router.route("/:collectionId/artworks/:sortOrder").get(getArtworksForCollectionPage)
 router.route("/create").post(createArtwork)
 router.route("/edit/:artworkId").put(editArtwork)
 router.route("/delete").delete(deleteArtworks)

@@ -35,17 +35,21 @@ export const getArtworksForCollectionPage = async (req: Request, res: Response) 
         if(!page || !pageSize)
             throw new Error("Request is missing query params")
 
-        const collectionName = req.params.collectionName
+        const collectionId = req.params.collectionId
+        
+        //TODO add error handling or refactor search 
+        const collection = await CollectionCollection.findOne({_id: collectionId}).exec()
+        
+        const collectionName = collection?.name as string
         const searchText = req.query.searchText
         const sortOrder = req.params.sortOrder
         
         const search = req.query.search === "true" ? true : false
-
         let queryFilter;
         if(!search)
             queryFilter = { collectionName: collectionName }
         else if(searchText)
-            queryFilter = await constructQuickSearchFilter(searchText, collectionName)
+            queryFilter = await constructQuickSearchFilter(searchText, collectionId, collectionName)
         else
             queryFilter = await constructAdvSearchFilter(req.query, collectionName)
         

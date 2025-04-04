@@ -20,15 +20,15 @@ enum ExportExtent {
 const ExportOptions = ({onClose, selectedArtworks}: Props) => {
     const location = useLocation()
     const searchParams = new URLSearchParams(location.search)
-    const { collection } = useParams()
+    const { collectionId } = useParams()
     const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
     const [exportExtent, setExportExtent] = useState<ExportExtent>(ExportExtent.all)
-    const [filename, setFilename] = useState(`${collection}.xlsx`);
+    const [filename, setFilename] = useState(`${collectionId}.xlsx`);
 
     const { data: categoriesData } = useQuery({
         queryKey: ["allCategories"],
-        queryFn: () => getAllCategories(collection as string),
-        enabled: !!collection,
+        queryFn: () => getAllCategories(collectionId as string),
+        enabled: !!collectionId,
     })
 
     const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -175,7 +175,7 @@ const ExportOptions = ({onClose, selectedArtworks}: Props) => {
                                     dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
                                     type="submit"
                                     onClick={() => getXlsxWithArtworksData(
-                                        collection as string, 
+                                        collectionId as string, 
                                         selectedKeys,
                                         exportExtent,
                                         selectedArtworks,

@@ -11,6 +11,7 @@ import MetadataForm from "../../components/artwork/MetadataForm";
 // import {getCollection} from "../../api/collections";
 import LoadingPage from "../LoadingPage";
 import {getAllCategories} from "../../api/categories";
+import { getCollection } from "src/api/collections";
 
 let example_data: Metadata[] = [
     { name: "Tytuł", value: "", subcategories: [] },
@@ -64,14 +65,22 @@ const CreateArtwork: React.FC = () => {
 
     // Pobranie nazwy kolekcji z URL
     const pathParts = window.location.pathname.split("/");
-    const collectionName = decodeURIComponent(pathParts[pathParts.indexOf("collections") + 1] || "Nieznana kolekcja");
+    // const collectionName = decodeURIComponent(pathParts[pathParts.indexOf("collections") + 1] || "Nieznana kolekcja");
+    const collectionId = decodeURIComponent(pathParts[pathParts.indexOf("collections") + 1]) as string
 
     // Pobierz kategorie
     const { data: categoriesData, isLoading, error } = useQuery({
-        queryKey: ["allCategories", collectionName],
-        queryFn: () => getAllCategories(collectionName),
-        enabled: !!collectionName
+        queryKey: ["allCategories", collectionId],
+        queryFn: () => getAllCategories(collectionId),
+        enabled: !!collectionId
     });
+
+    const { data: collectionData } = useQuery({
+            queryKey: [collectionId],
+            enabled: !!collectionId,
+            queryFn: () => getCollection(collectionId as string),
+    });
+    const collectionName = collectionData?.name || "Nieznana kolekcja"
 
     useEffect(() => {
         if (!location.state && categoriesData?.categories) {
