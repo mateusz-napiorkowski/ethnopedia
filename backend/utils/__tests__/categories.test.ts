@@ -6,6 +6,7 @@ jest.mock('../../models/collection', () => ({
 		find: () => mockCollectionFind()
 }))
 
+const collectionName = 'collection'
 describe('categories util functions tests', () => {
 		beforeEach(() => {
 				jest.resetAllMocks()
@@ -181,14 +182,14 @@ describe('categories util functions tests', () => {
 						mockCollectionFind.mockImplementation(() => {return {exec: () => Promise.resolve([
 								{
 										_id: "6717d46c666e8575d873ee57",
-										name: 'collection',
+										name: collectionName,
 										description: 'collection description',
 										categories: categories,
 										__v: 0
 								}
 						])}})
 		
-						expect(await getAllCategories("collection")).toMatchSnapshot();
+						expect(await getAllCategories(collectionName)).toMatchSnapshot();
 				}
 		)
 
@@ -207,7 +208,7 @@ describe('categories util functions tests', () => {
 				async ({collectionFind, error}) => {
 						mockCollectionFind.mockImplementation(collectionFind)
 
-						expect(() => getAllCategories("collection")).rejects.toThrow(error);
+						expect(() => getAllCategories(collectionName)).rejects.toThrow(error);
 				}
 		)
 
