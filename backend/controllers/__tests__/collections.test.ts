@@ -3,7 +3,6 @@ import express from "express";
 import request from "supertest";
 import bodyParser from "body-parser";
 import CollectionsRouter from "../../routes/collection";
-import { hasValidCategoryFormat } from "../../utils/categories";
 
 const app = express()
 app.use(bodyParser.json());
@@ -44,7 +43,9 @@ jest.mock("jsonwebtoken", () => ({
 const jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXN"
 	+ "lcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaecc"
 	+ "N-rDSjRS3kApqlA"
-
+const collectionId = "66c4e516d6303ed5ac5a8e55"
+const collectionName = "collection"
+const collectionDescription = "collection description"
 describe('collections controller', () =>{
     beforeEach(() => {
 		jest.resetAllMocks()
@@ -178,19 +179,19 @@ describe('collections controller', () =>{
                 expect(res.body.error).toBe(error)
             }
         )
-
+        
         test("getCollection should respond with status 200 and correct body", async () => {
             mockCollectionFindOne.mockReturnValue({
                 exec: () => Promise.resolve({
-                    _id: "66c4e516d6303ed5ac5a8e55",
-                    name: 'collection',
-                    description: 'collection description',
+                    _id: collectionId,
+                    name: collectionName,
+                    description: collectionDescription,
                     __v: 0
                 })
             })
 
             const res = await request(app.use(CollectionsRouter))
-            .get('/collection');
+            .get(`/${collectionId}`);
     
             expect(res.status).toBe(200)
             expect(res.body).toMatchSnapshot()
@@ -203,7 +204,7 @@ describe('collections controller', () =>{
             mockCollectionFindOne.mockReturnValue(findOne)
 
             const res = await request(app.use(CollectionsRouter))
-            .get('/collection');
+            .get(`/${collectionId}`);
     
             expect(res.status).toBe(statusCode)
             expect(res.body.error).toBe(error)
@@ -216,9 +217,9 @@ describe('collections controller', () =>{
             {name: "Artyści", subcategories: []}
         ]
         const collectionPromise = Promise.resolve({
-            _id: "66c4e516d6303ed5ac5a8e55",
-            name: 'collection',
-            description: 'collection description',
+            _id: collectionId,
+            name: collectionName,
+            description: collectionDescription,
             categories: correctCategories,
             __v: 0
         })
@@ -229,8 +230,8 @@ describe('collections controller', () =>{
             mockCollectionCreate.mockReturnValue(collectionPromise)
             
             const payload = {
-                name: 'collection',
-                description: 'collection description',
+                name: collectionName,
+                description: collectionDescription,
                 categories: correctCategories
             }
 
@@ -250,43 +251,43 @@ describe('collections controller', () =>{
                 error: 'Incorrect request body provided', findOne: undefined, startSession: () => startSessionDefaultReturnValue,
                 hasValidCategoryFormat: true
             }, 
-            {payload: { name: 'collection' }, statusCode: 400,
+            {payload: { name: collectionName }, statusCode: 400,
                 error: 'Incorrect request body provided', findOne: undefined, startSession: () => startSessionDefaultReturnValue,
                 hasValidCategoryFormat: true
             },
-            {payload: { description: 'collection description' }, statusCode: 400,
+            {payload: { description: collectionDescription }, statusCode: 400,
                 error: 'Incorrect request body provided', findOne: undefined, startSession: () => startSessionDefaultReturnValue,
                 hasValidCategoryFormat: true
             },
-            {payload: { name: 'collection', description: 'collection description' }, statusCode: 400,
+            {payload: { name: collectionName, description: collectionDescription }, statusCode: 400,
                 error: 'Incorrect request body provided', findOne: undefined, startSession: () => startSessionDefaultReturnValue,
                 hasValidCategoryFormat: true
             },
-            {payload: { name: 'collection', categories: correctCategories }, statusCode: 400,
+            {payload: { name: collectionName, categories: correctCategories }, statusCode: 400,
                 error: 'Incorrect request body provided', findOne: undefined, startSession: () => startSessionDefaultReturnValue,
                 hasValidCategoryFormat: true
             },
-            {payload: { description: 'collection description', categories: correctCategories }, statusCode: 400,
+            {payload: { description: collectionDescription, categories: correctCategories }, statusCode: 400,
                 error: 'Incorrect request body provided', findOne: undefined, startSession: () => startSessionDefaultReturnValue,
                 hasValidCategoryFormat: true
             },
-            {payload: { name: 'collection', description: 'collection description', categories: [{name: "Tytuł"}] }, statusCode: 400,
+            {payload: { name: collectionName, description: collectionDescription, categories: [{name: "Tytuł"}] }, statusCode: 400,
                 error: 'Incorrect request body provided', findOne: undefined, startSession: () => startSessionDefaultReturnValue,
                 hasValidCategoryFormat: false
             },   
-            {payload: { name: 'collection', description: 'collection description', categories: correctCategories }, statusCode: 503,
+            {payload: { name: collectionName, description: collectionDescription, categories: correctCategories }, statusCode: 503,
                 error: "Database unavailable", findOne: undefined, startSession: () => {throw Error()},
                 hasValidCategoryFormat: true
             },
-            {payload: { name: 'collection', description: 'collection description', categories: correctCategories}, statusCode: 503,
+            {payload: { name: collectionName, description: collectionDescription, categories: correctCategories}, statusCode: 503,
                 error: 'Database unavailable', findOne: { exec: () => {throw Error()} }, startSession: () => startSessionDefaultReturnValue,
                 hasValidCategoryFormat: true
             },
-            {payload: { name: 'collection', description: 'collection description', categories: correctCategories }, statusCode: 409,
+            {payload: { name: collectionName, description: collectionDescription, categories: correctCategories }, statusCode: 409,
                 error: 'Collection with provided name already exists', findOne: { exec: () => collectionPromise }, startSession: () => startSessionDefaultReturnValue,
                 hasValidCategoryFormat: true
             },
-            {payload: { name: 'collection', description: 'collection description', categories: correctCategories }, statusCode: 503,
+            {payload: { name: collectionName, description: collectionDescription, categories: correctCategories }, statusCode: 503,
                 error: 'Database unavailable', findOne: { exec: () => Promise.resolve(null) }, startSession: () => startSessionDefaultReturnValue,
                 hasValidCategoryFormat: true
             }
