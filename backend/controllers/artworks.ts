@@ -31,19 +31,19 @@ export const getArtworksForCollectionPage = async (req: Request, res: Response) 
     try {
         const page = parseInt(req.query.page as string)
         const pageSize = parseInt(req.query.pageSize as string)
-        
+
         if(!page || !pageSize)
             throw new Error("Request is missing query params")
 
         const collectionId = req.params.collectionId
-        
-        //TODO add error handling or refactor search 
         const collection = await CollectionCollection.findOne({_id: collectionId}).exec()
+        if (collection == null)
+            throw new Error(`Collection not found`)
         
         const collectionName = collection?.name as string
         const searchText = req.query.searchText
         const sortOrder = req.params.sortOrder
-        
+
         const search = req.query.search === "true" ? true : false
         let queryFilter;
         if(!search)
@@ -52,7 +52,7 @@ export const getArtworksForCollectionPage = async (req: Request, res: Response) 
             queryFilter = await constructQuickSearchFilter(searchText, collectionId, collectionName)
         else
             queryFilter = await constructAdvSearchFilter(req.query, collectionName)
-        
+
         const artworksFiltered = await Artwork.find(queryFilter).exec()
         const artworksSorted = sortRecordsByCategory(artworksFiltered, sortOrder)
         const artworksForPage = artworksSorted.slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize)
@@ -68,6 +68,8 @@ export const getArtworksForCollectionPage = async (req: Request, res: Response) 
         console.error(error)
         if (err.message === "Request is missing query params")
             res.status(400).json({ error: err.message })
+        else if (err.message === "Collection not found")
+            res.status(404).json({ error: err.message })
         else
             res.status(503).json({ error: `Database unavailable` })
     }
