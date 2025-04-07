@@ -1,14 +1,12 @@
-import Navbar from "../components/navbar/Navbar"
-import CollectionsPage from "./collections/CollectionsPage"
-import React from "react"
+import React from "react";
+import { useUser } from "../providers/UserProvider";
+import CollectionsPage from "./collections/CollectionsPage";
+import LandingPage from "./LandingPage";
 
 const Home = () => {
-    return <div className="flex flex-col">
-        <div className="flex-grow">
-            <Navbar />
-            <CollectionsPage />
-        </div>
-    </div>
-}
+    const { jwtToken } = useUser();
 
-export default Home
+    return jwtToken ? <CollectionsPage /> : <LandingPage />;
+};
+
+export default Home;

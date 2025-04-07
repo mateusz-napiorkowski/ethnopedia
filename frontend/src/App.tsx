@@ -2,7 +2,6 @@ import React from "react"
 import { Route, BrowserRouter, Routes } from "react-router-dom"
 import { QueryClient, QueryClientProvider } from "react-query"
 import LoginPage from "./pages/LoginPage"
-import Home from "./pages/Home"
 import "./index.css"
 import ArtworkPage from "./pages/artworks/ArtworkPage"
 import NotFoundPage from "./pages/NotFoundPage"
@@ -11,6 +10,7 @@ import RegisterPage from "./pages/RegisterPage"
 import { UserProvider } from "./providers/UserProvider"
 import CreateArtworkPage from "./pages/artworks/CreateArtworkPage"
 import CreateCollectionPage from "./pages/collections/CreateCollectionPage";
+import Home from "./pages/Home"
 
 const queryClient = new QueryClient()
 
