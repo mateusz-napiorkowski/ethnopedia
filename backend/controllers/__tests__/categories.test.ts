@@ -18,6 +18,8 @@ jest.mock("../../utils/categories", () => ({
     getAllCategories: () => mockgetAllCategories()
 }))
 
+const collectionId = "66f2194a6123d7f50558cd8f"
+
 describe('categories controller', () => {
     beforeEach(() => {
         jest.resetAllMocks()
@@ -29,7 +31,7 @@ describe('categories controller', () => {
             mockgetAllCategories.mockReturnValue(["Title"])
 
             const res = await request(app)
-                .get(`/all/collection`)
+                .get(`/all/${collectionId}`)
                 .set('Accept', 'application/json')
 
             expect(res.status).toBe(200)
@@ -40,7 +42,7 @@ describe('categories controller', () => {
             mockgetAllCategories.mockImplementation(() => {throw Error("Collection not found")})
 
             const res = await request(app)
-                .get(`/all/collection`)
+                .get(`/all/${collectionId}`)
                 .set('Accept', 'application/json')
 
             expect(res.status).toBe(404)
@@ -51,7 +53,7 @@ describe('categories controller', () => {
             mockgetAllCategories.mockImplementation(() => {throw Error("Database unavailable")})
 
             const res = await request(app)
-                .get(`/all/collection`)
+                .get(`/all/${collectionId}`)
                 .set('Accept', 'application/json')
 
             expect(res.status).toBe(503)

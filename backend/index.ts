@@ -18,7 +18,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); 
 
 app.use((req, res, next) => {
-    console.log(req.url)
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
     next()
 })

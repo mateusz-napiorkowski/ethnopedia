@@ -3,7 +3,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import request from "supertest";
 import ArtworksRouter from "../../routes/artwork";
-import { constructAdvSearchFilter, constructQuickSearchFilter, sortRecordsByCategory } from "../../utils/artworks";
+import { constructAdvSearchFilter, constructQuickSearchFilter } from "../../utils/artworks";
 
 const app = express()
 app.use(bodyParser.json());
@@ -43,9 +43,11 @@ jest.mock("../../models/artwork", () => ({
     deleteMany: () => mockDeleteMany()
 }))
 
-const mockFind = jest.fn()
+const mockCollectionFind = jest.fn()
+const mockCollectionFindOne = jest.fn()
 jest.mock("../../models/collection", () => ({
-    find: () => mockFind()
+    find: () => mockCollectionFind(),
+    findOne: () => mockCollectionFindOne()
 }))
 
 jest.mock("jsonwebtoken", () => ({
@@ -55,6 +57,9 @@ jest.mock("jsonwebtoken", () => ({
 const jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXN"
     + "lcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaecc"
     + "N-rDSjRS3kApqlA"
+const collectionId = "66f2194a6123d7f50558cd8f"
+const collectionName = "collection"
+const artworkId = "66ce0bf156199c1b8df5db7d"
 
 describe('artworks controller', () => {
     beforeEach(() => {
@@ -64,13 +69,12 @@ describe('artworks controller', () => {
 
     describe('GET endpoints', () => {
         test("getArtwork should respond with status 200 and correct body", async () => {
-            const artworkId = "662e92b5d628570afa5357c3"
             mockIsValidObjectId.mockReturnValue(true)
             mockFindById.mockReturnValue({
                 exec: jest.fn().mockReturnValue(Promise.resolve({
                     _id: `${artworkId}`,
                     categories: [{name: 'Title', value: "Title", subcategories: []}],
-                    collectionName: 'collection',
+                    collectionName: collectionName,
                     createdAt: new Date("2024-09-10T12:17:12.821Z"),
                     updatedAt: new Date("2024-09-10T12:17:12.821Z"),
                     __v: 0
@@ -123,7 +127,7 @@ describe('artworks controller', () => {
                 quickSearchCalls: 0, advSearchCalls: 0,
                 artworkFind: () => {return {exec: () => Promise.resolve([
                     {
-                      _id: "6717d4c0666e8575d873ee69",
+                      _id: artworkId,
                       createdAt: '2024-10-22T20:12:12.209Z',
                       updatedAt: '2024-10-22T20:12:12.209Z',
                       __v: 0,
@@ -134,12 +138,12 @@ describe('artworks controller', () => {
                           subcategories: []
                         },
                       ],
-                      collectionName: 'collection'
+                      collectionName: collectionName
                     },
                 ])}},
                 sortRecordsByCategory: () => [
                     {
-                      _id: "6717d4c0666e8575d873ee69",
+                      _id: artworkId,
                       createdAt: '2024-10-22T20:12:12.209Z',
                       updatedAt: '2024-10-22T20:12:12.209Z',
                       __v: 0,
@@ -150,7 +154,7 @@ describe('artworks controller', () => {
                           subcategories: []
                         },
                       ],
-                      collectionName: 'collection'
+                      collectionName: collectionName
                     },
                 ],
                 statusCode: 200
@@ -162,7 +166,7 @@ describe('artworks controller', () => {
                 quickSearchCalls: 1, advSearchCalls: 0,
                 artworkFind: () => {return {exec: () => Promise.resolve([
                     {
-                      _id: "6717d4c0666e8575d873ee69",
+                      _id: artworkId,
                       createdAt: '2024-10-22T20:12:12.209Z',
                       updatedAt: '2024-10-22T20:12:12.209Z',
                       __v: 0,
@@ -173,12 +177,12 @@ describe('artworks controller', () => {
                           subcategories: []
                         },
                       ],
-                      collectionName: 'collection'
+                      collectionName: collectionName
                     },
                 ])}},
                 sortRecordsByCategory: () => [
                     {
-                      _id: "6717d4c0666e8575d873ee69",
+                      _id: artworkId,
                       createdAt: '2024-10-22T20:12:12.209Z',
                       updatedAt: '2024-10-22T20:12:12.209Z',
                       __v: 0,
@@ -189,7 +193,7 @@ describe('artworks controller', () => {
                           subcategories: []
                         },
                       ],
-                      collectionName: 'collection'
+                      collectionName: collectionName
                     },
                 ],
                 statusCode: 200
@@ -201,7 +205,7 @@ describe('artworks controller', () => {
                 quickSearchCalls: 0, advSearchCalls: 1,
                 artworkFind: () => {return {exec: () => Promise.resolve([
                     {
-                      _id: "6717d4c0666e8575d873ee69",
+                      _id: artworkId,
                       createdAt: '2024-10-22T20:12:12.209Z',
                       updatedAt: '2024-10-22T20:12:12.209Z',
                       __v: 0,
@@ -212,12 +216,12 @@ describe('artworks controller', () => {
                           subcategories: []
                         },
                       ],
-                      collectionName: 'collection'
+                      collectionName: collectionName
                     },
                 ])}},
                 sortRecordsByCategory: () => [
                     {
-                      _id: "6717d4c0666e8575d873ee69",
+                      _id: artworkId,
                       createdAt: '2024-10-22T20:12:12.209Z',
                       updatedAt: '2024-10-22T20:12:12.209Z',
                       __v: 0,
@@ -228,17 +232,27 @@ describe('artworks controller', () => {
                           subcategories: []
                         },
                       ],
-                      collectionName: 'collection'
+                      collectionName: collectionName
                     },
                 ],
                 statusCode: 200
             },
         ])(`getArtworksForCollectionPage should respond with status 200 and correct body - $case`,
             async ({page, pageSize, sortOrder, search, searchText, quickSearchCalls, advSearchCalls, artworkFind, sortRecordsByCategory, statusCode}) => {
+                mockCollectionFindOne.mockReturnValue({exec: () => ({
+                    _id: collectionId,
+                    name: collectionName,
+                    description: 'collection description',
+                    categories: [
+                        {name: 'Tytuł', subcategories: []}
+                    ],
+                    __v: 0
+                })}     
+                )
                 mockArtworkFind.mockImplementation(artworkFind)
                 mockSortRecordsByCategory.mockImplementation(sortRecordsByCategory)
 
-                let queryString = `/collection/artworks/${sortOrder}?`
+                let queryString = `/${collectionId}/artworks/${sortOrder}?`
                 if (page) queryString += page
                 if (pageSize) queryString += pageSize
                 if (search) queryString += search
@@ -258,24 +272,40 @@ describe('artworks controller', () => {
         test.each([
             {
                 page: undefined, pageSize: "pageSize=10&", sortOrder: "Tytuł-asc",
+                collectionFindOne: () => {throw Error()},
                 artworkFind: () => {throw Error()},
                 statusCode: 400, error: 'Request is missing query params'
             },
             {
                 page: "page=1&", pageSize: undefined, sortOrder: "Tytuł-asc",
+                collectionFindOne: () => {throw Error()},
                 artworkFind: () => {throw Error()},
                 statusCode: 400, error: 'Request is missing query params'
             },
             {
                 page: "page=1&", pageSize: "pageSize=10&", sortOrder: "Tytuł-asc",
+                collectionFindOne: () => {return {exec: () => Promise.resolve(null)}},
+                artworkFind: () => {throw Error()},
+                statusCode: 404, error: 'Collection not found'
+            },
+            {
+                page: "page=1&", pageSize: "pageSize=10&", sortOrder: "Tytuł-asc",
+                collectionFindOne: () => {throw Error()},
+                artworkFind: () => {},
+                statusCode: 503, error: 'Database unavailable'
+            },
+            {
+                page: "page=1&", pageSize: "pageSize=10&", sortOrder: "Tytuł-asc",
+                collectionFindOne: () => {},
                 artworkFind: () => {throw Error()},
                 statusCode: 503, error: 'Database unavailable'
             },
         ])(`getArtworksForCollectionPage should respond with status $statusCode and correct error message`,
-            async ({page, pageSize, sortOrder, artworkFind, statusCode, error}) => {
+            async ({page, pageSize, sortOrder, collectionFindOne, artworkFind, statusCode, error}) => {
+                mockCollectionFindOne.mockImplementation(collectionFindOne)
                 mockArtworkFind.mockImplementation(artworkFind)
 
-                let queryString = `/collection/artworks/${sortOrder}?`
+                let queryString = `/${collectionId}/artworks/${sortOrder}?`
                 if (page) queryString += page
                 if (pageSize) queryString += pageSize
 
@@ -290,21 +320,19 @@ describe('artworks controller', () => {
     })
 
     describe('POST endpoints', () => {
-        const artworkId = "66ce0bf156199c1b8df5db7d"
-        const collectionId = "66c4e516d6303ed5ac5a8e55"
         test("createArtwork should respond with status 201 and correct body", async () => {
             mockCreate.mockReturnValue(Promise.resolve({
                 _id: `${artworkId}`,
                 categories: [{name: 'Title', value: 'Title', subcategories: []}],
-                collectionName: 'collection',
+                collectionName: collectionName,
                 createdAt: '2024-08-27T17:25:05.352Z',
                 updatedAt: '2024-08-27T17:25:05.352Z',
                 __v: 0
             }))
-            mockFind.mockReturnValue({
+            mockCollectionFind.mockReturnValue({
                 exec: () => Promise.resolve([{
-                    _id: `${collectionId}`,
-                    name: 'collection',
+                    _id: collectionId,
+                    name: collectionName,
                     description: 'collection description',
                     categories: [
                         {name: 'Title', subcategories: []}
@@ -315,7 +343,7 @@ describe('artworks controller', () => {
             mockArtworkCategoriesHaveValidFormat.mockReturnValue(true)
             const payload = {
                 categories: [{name: 'Title', value: 'Title', subcategories: []}],
-                collectionName: 'collection'
+                collectionName: collectionName
             }
 
             const res = await request(app)
@@ -341,14 +369,14 @@ describe('artworks controller', () => {
                 statusCode: 400, error: 'Incorrect request body provided'
             },
             {
-                payload: {collectionName: 'collection'},
+                payload: {collectionName: collectionName},
                 create: undefined, find: undefined, artworkCategoriesHaveValidFormat: true,
                 statusCode: 400, error: 'Incorrect request body provided'
             },  
             {
                 payload: {
                     categories: [{name: 'Title', value: 'Title', subcategories: []}],
-                    collectionName: 'collection'
+                    collectionName: collectionName
                 },
                 create: undefined, find: {exec: () => {throw Error()}}, artworkCategoriesHaveValidFormat: true,
                 statusCode: 503, error: 'Database unavailable'
@@ -356,7 +384,7 @@ describe('artworks controller', () => {
             {
                 payload: {
                     categories: [{name: 'Title', value: 'Title', subcategories: []}],
-                    collectionName: 'collection'
+                    collectionName: collectionName
                 },
                 create: () => Promise.reject(), find: undefined, artworkCategoriesHaveValidFormat: true,
                 statusCode: 503, error: 'Database unavailable'
@@ -364,12 +392,12 @@ describe('artworks controller', () => {
             {
                 payload: {
                     categories: [{name: 'Title', value: 'Title', subcategories: []}],
-                    collectionName: 'collection'
+                    collectionName: collectionName
                 },
                 create: undefined,
                 find: {exec: () => Promise.resolve([{
                     _id: `${collectionId}`,
-                    name: 'collection',
+                    name: collectionName,
                     description: 'collection description',
                     categories: [
                         {name: 'Title', subcategories: []}
@@ -383,7 +411,7 @@ describe('artworks controller', () => {
             {
                 payload: {
                     categories: [{name: 'Title', value: 'Title', subcategories: []}],
-                    collectionName: 'collection'
+                    collectionName: collectionName
                 },
                 create: undefined,
                 find: {exec: () => Promise.resolve([])},
@@ -401,7 +429,7 @@ describe('artworks controller', () => {
                        error
                    }) => {
                 mockCreate.mockReturnValue(create)
-                mockFind.mockReturnValue(find)
+                mockCollectionFind.mockReturnValue(find)
                 mockArtworkCategoriesHaveValidFormat.mockReturnValue(artworkCategoriesHaveValidFormat)
 
                 const res = await request(app)
@@ -430,11 +458,11 @@ describe('artworks controller', () => {
             })
             const payload = {
                 categories: [{name: 'Title', value: 'New Title', subcategories: []}],
-                collectionName: 'collection'
+                collectionName: collectionName
             }
 
             const res = await request(app)
-                .put('/edit/66ce0bf156199c1b8df5db7d')
+                .put(`/edit/${artworkId}`)
                 .send(payload)
                 .set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
                 .set('Content-Type', 'application/json')
@@ -464,20 +492,20 @@ describe('artworks controller', () => {
                 replaceOne: undefined, statusCode: 400, error: 'Incorrect request body provided'
             },
             {
-                payload: {collectionName: 'collection'},
+                payload: {collectionName: collectionName},
                 replaceOne: undefined, statusCode: 400, error: 'Incorrect request body provided'
             },
             {
                 payload: {
                     categories: [{name: 'Title', value: 'New Title', subcategories: []}],
-                    collectionName: 'collection'
+                    collectionName: collectionName
                 },
                 replaceOne: {exec: () => {throw Error()}}, statusCode: 503, error: 'Database unavailable'
             },
             {
                 payload: {
                     categories: [{name: 'Title', value: 'New Title', subcategories: []}],
-                    collectionName: 'collection'
+                    collectionName: collectionName
                 },
                 replaceOne: replaceOneNoMatchResponse, statusCode: 404, error: 'Artwork not found'
             }
@@ -491,7 +519,7 @@ describe('artworks controller', () => {
                 mockReplaceOne.mockReturnValue(replaceOne)
 
                 const res = await request(app)
-                    .put('/edit/66ce0bf156199c1b8df5db7d')
+                    .put(`/edit/${artworkId}`)
                     .send(payload)
                     .set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
                     .set('Content-Type', 'application/json')
@@ -504,7 +532,6 @@ describe('artworks controller', () => {
     })
 
     describe('DELETE endpoints', () => {
-
         const startSessionDefaultReturnValue = Promise.resolve({
             withTransaction: (async (transactionFunc: Function) => {
                 await transactionFunc()

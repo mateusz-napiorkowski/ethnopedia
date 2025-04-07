@@ -11,7 +11,7 @@ exports[`artworks controller GET endpoints getArtwork should respond with status
 {
   "artwork": {
     "__v": 0,
-    "_id": "662e92b5d628570afa5357c3",
+    "_id": "66ce0bf156199c1b8df5db7d",
     "categories": [
       {
         "name": "Title",
@@ -31,7 +31,7 @@ exports[`artworks controller GET endpoints getArtworksForCollectionPage should r
   "artworks": [
     {
       "__v": 0,
-      "_id": "6717d4c0666e8575d873ee69",
+      "_id": "66ce0bf156199c1b8df5db7d",
       "categories": [
         {
           "name": "Tytuł",
@@ -55,7 +55,7 @@ exports[`artworks controller GET endpoints getArtworksForCollectionPage should r
   "artworks": [
     {
       "__v": 0,
-      "_id": "6717d4c0666e8575d873ee69",
+      "_id": "66ce0bf156199c1b8df5db7d",
       "categories": [
         {
           "name": "Tytuł",
@@ -79,7 +79,7 @@ exports[`artworks controller GET endpoints getArtworksForCollectionPage should r
   "artworks": [
     {
       "__v": 0,
-      "_id": "6717d4c0666e8575d873ee69",
+      "_id": "66ce0bf156199c1b8df5db7d",
       "categories": [
         {
           "name": "Tytuł",

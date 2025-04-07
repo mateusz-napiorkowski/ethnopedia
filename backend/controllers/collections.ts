@@ -63,9 +63,8 @@ export const getCollection = async (req: Request, res: Response) => {
     try {
         const collectionId = req.params.collectionId
         const collection = await CollectionCollection.findOne({ _id: collectionId }).exec()
-        if (!collection) {
+        if (collection == null)
             throw new Error("Collection not found")
-        }
         res.status(200).json(collection) 
     } catch (error) {
         const err = error as Error
@@ -81,7 +80,6 @@ export const createCollection = authAsyncWrapper(async (req: Request, res: Respo
     const collectionName = req.body.name
     const collectionDescription = req.body.description
     const categories = req.body.categories
-    console.log("Otrzymane categories:", req.body.categories);
     try {
         if(!collectionName || !collectionDescription || !categories || !hasValidCategoryFormat(categories))
             throw new Error("Incorrect request body provided")

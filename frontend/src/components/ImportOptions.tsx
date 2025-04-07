@@ -16,7 +16,7 @@ const ImportOptions = ({ onClose, collectionData }: Props) => {
     const [showDropzoneForm, setShowDropzoneForm] = useState(true)
     const [showCollectionForm, setShowCollectionForm] = useState(false)
     const [filename, setFilename] = useState("")
-    const [dataToSend, setDataToSend] = useState<any>()
+    const [dataToSend, setDataToSend] = useState<Array<any>>([])
     const [collectionName, setCollectionName] = useState("")
     const [description, setDescription] = useState("")
     const [errorMessage, setErrorMessage] = useState("")
@@ -46,7 +46,8 @@ const ImportOptions = ({ onClose, collectionData }: Props) => {
             const worksheetName = workbook.SheetNames[0];
             const worksheet = workbook.Sheets[worksheetName];
 
-            const parsedData = XLSX.utils.sheet_to_json(worksheet, {header:1, defval: ""});
+            const parsedData = XLSX.utils.sheet_to_json(worksheet, {header:1, defval: "", raw: false});
+            console.log(parsedData)
             setDataToSend(parsedData)
         };
         reader.readAsArrayBuffer(file)
