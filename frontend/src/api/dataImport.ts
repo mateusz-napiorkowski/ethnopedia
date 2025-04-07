@@ -1,7 +1,7 @@
 import axios from "axios"
 import { API_URL } from "../config"
 
-export const importData = async (importData: any, jwtToken: any, collectionName: any) => {
+export const importData = async (importData: Array<Array<string>>, jwtToken: any, collectionName: string | undefined) => {
     const config = {
         headers: { Authorization: `Bearer ${jwtToken}` }
     };
@@ -10,7 +10,7 @@ export const importData = async (importData: any, jwtToken: any, collectionName:
         .then(res => res.data)
 }
 
-export const importDataAsCollection = async (importData: any, collectionName: string, description: string, jwtToken: string) => {
+export const importDataAsCollection = async (importData: Array<Array<string>>, collectionName: string, description: string, jwtToken: string) => {
     const config = {
         headers: { Authorization: `Bearer ${jwtToken}` }
     };
