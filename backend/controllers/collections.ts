@@ -4,6 +4,8 @@ import { authAsyncWrapper } from "../middleware/auth"
 import Artwork from "../models/artwork";
 import CollectionCollection from "../models/collection";
 import {hasValidCategoryFormat} from "../utils/categories";
+import { artworkCategory, collectionCategory } from "../utils/interfaces";
+import { updateArtworkCategories } from "../utils/artworks";
 
 export const getAllCollections = async (req: Request, res: Response) => {
     try {
@@ -149,43 +151,29 @@ export const deleteCollections = authAsyncWrapper(async (req: Request, res: Resp
     }   
 })
 
-
 export const updateCollection = authAsyncWrapper(async (req: Request, res: Response) => {
     const collectionId = req.params.id;
     const { name, description, categories } = req.body;
-
     try {
-        if (!name || !description || !categories || !hasValidCategoryFormat(categories)) {
+        if (!name || !description || !categories || !hasValidCategoryFormat(categories))
             throw new Error("Incorrect request body provided");
-        }
 
         const session = await mongoose.startSession();
-
         await session.withTransaction(async (session: ClientSession) => {
             const collection = await CollectionCollection.findById(collectionId, null, { session }).exec();
-            if (!collection) {
+            if (!collection)
                 throw new Error("Collection not found");
-            }
 
             const artworks = await Artwork.find({ collectionName: collection.name }, null, { session });
             await Promise.all(artworks.map(async (artwork: any) => {
                 artwork.collectionName = name;
-                const newArtworkCategories: any = []
-                for(const [categoryIndex, category] of categories.entries()) {
-                    if(!artwork.categories[categoryIndex]) {
-                        newArtworkCategories.push({name: category.name, value: "", subcategories: []})
-                    } else {
-                        newArtworkCategories.push({name: category.name, value: artwork.categories[categoryIndex].value, subcategories: artwork.categories[categoryIndex].subcategories})
-                    }
-                }
-                artwork.categories = newArtworkCategories
+                artwork.categories = updateArtworkCategories(artwork.categories, categories)
                 await artwork.save({ session });
             }));
 
             collection.name = name;
             collection.description = description;
             collection.categories = categories;
-
             await collection.save({ session });
 
             res.status(200).json(collection);

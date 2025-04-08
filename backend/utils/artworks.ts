@@ -1,4 +1,17 @@
 import { getAllCategories } from "./categories";
+import { artworkCategory, collectionCategory } from "./interfaces";
+
+export const updateArtworkCategories = (subcategories: Array<artworkCategory>, collectionSubcategories: Array<collectionCategory>) => {
+    const newArtworkCategories: any = []
+    for(const [categoryIndex, category] of collectionSubcategories.entries()) {
+        if(!subcategories[categoryIndex]) {
+            newArtworkCategories.push({name: category.name, value: "", subcategories: updateArtworkCategories([], collectionSubcategories[categoryIndex].subcategories)})
+        } else {
+            newArtworkCategories.push({name: category.name, value: subcategories[categoryIndex].value, subcategories: updateArtworkCategories(subcategories[categoryIndex].subcategories, collectionSubcategories[categoryIndex].subcategories)})
+        }
+    }
+    return newArtworkCategories
+}
 
 const fillSubcategoriesFilterPart: any = (searchText: string, currentDepth: number, maxDepth: number) => {
     if (maxDepth === 0) return []
