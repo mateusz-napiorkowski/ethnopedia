@@ -373,7 +373,10 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                 <div className="flex mx-auto flex-1 justify-end w-full"></div>
                 <div data-testid="artworks-listed" className="w-full flex-2 lg:px-6 max-w-screen-xl">
                     {artworkData.artworks.length === 0 ? (
-                        <EmptyCollectionMessage setShowImportOptions={setShowImportOptions} />
+                        <EmptyCollectionMessage
+                            setShowImportOptions={setShowImportOptions}
+                            jwtToken={jwtToken}
+                        />
                     ) : (
                         allArtworks
                     )}

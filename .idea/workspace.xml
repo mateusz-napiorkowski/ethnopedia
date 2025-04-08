@@ -5,9 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2d029bd7-82b7-4397-bf3e-7fcfe7cda461" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/artwork/EmptyCollectionMessage.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/artworks/ArtworksListPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/artworks/ArtworksListPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/artwork/EmptyCollectionMessage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/artwork/EmptyCollectionMessage.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -195,7 +194,7 @@
       <workItem from="1743604120463" duration="7180000" />
       <workItem from="1744039939645" duration="14655000" />
       <workItem from="1744055719479" duration="6095000" />
-      <workItem from="1744110815168" duration="4407000" />
+      <workItem from="1744110815168" duration="6663000" />
     </task>
     <servers />
   </component>
