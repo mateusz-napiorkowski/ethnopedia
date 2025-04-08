@@ -9,7 +9,6 @@ import SearchComponent from "../../components/search/SearchComponent";
 import ImportOptions from "../../components/ImportOptions";
 import ExportOptions from "../../components/ExportOptions";
 import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg";
-import { HiOutlineCollection } from "react-icons/hi";
 import { ReactComponent as FileImportIcon } from "../../assets/icons/fileImport.svg";
 import { ReactComponent as FileExportIcon } from "../../assets/icons/fileExport.svg";
 import WarningPopup from "../WarningPopup";
@@ -20,6 +19,8 @@ import { useUser } from "../../providers/UserProvider";
 import { getAllCategories } from "../../api/categories";
 import DisplayCategoriesSelect, { Option } from "../../components/DisplayCategoriesSelect";
 import { ReactComponent as EditIcon } from "../../assets/icons/edit.svg"
+import EmptyCollectionMessage from "../../components/artwork/EmptyCollectionMessage";
+
 
 const ArtworksListPage = ({ pageSize = 10 }) => {
     const [selectedArtworks, setSelectedArtworks] = useState<{ [key: string]: boolean }>({});
@@ -91,7 +92,6 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
     };
 
 
-
     const { data: categoriesData } = useQuery({
         queryKey: ["allCategories", collection],
         queryFn: () => getAllCategories(collection as string),
@@ -151,33 +151,6 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
         );
     }
 
-    // Komponent wyświetlany, gdy kolekcja jest pusta
-    const EmptyCollectionMessage = () => (
-        <div className="px-4 max-w-screen-xl pt-10 pb-10 py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4 border border-gray-300 dark:border-gray-600 cursor-pointer text-center">
-            <HiOutlineCollection className="mx-auto w-16 h-16 mb-4 text-gray-400" />
-            <p className="text-xl mb-4">Ta kolekcja jest pusta.</p>
-            <p className="text-md">
-                <button
-                    type="button"
-                    className="text-blue-600 cursor-pointer bg-transparent border-0 p-0"
-                    onClick={() => navigate(`/collections/${collection}/create-artwork`)}
-                >
-                    Dodawaj nowe rekordy
-                </button>
-                {" "}
-                ręcznie lub{" "}
-                <button
-                    type="button"
-                    className="text-blue-600 cursor-pointer bg-transparent border-0 p-0"
-                    onClick={() => setShowImportOptions((prev) => !prev)}
-                >
-                    zaimportuj
-                </button>
-                {" "}
-                dane z pliku Excel, aby rozpocząć organizację swojej kolekcji.
-            </p>
-        </div>
-    );
 
     const allArtworks = artworkData.artworks.map((artwork: any) => (
         <div
@@ -399,7 +372,11 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
             <div className="flex flex-row">
                 <div className="flex mx-auto flex-1 justify-end w-full"></div>
                 <div data-testid="artworks-listed" className="w-full flex-2 lg:px-6 max-w-screen-xl">
-                    {artworkData.artworks.length === 0 ? <EmptyCollectionMessage /> : allArtworks}
+                    {artworkData.artworks.length === 0 ? (
+                        <EmptyCollectionMessage setShowImportOptions={setShowImportOptions} />
+                    ) : (
+                        allArtworks
+                    )}
                 </div>
                 <div className="mx-auto w-full flex-1"></div>
             </div>
