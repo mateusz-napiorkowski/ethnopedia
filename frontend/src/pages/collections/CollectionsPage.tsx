@@ -30,12 +30,10 @@ const CollectionsPage = () => {
     const { jwtToken } = useUser();
     const pageSize = 10
     const navigate = useNavigate();
-
     const queryClient = useQueryClient()
-
     const { mutate: batchDeleteMutation } = useBatchDeleteCollectionMutation()
-
     const[newCollection]=useState<string>("");
+    const [sortOrder, setSortOrder] = useState("A-Z")
 
     useEffect(() => {
         refetch()
@@ -82,8 +80,6 @@ const CollectionsPage = () => {
         }
     }
 
-    // const [showPopup, setShowNewCollectionPopup] = useState(false)
-    const [sortOrder, setSortOrder] = useState("A-Z")
 
     if (fetchedData === undefined) {
         return <LoadingPage />

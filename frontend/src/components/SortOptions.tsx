@@ -7,17 +7,29 @@ interface Option {
 
 interface SortOptionsProps {
     options: Option[];
-    onSelect: (value: string) => void;
-    sortOrder: string;
+    onSelect: (field: string, order: string) => void;
+    sortOrder: string; // 'asc' lub 'desc'
     setCurrentPage: (pageNumber: number) => void;
 }
 
-const SortOptions: React.FC<SortOptionsProps> = ({ options, onSelect, sortOrder, setCurrentPage }) => {
-    const [selectedOption, setSelectedOption] = useState<string>(sortOrder);
+const SortOptions: React.FC<SortOptionsProps> = ({
+                                                     options,
+                                                     onSelect,
+                                                     sortOrder,
+                                                     setCurrentPage,
+                                                 }) => {
+    const [selectedOption, setSelectedOption] = useState<string>(options[0]?.value || "");
     const [open, setOpen] = useState<boolean>(false);
+    const [currentSortOrder, setCurrentSortOrder] = useState<string>(sortOrder); // 'asc' lub 'desc'
     const dropdownRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLDivElement>(null);
     const [dropdownWidth, setDropdownWidth] = useState<string>("auto");
+
+    useEffect(() => {
+        if (options.some(opt => opt.value === selectedOption)) return;
+        setSelectedOption(options[0]?.value || "");
+    }, [options]);
+
 
     // Zamknięcie dropdowna po kliknięciu poza komponentem
     useEffect(() => {
@@ -50,9 +62,15 @@ const SortOptions: React.FC<SortOptionsProps> = ({ options, onSelect, sortOrder,
 
     const handleSelect = (value: string) => {
         setSelectedOption(value);
-        onSelect(value);
+        onSelect(value, currentSortOrder);
         setCurrentPage(1);
         setOpen(false);
+    };
+
+    const toggleSortOrder = () => {
+        const newSortOrder = currentSortOrder === "asc" ? "desc" : "asc";
+        setCurrentSortOrder(newSortOrder);
+        onSelect(selectedOption, newSortOrder);
     };
 
     return (
@@ -63,8 +81,8 @@ const SortOptions: React.FC<SortOptionsProps> = ({ options, onSelect, sortOrder,
                 className="cursor-pointer py-2 px-4 border bg-white dark:bg-gray-800 border-gray-300 rounded-lg flex items-center justify-between"
                 style={{ minWidth: dropdownWidth }}
             >
-                <span>{options.find(opt => opt.value === selectedOption)?.label || "Sortuj"}</span>
-                {/* Strzałka */}
+                <span>{options.find(opt => opt.value === selectedOption)?.label || "Wybierz kategorię"}</span>
+                {/* Strzałka dla rozwijanej listy */}
                 <svg
                     className={`h-4 w-4 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
                     fill="none"
@@ -90,6 +108,13 @@ const SortOptions: React.FC<SortOptionsProps> = ({ options, onSelect, sortOrder,
                     ))}
                 </div>
             )}
+            {/* Przycisk z strzałką obok rozwijanej listy */}
+            <button
+                onClick={toggleSortOrder}
+                className="ml-2 p-2 text-sm text-gray-600 dark:text-gray-300 border rounded-lg"
+            >
+                {currentSortOrder === "asc" ? "↑" : "↓"}
+            </button>
         </div>
     );
 };

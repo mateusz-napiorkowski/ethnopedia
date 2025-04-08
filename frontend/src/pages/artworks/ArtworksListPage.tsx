@@ -41,9 +41,6 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
     const queryClient = useQueryClient();
     const navigate = useNavigate();
 
-    console.log("id:", collectionId, "name:", collection);
-
-
     // Funkcja wyszukująca wartość dla danej kategorii
     const findValue = (artwork: any, categoryName: string) => {
         let val = "";
@@ -100,8 +97,7 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
 
 
     const sortOptions = categoriesData?.categories?.flatMap((category: string) => [
-        { value: `${category}-asc`, label: `${category} rosnąco` },
-        { value: `${category}-desc`, label: `${category} malejąco` },
+        { value: `${category}`, label: `${category}` }
     ]);
 
     // Ustaw domyślnie pierwsze 3 kategorie, jeśli jeszcze nie wybrano żadnych
@@ -360,8 +356,8 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                         {sortOptions && (
                             <SortOptions
                                 options={sortOptions}
-                                onSelect={(value) => setSortOrder(value)}
-                                sortOrder={sortOrder}
+                                onSelect={(field, order) => setSortOrder(`${field}_${order}`)}
+                                sortOrder={sortOrder.split("_")[1]} // żeby przekazać tylko 'asc' lub 'desc'
                                 setCurrentPage={setCurrentPage}
                             />
                         )}

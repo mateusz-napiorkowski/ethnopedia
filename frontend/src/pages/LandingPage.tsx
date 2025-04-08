@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../components/navbar/Navbar";
 import { useNavigate } from "react-router-dom";
 import { ReactComponent as ArrowRight } from "../assets/icons/angleRight.svg";
-import { ReactComponent as HeroGraphic } from "../assets/icons/HeroGraphic.svg";
+import { ReactComponent as HeroGraphic } from "../assets/icons/HeroSectionIcon.svg";
+import { ReactComponent as HeroGraphicDark } from "../assets/icons/HeroSectionIconDark.svg";
 import { ReactComponent as StructureIcon } from "../assets/icons/StructureIcon.svg";
 import { ReactComponent as AddCollection } from "../assets/icons/AddCollection.svg";
 import { ReactComponent as AddRecord } from "../assets/icons/AddRecord.svg";
@@ -15,7 +16,7 @@ import Pagination from "../components/Pagination";
 const LandingPage = () => {
     const navigate = useNavigate();
     const [collections, setCollections] = useState<Collection[]>([]);
-    const [sortOrder, setSortOrder] = useState("A-Z");
+    const [sortOrder, setSortOrder] = useState("A-Z")
     const [currentPage, setCurrentPage] = useState(1);
     const pageSize = 6;
     const [totalCollections, setTotalCollections] = useState(0);
@@ -49,10 +50,10 @@ const LandingPage = () => {
                 <div className="mx-auto max-w-screen-xl px-4 lg:px-12">
 
                     {/* Hero */}
-                    <section className="hero py-6 bg-gray-50 dark:bg-gray-900">
-                        <div className="pt-8 flex flex-col lg:flex-row items-center justify-between gap-8">
+                    <section className="hero bg-gray-50 dark:bg-gray-900">
+                        <div className="mt-24 flex flex-col lg:flex-row items-center justify-between gap-8">
                             {/* LEWA KOLUMNA */}
-                            <div className="flex-1 text-left py-4">
+                            <div className="flex-1 text-left pb-10">
                                 <h1 className="text-2xl font-semibold mb-4">
                                     Cyfrowe repozytorium wiedzy kulturowej i naukowej
                                 </h1>
@@ -80,7 +81,7 @@ const LandingPage = () => {
                                 <div className="mt-8">
                                     <button
                                         onClick={scrollToCollections}
-                                        className="text-lg font-normal text-gray-500 dark:text-gray-400 hover:text-gray-600 flex items-center gap-2 border-0 bg-transparent p-1"
+                                        className="text-lg font-normal p-1 text-gray-500 dark:text-gray-400 hover:text-gray-600 flex items-center gap-2 border-0 bg-transparent dark:border-0 dark:bg-transparent"
                                     >
                                         <span>Przeglądaj bez logowania</span>
                                         <ArrowRight className="w-4 h-4"/>
@@ -89,13 +90,15 @@ const LandingPage = () => {
                             </div>
 
                             {/* PRAWA KOLUMNA */}
-                            <div className="flex-1 flex items-center justify-center pb-6">
-                                <HeroGraphic className="max-w-xs w-full h-auto max-h-80"/>
+                            <div className="flex-1 flex items-center justify-center">
+                                <HeroGraphic className="max-w-lg w-auto h-full max-h-lg block dark:hidden" />
+                                <HeroGraphicDark className="max-w-lg w-auto h-full max-h-lg hidden dark:block" />
                             </div>
                         </div>
                     </section>
                 </div>
 
+                {/*TODO change icons + icons in dark mode*/}
                 <section className="bg-white dark:bg-gray-800 py-16 w-full">
                     <div className="max-w-screen-xl mx-auto px-4 lg:px-12">
                         <h2 className="text-2xl font-semibold mb-12 text-center">Jak działa Ethnopedia?</h2>
@@ -103,7 +106,7 @@ const LandingPage = () => {
                             <div className="flex flex-col items-center">
                                 <AddCollection className="w-12 h-12 mb-4 text-gray-700"/>
                                 <h3 className="text-lg font-medium mb-2">Utwórz kolekcję</h3>
-                                <p className="text-gray-600 text-sm max-w-xs">
+                                <p className="text-gray-600 dark:text-gray-300 text-sm max-w-xs">
                                     Kolekcja to zbiór metadanych o ustalonej strukturze, który może dotyczyć różnych
                                     zasobów, takich jak nagrania audio, zdjęcia, dokumenty i inne dane.
                                 </p>
@@ -111,7 +114,7 @@ const LandingPage = () => {
                             <div className="flex flex-col items-center">
                                 <StructureIcon className="w-12 h-12 mb-4 text-gray-700"/>
                                 <h3 className="text-lg font-medium mb-2">Zaprojektuj strukturę</h3>
-                                <p className="text-gray-600 text-sm max-w-xs">
+                                <p className="text-gray-600 dark:text-gray-300 text-sm max-w-xs">
                                     Określ kategorie, które będą opisem Twoich danych. System pozwala tworzyć
                                     rozbudowane, hierarchiczne układy metadanych.
                                 </p>
@@ -119,7 +122,7 @@ const LandingPage = () => {
                             <div className="flex flex-col items-center">
                                 <AddRecord className="w-12 h-12 mb-4 text-gray-700"/>
                                 <h3 className="text-lg font-medium mb-2">Dodawaj rekordy</h3>
-                                <p className="text-gray-600 text-sm max-w-xs">
+                                <p className="text-gray-600 dark:text-gray-300 text-sm max-w-xs">
                                     Wprowadzaj opisy poszczególnych obiektów zgodnie z ustaloną strukturą kolekcji.
                                     Każdy rekord to komplet metadanych.
                                 </p>
@@ -127,7 +130,7 @@ const LandingPage = () => {
                             <div className="flex flex-col items-center">
                                 <SearchCollection className="w-12 h-12 mb-4 text-gray-700"/>
                                 <h3 className="text-lg font-medium mb-2">Wyszukuj i przeglądaj dane</h3>
-                                <p className="text-gray-600 text-sm max-w-xs">
+                                <p className="text-gray-600 dark:text-gray-300 text-sm max-w-xs">
                                     Korzystaj z wygodnych narzędzi wyszukiwania i filtrowania, aby szybko znaleźć
                                     potrzebne informacje w swoich zbiorach.
                                 </p>
@@ -147,7 +150,7 @@ const LandingPage = () => {
                                     {value: "Z-A", label: "Kolekcja malejąco"},
                                 ]}
                                 onSelect={(value: string) => setSortOrder(value)}
-                                sortOrder={sortOrder}
+                                sortOrder=""
                                 setCurrentPage={() => {
                                 }}
                             />
