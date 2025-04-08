@@ -27,7 +27,8 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
     const [showImportOptions, setShowImportOptions] = useState<boolean>(false);
     const [showExportOptions, setShowExportOptions] = useState<boolean>(false);
     const [showDeleteRecordsWarning, setShowDeleteRecordsWarning] = useState(false);
-    const [sortOrder, setSortOrder] = useState<string>("Tytuł-asc");
+    const [sortCategory, setSortCategory] = useState<string>("");
+    const [sortDirection, setSortDirection] = useState<string>("asc");
     // Stan dla multiselect – kategorie, które mają być wyświetlane
     const [selectedDisplayCategories, setSelectedDisplayCategories] = useState<string[]>([]);
     const { jwtToken } = useUser();
@@ -54,18 +55,19 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
     };
 
     const { data: artworkData } = useQuery({
-        queryKey: ["artwork", currentPage, location.search, location, sortOrder],
+        queryKey: ["artwork", currentPage, location.search, sortCategory, sortDirection],
         queryFn: () =>
             getArtworksForCollectionPage(
                 collection as string,
                 currentPage,
                 pageSize,
-                sortOrder,
+                `${sortCategory}-${sortDirection}`, // scalamy kategorię i kierunek w jeden parametr
                 new URLSearchParams(location.search).get("searchText"),
                 Object.fromEntries(new URLSearchParams(location.search).entries())
             ),
         enabled: !!collection,
     });
+
 
     const { data: collectionData } = useQuery({
         queryKey: [collection],
@@ -96,9 +98,20 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
     });
 
 
-    const sortOptions = categoriesData?.categories?.flatMap((category: string) => [
-        { value: `${category}`, label: `${category}` }
-    ]);
+    // Ustaw domyślnie wybraną kategorię sortowania na pierwszą kategorię z listy (jeśli istnieje)
+    useEffect(() => {
+        if (categoriesData && categoriesData.categories && categoriesData.categories.length > 0 && !sortCategory) {
+            setSortCategory(categoriesData.categories[0]);
+        }
+    }, [categoriesData, sortCategory]);
+
+// Przygotowanie opcji – każda kategoria pojawia się tylko raz
+    const categoryOptions: Option[] =
+        categoriesData?.categories?.map((cat: string) => ({
+            value: cat,
+            label: cat,
+        })) || [];
+
 
     // Ustaw domyślnie pierwsze 3 kategorie, jeśli jeszcze nie wybrano żadnych
     useEffect(() => {
@@ -199,13 +212,6 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
         value: string;
         label: string;
     };
-
-    // Przygotowanie opcji z kategorii
-    const categoryOptions: Option[] =
-        categoriesData?.categories?.map((cat: string) => ({
-            value: cat,
-            label: cat,
-        })) || [];
 
     // Dodanie opcji specjalnych na początku listy
     const customOptions = [
@@ -343,8 +349,8 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                     </div>
                     {showImportOptions && <ImportOptions onClose={() => setShowImportOptions(false)} collectionData={collectionData}/>}
                     {showExportOptions && <ExportOptions onClose={() => setShowExportOptions(false)} selectedArtworks={selectedArtworks} />}
-                    <div className="flex w-full md:w-auto pt-4 flex-row items-center">
-                        <p className="pr-2 text-sm">Wyświetlane kategorie:</p>
+                    <div className="flex w-full md:w-auto pt-4 flex-row items-center text-sm">
+                        <p className="pr-2">Wyświetlane kategorie:</p>
                         <DisplayCategoriesSelect
                             selectedDisplayCategories={selectedDisplayCategories}
                             setSelectedDisplayCategories={setSelectedDisplayCategories}
@@ -352,13 +358,15 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                             customOptions={customOptions}     // wcześniej zdefiniowana tablica z opcjami specjalnymi i zwykłymi
                             formatOptionLabel={formatOptionLabel} // funkcja wyróżniająca opcje specjalne
                         />
-                        <p className="pl-2 pr-2 text-sm">Sortuj według:</p>
-                        {sortOptions && (
+                        <p className="pl-2 pr-2">Sortuj według:</p>
+                        {categoryOptions && (
                             <SortOptions
-                                options={sortOptions}
-                                onSelect={(field, order) => setSortOrder(`${field}_${order}`)}
-                                sortOrder={sortOrder.split("_")[1]} // żeby przekazać tylko 'asc' lub 'desc'
-                                setCurrentPage={setCurrentPage}
+                            options={categoryOptions}
+                            sortCategory={sortCategory}
+                            sortDirection={sortDirection}
+                            onSelectCategory={setSortCategory}
+                            onSelectDirection={setSortDirection}
+                            setCurrentPage={setCurrentPage}
                             />
                         )}
                     </div>

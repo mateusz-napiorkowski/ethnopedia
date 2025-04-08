@@ -1,37 +1,32 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
-interface Option {
+export interface Option {
     value: string;
     label: string;
 }
 
 interface SortOptionsProps {
     options: Option[];
-    onSelect: (field: string, order: string) => void;
-    sortOrder: string; // 'asc' lub 'desc'
+    sortCategory: string;
+    sortDirection: string;
+    onSelectCategory: (value: string) => void;
+    onSelectDirection: (value: string) => void;
     setCurrentPage: (pageNumber: number) => void;
 }
 
 const SortOptions: React.FC<SortOptionsProps> = ({
                                                      options,
-                                                     onSelect,
-                                                     sortOrder,
+                                                     sortCategory,
+                                                     sortDirection,
+                                                     onSelectCategory,
+                                                     onSelectDirection,
                                                      setCurrentPage,
                                                  }) => {
-    const [selectedOption, setSelectedOption] = useState<string>(options[0]?.value || "");
     const [open, setOpen] = useState<boolean>(false);
-    const [currentSortOrder, setCurrentSortOrder] = useState<string>(sortOrder); // 'asc' lub 'desc'
     const dropdownRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLDivElement>(null);
     const [dropdownWidth, setDropdownWidth] = useState<string>("auto");
 
-    useEffect(() => {
-        if (options.some(opt => opt.value === selectedOption)) return;
-        setSelectedOption(options[0]?.value || "");
-    }, [options]);
-
-
-    // Zamknięcie dropdowna po kliknięciu poza komponentem
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -42,7 +37,6 @@ const SortOptions: React.FC<SortOptionsProps> = ({
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    // Oblicz szerokość na podstawie najdłuższego tekstu
     useEffect(() => {
         if (buttonRef.current) {
             const longestOption = options.reduce(
@@ -60,60 +54,77 @@ const SortOptions: React.FC<SortOptionsProps> = ({
         }
     }, [options]);
 
-    const handleSelect = (value: string) => {
-        setSelectedOption(value);
-        onSelect(value, currentSortOrder);
+    const handleSelectCategory = (value: string) => {
+        onSelectCategory(value);
         setCurrentPage(1);
         setOpen(false);
     };
 
-    const toggleSortOrder = () => {
-        const newSortOrder = currentSortOrder === "asc" ? "desc" : "asc";
-        setCurrentSortOrder(newSortOrder);
-        onSelect(selectedOption, newSortOrder);
+    const toggleSortDirection = () => {
+        onSelectDirection(sortDirection === "asc" ? "desc" : "asc");
+        setCurrentPage(1);
     };
 
     return (
-        <div className="relative flex items-center text-sm" ref={dropdownRef}>
-            <div
-                ref={buttonRef}
-                onClick={() => setOpen(!open)}
-                className="cursor-pointer py-2 px-4 border bg-white dark:bg-gray-800 border-gray-300 rounded-lg flex items-center justify-between"
-                style={{ minWidth: dropdownWidth }}
+        <div className="flex items-center space-x-1">
+            <div className="relative" ref={dropdownRef}>
+                <div
+                    ref={buttonRef}
+                    onClick={() => setOpen((prev) => !prev)}
+                    className="cursor-pointer py-2 px-4 border bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-sm rounded-lg flex items-center justify-between"
+                    style={{ minWidth: dropdownWidth }}
+                >
+                    <span>{options.find((opt) => opt.value === sortCategory)?.label || "Wybierz kategorię"}</span>
+                    <svg
+                        className={`h-4 w-4 ml-2 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                </div>
+                {open && (
+                    <div
+                        className="absolute top-full mt-1 z-10 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-md max-h-52 overflow-y-auto"
+                        style={{ minWidth: dropdownWidth }}
+                    >
+                        {options.map((option) => (
+                            <div
+                                key={option.value}
+                                onClick={() => handleSelectCategory(option.value)}
+                                className="cursor-pointer py-2 px-4 hover:bg-gray-200 dark:hover:bg-gray-700"
+                            >
+                                {option.label}
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            <button
+                onClick={toggleSortDirection}
+                className="p-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                aria-label="Zmień kierunek sortowania"
+                title={sortDirection === "asc" ? "Sortuj malejąco" : "Sortuj rosnąco"}
             >
-                <span>{options.find(opt => opt.value === selectedOption)?.label || "Wybierz kategorię"}</span>
-                {/* Strzałka dla rozwijanej listy */}
                 <svg
-                    className={`h-4 w-4 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+                    className={`h-5 w-5 text-gray-700 dark:text-gray-200 transition-transform duration-200 ${
+                        sortDirection === "asc" ? "rotate-180" : ""
+                    }`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
                 >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 4v16m0 0l6-6m-6 6l-6-6"
+                    />
                 </svg>
-            </div>
-            {open && (
-                <div
-                    className="absolute top-full mt-1 z-10 bg-white dark:bg-gray-800 border border-gray-300 rounded shadow-md max-h-52 overflow-y-auto"
-                    style={{ minWidth: dropdownWidth }}
-                >
-                    {options.map((option, index) => (
-                        <div
-                            key={index}
-                            onClick={() => handleSelect(option.value)}
-                            className="cursor-pointer py-2 px-4 hover:bg-gray-200 dark:hover:bg-gray-700"
-                        >
-                            {option.label}
-                        </div>
-                    ))}
-                </div>
-            )}
-            {/* Przycisk z strzałką obok rozwijanej listy */}
-            <button
-                onClick={toggleSortOrder}
-                className="ml-2 p-2 text-sm text-gray-600 dark:text-gray-300 border rounded-lg"
-            >
-                {currentSortOrder === "asc" ? "↑" : "↓"}
+
+
             </button>
         </div>
     );
