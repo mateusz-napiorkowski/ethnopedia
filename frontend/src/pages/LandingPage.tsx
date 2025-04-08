@@ -10,17 +10,22 @@ import { ReactComponent as SearchCollection } from "../assets/icons/SearchCollec
 import SortOptions from "../components/SortOptions";
 import { getAllCollections } from "../api/collections";
 import { Collection } from "../@types/Collection";
+import Pagination from "../components/Pagination";
 
 const LandingPage = () => {
     const navigate = useNavigate();
     const [collections, setCollections] = useState<Collection[]>([]);
     const [sortOrder, setSortOrder] = useState("A-Z");
+    const [currentPage, setCurrentPage] = useState(1);
+    const pageSize = 6;
+    const [totalCollections, setTotalCollections] = useState(0);
 
     useEffect(() => {
-        getAllCollections(1, 10).then((data) => {
+        getAllCollections(currentPage, pageSize).then((data) => {
             setCollections(data.collections);
+            setTotalCollections(data.total);
         });
-    }, []);
+    }, [currentPage]);
 
     const sortedCollections = [...collections].sort((a, b) => {
         if (sortOrder === "A-Z") {
@@ -39,7 +44,7 @@ const LandingPage = () => {
 
     return (
         <div className="flex flex-col h-full w-full">
-            <Navbar />
+            <Navbar/>
             <section className="h-full">
                 <div className="mx-auto max-w-screen-xl px-4 lg:px-12">
 
@@ -78,25 +83,25 @@ const LandingPage = () => {
                                         className="text-lg font-normal text-gray-500 dark:text-gray-400 hover:text-gray-600 flex items-center gap-2 border-0 bg-transparent p-1"
                                     >
                                         <span>Przeglądaj bez logowania</span>
-                                        <ArrowRight className="w-4 h-4" />
+                                        <ArrowRight className="w-4 h-4"/>
                                     </button>
                                 </div>
                             </div>
 
                             {/* PRAWA KOLUMNA */}
                             <div className="flex-1 flex items-center justify-center pb-6">
-                                <HeroGraphic className="max-w-xs w-full h-auto max-h-80" />
+                                <HeroGraphic className="max-w-xs w-full h-auto max-h-80"/>
                             </div>
                         </div>
                     </section>
                 </div>
 
-                <section className="bg-white dark:bg-gray-800 py-14 w-full">
+                <section className="bg-white dark:bg-gray-800 py-16 w-full">
                     <div className="max-w-screen-xl mx-auto px-4 lg:px-12">
-                        <h2 className="text-2xl font-semibold mb-10 text-center">Jak działa Ethnopedia?</h2>
+                        <h2 className="text-2xl font-semibold mb-12 text-center">Jak działa Ethnopedia?</h2>
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
                             <div className="flex flex-col items-center">
-                                <AddCollection className="w-12 h-12 mb-4 text-gray-700" />
+                                <AddCollection className="w-12 h-12 mb-4 text-gray-700"/>
                                 <h3 className="text-lg font-medium mb-2">Utwórz kolekcję</h3>
                                 <p className="text-gray-600 text-sm max-w-xs">
                                     Kolekcja to zbiór metadanych o ustalonej strukturze, który może dotyczyć różnych
@@ -104,7 +109,7 @@ const LandingPage = () => {
                                 </p>
                             </div>
                             <div className="flex flex-col items-center">
-                                <StructureIcon className="w-12 h-12 mb-4 text-gray-700" />
+                                <StructureIcon className="w-12 h-12 mb-4 text-gray-700"/>
                                 <h3 className="text-lg font-medium mb-2">Zaprojektuj strukturę</h3>
                                 <p className="text-gray-600 text-sm max-w-xs">
                                     Określ kategorie, które będą opisem Twoich danych. System pozwala tworzyć
@@ -112,7 +117,7 @@ const LandingPage = () => {
                                 </p>
                             </div>
                             <div className="flex flex-col items-center">
-                                <AddRecord className="w-12 h-12 mb-4 text-gray-700" />
+                                <AddRecord className="w-12 h-12 mb-4 text-gray-700"/>
                                 <h3 className="text-lg font-medium mb-2">Dodawaj rekordy</h3>
                                 <p className="text-gray-600 text-sm max-w-xs">
                                     Wprowadzaj opisy poszczególnych obiektów zgodnie z ustaloną strukturą kolekcji.
@@ -120,7 +125,7 @@ const LandingPage = () => {
                                 </p>
                             </div>
                             <div className="flex flex-col items-center">
-                                <SearchCollection className="w-12 h-12 mb-4 text-gray-700" />
+                                <SearchCollection className="w-12 h-12 mb-4 text-gray-700"/>
                                 <h3 className="text-lg font-medium mb-2">Wyszukuj i przeglądaj dane</h3>
                                 <p className="text-gray-600 text-sm max-w-xs">
                                     Korzystaj z wygodnych narzędzi wyszukiwania i filtrowania, aby szybko znaleźć
@@ -135,15 +140,16 @@ const LandingPage = () => {
                 <div className="mx-auto max-w-screen-xl px-4 lg:px-12">
                     <section id="collections-section" className="py-12 mt-4 bg-gray-50 dark:bg-gray-900">
                         <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-xl">Przeglądaj istniejące kolekcje:</h2>
+                            <h2 className="text-xl font-semibold px-4">Przeglądaj istniejące kolekcje:</h2>
                             <SortOptions
                                 options={[
-                                    { value: "A-Z", label: "Kolekcja rosnąco" },
-                                    { value: "Z-A", label: "Kolekcja malejąco" },
+                                    {value: "A-Z", label: "Kolekcja rosnąco"},
+                                    {value: "Z-A", label: "Kolekcja malejąco"},
                                 ]}
                                 onSelect={(value: string) => setSortOrder(value)}
                                 sortOrder={sortOrder}
-                                setCurrentPage={() => {}}
+                                setCurrentPage={() => {
+                                }}
                             />
                         </div>
 
@@ -154,7 +160,7 @@ const LandingPage = () => {
                                     className="relative group px-4 py-3 bg-white dark:bg-gray-800 shadow-md rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                                     onClick={() =>
                                         navigate(`/collections/${collection.name}/artworks`, {
-                                            state: { collectionId: collection.id },
+                                            state: {collectionId: collection.id},
                                         })
                                     }
                                 >
@@ -181,6 +187,16 @@ const LandingPage = () => {
                     </section>
                 </div>
             </section>
+
+            <div className="flex justify-center mb-6">
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={Math.ceil(totalCollections / pageSize)}
+                    setCurrentPage={setCurrentPage}
+                    onPageChange={() => {}}
+                />
+            </div>
+
         </div>
     );
 };
