@@ -54,7 +54,7 @@ const ArtworkPage = () => {
             }
             <section className="p-2 sm:p-4">
                 <div className="mx-auto max-w-screen-xl lg:px-6">
-                    <Navigation artworkTitle={findCategoryValue(artworkData, "Tytuł")}/>
+                    <Navigation />
                     <ArtworkDetails
                         collectionName={artworkData.collectionName}
                         detailsToShow={artworkData}
