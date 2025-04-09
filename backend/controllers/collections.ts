@@ -4,8 +4,8 @@ import { authAsyncWrapper } from "../middleware/auth"
 import Artwork from "../models/artwork";
 import CollectionCollection from "../models/collection";
 import {hasValidCategoryFormat} from "../utils/categories";
-import { artworkCategory, collectionCategory } from "../utils/interfaces";
 import { updateArtworkCategories } from "../utils/artworks";
+import { isValidCollectionCategoryStructureForCollectionUpdate } from "../utils/categories";
 
 export const getAllCollections = async (req: Request, res: Response) => {
     try {
@@ -167,6 +167,8 @@ export const updateCollection = authAsyncWrapper(async (req: Request, res: Respo
             const artworks = await Artwork.find({ collectionName: collection.name }, null, { session });
             await Promise.all(artworks.map(async (artwork: any) => {
                 artwork.collectionName = name;
+                if(!isValidCollectionCategoryStructureForCollectionUpdate(artwork.categories, categories))
+                    throw Error("Incorrect request body provided")
                 artwork.categories = updateArtworkCategories(artwork.categories, categories)
                 await artwork.save({ session });
             }));

@@ -1,14 +1,17 @@
 import { getAllCategories } from "./categories";
 import { artworkCategory, collectionCategory } from "./interfaces";
 
-export const updateArtworkCategories = (subcategories: Array<artworkCategory>, collectionSubcategories: Array<collectionCategory>) => {
-    const newArtworkCategories: any = []
+export const updateArtworkCategories = (artworkSubcategories: Array<artworkCategory>, collectionSubcategories: Array<collectionCategory>) => {
+    const newArtworkCategories: Array<artworkCategory> = []
     for(const [categoryIndex, category] of collectionSubcategories.entries()) {
-        if(!subcategories[categoryIndex]) {
-            newArtworkCategories.push({name: category.name, value: "", subcategories: updateArtworkCategories([], collectionSubcategories[categoryIndex].subcategories)})
-        } else {
-            newArtworkCategories.push({name: category.name, value: subcategories[categoryIndex].value, subcategories: updateArtworkCategories(subcategories[categoryIndex].subcategories, collectionSubcategories[categoryIndex].subcategories)})
-        }
+        newArtworkCategories.push({
+            name: category.name,
+            value: artworkSubcategories[categoryIndex] ? artworkSubcategories[categoryIndex].value : "",
+            subcategories: updateArtworkCategories(
+                artworkSubcategories[categoryIndex] ? artworkSubcategories[categoryIndex].subcategories : [],
+                collectionSubcategories[categoryIndex].subcategories
+            )
+        })
     }
     return newArtworkCategories
 }
