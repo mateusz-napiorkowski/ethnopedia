@@ -4,6 +4,7 @@ import { ReactComponent as Fold } from "../../assets/icons/minus.svg";
 import { ReactComponent as EditIcon } from "../../assets/icons/edit.svg";
 import { ReactComponent as TrashBinIcon } from "../../assets/icons/trashBin.svg";
 import { useUser } from "../../providers/UserProvider";
+import {useNavigate} from "react-router-dom";
 
 interface Category {
     name: string;
@@ -26,6 +27,7 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
                                                        }) => {
     const { jwtToken } = useUser();
     const [expanded, setExpanded] = useState<{ [key: string]: boolean }>({});
+    const navigate = useNavigate();
 
     const toggle = (key: string) => {
         setExpanded(prev => ({ ...prev, [key]: !prev[key] }));
@@ -36,8 +38,7 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
             {categories.map((category) => (
                 <li
                     key={category.name}
-                    style={{ marginLeft: `${level * 16}px` }}
-                    // className="py-2 border border-gray-200 rounded mb-2 bg-gray-50"
+                    style={{ marginLeft: level > 0 ? `16px` : '0' }}
                     className="mb-2 bg-gray-50 dark:bg-gray-700"
                 >
                     <div className="flex justify-between items-center p-2">
@@ -69,7 +70,7 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
 
 
     return (
-        <div className="max-w-3xl mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+        <div className="max-w-3xl mx-auto mt-4 bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
             {/* Nagłówek */}
             <div className="mb-4 border-b pb-2">
                 <p className="text-lg text-gray-500 dark:text-gray-300">
@@ -81,13 +82,19 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
             {/* Przyciski akcji */}
             <div className="mt-10 flex justify-end space-x-4">
                 <button
+                    onClick={() => navigate(-1)}
+                    className="text-sm text-blue-600 hover:underline rounded"
+                >
+                    ← Powrót do kolekcji
+                </button>
+                <button
                     disabled={!jwtToken}
                     onClick={handleEditClick}
                     className={`flex items-center px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors ${
                         !jwtToken ? "opacity-50 cursor-not-allowed" : ""
                     }`}
                 >
-                    <EditIcon className="w-5 h-5" />
+                    <EditIcon className="w-5 h-5"/>
                     <span className="ml-2">Edytuj</span>
                 </button>
                 <button
@@ -97,7 +104,7 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
                         !jwtToken ? "opacity-50 cursor-not-allowed" : ""
                     }`}
                 >
-                    <TrashBinIcon className="w-5 h-5" />
+                    <TrashBinIcon className="w-5 h-5"/>
                     <span className="ml-2">Usuń</span>
                 </button>
             </div>
