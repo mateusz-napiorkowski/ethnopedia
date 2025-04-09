@@ -190,7 +190,7 @@ const CreateCollectionPage = () => {
                                         <button
                                             type="button"
                                             onClick={() => navigate(-1)}
-                                            className="px-4 py-2 mr-2 color-button"
+                                            className="px-4 py-2 mr-2"
                                         >
                                             Anuluj
                                         </button>

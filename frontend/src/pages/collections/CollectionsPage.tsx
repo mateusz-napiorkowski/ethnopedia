@@ -99,7 +99,7 @@ const CollectionsPage = () => {
 
         // Opcje dla sortowania kategorii – tutaj mamy tylko jedną opcję (sortuj po nazwie)
         const categorySortOptions: Option[] = [
-            { value: "name", label: "Kolekcja" }
+            { value: "name", label: "Nazwa kolekcji" }
         ];
 
         return (

@@ -144,7 +144,7 @@ const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, collection
   };
 
   return (
-      <div style={{ overflowY: 'auto', height: '70vh', minWidth: '2000px'}}> {/* TODO */}
+      <div style={{ overflowY: 'auto', height: 'auto', minWidth: '2000px'}}> {/* TODO */}
         <div className="m-4">
           <form>
             {formDataList.map((formData, index) => (

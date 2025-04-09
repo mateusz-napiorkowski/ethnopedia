@@ -53,7 +53,7 @@ const ArtworkPage = () => {
                 />
             }
             <section className="p-2 sm:p-4">
-                <div className="mx-auto max-w-screen-xl lg:px-6">
+                <div className="max-w-3xl mx-auto lg:px-6">
                     <Navigation />
                     <ArtworkDetails
                         collectionName={artworkData.collectionName}

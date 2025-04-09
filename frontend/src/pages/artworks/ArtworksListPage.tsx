@@ -29,30 +29,35 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
     const [showDeleteRecordsWarning, setShowDeleteRecordsWarning] = useState(false);
     const [sortCategory, setSortCategory] = useState<string>("");
     const [sortDirection, setSortDirection] = useState<string>("asc");
-    // Stan dla multiselect – kategorie, które mają być wyświetlane
     const [selectedDisplayCategories, setSelectedDisplayCategories] = useState<string[]>([]);
     const { jwtToken } = useUser();
-
     const location = useLocation();
-
     const { collectionId } = location.state as { collectionId?: string } || {};
-
     const [currentPage, setCurrentPage] = useState(1);
     const { collection } = useParams<string>();
     const queryClient = useQueryClient();
     const navigate = useNavigate();
 
     // Funkcja wyszukująca wartość dla danej kategorii
-    const findValue = (artwork: any, categoryName: string) => {
-        let val = "";
-        artwork.categories.forEach((category: any) => {
-            if (category.name === categoryName) {
-                val = category.value;
-                return;
+    const findValue = (artwork: any, categoryPath: any): string => {
+        const parts = categoryPath.split(".");
+
+        const searchCategory = (categories: any[], parts: string[]): string => {
+            if (parts.length === 0) return "";
+            const current = categories.find((cat) => cat.name === parts[0]);
+            if (!current) return "";
+            if (parts.length === 1) {
+                return current.value || "";
             }
-        });
-        return val;
+            if (current.subcategories && current.subcategories.length > 0) {
+                return searchCategory(current.subcategories, parts.slice(1));
+            }
+            return "";
+        };
+
+        return searchCategory(artwork.categories, parts);
     };
+
 
     const { data: artworkData } = useQuery({
         queryKey: ["artwork", currentPage, location.search, sortCategory, sortDirection],
@@ -105,7 +110,7 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
         }
     }, [categoriesData, sortCategory]);
 
-// Przygotowanie opcji – każda kategoria pojawia się tylko raz
+    // Przygotowanie opcji – lista wszyskich kategorii
     const categoryOptions: Option[] =
         categoriesData?.categories?.map((cat: string) => ({
             value: cat,
