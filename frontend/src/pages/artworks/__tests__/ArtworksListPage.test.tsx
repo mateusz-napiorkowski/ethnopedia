@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import { render, waitFor } from '@testing-library/react'
-import ArtworksList from "../ArtworksList"
+import ArtworksListPage from "../ArtworksListPage"
 import { QueryClient, QueryClientProvider } from "react-query";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
@@ -50,7 +50,7 @@ const renderPage = (
                 <QueryClientProvider client={queryClient}>
                     <MemoryRouter initialEntries={[`/collections/${collection}/artworks/`]}>
                         <Routes>
-                            <Route path="/collections/:collection/artworks/" element={<ArtworksList pageSize={pageSize}/>}/>
+                            <Route path="/collections/:collection/artworks/" element={<ArtworksListPage pageSize={pageSize}/>}/>
                         </Routes>  
                     </MemoryRouter>
                 </QueryClientProvider>    
@@ -58,7 +58,7 @@ const renderPage = (
         );
 };
 
-describe("ArtworksList tests", () => {
+describe("ArtworksListPage tests", () => {
     beforeEach(() => {
         jest.clearAllMocks();
         queryClient.clear();

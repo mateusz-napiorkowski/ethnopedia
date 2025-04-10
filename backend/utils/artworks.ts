@@ -1,4 +1,20 @@
 import { getAllCategories } from "./categories";
+import { artworkCategory, collectionCategory } from "./interfaces";
+
+export const updateArtworkCategories = (artworkSubcategories: Array<artworkCategory>, collectionSubcategories: Array<collectionCategory>) => {
+    const newArtworkCategories: Array<artworkCategory> = []
+    for(const [categoryIndex, category] of collectionSubcategories.entries()) {
+        newArtworkCategories.push({
+            name: category.name,
+            value: artworkSubcategories[categoryIndex] ? artworkSubcategories[categoryIndex].value : "",
+            subcategories: updateArtworkCategories(
+                artworkSubcategories[categoryIndex] ? artworkSubcategories[categoryIndex].subcategories : [],
+                collectionSubcategories[categoryIndex].subcategories
+            )
+        })
+    }
+    return newArtworkCategories
+}
 
 const fillSubcategoriesFilterPart: any = (searchText: string, currentDepth: number, maxDepth: number) => {
     if (maxDepth === 0) return []

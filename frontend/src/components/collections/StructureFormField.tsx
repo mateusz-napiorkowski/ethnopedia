@@ -11,16 +11,18 @@ interface FormFieldProps {
     handleInputChange: (index: string, e: React.ChangeEvent<HTMLInputElement>) => void;
     handleRemove: (index: string) => void;
     handleAddSubcategory: (index: string) => void;
+    isEditMode: boolean;
 }
 
 const StructureFormField: React.FC<FormFieldProps> = ({
-                                                 formData,
-                                                 formDataList,
-                                                 index,
-                                                 level,
-                                                 handleInputChange,
-                                                 handleRemove,
-                                                 handleAddSubcategory,
+                                                          formData,
+                                                          formDataList,
+                                                          index,
+                                                          level,
+                                                          handleInputChange,
+                                                          handleRemove,
+                                                          handleAddSubcategory,
+                                                          isEditMode,
                                              }) => {
     const [isHovered, setIsHovered] = useState(false);
 
@@ -48,7 +50,10 @@ const StructureFormField: React.FC<FormFieldProps> = ({
                         onChange={(e) => handleInputChange(index, e)}
                         // placeholder={`[${index}] Podaj nazwę kategorii...`}
                         placeholder={`Podaj nazwę kategorii...`}
-                        className="p-2 border rounded"
+                        // className="p-2 border rounded"
+                        className={`p-2 border rounded ${
+                            formData.isNew ? 'border-green-500' : 'border-gray-300'
+                        }`}
                     />
                 </label>
                 <div className="actions ml-1 space-x-1">
@@ -61,7 +66,7 @@ const StructureFormField: React.FC<FormFieldProps> = ({
                             <PlusIcon />
                         </button>
                     )}
-                    {isHovered && (
+                    {isHovered && formData.isNew && (
                         <button
                             type="button"
                             onClick={() => handleRemove(index)}
@@ -88,6 +93,7 @@ const StructureFormField: React.FC<FormFieldProps> = ({
                                     handleInputChange={handleInputChange}
                                     handleRemove={handleRemove}
                                     handleAddSubcategory={handleAddSubcategory}
+                                    isEditMode={isEditMode}
                                 />
                             </div>
                         );

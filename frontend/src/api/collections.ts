@@ -39,6 +39,26 @@ export const createCollection = async (name: any, description: any, categories: 
         .then(res => res.data)
 }
 
+export const updateCollection = async (
+    id: string,
+    name: string,
+    description: string,
+    categories: Category[],
+    jwtToken: string
+) => {
+    console.log("Frontend API: id:", id, "name:", name, description, categories);
+    console.log("Type of collectionId:", typeof id);
+    const config = {
+        headers: { Authorization: `Bearer ${jwtToken}` },
+    };
+    const res = await axios.put(
+        `${API_URL}v1/collection/edit/${id}`,
+        { name, description, categories },
+        config
+    );
+    return res.data;
+};
+
 export const useBatchDeleteCollectionMutation = () => {
     return useMutation(async (data: Array<any>) => {
         const url = `${API_URL}v1/collection/delete`

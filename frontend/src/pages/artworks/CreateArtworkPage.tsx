@@ -45,7 +45,7 @@ const convertToJson = (data: string[]): Metadata[] => {
 };
 
 
-const CreateArtwork: React.FC = () => {
+const CreateArtworkPage: React.FC = () => {
     const location = useLocation();
     // const { collectionId } = useParams<{ collectionId: string }>();
     const queryClient = useQueryClient();
@@ -168,7 +168,7 @@ const CreateArtwork: React.FC = () => {
                                         <button
                                             type="button"
                                             onClick={() => navigate(-1)}
-                                            className="px-4 py-2 mr-2 color-button"
+                                            className="px-4 py-2 mr-2"
                                         >
                                             Anuluj
                                         </button>
@@ -190,4 +190,4 @@ const CreateArtwork: React.FC = () => {
     );
 };
 
-export default CreateArtwork;
+export default CreateArtworkPage;

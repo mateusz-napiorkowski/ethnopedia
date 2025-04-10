@@ -26,6 +26,16 @@ export const artworkCategoriesHaveValidFormat = (artworkCategories: Array<artwor
     });
 };
 
+export const isValidCollectionCategoryStructureForCollectionUpdate = (artworkSubcategories: Array<artworkCategory>, collectionSubcategories: Array<collectionCategory>): boolean => {
+    if(artworkSubcategories.length > collectionSubcategories.length) return false
+    return artworkSubcategories.every((artworkCategory, index) =>
+        isValidCollectionCategoryStructureForCollectionUpdate(
+          artworkCategory.subcategories,
+          collectionSubcategories[index].subcategories
+        )
+      );
+}
+
 const getNestedCategories = ((prefix: string, subcategories: Array<artworkCategory>) => {
     const nestedCategories: Array<string> = []
     for(const subcategory of subcategories) {

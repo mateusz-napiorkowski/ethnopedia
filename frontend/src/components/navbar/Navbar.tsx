@@ -5,7 +5,7 @@ import { ReactComponent as UserIcon } from "../../assets/icons/user-icon.svg"
 import { deleteAccount } from "../../api/auth"
 import { useMutation } from "react-query"
 import { useUser } from "../../providers/UserProvider"
-import WarningPopup from "../../pages/collections/WarningPopup"
+import WarningPopup from "../../pages/WarningPopup"
 
 const Navbar = () => {
     const location = useLocation()
@@ -22,13 +22,14 @@ const Navbar = () => {
         localStorage.removeItem("token")
         setUserData(false, "", "", "")
 
-        const lastUrlSegment = decodeURIComponent(location.pathname)
-            .split("/")
-            .filter(Boolean)
-            .pop()
-        if(lastUrlSegment === "create-artwork" || lastUrlSegment === "edit-artwork") {
-            navigate(-1)
-        }
+        // const lastUrlSegment = decodeURIComponent(location.pathname)
+        //     .split("/")
+        //     .filter(Boolean)
+        //     .pop()
+        // if(lastUrlSegment === "create-artwork" || lastUrlSegment === "edit-artwork") {
+        //     navigate(-1)
+        // }
+        navigate("/")
     }
 
     const deleteAccountmutation = useMutation(() => deleteAccount(userId, jwtToken as string), {

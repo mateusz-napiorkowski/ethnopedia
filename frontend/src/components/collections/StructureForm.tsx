@@ -10,9 +10,10 @@ import { Category } from '../../@types/Category';
 interface StructureFormProps {
   initialFormData: Category[];
   setFieldValue: (field: string, value: any, shouldValidate?: boolean) => void;
+  isEditMode: boolean;
 }
 
-const StructureForm: React.FC<StructureFormProps> = ({ initialFormData, setFieldValue }) => {
+const StructureForm: React.FC<StructureFormProps> = ({ initialFormData, setFieldValue, isEditMode }) => {
   const [formDataList, setFormDataList] = useState<Category[]>(initialFormData);
 
   useEffect(() => {
@@ -20,10 +21,6 @@ const StructureForm: React.FC<StructureFormProps> = ({ initialFormData, setField
   }, [formDataList, setFieldValue]);
 
   const [jsonOutput] = useState<string>('');
-  // const [jsonOutput, setJsonOutput] = useState<string>('');
-  // const handleShowJson = () => {
-  //   setJsonOutput(JSON.stringify(formDataList, null, 2));
-  // };
 
   const handleInputChange = (index: string, e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -57,19 +54,24 @@ const StructureForm: React.FC<StructureFormProps> = ({ initialFormData, setField
 
 
   const handleAddCategory = () => {
-    setFormDataList((prevDataList) => [...prevDataList, { name: '', subcategories: [] }]);
+    setFormDataList((prevDataList) => [
+      ...prevDataList,
+      { name: '', subcategories: [], isNew: true },
+    ]);
   };
+
 
   const handleAddSubcategory = (index: string) => {
     const indexParts = index.split('-').map(Number);
     setFormDataList((prevDataList) =>
-        addSubcategory(prevDataList, indexParts)
+        addSubcategory(prevDataList, indexParts, true) // Flaga dla nowych subkategorii
     );
   };
 
-  const addSubcategory = (dataList: Category[], indexParts: number[]): Category[] => {
+
+  const addSubcategory = (dataList: Category[], indexParts: number[], isNew: boolean): Category[] => {
     if (indexParts.length === 0) {
-      return [...dataList, { name: '', subcategories: [] }];
+      return [...dataList, { name: '', subcategories: [], isNew }];
     }
     const [currentIndex, ...remainingIndexParts] = indexParts;
     return dataList.map((item, i) => {
@@ -77,10 +79,10 @@ const StructureForm: React.FC<StructureFormProps> = ({ initialFormData, setField
         if (remainingIndexParts.length === 0) {
           return {
             ...item,
-            subcategories: [...(item.subcategories || []), { name: '', subcategories: [] }]
+            subcategories: [...(item.subcategories || []), { name: '', subcategories: [], isNew }],
           };
         } else {
-          const updatedSubcategories = addSubcategory(item.subcategories || [], remainingIndexParts);
+          const updatedSubcategories = addSubcategory(item.subcategories || [], remainingIndexParts, isNew);
           return { ...item, subcategories: updatedSubcategories };
         }
       } else {
@@ -88,6 +90,7 @@ const StructureForm: React.FC<StructureFormProps> = ({ initialFormData, setField
       }
     });
   };
+
 
   const handleRemove = (index: string) => {
     const indexParts = index.split('-').map(Number);
@@ -126,6 +129,7 @@ const StructureForm: React.FC<StructureFormProps> = ({ initialFormData, setField
                   handleInputChange={handleInputChange}
                   handleRemove={handleRemove}
                   handleAddSubcategory={handleAddSubcategory}
+                  isEditMode={isEditMode}
               />
           ))}
           <div className="actions mt-1">

@@ -9,52 +9,64 @@ import SearchComponent from "../../components/search/SearchComponent";
 import ImportOptions from "../../components/ImportOptions";
 import ExportOptions from "../../components/ExportOptions";
 import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg";
-import { HiOutlineCollection } from "react-icons/hi";
 import { ReactComponent as FileImportIcon } from "../../assets/icons/fileImport.svg";
 import { ReactComponent as FileExportIcon } from "../../assets/icons/fileExport.svg";
-import WarningPopup from "../collections/WarningPopup";
+import WarningPopup from "../WarningPopup";
 import SortOptions from "../../components/SortOptions";
 import Navigation from "../../components/Navigation";
 import Pagination from "../../components/Pagination";
 import { useUser } from "../../providers/UserProvider";
 import { getAllCategories } from "../../api/categories";
-import Select from "react-select";
+import DisplayCategoriesSelect, { Option } from "../../components/DisplayCategoriesSelect";
+import { ReactComponent as EditIcon } from "../../assets/icons/edit.svg"
+import EmptyCollectionMessage from "../../components/artwork/EmptyCollectionMessage";
 
-const ArtworksList = ({ pageSize = 10 }) => {
+
+const ArtworksListPage = ({ pageSize = 10 }) => {
     const [selectedArtworks, setSelectedArtworks] = useState<{ [key: string]: boolean }>({});
     const [showImportOptions, setShowImportOptions] = useState<boolean>(false);
     const [showExportOptions, setShowExportOptions] = useState<boolean>(false);
     const [showDeleteRecordsWarning, setShowDeleteRecordsWarning] = useState(false);
-    const [sortOrder, setSortOrder] = useState<string>("Tytuł-asc");
-    // Stan dla multiselect – kategorie, które mają być wyświetlane
+    const [sortCategory, setSortCategory] = useState<string>("");
+    const [sortDirection, setSortDirection] = useState<string>("asc");
     const [selectedDisplayCategories, setSelectedDisplayCategories] = useState<string[]>([]);
     const { jwtToken } = useUser();
     const location = useLocation();
+    // const { collectionId } = location.state as { collectionId?: string } || {};
     const [currentPage, setCurrentPage] = useState(1);
     const { collectionId } = useParams();
     const queryClient = useQueryClient();
     const navigate = useNavigate();
 
     // Funkcja wyszukująca wartość dla danej kategorii
-    const findValue = (artwork: any, categoryName: string) => {
-        let val = "";
-        artwork.categories.forEach((category: any) => {
-            if (category.name === categoryName) {
-                val = category.value;
-                return;
+    const findValue = (artwork: any, categoryPath: any): string => {
+        const parts = categoryPath.split(".");
+
+        const searchCategory = (categories: any[], parts: string[]): string => {
+            if (parts.length === 0) return "";
+            const current = categories.find((cat) => cat.name === parts[0]);
+            if (!current) return "";
+            if (parts.length === 1) {
+                return current.value || "";
             }
-        });
-        return val;
+            if (current.subcategories && current.subcategories.length > 0) {
+                return searchCategory(current.subcategories, parts.slice(1));
+            }
+            return "";
+        };
+
+        return searchCategory(artwork.categories, parts);
     };
 
+
     const { data: artworkData } = useQuery({
-        queryKey: ["artwork", currentPage, location.search, location, sortOrder],
+        queryKey: ["artwork", currentPage, location.search, sortCategory, sortDirection],
         queryFn: () =>
             getArtworksForCollectionPage(
                 collectionId as string,
                 currentPage,
                 pageSize,
-                sortOrder,
+                `${sortCategory}-${sortDirection}`, // scalamy kategorię i kierunek w jeden parametr
                 new URLSearchParams(location.search).get("searchText"),
                 Object.fromEntries(new URLSearchParams(location.search).entries())
             ),
@@ -68,16 +80,43 @@ const ArtworksList = ({ pageSize = 10 }) => {
         queryFn: () => getCollection(collectionId as string),
     });
 
+    const formatOptionLabel = (option: Option, { context }: { context: string }) => {
+        if (context === "menu") {
+            if (option.value === "select_all" || option.value === "deselect_all") {
+                return (
+                    <div
+                        className="text-gray-500 dark:text-gray-300 underline"
+                    >
+                        {option.label}
+                    </div>
+                );
+            }
+        }
+        return option.label;
+    };
+
+
     const { data: categoriesData } = useQuery({
         queryKey: ["allCategories", collectionId],
         queryFn: () => getAllCategories(collectionId as string),
         enabled: !!collectionId,
     });
 
-    const sortOptions = categoriesData?.categories?.flatMap((category: string) => [
-        { value: `${category}-asc`, label: `${category} rosnąco` },
-        { value: `${category}-desc`, label: `${category} malejąco` },
-    ]);
+
+    // Ustaw domyślnie wybraną kategorię sortowania na pierwszą kategorię z listy (jeśli istnieje)
+    useEffect(() => {
+        if (categoriesData && categoriesData.categories && categoriesData.categories.length > 0 && !sortCategory) {
+            setSortCategory(categoriesData.categories[0]);
+        }
+    }, [categoriesData, sortCategory]);
+
+    // Przygotowanie opcji – lista wszyskich kategorii
+    const categoryOptions: Option[] =
+        categoriesData?.categories?.map((cat: string) => ({
+            value: cat,
+            label: cat,
+        })) || [];
+
 
     // Ustaw domyślnie pierwsze 3 kategorie, jeśli jeszcze nie wybrano żadnych
     useEffect(() => {
@@ -126,33 +165,6 @@ const ArtworksList = ({ pageSize = 10 }) => {
         );
     }
 
-    // Komponent wyświetlany, gdy kolekcja jest pusta
-    const EmptyCollectionMessage = () => (
-        <div className="px-4 max-w-screen-xl pt-10 pb-10 py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4 border border-gray-300 dark:border-gray-600 cursor-pointer text-center">
-            <HiOutlineCollection className="mx-auto w-16 h-16 mb-4 text-gray-400" />
-            <p className="text-xl mb-4">Ta kolekcja jest pusta.</p>
-            <p className="text-md">
-                <button
-                    type="button"
-                    className="text-blue-600 cursor-pointer bg-transparent border-0 p-0"
-                    onClick={() => navigate(`/collections/${collectionId}/create-artwork`)}
-                >
-                    Dodawaj nowe rekordy
-                </button>
-                {" "}
-                ręcznie lub{" "}
-                <button
-                    type="button"
-                    className="text-blue-600 cursor-pointer bg-transparent border-0 p-0"
-                    onClick={() => setShowImportOptions((prev) => !prev)}
-                >
-                    zaimportuj
-                </button>
-                {" "}
-                dane z pliku Excel, aby rozpocząć organizację swojej kolekcji.
-            </p>
-        </div>
-    );
 
     const allArtworks = artworkData.artworks.map((artwork: any) => (
         <div
@@ -201,13 +213,17 @@ const ArtworksList = ({ pageSize = 10 }) => {
         </div>
     ));
 
-    // Przygotowanie opcji dla multiselect (categoriesData.categories)
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const categoryOptions =
-        categoriesData?.categories?.map((cat: string) => ({
-            value: cat,
-            label: cat,
-        })) || [];
+    type Option = {
+        value: string;
+        label: string;
+    };
+
+    // Dodanie opcji specjalnych na początku listy
+    const customOptions = [
+        { value: "select_all", label: "Zaznacz wszystkie" },
+        { value: "deselect_all", label: "Odznacz wszystkie" },
+        ...categoryOptions,
+    ];
 
     return (
         <><div data-testid="loaded-artwork-page-container">
@@ -233,6 +249,30 @@ const ArtworksList = ({ pageSize = 10 }) => {
                             <p className="text-xl text-gray-600 dark:text-gray-300">
                                 {collectionData?.description}
                             </p>
+                        </div>
+                        {/* Edytuj kolekcję */}
+                        <div>
+                            <button
+                                disabled={jwtToken ? false : true}
+                                className={
+                                    jwtToken
+                                        ? "text-sm font-semibold h-fit mr-4 flex items-center"
+                                        : "text-sm font-semibold h-fit mr-4 bg-gray-100 hover:bg-gray-100 flex items-center"
+                                }
+                                onClick={() =>  navigate(`/collections/${collectionId}/edit`, {
+                                    state: {
+                                        collectionId: collectionId,
+                                        mode: 'edit',
+                                        name: collectionData?.name,
+                                        description: collectionData?.description,
+                                        categories: collectionData?.categories
+                                    }
+                                })}
+                            >
+                                <EditIcon/>
+                                <p className="ml-1">Edytuj</p>
+                            </button>
+
                         </div>
                     </div>
                     {collectionId && <SearchComponent collectionId={collectionId} />}
@@ -296,9 +336,7 @@ const ArtworksList = ({ pageSize = 10 }) => {
                             </button>
                             <button
                                 disabled={
-                                    jwtToken && !Object.values(selectedArtworks).every((value) => value === false)
-                                        ? false
-                                        : true
+                                    !(jwtToken && !Object.values(selectedArtworks).every((value) => value === false))
                                 }
                                 className={`flex items-center justify-center dark:text-white hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2 dark:focus:ring-primary-800 font-semibold text-white ${
                                     jwtToken && !Object.values(selectedArtworks).every((value) => value === false)
@@ -316,42 +354,24 @@ const ArtworksList = ({ pageSize = 10 }) => {
                     </div>
                     {showImportOptions && <ImportOptions onClose={() => setShowImportOptions(false)} collectionData={collectionData}/>}
                     {showExportOptions && <ExportOptions onClose={() => setShowExportOptions(false)} selectedArtworks={selectedArtworks} />}
-                    <div className="flex w-full md:w-auto pt-4 flex-row items-center">
-                        <p className="pr-2 text-sm">Wyświetl:</p>
-                        <Select
-                            isMulti
-                            options={
-                                categoriesData?.categories?.map((cat: string) => ({
-                                    value: cat,
-                                    label: cat,
-                                })) || []
-                            }
-                            value={selectedDisplayCategories.map((cat) => ({ value: cat, label: cat }))}
-                            onChange={(selectedOptions) =>
-                                setSelectedDisplayCategories(
-                                    selectedOptions ? selectedOptions.map((option) => option.value) : []
-                                )
-                            }
-                            styles={{
-                                control: (provided) => ({
-                                    ...provided,
-                                    minWidth: 250,
-                                    maxWidth: 250,
-                                    fontSize: "0.875rem",
-                                    border: "1px solid #D1D5DB",
-                                    borderRadius: "0.5rem",
-                                    cursor: "pointer",
-                                }),
-                                multiValue: (provided) => ({ ...provided, fontSize: "0.75rem" }),
-                            }}
-                            placeholder="Wybierz kategorie"
+                    <div className="flex w-full md:w-auto pt-4 flex-row items-center text-sm">
+                        <p className="pr-2">Wyświetlane kategorie:</p>
+                        <DisplayCategoriesSelect
+                            selectedDisplayCategories={selectedDisplayCategories}
+                            setSelectedDisplayCategories={setSelectedDisplayCategories}
+                            categoryOptions={categoryOptions} // wcześniej zdefiniowana tablica opcji
+                            customOptions={customOptions}     // wcześniej zdefiniowana tablica z opcjami specjalnymi i zwykłymi
+                            formatOptionLabel={formatOptionLabel} // funkcja wyróżniająca opcje specjalne
                         />
-                        {sortOptions && (
+                        <p className="pl-2 pr-2">Sortuj według:</p>
+                        {categoryOptions && (
                             <SortOptions
-                                options={sortOptions}
-                                onSelect={(value) => setSortOrder(value)}
-                                sortOrder={sortOrder}
-                                setCurrentPage={setCurrentPage}
+                            options={categoryOptions}
+                            sortCategory={sortCategory}
+                            sortDirection={sortDirection}
+                            onSelectCategory={setSortCategory}
+                            onSelectDirection={setSortDirection}
+                            setCurrentPage={setCurrentPage}
                             />
                         )}
                     </div>
@@ -361,7 +381,14 @@ const ArtworksList = ({ pageSize = 10 }) => {
             <div className="flex flex-row">
                 <div className="flex mx-auto flex-1 justify-end w-full"></div>
                 <div data-testid="artworks-listed" className="w-full flex-2 lg:px-6 max-w-screen-xl">
-                    {artworkData.artworks.length === 0 ? <EmptyCollectionMessage /> : allArtworks}
+                    {artworkData.artworks.length === 0 ? (
+                        <EmptyCollectionMessage
+                            setShowImportOptions={setShowImportOptions}
+                            jwtToken={jwtToken}
+                        />
+                    ) : (
+                        allArtworks
+                    )}
                 </div>
                 <div className="mx-auto w-full flex-1"></div>
             </div>
@@ -377,4 +404,4 @@ const ArtworksList = ({ pageSize = 10 }) => {
     );
 };
 
-export default ArtworksList;
+export default ArtworksListPage;

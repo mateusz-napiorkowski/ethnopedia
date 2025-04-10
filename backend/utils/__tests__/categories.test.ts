@@ -1,5 +1,5 @@
 import {describe, expect, test, jest, beforeEach} from "@jest/globals"
-import { getAllCategories, hasValidCategoryFormat, artworkCategoriesHaveValidFormat, transformCategoriesArrayToCategoriesObject, findMissingParentCategories } from "../categories"
+import { getAllCategories, hasValidCategoryFormat, artworkCategoriesHaveValidFormat, transformCategoriesArrayToCategoriesObject, findMissingParentCategories, isValidCollectionCategoryStructureForCollectionUpdate } from "../categories"
 
 const mockCollectionFind = jest.fn()
 jest.mock('../../models/collection', () => ({
@@ -160,6 +160,152 @@ describe('categories util functions tests', () => {
 					expect(artworkCategoriesHaveValidFormat(artworkCategories, collectionCategories)).toBe(returnValue)
 				}
 		)
+
+		test.each([
+			  {
+				testCase: "empty arrays",
+				artworkSubcategories: [],
+				collectionSubcategories: [],
+				returnValue: true
+			  },
+			  {
+				testCase: "structure not changed",
+				artworkSubcategories: [
+				  { name: "Wykonawca", value: "some value", subcategories: []},
+				  { name: "Rok", value: "some value 2", subcategories: [
+					{name: "Miesiąc", value: "some subvalue 1", subcategories: [
+					  {name: "Dzień", value: "some subsubvalue 1", subcategories: []}
+					]},
+					{name: "Jakaś kategoria", value: "some subvalue 2", subcategories: []},
+				  ]},
+				  { name: "Region", value: "some value 3", subcategories: [
+					{name: "Podregion", value: "some subvalue 1", subcategories: []}
+				  ]},
+				],
+				collectionSubcategories: [
+				  { name: "Wykonawca", subcategories: [] },
+				  { name: "Rok", subcategories: [
+					{name: "Miesiąc", subcategories: [
+					  {name: "Dzień", subcategories: []}
+					]},
+					{name: "Jakaś kategoria", subcategories: []},
+				  ] },
+				  { name: "Region", subcategories: [
+					{name: "Podregion", subcategories: []}
+				  ] }
+				],
+				returnValue: true
+			  },
+			  {
+				testCase: "only category names changed",
+				artworkSubcategories: [
+				  { name: "Wykonawca", value: "some value", subcategories: []},
+				  { name: "Rok", value: "some value 2", subcategories: [
+					{name: "Kwartał", value: "some subvalue 1", subcategories: [
+					  {name: "Miesiąc", value: "some subsubvalue 1", subcategories: []}
+					]},
+					{name: "Jakaś kategoria", value: "some subvalue 2", subcategories: []},
+				  ]},
+				  { name: "Miejsce pochodzenia", value: "some value 3", subcategories: [
+					{name: "Region", value: "some subvalue 1", subcategories: []}
+				  ]},
+				],
+				collectionSubcategories: [
+				  { name: "Artysta", subcategories: [] },
+				  { name: "Rok", subcategories: [
+					{name: "Miesiąc", subcategories: [
+					  {name: "Dzień", subcategories: []}
+					]},
+					{name: "Jakaś kategoria", subcategories: []},
+				  ] },
+				  { name: "Region", subcategories: [
+					{name: "Podregion", subcategories: []}
+				  ] }
+				],
+				returnValue: true
+			  },
+			  {
+				testCase: "new categories and subcategories",
+				artworkSubcategories: [
+				  { name: "Wykonawca", value: "some value", subcategories: []},
+				  { name: "Rok", value: "some value 2", subcategories: [
+					{name: "Miesiąc", value: "some subvalue 1", subcategories: [
+					  {name: "Dzień", value: "some subsubvalue 1", subcategories: []}
+					]},
+					{name: "Jakaś kategoria", value: "some subvalue 2", subcategories: []},
+				  ]},
+				  { name: "Region", value: "some value 3", subcategories: [
+					{name: "Podregion", value: "some subvalue 1", subcategories: []}
+				  ]},
+				],
+				collectionSubcategories: [
+				  { name: "Wykonawca", subcategories: [] },
+				  { name: "Rok", subcategories: [
+					{name: "Miesiąc", subcategories: [
+					  {name: "Dzień", subcategories: []},
+					  {name: "Nowa podpodkategoria", subcategories: [
+						{name: "Nowa podpodpodkategoria", subcategories: [
+						  {name: "Nowa podpodpodpodkategoria", subcategories: []}
+						]},
+						{name: "Nowa podpodpodkategoria 2", subcategories: []},
+					  ]}
+					]},
+					{name: "Jakaś kategoria", subcategories: []},
+				  ] },
+				  { name: "Region", subcategories: [
+					{name: "Podregion", subcategories: []},
+					{name: "Nowa podkategoria", subcategories: []}
+				  ] },
+				  {name: "Nowa kategoria", subcategories: []},
+				  {name: "Nowa kategoria 2", subcategories: []}
+				],
+				returnValue: true
+			  },
+			  {
+				testCase: "less categories in collection than in artwork",
+				artworkSubcategories: [
+				  {name: "Rok", value: "1999", subcategories: []},
+				  {name: "Wykonawca", value: "Jan Kowalski", subcategories: []}
+				],
+				collectionSubcategories: [
+				  {name: "Rok", subcategories: []}
+				],
+				returnValue: false
+			  },
+			  {
+				testCase: "less subcategories in collection than in artwork",
+				artworkSubcategories: [
+				  {name: "Region", value: "Mazowsze", subcategories: [
+					{name: "Podregion", value: "Mazowsze południowe", subcategories: []},
+					{name: "Jakaś kategoria", value: "Wartość", subcategories: []},
+				  ]}
+				],
+				collectionSubcategories: [
+				  {name: "Region", subcategories: [
+					{name: "Podregion", subcategories: []}
+				  ]}
+				],
+				returnValue: false
+			  },
+			  {
+				testCase: "less subcategories in collection than in artwork - artwork subcategiories have more levels",
+				artworkSubcategories: [
+				  {name: "Region", value: "Mazowsze", subcategories: [
+					{name: "Podregion", value: "Mazowsze południowe", subcategories: [
+					  {name: "Podpodregion", value: "Wartość podpodregionu", subcategories: []}
+					]},
+				  ]}
+				],
+				collectionSubcategories: [
+				  {name: "Region", subcategories: [
+					{name: "Podregion", subcategories: []}
+				  ]}
+				],
+				returnValue: false
+			  },
+			])("isValidCollectionCategoryStructureForCollectionUpdate - $testCase", ({artworkSubcategories, collectionSubcategories, returnValue}) => {
+			  expect(isValidCollectionCategoryStructureForCollectionUpdate(artworkSubcategories, collectionSubcategories)).toBe(returnValue)
+			})
 
 		test.each([
 				{

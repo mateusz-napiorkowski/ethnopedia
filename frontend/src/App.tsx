@@ -1,15 +1,15 @@
 import { Route, BrowserRouter, Routes } from "react-router-dom"
 import { QueryClient, QueryClientProvider } from "react-query"
 import LoginPage from "./pages/LoginPage"
-import Home from "./pages/Home"
 import "./index.css"
 import ArtworkPage from "./pages/artworks/ArtworkPage"
 import NotFoundPage from "./pages/NotFoundPage"
-import Artworks from "./pages/artworks/ArtworksList"
+import Artworks from "./pages/artworks/ArtworksListPage"
 import RegisterPage from "./pages/RegisterPage"
 import { UserProvider } from "./providers/UserProvider"
-import CreateArtwork from "./pages/artworks/CreateArtwork"
+import CreateArtworkPage from "./pages/artworks/CreateArtworkPage"
 import CreateCollectionPage from "./pages/collections/CreateCollectionPage";
+import Home from "./pages/Home"
 
 const queryClient = new QueryClient()
 
@@ -20,9 +20,10 @@ const App = () => {
                 <BrowserRouter basename="/ethnopedia">
                     <Routes>
                         <Route path="/collections/:collectionId/artworks/:artworkId" element={<ArtworkPage />} />
-                        <Route path="/collections/:collectionId/create-artwork" element={<CreateArtwork />} />
-                        <Route path="/collections/:collectionId/artworks/:artworkId/edit-artwork" element={<CreateArtwork />} />
+                        <Route path="/collections/:collectionId/create-artwork" element={<CreateArtworkPage />} />
+                        <Route path="/collections/:collectionId/artworks/:artworkId/edit-artwork" element={<CreateArtworkPage />} />
                         <Route path="/create-collection" element={<CreateCollectionPage />} />
+                        <Route path="/collections/:collection/edit" element={<CreateCollectionPage />} />
 
                         <Route path="/" element={<Home />} />
                         <Route path="/collections/:collectionId/artworks" element={<Artworks />} />

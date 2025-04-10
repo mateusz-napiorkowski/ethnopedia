@@ -589,3 +589,171 @@ exports[`artworks util functions tests sortRecordsByCategory test - sort by Tytu
   },
 ]
 `;
+
+exports[`artworks util functions tests updateArtworkCategories test - empty arrays 1`] = `[]`;
+
+exports[`artworks util functions tests updateArtworkCategories test - new categories and subcategories 1`] = `
+[
+  {
+    "name": "Wykonawca",
+    "subcategories": [],
+    "value": "some value",
+  },
+  {
+    "name": "Rok",
+    "subcategories": [
+      {
+        "name": "Miesiąc",
+        "subcategories": [
+          {
+            "name": "Dzień",
+            "subcategories": [],
+            "value": "some subsubvalue 1",
+          },
+          {
+            "name": "Nowa podpodkategoria",
+            "subcategories": [
+              {
+                "name": "Nowa podpodpodkategoria",
+                "subcategories": [
+                  {
+                    "name": "Nowa podpodpodpodkategoria",
+                    "subcategories": [],
+                    "value": "",
+                  },
+                ],
+                "value": "",
+              },
+              {
+                "name": "Nowa podpodpodkategoria 2",
+                "subcategories": [],
+                "value": "",
+              },
+            ],
+            "value": "",
+          },
+        ],
+        "value": "some subvalue 1",
+      },
+      {
+        "name": "Jakaś kategoria",
+        "subcategories": [],
+        "value": "some subvalue 2",
+      },
+    ],
+    "value": "some value 2",
+  },
+  {
+    "name": "Region",
+    "subcategories": [
+      {
+        "name": "Podregion",
+        "subcategories": [],
+        "value": "some subvalue 1",
+      },
+      {
+        "name": "Nowa podkategoria",
+        "subcategories": [],
+        "value": "",
+      },
+    ],
+    "value": "some value 3",
+  },
+  {
+    "name": "Nowa kategoria",
+    "subcategories": [],
+    "value": "",
+  },
+  {
+    "name": "Nowa kategoria 2",
+    "subcategories": [],
+    "value": "",
+  },
+]
+`;
+
+exports[`artworks util functions tests updateArtworkCategories test - only category names changed 1`] = `
+[
+  {
+    "name": "Artysta",
+    "subcategories": [],
+    "value": "some value",
+  },
+  {
+    "name": "Rok",
+    "subcategories": [
+      {
+        "name": "Miesiąc",
+        "subcategories": [
+          {
+            "name": "Dzień",
+            "subcategories": [],
+            "value": "some subsubvalue 1",
+          },
+        ],
+        "value": "some subvalue 1",
+      },
+      {
+        "name": "Jakaś kategoria",
+        "subcategories": [],
+        "value": "some subvalue 2",
+      },
+    ],
+    "value": "some value 2",
+  },
+  {
+    "name": "Region",
+    "subcategories": [
+      {
+        "name": "Podregion",
+        "subcategories": [],
+        "value": "some subvalue 1",
+      },
+    ],
+    "value": "some value 3",
+  },
+]
+`;
+
+exports[`artworks util functions tests updateArtworkCategories test - structure not changed 1`] = `
+[
+  {
+    "name": "Wykonawca",
+    "subcategories": [],
+    "value": "some value",
+  },
+  {
+    "name": "Rok",
+    "subcategories": [
+      {
+        "name": "Miesiąc",
+        "subcategories": [
+          {
+            "name": "Dzień",
+            "subcategories": [],
+            "value": "some subsubvalue 1",
+          },
+        ],
+        "value": "some subvalue 1",
+      },
+      {
+        "name": "Jakaś kategoria",
+        "subcategories": [],
+        "value": "some subvalue 2",
+      },
+    ],
+    "value": "some value 2",
+  },
+  {
+    "name": "Region",
+    "subcategories": [
+      {
+        "name": "Podregion",
+        "subcategories": [],
+        "value": "some subvalue 1",
+      },
+    ],
+    "value": "some value 3",
+  },
+]
+`;
