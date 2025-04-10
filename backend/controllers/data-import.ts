@@ -8,15 +8,16 @@ import { findMissingParentCategories, transformCategoriesArrayToCategoriesObject
 
 export const importData = authAsyncWrapper(async (req: Request, res: Response) => {
     try {
-        if(!req.body.importData || req.body.importData.length < 2 || !req.body.collectionName )
+        if(!req.body.importData || req.body.importData.length < 2 || !req.body.collectionId )
             throw new Error("Incorrect request body provided")
         const session = await mongoose.startSession()
         await session.withTransaction(async (session: ClientSession) => {
-            const collectionName = req.body.collectionName
-            const foundCollections = await CollectionCollection.find({name: collectionName}, null, {session}).exec()
-            if (foundCollections.length !== 1)
+            const collectionId = req.body.collectionId
+            const foundCollections = await CollectionCollection.find({_id: collectionId}, null, {session}).exec()
+            if (foundCollections.length !== 1 )
                 throw new Error(`Collection not found`)
-            const records = await prepRecords(req.body.importData, collectionName, false)
+            const collectionName = foundCollections[0].name!
+            const records = await prepRecords(req.body.importData, collectionName, false, collectionId)
             const result = await Artwork.insertMany(records, {session})
             return res.status(201).json(result)
         });

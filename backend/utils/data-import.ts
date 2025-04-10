@@ -1,10 +1,10 @@
 import { getAllCategories } from "./categories"
 import { artworkCategory, record } from "./interfaces"
 
-export const prepRecords = async (data: Array<Array<string>>, collectionName: string, asCollection: boolean) => {
+export const prepRecords = async (data: Array<Array<string>>, collectionName: string, asCollection: boolean, collectionId: string | undefined = undefined) => {
     try {
         const header = data[0].map(categoryName => categoryName.trim().replace(/\s*\.\s*/g, '.'))
-        const categories = asCollection ? data[0] : await getAllCategories(collectionName)
+        const categories = (asCollection) ? data[0] : await getAllCategories(collectionId!)
         let missingCategories = categories.filter((category: string) => !header.includes(category))
         let unnecessaryCategories = header.filter((category: string) => !categories.includes(category))
         if(missingCategories.length != 0 || unnecessaryCategories.length != 0) {

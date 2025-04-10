@@ -9,7 +9,7 @@ import { Collection } from "../@types/Collection"
 
 type Props = {
     onClose: () => void,
-    collectionData?: Collection
+    collectionData?: any
 }
 
 const ImportOptions = ({ onClose, collectionData }: Props) => {
@@ -74,7 +74,7 @@ const ImportOptions = ({ onClose, collectionData }: Props) => {
         importCollectionMutation.mutate()
     }
 
-    const importDataMutation = useMutation(() => importData(dataToSend, jwtToken, collectionData?.name), {
+    const importDataMutation = useMutation(() => importData(dataToSend, jwtToken, collectionData?._id), {
         onSuccess: () => {
             queryClient.invalidateQueries("artwork")
             onClose()
