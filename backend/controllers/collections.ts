@@ -4,6 +4,8 @@ import { authAsyncWrapper } from "../middleware/auth"
 import Artwork from "../models/artwork";
 import CollectionCollection from "../models/collection";
 import {hasValidCategoryFormat} from "../utils/categories";
+import { updateArtworkCategories } from "../utils/artworks";
+import { isValidCollectionCategoryStructureForCollectionUpdate } from "../utils/categories";
 
 export const getAllCollections = async (req: Request, res: Response) => {
     try {
@@ -149,39 +151,33 @@ export const deleteCollections = authAsyncWrapper(async (req: Request, res: Resp
     }   
 })
 
-
 export const updateCollection = authAsyncWrapper(async (req: Request, res: Response) => {
-    const collectionId = req.params.id; // Id kolekcji do zaktualizowania
-    const { name, description, categories } = req.body; // Dane do zaktualizowania
-
-    console.log("Id kolekcji do aktualizacji:", collectionId);
-    console.log("Type of collectionId:", typeof collectionId);
-    console.log("Otrzymane dane do aktualizacji:", req.body);
-
+    const collectionId = req.params.id;
+    const { name, description, categories } = req.body;
     try {
-        // Walidacja danych wejściowych
-        if (!name || !description || !categories || !hasValidCategoryFormat(categories)) {
+        if (!name || !description || !categories || !hasValidCategoryFormat(categories))
             throw new Error("Incorrect request body provided");
-        }
 
         const session = await mongoose.startSession();
-
         await session.withTransaction(async (session: ClientSession) => {
-            // Znajdujemy kolekcję według id
             const collection = await CollectionCollection.findById(collectionId, null, { session }).exec();
-            if (!collection) {
+            if (!collection)
                 throw new Error("Collection not found");
-            }
 
-            // Aktualizujemy dane kolekcji
+            const artworks = await Artwork.find({ collectionName: collection.name }, null, { session });
+            await Promise.all(artworks.map(async (artwork: any) => {
+                artwork.collectionName = name;
+                if(!isValidCollectionCategoryStructureForCollectionUpdate(artwork.categories, categories))
+                    throw Error("Incorrect request body provided")
+                artwork.categories = updateArtworkCategories(artwork.categories, categories)
+                await artwork.save({ session });
+            }));
+
             collection.name = name;
             collection.description = description;
             collection.categories = categories;
-
-            // Zapisujemy zmiany
             await collection.save({ session });
 
-            // Zwracamy zaktualizowaną kolekcję
             res.status(200).json(collection);
         });
 
@@ -189,8 +185,6 @@ export const updateCollection = authAsyncWrapper(async (req: Request, res: Respo
     } catch (error) {
         const err = error as Error;
         console.error(error);
-
-        // Obsługa błędów
         if (err.message === "Incorrect request body provided") {
             res.status(400).json({ error: err.message });
         } else if (err.message === "Collection not found") {

@@ -1,6 +1,9 @@
-import mongoose from "mongoose"
+import mongoose, { Schema, SchemaType } from "mongoose"
 
-const artworkSchema = new mongoose.Schema({},{
+const artworkSchema = new mongoose.Schema({
+    collectionName: {type: String},
+    categories: {type: Schema.Types.Mixed}
+},{
     strict: false,
     timestamps: true,
 })
