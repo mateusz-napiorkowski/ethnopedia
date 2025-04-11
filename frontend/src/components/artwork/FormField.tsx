@@ -12,6 +12,7 @@ interface FormFieldProps {
     handleInputChange: (index: string, e: React.ChangeEvent<HTMLInputElement>) => void;
     handleRemove: (index: string) => void;
     handleAddSubcategory: (index: string) => void;
+    errorPaths: string[];
 }
 
 const FormField: React.FC<FormFieldProps> = ({
@@ -22,6 +23,7 @@ const FormField: React.FC<FormFieldProps> = ({
                                                  handleInputChange,
                                                  handleRemove,
                                                  handleAddSubcategory,
+                                                 errorPaths,
                                              }) => {
     // const [isHovered, setIsHovered] = useState(false);
 
@@ -62,7 +64,9 @@ const FormField: React.FC<FormFieldProps> = ({
                         value={formData.value || ""}
                         onChange={(e) => handleInputChange(index, e)}
                         // placeholder={`Podaj wartość kategorii...`}
-                        className="p-2 border rounded"
+                        className={`p-2 border rounded ${
+                            errorPaths.includes(index) ? 'border-red-500' : 'border-gray-300'
+                        }`}
                     />
                 </label>
                 {/*<div className="actions ml-1 space-x-1">*/}
@@ -102,6 +106,7 @@ const FormField: React.FC<FormFieldProps> = ({
                                     handleInputChange={handleInputChange}
                                     handleRemove={handleRemove}
                                     handleAddSubcategory={handleAddSubcategory}
+                                    errorPaths={errorPaths}
                                 />
                             </div>
                         );

@@ -8,11 +8,36 @@ interface MetadataFormProps {
   initialFormData: Metadata[];
   collectionName: string;
   setDataToInsert: (data: { categories: Metadata[]; collectionName: string }) => void;
+  hasSubmitted: boolean;
 }
 
-const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, collectionName, setDataToInsert }) => {
+const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, collectionName, setDataToInsert, hasSubmitted }) => {
   // Inicjalizujemy stan tylko raz przy pierwszym renderze lub gdy initialFormData się zmieni.
   const [formDataList, setFormDataList] = React.useState<Metadata[]>(initialFormData);
+
+  const [errorPaths, setErrorPaths] = React.useState<string[]>([]);
+
+  useEffect(() => {
+    if (hasSubmitted) {
+      const pathsWithErrors: string[] = [];
+      const collectErrorPaths = (items: Metadata[], basePath = '') => {
+        items.forEach((item, idx) => {
+          const currentPath = basePath ? `${basePath}-${idx}` : `${idx}`;
+          if (!item.value.trim()) {
+            pathsWithErrors.push(currentPath);
+          }
+          if (item.subcategories && item.subcategories.length > 0) {
+            collectErrorPaths(item.subcategories, currentPath);
+          }
+        });
+      };
+      collectErrorPaths(formDataList);
+      setErrorPaths(pathsWithErrors);
+    } else {
+      // Jeśli użytkownik jeszcze nie kliknął submit, nie pokazuj błędów
+      setErrorPaths([]);
+    }
+  }, [formDataList, hasSubmitted]);
 
 
   // Ustaw stan formularza, gdy initialFormData się zmieni (np. przy pierwszym pobraniu)
@@ -157,6 +182,7 @@ const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, collection
                     handleInputChange={handleInputChange}
                     handleRemove={handleRemove}
                     handleAddSubcategory={handleAddSubcategory}
+                    errorPaths={errorPaths}
                 />
             ))}
             {/*<div className="actions mt-1">*/}

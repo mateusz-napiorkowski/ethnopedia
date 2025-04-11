@@ -54,6 +54,8 @@ const CreateArtworkPage: React.FC = () => {
     const [dataToInsert, setDataToInsert] = useState({});  // Przechowywanie danych do wysłania
     const [initialFormData, setInitialFormData] = useState<Metadata[]>(example_data);  // Stan dla początkowych danych formularza
 
+    const [hasSubmitted, setHasSubmitted] = useState(false);
+
     // TODO skąd biore collectionId?
     // // Pobranie danych kolekcji na podstawie collectionId
     // const { data: collectionData } = useQuery(
@@ -150,8 +152,9 @@ const CreateArtworkPage: React.FC = () => {
                             </h4>
                         </div>
                         <Formik
-                            initialValues={{formDataList: initialFormData}}
-                            onSubmit={(values, {setSubmitting}) => {
+                            initialValues={{ formDataList: initialFormData }}
+                            onSubmit={(values, { setSubmitting }) => {
+                                setHasSubmitted(true);
                                 handleSubmit(values.formDataList);
                                 setSubmitting(false);
                             }}
@@ -162,7 +165,8 @@ const CreateArtworkPage: React.FC = () => {
                                         <MetadataForm
                                             initialFormData={initialFormData}
                                             collectionName={collectionName}
-                                            setDataToInsert={(dataToInsert: any) => setDataToInsert(dataToInsert)} />
+                                            setDataToInsert={(dataToInsert: any) => setDataToInsert(dataToInsert)}
+                                            hasSubmitted={hasSubmitted} />
                                     </div>
                                     <div className="flex justify-end mt-6">
                                         <button

@@ -52,7 +52,7 @@ const StructureFormField: React.FC<FormFieldProps> = ({
                         placeholder={`Podaj nazwę kategorii...`}
                         // className="p-2 border rounded"
                         className={`p-2 border rounded ${
-                            formData.isNew ? 'border-green-500' : 'border-gray-300'
+                            isEditMode && formData.isNew ? 'border-green-500' : 'border-gray-300'
                         }`}
                     />
                 </label>
