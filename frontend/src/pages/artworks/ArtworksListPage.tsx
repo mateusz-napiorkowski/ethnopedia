@@ -20,6 +20,7 @@ import { getAllCategories } from "../../api/categories";
 import DisplayCategoriesSelect, { Option } from "../../components/DisplayCategoriesSelect";
 import { ReactComponent as EditIcon } from "../../assets/icons/edit.svg"
 import EmptyCollectionMessage from "../../components/artwork/EmptyCollectionMessage";
+import NoSearchResultMessage from "../../components/artwork/NoSearchResultMessage";
 
 
 const ArtworksListPage = ({ pageSize = 10 }) => {
@@ -381,14 +382,17 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
             <div className="flex flex-row">
                 <div className="flex mx-auto flex-1 justify-end w-full"></div>
                 <div data-testid="artworks-listed" className="w-full flex-2 lg:px-6 max-w-screen-xl">
-                    {artworkData.artworks.length === 0 ? (
+                    {allArtworks.length > 0 ? (
+                        allArtworks
+                    ) : new URLSearchParams(location.search).get("searchText") ? (
+                        <NoSearchResultMessage />
+                    ) : (
                         <EmptyCollectionMessage
                             setShowImportOptions={setShowImportOptions}
                             jwtToken={jwtToken}
                         />
-                    ) : (
-                        allArtworks
                     )}
+
                 </div>
                 <div className="mx-auto w-full flex-1"></div>
             </div>

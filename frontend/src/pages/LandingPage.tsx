@@ -14,6 +14,11 @@ import { Collection } from "../@types/Collection";
 import Pagination from "../components/Pagination";
 import Footer from "../components/Footer";
 
+import { HiOutlineFolderAdd } from "react-icons/hi";
+import { BsDiagram3 } from "react-icons/bs";
+import { AiOutlinePlusSquare } from "react-icons/ai";
+import { FiSearch } from "react-icons/fi";
+
 const LandingPage = () => {
     const navigate = useNavigate();
     const [collections, setCollections] = useState<Collection[]>([]);
@@ -106,7 +111,7 @@ const LandingPage = () => {
                         <h2 className="text-2xl font-semibold mb-12 text-center">Jak działa Ethnopedia?</h2>
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
                             <div className="flex flex-col items-center">
-                                <AddCollection className="w-12 h-12 mb-4 text-gray-700"/>
+                                <HiOutlineFolderAdd className="w-12 h-12 mb-4 text-gray-700 dark:text-gray-400" />
                                 <h3 className="text-lg font-medium mb-2">Utwórz kolekcję</h3>
                                 <p className="text-gray-600 dark:text-gray-300 text-sm max-w-xs">
                                     Kolekcja to zbiór metadanych o ustalonej strukturze, który może dotyczyć różnych
@@ -114,7 +119,7 @@ const LandingPage = () => {
                                 </p>
                             </div>
                             <div className="flex flex-col items-center">
-                                <StructureIcon className="w-12 h-12 mb-4 text-gray-700"/>
+                                <BsDiagram3 className="w-12 h-12 mb-4 text-gray-700 dark:text-gray-400" />
                                 <h3 className="text-lg font-medium mb-2">Zaprojektuj strukturę</h3>
                                 <p className="text-gray-600 dark:text-gray-300 text-sm max-w-xs">
                                     Określ kategorie, które będą opisem Twoich danych. System pozwala tworzyć
@@ -122,7 +127,7 @@ const LandingPage = () => {
                                 </p>
                             </div>
                             <div className="flex flex-col items-center">
-                                <AddRecord className="w-12 h-12 mb-4 text-gray-700"/>
+                                <AiOutlinePlusSquare className="w-12 h-12 mb-4 text-gray-700 dark:text-gray-400" />
                                 <h3 className="text-lg font-medium mb-2">Dodawaj rekordy</h3>
                                 <p className="text-gray-600 dark:text-gray-300 text-sm max-w-xs">
                                     Wprowadzaj opisy poszczególnych obiektów zgodnie z ustaloną strukturą kolekcji.
@@ -130,7 +135,7 @@ const LandingPage = () => {
                                 </p>
                             </div>
                             <div className="flex flex-col items-center">
-                                <SearchCollection className="w-12 h-12 mb-4 text-gray-700"/>
+                                <FiSearch className="w-12 h-12 mb-4 text-gray-700 dark:text-gray-400" />
                                 <h3 className="text-lg font-medium mb-2">Wyszukuj i przeglądaj dane</h3>
                                 <p className="text-gray-600 dark:text-gray-300 text-sm max-w-xs">
                                     Korzystaj z wygodnych narzędzi wyszukiwania i filtrowania, aby szybko znaleźć
