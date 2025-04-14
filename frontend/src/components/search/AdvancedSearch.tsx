@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react"
+import React, { useEffect, useState } from "react"
 import { useFormik } from "formik"
 import { useQuery } from "react-query"
 import { getAllCategories } from "../../api/categories"
@@ -9,15 +9,16 @@ import LoadingPage from "../../pages/LoadingPage"
 import { useLocation, useNavigate } from "react-router-dom"
 import { v4 as uuidv4 } from "uuid"
 import DOMPurify from "dompurify"
+import Dropdown from "../Dropdown"
 
 interface SearchComponentProps {
-    collectionId: string;
+    collectionId: string
 }
 
 interface Rule {
-    field: string;
-    value: string;
-    id: string;
+    field: string
+    value: string
+    id: string
 }
 
 const AdvancedSearch: React.FC<SearchComponentProps> = ({ collectionId }) => {
@@ -28,10 +29,7 @@ const AdvancedSearch: React.FC<SearchComponentProps> = ({ collectionId }) => {
     const [currentRuleValue, setCurrentRuleValue] = useState("")
     const [errorMessage, setErrorMessage] = useState<string | null>(null)
     const [duplicateCategoryError, setDuplicateCategoryError] = useState(false)
-
-    // Refs to focus on fields
-    const categoryRef = useRef<HTMLSelectElement | null>(null)
-    const valueRef = useRef<HTMLInputElement | null>(null)
+    const [valueError, setValueError] = useState(false)
 
     useEffect(() => {
         if (location.state && location.state.rules) {
@@ -55,10 +53,10 @@ const AdvancedSearch: React.FC<SearchComponentProps> = ({ collectionId }) => {
         },
     })
 
-    const handleCurrentRuleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const handleCurrentRuleCategoryChange = (value: string) => {
+        setCurrentRuleCategory(value)
+        setDuplicateCategoryError(false) // resetujemy błąd, kiedy kategoria się zmienia
         setErrorMessage(null)
-        setDuplicateCategoryError(false)
-        setCurrentRuleCategory(event.target.value)
     }
 
     const handleCurrentRuleValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,50 +67,47 @@ const AdvancedSearch: React.FC<SearchComponentProps> = ({ collectionId }) => {
     const handleAddRule = () => {
         const trimmedRawValue = currentRuleValue.trim()
         const sanitizedValue = DOMPurify.sanitize(trimmedRawValue)
-        const isRuleCategoryUnique = rules.every(rule => currentRuleCategory !== rule.field) // Zakomentowane
 
-        // Sprawdzamy, czy wybrano kategorię
+        setValueError(false)
+        setErrorMessage(null)
+        setDuplicateCategoryError(false)
+
         if (!currentRuleCategory) {
             setErrorMessage("Wybierz kategorię przed dodaniem reguły.")
-            categoryRef.current?.focus()
+            setDuplicateCategoryError(true)
             return
         }
 
-        // Sprawdzamy, czy wartość nie jest pusta
         if (!trimmedRawValue) {
             setErrorMessage("Wprowadź wartość – to pole nie może być puste.")
-            valueRef.current?.focus()
+            setValueError(true)
             return
         }
 
-        // Sprawdzamy, czy nie występują niedozwolone znaki
         if (sanitizedValue !== trimmedRawValue) {
             setErrorMessage("Wartość zawiera niedozwolone znaki, np. <, >, lub inne specjalne znaki. Proszę usuń je i spróbuj ponownie.")
-            valueRef.current?.focus()
+            setValueError(true)
             return
         }
 
-        //TODO czy reguły nie powinny się łączyć na zasadzie OR?
-
-        // Sprawdzamy, czy kategoria reguły jest unikalna
+        // TODO czy powinna być opcja dodania kilku regół dla tej samej kategorii? Łączenie na zasadzie OR?
+        const isRuleCategoryUnique = rules.every(rule => currentRuleCategory !== rule.field)
         if (!isRuleCategoryUnique) {
             setErrorMessage("Reguła dla tej kategorii została już dodana. Wybierz inną kategorię.")
             setDuplicateCategoryError(true)
-            categoryRef.current?.focus()
             return
         }
 
-        // Dodajemy regułę do listy
         setRules([...rules, {
             field: currentRuleCategory,
             value: sanitizedValue,
             id: uuidv4()
         }])
 
-        // Resetujemy wartości i komunikaty o błędach
         setCurrentRuleCategory("")
         setCurrentRuleValue("")
         setErrorMessage(null)
+        setValueError(false)
         setDuplicateCategoryError(false)
     }
 
@@ -132,27 +127,26 @@ const AdvancedSearch: React.FC<SearchComponentProps> = ({ collectionId }) => {
         <div className="my-2" data-testid="advancedSearchComponent">
             <form onSubmit={formik.handleSubmit} className="flex flex-col gap-4">
                 <div className="flex items-center gap-2 flex-wrap">
-                    <select
-                        name="field"
-                        onChange={handleCurrentRuleCategoryChange}
+                    <Dropdown
+                        options={categoriesData.categories.map((category: string) => ({
+                            label: category,
+                            value: category,
+                        }))}
                         value={currentRuleCategory}
-                        className={`border p-2 ${errorMessage && !currentRuleCategory ? "border-red-500" : ""} ${duplicateCategoryError ? "border-red-500" : ""}`}
-                        ref={categoryRef}
-                    >
-                        <option hidden value="">Wybierz kategorię</option>
-                        {categoriesData.categories.map((categoryName: string) => (
-                            <option value={categoryName} key={uuidv4()}>{categoryName}</option>
-                        ))}
-                    </select>
+                        onChange={handleCurrentRuleCategoryChange}
+                        placeholder="Wybierz kategorię"
+                        error={duplicateCategoryError}
+                    />
+
                     <input
                         name="value"
                         type="text"
                         maxLength={100}
                         onChange={handleCurrentRuleValueChange}
                         value={currentRuleValue}
-                        className={`border p-2 rounded-lg ${errorMessage && !currentRuleValue ? "border-red-500" : ""}`}
-                        ref={valueRef}
+                        className={`border p-2 rounded-lg ${valueError ? "border-red-500" : ""}`}
                     />
+
                     <button type="button" onClick={handleAddRule}
                             className="border-gray-800 flex items-center bg-gray-800 hover:bg-gray-700 text-white p-2 font-semibold"
                     >
