@@ -39,6 +39,8 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
     const queryClient = useQueryClient();
     const navigate = useNavigate();
 
+    const hasSearchParams = new URLSearchParams(location.search).toString().length > 0;
+
     // Funkcja wyszukująca wartość dla danej kategorii
     const findValue = (artwork: any, categoryPath: any): string => {
         const parts = categoryPath.split(".");
@@ -74,28 +76,11 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
         enabled: !!collectionId,
     });
 
-
     const { data: collectionData } = useQuery({
         queryKey: [collectionId],
         enabled: !!collectionId,
         queryFn: () => getCollection(collectionId as string),
     });
-
-    const formatOptionLabel = (option: Option, { context }: { context: string }) => {
-        if (context === "menu") {
-            if (option.value === "select_all" || option.value === "deselect_all") {
-                return (
-                    <div
-                        className="text-gray-500 dark:text-gray-300 underline"
-                    >
-                        {option.label}
-                    </div>
-                );
-            }
-        }
-        return option.label;
-    };
-
 
     const { data: categoriesData } = useQuery({
         queryKey: ["allCategories", collectionId],
@@ -104,13 +89,6 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
     });
 
 
-    // Ustaw domyślnie wybraną kategorię sortowania na pierwszą kategorię z listy (jeśli istnieje)
-    useEffect(() => {
-        if (categoriesData && categoriesData.categories && categoriesData.categories.length > 0 && !sortCategory) {
-            setSortCategory(categoriesData.categories[0]);
-        }
-    }, [categoriesData, sortCategory]);
-
     // Przygotowanie opcji – lista wszyskich kategorii
     const categoryOptions: Option[] =
         categoriesData?.categories?.map((cat: string) => ({
@@ -118,6 +96,13 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
             label: cat,
         })) || [];
 
+
+    // Ustaw domyślnie wybraną kategorię sortowania na pierwszą kategorię z listy (jeśli istnieje)
+    useEffect(() => {
+        if (categoriesData && categoriesData.categories && categoriesData.categories.length > 0 && !sortCategory) {
+            setSortCategory(categoriesData.categories[0]);
+        }
+    }, [categoriesData, sortCategory]);
 
     // Ustaw domyślnie pierwsze 3 kategorie, jeśli jeszcze nie wybrano żadnych
     useEffect(() => {
@@ -166,7 +151,7 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
         );
     }
 
-
+    // Lista rekordów
     const allArtworks = artworkData.artworks.map((artwork: any) => (
         <div
             className="px-4 max-w-screen-xl py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4 border border-gray-300 dark:border-gray-600 cursor-pointer"
@@ -225,6 +210,21 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
         { value: "deselect_all", label: "Odznacz wszystkie" },
         ...categoryOptions,
     ];
+
+    const formatOptionLabel = (option: Option, { context }: { context: string }) => {
+        if (context === "menu") {
+            if (option.value === "select_all" || option.value === "deselect_all") {
+                return (
+                    <div
+                        className="text-gray-500 dark:text-gray-300 underline"
+                    >
+                        {option.label}
+                    </div>
+                );
+            }
+        }
+        return option.label;
+    };
 
     return (
         <><div data-testid="loaded-artwork-page-container">
@@ -382,17 +382,18 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
             <div className="flex flex-row">
                 <div className="flex mx-auto flex-1 justify-end w-full"></div>
                 <div data-testid="artworks-listed" className="w-full flex-2 lg:px-6 max-w-screen-xl">
-                    {allArtworks.length > 0 ? (
-                        allArtworks
-                    ) : new URLSearchParams(location.search).get("searchText") ? (
-                        <NoSearchResultMessage />
+                    {artworkData.artworks.length === 0 ? (
+                        hasSearchParams ? (
+                            <NoSearchResultMessage />
+                        ) : (
+                            <EmptyCollectionMessage
+                                setShowImportOptions={setShowImportOptions}
+                                jwtToken={jwtToken}
+                            />
+                        )
                     ) : (
-                        <EmptyCollectionMessage
-                            setShowImportOptions={setShowImportOptions}
-                            jwtToken={jwtToken}
-                        />
+                        allArtworks
                     )}
-
                 </div>
                 <div className="mx-auto w-full flex-1"></div>
             </div>
