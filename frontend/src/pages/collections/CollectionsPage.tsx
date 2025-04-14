@@ -14,6 +14,7 @@ import Pagination from "../../components/Pagination";
 import { getXlsxWithCollectionData } from "../../api/dataExport";
 import ImportOptions from "../../components/ImportOptions";
 import Navbar from "../../components/navbar/Navbar";
+import Footer from "../../components/Footer";
 
 interface Option {
     value: string;
@@ -291,7 +292,7 @@ const CollectionsPage = () => {
                             })}
                         </div>
 
-                        <div className="flex justify-center mt-4">
+                        <div className="flex justify-center mt-4 mb-4">
                             <Pagination
                                 currentPage={currentPage}
                                 totalPages={Math.ceil(fetchedData.total / pageSize)}
@@ -301,6 +302,8 @@ const CollectionsPage = () => {
                         </div>
                     </div>
                 </section>
+
+                <Footer />
             </div>
         );
     }
