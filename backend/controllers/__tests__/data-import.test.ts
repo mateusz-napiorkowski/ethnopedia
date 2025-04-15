@@ -45,6 +45,7 @@ jest.mock("jsonwebtoken", () => ({
 const jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXN"
     + "lcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaecc"
     + "N-rDSjRS3kApqlA"
+const collectionId = "66f2194a6123d7f50558cd8f"
 
 describe('data-import controller', () => {
     beforeEach(() => {
@@ -86,7 +87,7 @@ describe('data-import controller', () => {
               ])
             const payload = {
                 importData: [["Title"], ["An artwork title"]],
-                collectionName: 'collection'
+                collectionId: collectionId
             }
 
             const res = await request(app)
@@ -109,7 +110,7 @@ describe('data-import controller', () => {
                 prepRecords: () => []
             },
             {
-                payload: {collectionName: 'collection'},
+                payload: {collectionId: collectionId},
                 statusCode: 400, error: 'Incorrect request body provided',
                 startSession: () => startSessionDefaultReturnValue,
                 find: undefined,
@@ -123,35 +124,35 @@ describe('data-import controller', () => {
                 prepRecords: () => []
             },
             {
-                payload: {importData: [["Title"]], collectionName: 'collection'},
+                payload: {importData: [["Title"]], collectionId: collectionId},
                 statusCode: 400, error: 'Incorrect request body provided',
                 startSession: () => startSessionDefaultReturnValue,
                 find: undefined,
                 prepRecords: () => []
             },
             {
-                payload: {importData: [["Title"], ["An artwork title"]],collectionName: 'collection'},
+                payload: {importData: [["Title"], ["An artwork title"]], collectionId: collectionId},
                 statusCode: 503, error: 'Database unavailable',
                 startSession: () => startSessionDefaultReturnValue,
                 find: () => {throw Error()},
                 prepRecords: () => [] 
             },
             {
-                payload: {importData: [["Title"], ["An artwork title"]],collectionName: 'collection'},
+                payload: {importData: [["Title"], ["An artwork title"]], collectionId: collectionId},
                 statusCode: 503, error: 'Database unavailable',
                 startSession: () => {throw Error()},
                 find: undefined,
                 prepRecords: () => [] 
             },
             {
-                payload: {importData: [["Title"], ["An artwork title"]],collectionName: 'collection'},
+                payload: {importData: [["Title"], ["An artwork title"]], collectionId: collectionId},
                 statusCode: 404, error: 'Collection not found',
                 startSession: () => startSessionDefaultReturnValue,
                 find: {exec: () => Promise.resolve([])},
                 prepRecords: () => [ { categories: [ { name: 'Title', value: 'An artwork title', subcategories: [] } ], collectionName: 'collection' } ] 
             },
             {
-                payload: {importData: [["Title"], ["An artwork title"]],collectionName: 'collection'},
+                payload: {importData: [["Title"], ["An artwork title"]], collectionId: collectionId},
                 startSession: () => startSessionDefaultReturnValue,
                 statusCode: 400, error: 'Invalid data in the spreadsheet file',
                 find: {exec: () => Promise.resolve([
@@ -165,7 +166,7 @@ describe('data-import controller', () => {
                 prepRecords: () => {throw Error('Invalid data in the spreadsheet file')} 
             },
             {
-                payload: {importData: [["Title"], ["An artwork title"]],collectionName: 'collection'},
+                payload: {importData: [["Title"], ["An artwork title"]], collectionId: collectionId},
                 startSession: () => startSessionDefaultReturnValue,
                 statusCode: 503, error: 'Database unavailable',
                 find: {exec: () => Promise.resolve([
