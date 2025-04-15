@@ -8,16 +8,9 @@ import Navigation from "../../components/Navigation";
 import { Metadata } from '../../@types/Metadata';
 import {createArtwork, editArtwork, getArtwork} from "../../api/artworks";
 import MetadataForm from "../../components/artwork/MetadataForm";
-// import {getCollection} from "../../api/collections";
 import LoadingPage from "../LoadingPage";
 import {getAllCategories} from "../../api/categories";
 import { getCollection } from "src/api/collections";
-
-let example_data: Metadata[] = [
-    { name: "Tytuł", value: "", subcategories: [] },
-    { name: "Artyści", value: "", subcategories: [] },
-    { name: "Rok", value: "", subcategories: [] }
-];
 
 
 const convertToJson = (data: string[]): Metadata[] => {
@@ -47,27 +40,15 @@ const convertToJson = (data: string[]): Metadata[] => {
 
 const CreateArtworkPage: React.FC = () => {
     const location = useLocation();
-    // const { collectionId } = useParams<{ collectionId: string }>();
     const queryClient = useQueryClient();
     const { jwtToken } = useUser();
     const navigate = useNavigate();
     const [dataToInsert, setDataToInsert] = useState({});  // Przechowywanie danych do wysłania
-    const [initialFormData, setInitialFormData] = useState<Metadata[]>(example_data);  // Stan dla początkowych danych formularza
-
+    const [initialFormData, setInitialFormData] = useState<Metadata[]>([]);  // Stan dla początkowych danych formularza
     const [hasSubmitted, setHasSubmitted] = useState(false);
-
-    // TODO skąd biore collectionId?
-    // // Pobranie danych kolekcji na podstawie collectionId
-    // const { data: collectionData } = useQuery(
-    //     ['collection', collectionId],
-    //     () => getCollection(collectionId!),
-    //     { enabled: !!collectionId }
-    // );
-    // const collectionName = collectionData?.name || "Nieznana kolekcja";
 
     // Pobranie nazwy kolekcji z URL
     const pathParts = window.location.pathname.split("/");
-    // const collectionName = decodeURIComponent(pathParts[pathParts.indexOf("collections") + 1] || "Nieznana kolekcja");
     const collectionId = decodeURIComponent(pathParts[pathParts.indexOf("collections") + 1]) as string
 
     // Pobierz kategorie
@@ -110,7 +91,7 @@ const CreateArtworkPage: React.FC = () => {
     }
 
 
-    const handleSubmit = async (formDataList: Metadata[]) => {
+    const handleSubmit = async () => {
         console.log("Submit");
         // Przekazanie danych formularza do funkcji createArtwork
         try {
@@ -144,7 +125,6 @@ const CreateArtworkPage: React.FC = () => {
                     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border dark:border-gray-600 p-8">
                         <div className="flex-row items-start rounded-t border-b pb-2">
                             <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-                                {/*{location.state ? "Edytuj rekord z kolekcji" : `Dodaj nowy rekord do kolekcji: ${collectionName}`}*/}
                                 {location.state ? "Edytuj rekord z kolekcji" : `Dodaj nowy rekord do kolekcji:`}
                             </h3>
                             <h4 className="text-2xl text-gray-900 dark:text-white">
@@ -155,7 +135,7 @@ const CreateArtworkPage: React.FC = () => {
                             initialValues={{ formDataList: initialFormData }}
                             onSubmit={(values, { setSubmitting }) => {
                                 setHasSubmitted(true);
-                                handleSubmit(values.formDataList);
+                                handleSubmit();
                                 setSubmitting(false);
                             }}
                         >

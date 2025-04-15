@@ -1,5 +1,4 @@
 import React, { ChangeEvent, useEffect } from 'react';
-// import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg"
 import FormField from './FormField';
 import { Metadata } from '../../@types/Metadata';
 
@@ -14,7 +13,6 @@ interface MetadataFormProps {
 const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, collectionName, setDataToInsert, hasSubmitted }) => {
   // Inicjalizujemy stan tylko raz przy pierwszym renderze lub gdy initialFormData się zmieni.
   const [formDataList, setFormDataList] = React.useState<Metadata[]>(initialFormData);
-
   const [errorPaths, setErrorPaths] = React.useState<string[]>([]);
 
   useEffect(() => {
@@ -43,7 +41,6 @@ const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, collection
   // Ustaw stan formularza, gdy initialFormData się zmieni (np. przy pierwszym pobraniu)
   useEffect(() => {
     setFormDataList(initialFormData);
-    console.log('Initial Form Data:', initialFormData);
   }, [initialFormData]);
 
 
@@ -95,78 +92,6 @@ const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, collection
     });
   };
 
-  // const handleAddCategory = () => {
-  //   setFormDataList((prevDataList) => [...prevDataList, { name: '', value: '', subcategories: [] }]);
-  // };
-
-  const handleAddSubcategory = (index: string) => {
-    const indexParts = index.split('-').map(Number);  // e.g. index '2-0-1' -> [2, 0, 1]
-
-    setFormDataList((prevDataList) =>
-        addSubcategory(prevDataList, indexParts)
-    );
-  };
-
-  const addSubcategory = (dataList: Metadata[], indexParts: number[]): Metadata[] => {
-    if (indexParts.length === 0) {
-      return [...dataList, { name: '', value: '', subcategories: [] }];
-    }
-
-    const [currentIndex, ...remainingIndexParts] = indexParts;
-
-    return dataList.map((item, i) => {
-      if (i === currentIndex) {
-        if (remainingIndexParts.length === 0) {
-          // We're at the correct item, add a subcategory
-          return {
-            ...item,
-            subcategories: [
-              ...(item.subcategories || []),
-              { name: '', value: '', subcategories: [] }
-            ]
-          };
-        } else {
-          // We need to go deeper, recurse
-          const updatedSubcategories = addSubcategory(item.subcategories || [], remainingIndexParts);
-          return { ...item, subcategories: updatedSubcategories };
-        }
-      } else {
-        return item;
-      }
-    });
-  };
-
-
-  const handleRemove = (index: string) => {
-    const indexParts = index.split('-').map(Number);  // e.g. index '2-0-1' -> [2, 0, 1]
-
-    setFormDataList((prevDataList) =>
-        removeCategory(prevDataList, indexParts)
-    );
-  };
-
-  const removeCategory = (dataList: Metadata[], indexParts: number[]): Metadata[] => {
-    if (indexParts.length === 0) {
-      return dataList;
-    }
-
-    const [currentIndex, ...remainingIndexParts] = indexParts;
-
-    return dataList.map((item, i) => {
-      if (i === currentIndex) {
-        if (remainingIndexParts.length === 0) {
-          // We're at the correct item, remove it
-          return null;
-        } else {
-          // We need to go deeper, recurse
-          const updatedSubcategories = removeCategory(item.subcategories || [], remainingIndexParts);
-          return { ...item, subcategories: updatedSubcategories };
-        }
-      } else {
-        return item;
-      }
-    }).filter(item => item !== null) as Metadata[];
-  };
 
   return (
       <div style={{ overflowY: 'auto', height: 'auto', minWidth: '2000px'}}> {/* TODO */}
@@ -180,21 +105,10 @@ const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, collection
                     formData={formData}
                     formDataList={formDataList}
                     handleInputChange={handleInputChange}
-                    handleRemove={handleRemove}
-                    handleAddSubcategory={handleAddSubcategory}
                     errorPaths={errorPaths}
                 />
             ))}
-            {/*<div className="actions mt-1">*/}
-            {/*  <button type="button" onClick={handleAddCategory} title="Dodaj kategorię">*/}
-            {/*    <PlusIcon />*/}
-            {/*  </button>*/}
-            {/*  /!*<button type="button" onClick={handleShowJson}>*!/*/}
-            {/*  /!*  Show JSON*!/*/}
-            {/*  /!*</button>*!/*/}
-            {/*</div>*/}
           </form>
-          {/* <pre>{jsonOutput}</pre> */}
         </div>
       </div>
   );
