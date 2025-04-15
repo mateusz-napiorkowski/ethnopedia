@@ -77,6 +77,7 @@ export const getArtworksForCollectionPage = async (req: Request, res: Response) 
 
 export const createArtwork = authAsyncWrapper((async (req: Request, res: Response) => {
     try {
+        console.log("back api")
         const collectionName = req.body.collectionName
         if(!req.body.categories || !collectionName)
             throw new Error(`Incorrect request body provided`)
@@ -87,12 +88,16 @@ export const createArtwork = authAsyncWrapper((async (req: Request, res: Respons
         if(!artworkCategoriesHaveValidFormat(req.body.categories, collectionCategories))
             throw new Error(`Incorrect request body provided`)
         const newArtwork = await Artwork.create(req.body)
+        console.log(req.body);
         res.status(201).json(newArtwork)
     } catch (error) {
         const err = error as Error
         console.error(error)
         if (err.message === `Incorrect request body provided`)
+        {
+            console.log("error 404");
             res.status(400).json({ error: err.message })
+        }
         else if(err.message === `Collection not found`)
             res.status(404).json({ error: err.message })
         else

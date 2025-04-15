@@ -97,6 +97,7 @@ const CreateArtworkPage: React.FC = () => {
         try {
             if (!location.state) {
                 // dodawanie rekordu
+                console.log(dataToInsert);
                 await createArtwork(dataToInsert, jwtToken);
             } else {
                 // edycja rekordu
