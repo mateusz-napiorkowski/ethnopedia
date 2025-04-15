@@ -3,6 +3,10 @@ import express from "express";
 import request from "supertest";
 import bodyParser from "body-parser";
 import CollectionsRouter from "../../routes/collection";
+import {jwtToken, collectionId, collectionName, collectionDescription, startSessionDefaultReturnValue,
+    collectionFindByIdNotFound, collectionFindByIdHappyPath, collectionFindByIdSaveFailed,
+    artworkFindSaveFailed, artworkFindHappyPath, artworkWithUpdatedcategories
+} from "./utils/collectionsUtils"
 
 const app = express()
 app.use(bodyParser.json());
@@ -17,45 +21,46 @@ const mockCollectionCreate = jest.fn()
 const mockCollectionFind = jest.fn()
 const mockCollectionDeleteMany = jest.fn()
 const mockCollectionCountDocuments = jest.fn()
+const mockCollectionFindById = jest.fn()
 jest.mock("../../models/collection", () => ({
 	findOne: () => mockCollectionFindOne(),
     create: () => mockCollectionCreate(),
     find: () => mockCollectionFind(),
     deleteMany: () => mockCollectionDeleteMany(),
-    countDocuments: () => mockCollectionCountDocuments()
+    countDocuments: () => mockCollectionCountDocuments(),
+    findById: () => mockCollectionFindById()
 }))
 
 const mockArtworkDeleteMany = jest.fn()
 const mockArtworkAggregate = jest.fn()
+const mockArtworkFind = jest.fn()
 jest.mock("../../models/artwork", () => ({
     deleteMany: () => mockArtworkDeleteMany(),
-    aggregate: () => mockArtworkAggregate()
+    aggregate: () => mockArtworkAggregate(),
+    find: () => mockArtworkFind()
 }))
 
 const mockHasValidCategoryFormat = jest.fn()
+const mockIsValidCollectionCategoryStructureForCollectionUpdate = jest.fn()
 jest.mock("../../utils/categories", () => ({
     hasValidCategoryFormat: () => mockHasValidCategoryFormat(),
+    isValidCollectionCategoryStructureForCollectionUpdate: () => mockIsValidCollectionCategoryStructureForCollectionUpdate()
+}))
+
+const mockUpdateArtworkCategories = jest.fn()
+jest.mock("../../utils/artworks", () => ({
+    updateArtworkCategories: () => mockUpdateArtworkCategories()
 }))
 
 jest.mock("jsonwebtoken", () => ({
 	verify: jest.fn()
 }))
-const jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXN"
-	+ "lcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaecc"
-	+ "N-rDSjRS3kApqlA"
-const collectionId = "66c4e516d6303ed5ac5a8e55"
-const collectionName = "collection"
-const collectionDescription = "collection description"
+
 describe('collections controller', () =>{
     beforeEach(() => {
 		jest.resetAllMocks()
 	})
-    const startSessionDefaultReturnValue = Promise.resolve({
-        withTransaction: (async (transactionFunc: Function) => {
-            await transactionFunc()
-        }),
-        endSession: jest.fn()      
-    })
+    
     describe('GET endpoints', () =>{
 
         test("getAllCollections should respond with status 200 and correct body", async () => {
@@ -408,6 +413,180 @@ describe('collections controller', () =>{
 
             const res = await request(app.use(CollectionsRouter))
             .delete('/delete')
+            .send(payload)
+            .set('Authorization', `Bearer ${jwtToken}`)
+            .set('Content-Type', 'application/json')
+            .set('Accept', 'application/json')
+    
+            expect(res.status).toBe(statusCode)
+            expect(res.body.error).toBe(error)
+        })
+    })
+
+    describe('PUT endpoints', () =>{
+        test("updateCollection should respond with status 200 and correct body", async () => {
+            mockHasValidCategoryFormat.mockReturnValue(true)
+            mockStartSession.mockImplementation(() => startSessionDefaultReturnValue)
+            mockCollectionFindById.mockImplementation(collectionFindByIdHappyPath)
+            mockArtworkFind.mockImplementation(artworkFindHappyPath)
+            mockIsValidCollectionCategoryStructureForCollectionUpdate.mockReturnValue(true)
+            mockUpdateArtworkCategories.mockReturnValue(artworkWithUpdatedcategories)
+            const payload = { name: "nowa nazwa kolekcji", description: "nowy opis kolekcji", categories: [
+                { name: 'Tytuł', subcategories: []}, 
+                { name: 'Wykonawca', subcategories: []},]
+            }
+            const res = await request(app.use(CollectionsRouter))
+            .put(`/edit/${collectionId}`)
+            .send(payload)
+            .set('Authorization', `Bearer ${jwtToken}`)
+            .set('Content-Type', 'application/json')
+            .set('Accept', 'application/json')
+
+            expect(res.status).toBe(200)
+            expect(res.body).toMatchSnapshot()
+        })
+
+        test.each([
+            {
+                payload: {description: "nowy opis", categories: [
+                    { name: 'Tytuł', subcategories: []}, 
+                    { name: 'Wykonawca', subcategories: []},]},
+                statusCode: 400,
+                error: "Incorrect request body provided",
+                startSession: () => startSessionDefaultReturnValue,
+                hasValidCategoryFormat: true,
+                collectionFindById: collectionFindByIdHappyPath,
+                artworkFind: artworkFindHappyPath,
+                isValidCollectionCategoryStructureForCollectionUpdate: true
+            },
+            {
+                payload: {name: "nowa", categories: [
+                    { name: 'Tytuł', subcategories: []}, 
+                    { name: 'Wykonawca', subcategories: []},]},
+                statusCode: 400,
+                error: "Incorrect request body provided",
+                startSession: () => startSessionDefaultReturnValue,
+                hasValidCategoryFormat: true,
+                collectionFindById: collectionFindByIdHappyPath,
+                artworkFind: artworkFindHappyPath,
+                isValidCollectionCategoryStructureForCollectionUpdate: true
+            },
+            {
+                payload: {name: "nowa", description: "nowy opis" },
+                statusCode: 400,
+                error: "Incorrect request body provided",
+                startSession: () => startSessionDefaultReturnValue,
+                hasValidCategoryFormat: true,
+                collectionFindById: collectionFindByIdHappyPath,
+                artworkFind: artworkFindHappyPath,
+                isValidCollectionCategoryStructureForCollectionUpdate: true
+            },
+            {
+                payload: {name: "nowa", description: "nowy opis", categories: [
+                    { name: 'Tytuł', subcategories: []}, 
+                    { name: 'Wykonawca', subcategories: []},]},
+                statusCode: 400,
+                error: "Incorrect request body provided",
+                startSession: () => startSessionDefaultReturnValue,
+                hasValidCategoryFormat: false,
+                collectionFindById: collectionFindByIdHappyPath,
+                artworkFind: artworkFindHappyPath,
+                isValidCollectionCategoryStructureForCollectionUpdate: true
+            },
+            {
+                payload: {name: "nowa", description: "nowy opis", categories: [
+                    { name: 'Tytuł', subcategories: []}, 
+                    { name: 'Wykonawca', subcategories: []},]},
+                statusCode: 400,
+                error: "Incorrect request body provided",
+                startSession: () => startSessionDefaultReturnValue,
+                hasValidCategoryFormat: true,
+                collectionFindById: collectionFindByIdHappyPath,
+                artworkFind: artworkFindHappyPath,
+                isValidCollectionCategoryStructureForCollectionUpdate: false
+            },
+            {
+                payload: {name: "nowa", description: "nowy opis", categories: [
+                    { name: 'Tytuł', subcategories: []}, 
+                    { name: 'Wykonawca', subcategories: []},]},
+                statusCode: 503,
+                error: "Database unavailable",
+                startSession: () => {throw Error()},
+                hasValidCategoryFormat: true,
+                collectionFindById: collectionFindByIdHappyPath,
+                artworkFind: artworkFindHappyPath,
+                isValidCollectionCategoryStructureForCollectionUpdate: true
+            },
+            {
+                payload: {name: "nowa", description: "nowy opis", categories: [
+                    { name: 'Tytuł', subcategories: []}, 
+                    { name: 'Wykonawca', subcategories: []},]},
+                statusCode: 503,
+                error: "Database unavailable",
+                startSession: () => startSessionDefaultReturnValue,
+                hasValidCategoryFormat: true,
+                collectionFindById: () => {throw Error()},
+                artworkFind: artworkFindHappyPath,
+                isValidCollectionCategoryStructureForCollectionUpdate: true
+            },
+            {
+                payload: {name: "nowa", description: "nowy opis", categories: [
+                    { name: 'Tytuł', subcategories: []}, 
+                    { name: 'Wykonawca', subcategories: []},]},
+                statusCode: 503,
+                error: "Database unavailable",
+                startSession: () => startSessionDefaultReturnValue,
+                hasValidCategoryFormat: true,
+                collectionFindById: collectionFindByIdHappyPath,
+                artworkFind: () => {throw Error()},
+                isValidCollectionCategoryStructureForCollectionUpdate: true
+            },
+            {
+                payload: {name: "nowa", description: "nowy opis", categories: [
+                    { name: 'Tytuł', subcategories: []}, 
+                    { name: 'Wykonawca', subcategories: []},]},
+                statusCode: 503,
+                error: "Database unavailable",
+                startSession: () => startSessionDefaultReturnValue,
+                hasValidCategoryFormat: true,
+                collectionFindById: collectionFindByIdHappyPath,
+                artworkFind: artworkFindSaveFailed,
+                isValidCollectionCategoryStructureForCollectionUpdate: true
+            },
+            {
+                payload: {name: "nowa", description: "nowy opis", categories: [
+                    { name: 'Tytuł', subcategories: []}, 
+                    { name: 'Wykonawca', subcategories: []},]},
+                statusCode: 503,
+                error: "Database unavailable",
+                startSession: () => startSessionDefaultReturnValue,
+                hasValidCategoryFormat: true,
+                collectionFindById: collectionFindByIdSaveFailed,
+                artworkFind: artworkFindHappyPath,
+                isValidCollectionCategoryStructureForCollectionUpdate: true
+            },
+            {
+                payload: {name: "nowa", description: "nowy opis", categories: [
+                    { name: 'Tytuł', subcategories: []}, 
+                    { name: 'Wykonawca', subcategories: []},]},
+                statusCode: 404,
+                error: "Collection not found",
+                startSession: () => startSessionDefaultReturnValue,
+                hasValidCategoryFormat: true,
+                collectionFindById: collectionFindByIdNotFound,
+                artworkFind: artworkFindHappyPath,
+                isValidCollectionCategoryStructureForCollectionUpdate: true
+            },
+        ])('deleteCollections should respond with status $statusCode and correct error message', async ({payload, statusCode, error, startSession, hasValidCategoryFormat, collectionFindById, artworkFind, isValidCollectionCategoryStructureForCollectionUpdate}) => {
+            mockHasValidCategoryFormat.mockReturnValue(hasValidCategoryFormat)
+            mockStartSession.mockImplementation(startSession)
+            mockCollectionFindById.mockImplementation(collectionFindById)
+            mockArtworkFind.mockImplementation(artworkFind)
+            mockIsValidCollectionCategoryStructureForCollectionUpdate.mockReturnValue(isValidCollectionCategoryStructureForCollectionUpdate)
+            mockUpdateArtworkCategories.mockReturnValue(artworkWithUpdatedcategories)
+
+            const res = await request(app.use(CollectionsRouter))
+            .put(`/edit/${collectionId}`)
             .send(payload)
             .set('Authorization', `Bearer ${jwtToken}`)
             .set('Content-Type', 'application/json')

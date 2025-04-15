@@ -3,9 +3,8 @@ import mongoose, { ClientSession, SortOrder } from "mongoose"
 import { authAsyncWrapper } from "../middleware/auth"
 import Artwork from "../models/artwork";
 import CollectionCollection from "../models/collection";
-import {hasValidCategoryFormat} from "../utils/categories";
 import { updateArtworkCategories } from "../utils/artworks";
-import { isValidCollectionCategoryStructureForCollectionUpdate } from "../utils/categories";
+import { hasValidCategoryFormat, isValidCollectionCategoryStructureForCollectionUpdate } from "../utils/categories";
 
 export const getAllCollections = async (req: Request, res: Response) => {
     try {
@@ -161,8 +160,7 @@ export const updateCollection = authAsyncWrapper(async (req: Request, res: Respo
             const collection = await CollectionCollection.findById(collectionId, null, { session }).exec();
             if (!collection)
                 throw new Error("Collection not found");
-
-            const artworks = await Artwork.find({ collectionName: collection.name }, null, { session });
+            const artworks = await Artwork.find({ collectionName: collection.name }, null, { session }).exec();
             await Promise.all(artworks.map(async (artwork: any) => {
                 artwork.collectionName = name;
                 if(!isValidCollectionCategoryStructureForCollectionUpdate(artwork.categories, categories))
