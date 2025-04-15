@@ -152,7 +152,7 @@ const CollectionsPage = () => {
                                         if (Object.keys(checkedCollections).length === 1) {
                                             for (const key in fetchedData.collections) {
                                                 if (fetchedData.collections[key].id === Object.keys(checkedCollections)[0]) {
-                                                    getXlsxWithCollectionData(fetchedData.collections[key].name);
+                                                    getXlsxWithCollectionData(fetchedData.collections[key].id);
                                                     setExportErrorMessage("");
                                                 }
                                             }
@@ -160,14 +160,14 @@ const CollectionsPage = () => {
                                             if (Object.keys(checkedCollections).length === 0) {
                                                 setExportErrorMessage("Najpierw należy zaznaczyć kolekcję do wyeksportowania.");
                                             } else {
-                                                const checkedCollectionsNames = Object.keys(checkedCollections)
+                                                const checkedCollectionsIds = Object.keys(checkedCollections)
                                                     .filter((checkedCollection) => checkedCollections[checkedCollection])
                                                     .map((checkedCollection) => {
                                                         const collection = fetchedData.collections.find((col) => col.id === checkedCollection);
-                                                        return collection!.name;
+                                                        return collection!.id;
                                                     });
-                                                for (const collectionName of checkedCollectionsNames) {
-                                                    getXlsxWithCollectionData(collectionName);
+                                                for (const collectionId of checkedCollectionsIds) {
+                                                    getXlsxWithCollectionData(collectionId);
                                                 }
                                                 setExportErrorMessage("");
                                             }
