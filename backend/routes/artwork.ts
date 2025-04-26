@@ -6,7 +6,7 @@ const router = express.Router()
 
 router.route("/:artworkId").get(getArtwork)
 router.route("/:collectionId/artworks/:sortOrder").get(getArtworksForCollectionPage)
-router.route("/omram-search/:searchText").get(getArtworksBySearchTextMatchedInTopmostCategory)
+router.route("/omram/search").get(getArtworksBySearchTextMatchedInTopmostCategory)
 router.route("/create").post(createArtwork)
 router.route("/edit/:artworkId").put(editArtwork)
 router.route("/delete").delete(deleteArtworks)
