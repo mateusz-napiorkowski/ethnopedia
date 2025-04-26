@@ -17,7 +17,7 @@ import Navigation from "../../components/Navigation";
 import Pagination from "../../components/Pagination";
 import { useUser } from "../../providers/UserProvider";
 import { getAllCategories } from "../../api/categories";
-import DisplayCategoriesSelect, { Option } from "../../components/DisplayCategoriesSelect";
+import DisplayCategoriesSelect from "../../components/DisplayCategoriesSelect";
 import { ReactComponent as EditIcon } from "../../assets/icons/edit.svg"
 import EmptyCollectionMessage from "../../components/artwork/EmptyCollectionMessage";
 

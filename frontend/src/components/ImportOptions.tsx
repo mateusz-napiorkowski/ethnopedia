@@ -5,7 +5,6 @@ import * as XLSX from 'xlsx';
 import { importData, importDataAsCollection } from "../api/dataImport"
 import { useUser } from "../providers/UserProvider";
 import { useMutation, useQueryClient } from "react-query";
-import { Collection } from "../@types/Collection"
 
 type Props = {
     onClose: () => void,

@@ -8,7 +8,6 @@ import { useUser } from "../../providers/UserProvider"
 import WarningPopup from "../../pages/WarningPopup"
 
 const Navbar = () => {
-    const location = useLocation()
     const navigate = useNavigate()
 
     const { isUserLoggedIn, firstName, userId, jwtToken, setUserData} = useUser()
