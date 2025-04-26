@@ -26,6 +26,30 @@ exports[`artworks controller GET endpoints getArtwork should respond with status
 }
 `;
 
+exports[`artworks controller GET endpoints getArtworksBySearchTextMatchedInTopmostCategory should respond with status 200 and correct body 1`] = `
+{
+  "artworks": {
+    "artworks": [
+      {
+        "__v": 0,
+        "_id": "680d3aaa071644252a168caa",
+        "categories": [
+          {
+            "name": "Tytuł",
+            "subcategories": [],
+            "value": "Przykładowy tytuł",
+          },
+        ],
+        "collectionName": "collection",
+        "createdAt": "2025-04-26T19:57:30.007Z",
+        "updatedAt": "2025-04-26T19:57:30.007Z",
+      },
+    ],
+    "total": 1,
+  },
+}
+`;
+
 exports[`artworks controller GET endpoints getArtworksForCollectionPage should respond with status 200 and correct body - advanced search 1`] = `
 {
   "artworks": [

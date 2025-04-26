@@ -146,6 +146,16 @@ exports[`artworks util functions tests constructQuickSearchFilter test - maxDept
 }
 `;
 
+exports[`artworks util functions tests constructTopmostCategorySearchTextFilter test 1`] = `
+{
+  "categories": {
+    "$elemMatch": {
+      "value": /\\^Searched text\\$/i,
+    },
+  },
+}
+`;
+
 exports[`artworks util functions tests sortRecordsByCategory test - category to sort records by doesn't exist on some records 1`] = `
 [
   {

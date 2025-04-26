@@ -1,5 +1,5 @@
 import {describe, expect, test, jest, beforeEach} from "@jest/globals"
-import { constructQuickSearchFilter, constructAdvSearchFilter, sortRecordsByCategory, updateArtworkCategories } from "../artworks"
+import { constructQuickSearchFilter, constructAdvSearchFilter, sortRecordsByCategory, updateArtworkCategories, constructTopmostCategorySearchTextFilter } from "../artworks"
 
 const mockGetAllCategories = jest.fn()
 jest.mock("../../utils/categories", () => ({
@@ -146,6 +146,10 @@ describe('artworks util functions tests', () => {
             expect(await constructQuickSearchFilter("text to find", collectionId, collectionName)).toMatchSnapshot()
         }
     )
+
+    it("constructTopmostCategorySearchTextFilter test", () => {
+      expect(constructTopmostCategorySearchTextFilter("Searched text")).toMatchSnapshot()
+    })
 
     test.each([
         {
