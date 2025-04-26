@@ -77,9 +77,12 @@ export const getArtworksForCollectionPage = async (req: Request, res: Response) 
 
 export const getArtworksBySearchTextMatchedInTopmostCategory = async (req: Request, res: Response) => {
     try {
-        const searchText = req.params.searchText as string
+        const searchText = req.query.searchText as string
         const numOfArtworks = parseInt(req.query.n as string)
 
+        if(!searchText || !numOfArtworks)
+            throw new Error("Request is missing query params")
+        
         const queryFilter = constructTopmostCategorySearchTextFilter(searchText)
 
         const artworks = await Artwork.find(queryFilter).limit(numOfArtworks).exec()
@@ -89,8 +92,12 @@ export const getArtworksBySearchTextMatchedInTopmostCategory = async (req: Reque
             total: artworks.length
         })
     } catch (error) {
+        const err = error as Error
         console.error(error)
-        res.status(503).json({ error: `Database unavailable` })
+        if (err.message === "Request is missing query params")
+            res.status(400).json({ error: err.message })
+        else
+            res.status(503).json({ error: `Database unavailable` })
     }
 }
 

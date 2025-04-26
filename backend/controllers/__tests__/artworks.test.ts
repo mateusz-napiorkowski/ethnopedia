@@ -321,21 +321,20 @@ describe('artworks controller', () => {
 
         test("getArtworksBySearchTextMatchedInTopmostCategory should respond with status 200 and correct body", async () => {
             mockArtworkFind.mockReturnValue({limit: () => ({
-                exec: () => ({
-                    "artworks":[
-                        {
-                            "_id":"680d3aaa071644252a168caa",
-                            "collectionName":"collection",
-                            "categories":[{"name":"Tytuł","value":"Przykładowy tytuł","subcategories":[]}],
-                            "createdAt":"2025-04-26T19:57:30.007Z",
-                            "updatedAt":"2025-04-26T19:57:30.007Z","__v":0
-                        }],
-                    "total":1
-                })
+                exec: () => ([
+                    {
+                        "_id":"680d3aaa071644252a168caa",
+                        "collectionName":"collection",
+                        "categories":[{"name":"Tytuł","value":"Searched Text","subcategories":[]}],
+                        "createdAt":"2025-04-26T19:57:30.007Z",
+                        "updatedAt":"2025-04-26T19:57:30.007Z",
+                        "__v":0
+                    }
+                ])
             })})
 
             const res = await request(app)
-                .get(`/omram-search/Searched%20Text`)
+                .get(`/omram/search?searchText=Searched Text&n=1`)
                 .set('Accept', 'application/json')
 
             expect(res.status).toBe(200)
@@ -344,15 +343,33 @@ describe('artworks controller', () => {
 
         test.each([
             {
+                searchText: undefined,
+                numOfArtworks: 1,
+                artworkFind: () => {throw Error()},
+                statusCode: 400, error: 'Request is missing query params'
+            },
+            {
+                searchText: "Searched text",
+                numOfArtworks: undefined,
+                artworkFind: () => {throw Error()},
+                statusCode: 400, error: 'Request is missing query params'
+            },
+            {
+                searchText: "Searched text",
+                numOfArtworks: 1,
                 artworkFind: () => {throw Error()},
                 statusCode: 503, error: 'Database unavailable'
             },
         ])(`getArtworksBySearchTextMatchedInTopmostCategory should respond with status $statusCode and correct error message`,
-            async ({artworkFind, statusCode, error}) => {
+            async ({searchText, numOfArtworks, artworkFind, statusCode, error}) => {
                 mockArtworkFind.mockImplementation(artworkFind)
                 
+                let queryString = `/omram/search?`
+                if (searchText) queryString += `searchText=${searchText}&`
+                if (numOfArtworks) queryString += `n=${numOfArtworks}&`
+
                 const res = await request(app)
-                    .get("/omram-search/Searched%20Text")
+                    .get(queryString)
                     .set('Accept', 'application/json')
 
                 expect(res.status).toBe(statusCode)
