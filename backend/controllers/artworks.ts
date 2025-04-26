@@ -3,7 +3,7 @@ import mongoose, { ClientSession } from "mongoose"
 import { authAsyncWrapper } from "../middleware/auth"
 import Artwork from "../models/artwork";
 import CollectionCollection from "../models/collection"
-import { constructQuickSearchFilter, constructAdvSearchFilter, sortRecordsByCategory } from "../utils/artworks"
+import { constructQuickSearchFilter, constructAdvSearchFilter, sortRecordsByCategory, constructTopmostCategorySearchTextFilter } from "../utils/artworks"
 import { artworkCategoriesHaveValidFormat } from "../utils/categories";
 
 export const getArtwork = async (req: Request, res: Response) => {
@@ -72,6 +72,25 @@ export const getArtworksForCollectionPage = async (req: Request, res: Response) 
             res.status(404).json({ error: err.message })
         else
             res.status(503).json({ error: `Database unavailable` })
+    }
+}
+
+export const getArtworksBySearchTextMatchedInTopmostCategory = async (req: Request, res: Response) => {
+    try {
+        const searchText = req.params.searchText as string
+        const numOfArtworks = parseInt(req.query.n as string)
+
+        const queryFilter = constructTopmostCategorySearchTextFilter(searchText)
+
+        const artworks = await Artwork.find(queryFilter).limit(numOfArtworks).exec()
+
+        return res.status(200).json({
+            artworks: artworks,
+            total: artworks.length
+        })
+    } catch (error) {
+        console.error(error)
+        res.status(503).json({ error: `Database unavailable` })
     }
 }
 

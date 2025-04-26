@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useLocation, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import ToggleTheme from "./ToggleTheme"
 import { ReactComponent as UserIcon } from "../../assets/icons/user-icon.svg"
 import { deleteAccount } from "../../api/auth"
@@ -8,7 +8,6 @@ import { useUser } from "../../providers/UserProvider"
 import WarningPopup from "../../pages/WarningPopup"
 
 const Navbar = () => {
-    const location = useLocation()
     const navigate = useNavigate()
 
     const { isUserLoggedIn, firstName, userId, jwtToken, setUserData} = useUser()

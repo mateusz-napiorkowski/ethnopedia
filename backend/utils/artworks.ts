@@ -69,6 +69,16 @@ const constructAdvSearchSubcategoriesFilter = (searchRules: Array<Array<string>>
     return subcategoryFilter
 }
 
+export const constructTopmostCategorySearchTextFilter = (searchText: string) => {
+    return {
+        categories: {
+            $elemMatch: {
+                value: new RegExp(`^${searchText}$`, 'i')
+            }
+        }
+    }
+}
+
 const getOnlySearchRulesArray = (reqQuery: any, forArtworkPage = true) => {
     let rulesArray: any = []
     const keywordsToSkip = forArtworkPage ? ["page", "pageSize", "sortOrder", "search"] : ["columnNames", "selectedArtworks", "exportExtent"]

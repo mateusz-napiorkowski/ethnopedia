@@ -22,11 +22,6 @@ const ArtworkPage = () => {
         enabled: !!artworkId,
     })
 
-    const findCategoryValue = (artwork: any, categoryName: string) => {
-        const foundCategory = artwork.categories.find((category: any) => category.name === categoryName);
-        return foundCategory ? foundCategory.value : "";
-    }
-
     const deleteArtworksMutation = useMutation(() => deleteArtworks([artworkId as string], jwtToken as string), {
         onSuccess: () => {
             queryClient.invalidateQueries("artwork")

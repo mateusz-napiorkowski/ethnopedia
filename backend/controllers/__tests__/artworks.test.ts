@@ -19,6 +19,7 @@ const mockSortRecordsByCategory = jest.fn()
 jest.mock('../../utils/artworks', () => ({
     constructQuickSearchFilter: jest.fn(),
     constructAdvSearchFilter: jest.fn(),
+    constructTopmostCategorySearchTextFilter: jest.fn(),
     sortRecordsByCategory: () => mockSortRecordsByCategory()
 }))
 
@@ -311,6 +312,47 @@ describe('artworks controller', () => {
 
                 const res = await request(app)
                     .get(queryString)
+                    .set('Accept', 'application/json')
+
+                expect(res.status).toBe(statusCode)
+                expect(res.body.error).toBe(error)
+            }
+        )
+
+        test("getArtworksBySearchTextMatchedInTopmostCategory should respond with status 200 and correct body", async () => {
+            mockArtworkFind.mockReturnValue({limit: () => ({
+                exec: () => ({
+                    "artworks":[
+                        {
+                            "_id":"680d3aaa071644252a168caa",
+                            "collectionName":"collection",
+                            "categories":[{"name":"Tytuł","value":"Przykładowy tytuł","subcategories":[]}],
+                            "createdAt":"2025-04-26T19:57:30.007Z",
+                            "updatedAt":"2025-04-26T19:57:30.007Z","__v":0
+                        }],
+                    "total":1
+                })
+            })})
+
+            const res = await request(app)
+                .get(`/omram-search/Searched%20Text`)
+                .set('Accept', 'application/json')
+
+            expect(res.status).toBe(200)
+            expect(res.body).toMatchSnapshot()
+        })
+
+        test.each([
+            {
+                artworkFind: () => {throw Error()},
+                statusCode: 503, error: 'Database unavailable'
+            },
+        ])(`getArtworksBySearchTextMatchedInTopmostCategory should respond with status $statusCode and correct error message`,
+            async ({artworkFind, statusCode, error}) => {
+                mockArtworkFind.mockImplementation(artworkFind)
+                
+                const res = await request(app)
+                    .get("/omram-search/Searched%20Text")
                     .set('Accept', 'application/json')
 
                 expect(res.status).toBe(statusCode)
