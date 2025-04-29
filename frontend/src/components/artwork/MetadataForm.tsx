@@ -53,7 +53,40 @@ const MetadataForm: React.FC<MetadataFormProps> = ({
       []
   );
 
-  const updateNestedValue = (
+
+    const getAllFieldIndices = (data: Metadata[], basePath = ''): string[] => {
+        let result: string[] = [];
+
+        data.forEach((item, i) => {
+            const currentIndex = basePath ? `${basePath}-${i}` : `${i}`;
+            result.push(currentIndex);
+
+            if (item.subcategories) {
+                result = result.concat(getAllFieldIndices(item.subcategories, currentIndex));
+            }
+        });
+
+        return result;
+    };
+
+
+    const handleKeyDown = (index: string, e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            const allIndices = getAllFieldIndices(formDataList);
+            const currentIndex = allIndices.indexOf(index);
+
+            if (currentIndex >= 0 && currentIndex + 1 < allIndices.length) {
+                const nextFieldId = `field-${allIndices[currentIndex + 1]}`;
+                const nextField = document.getElementById(nextFieldId);
+                if (nextField) {
+                    (nextField as HTMLElement).focus();
+                }
+            }
+        }
+    };
+
+
+    const updateNestedValue = (
       dataList: Metadata[],
       indexParts: number[],
       name: string,
@@ -73,7 +106,7 @@ const MetadataForm: React.FC<MetadataFormProps> = ({
   };
 
   return (
-      <div style={{ overflowY: 'auto', height: 'auto', minWidth: '2000px' }}>
+      <div style={{ overflowY: 'auto', height: 'auto'}}>
         <div className="m-4">
           <form>
             {formDataList.map((formData, index) => (
@@ -82,8 +115,8 @@ const MetadataForm: React.FC<MetadataFormProps> = ({
                     index={index.toString()}
                     level={0}
                     formData={formData}
-                    formDataList={formDataList}
                     handleInputChange={handleInputChange}
+                    handleKeyDown={handleKeyDown}
                     errorPaths={errorPaths}
                 />
             ))}

@@ -3,19 +3,19 @@ import { Metadata } from '../../@types/Metadata';
 
 interface FormFieldProps {
     formData: Metadata;
-    formDataList: Metadata[];
     index: string;
     level: number;
     handleInputChange: (index: string, e: React.ChangeEvent<HTMLInputElement>) => void;
+    handleKeyDown: (index: string, e: React.KeyboardEvent<HTMLInputElement>) => void;
     errorPaths: string[];
 }
 
 const FormField: React.FC<FormFieldProps> = ({
                                                  formData,
-                                                 formDataList,
                                                  index,
                                                  level,
                                                  handleInputChange,
+                                                 handleKeyDown,
                                                  errorPaths,
                                              }) => {
 
@@ -34,25 +34,16 @@ const FormField: React.FC<FormFieldProps> = ({
                     </>
                 )}
                 <label className="flex items-center">
-                    <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        className="p-2 border rounded"
-                        onChange={(e) => handleInputChange(index, e)}
-                        disabled
-                    />
+                    <span className="">{formData.name} :</span>
                 </label>
-                <label className="flex items-center">
-                    <span className="ml-1 mr-1">
-                        :
-                    </span>
+                <label className="flex items-center px-2">
                     <input
+                        id={`field-${index}`}  // Dodajemy id dla łatwiejszego dostępu
                         type="text"
                         name="value"
-                        value={formData.value || ""}
+                        value={formData.value || ''}
                         onChange={(e) => handleInputChange(index, e)}
-                        // placeholder={`Podaj wartość kategorii...`}
+                        onKeyDown={(e) => handleKeyDown(index, e)}  // Obsługuje przejście przy Enter
                         className={`p-2 border rounded ${
                             errorPaths.includes(index) ? 'border-red-500' : 'border-gray-300'
                         }`}
@@ -71,8 +62,8 @@ const FormField: React.FC<FormFieldProps> = ({
                                     index={uniqueSubIndex}
                                     level={level + 1}
                                     formData={subCategory}
-                                    formDataList={formDataList}
                                     handleInputChange={handleInputChange}
+                                    handleKeyDown={handleKeyDown}
                                     errorPaths={errorPaths}
                                 />
                             </div>
