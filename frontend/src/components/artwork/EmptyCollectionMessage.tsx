@@ -8,7 +8,7 @@ type Props = {
 
 const EmptyCollectionMessage = ({ setShowImportOptions, jwtToken }: Props) => {
     const navigate = useNavigate();
-    const { collection } = useParams();
+    const { collectionId } = useParams();
 
     return (
         <div className="px-4 max-w-screen-xl pt-10 pb-10 py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4 border border-gray-300 dark:border-gray-600 cursor-pointer text-center">
@@ -21,7 +21,7 @@ const EmptyCollectionMessage = ({ setShowImportOptions, jwtToken }: Props) => {
                             type="button"
                             className="text-blue-600 cursor-pointer bg-transparent border-0 p-0"
                             onClick={() =>
-                                navigate(`/collections/${collection}/create-artwork`)
+                                navigate(`/collections/${collectionId}/create-artwork`)
                             }
                         >
                             Dodawaj nowe rekordy
