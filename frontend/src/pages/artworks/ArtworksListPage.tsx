@@ -62,19 +62,32 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
     };
 
 
-    const { data: artworkData } = useQuery({
-        queryKey: ["artwork", currentPage, location.search, sortCategory, sortDirection],
+    const {
+        data: artworkData,
+        isLoading: isLoadingArtworks,
+        isFetching: isFetchingArtworks,
+    } = useQuery({
+        queryKey: [
+            "artwork",
+            collectionId,               // ◀️ dodajemy collectionId
+            currentPage,
+            location.search,
+            sortCategory,
+            sortDirection,
+        ],
         queryFn: () =>
             getArtworksForCollectionPage(
                 collectionId as string,
                 currentPage,
                 pageSize,
-                `${sortCategory}-${sortDirection}`, // scalamy kategorię i kierunek w jeden parametr
+                `${sortCategory}-${sortDirection}`,
                 new URLSearchParams(location.search).get("searchText"),
                 Object.fromEntries(new URLSearchParams(location.search).entries())
             ),
         enabled: !!collectionId,
+        keepPreviousData: false,     // ◀️ wyłączamy keepPreviousData
     });
+
 
     const { data: collectionData } = useQuery({
         queryKey: [collectionId],
@@ -382,14 +395,13 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
             <div className="flex flex-row">
                 <div className="flex mx-auto flex-1 justify-end w-full"></div>
                 <div data-testid="artworks-listed" className="w-full flex-2 lg:px-6 max-w-screen-xl">
-                    {artworkData.artworks.length === 0 ? (
+                    {isLoadingArtworks || isFetchingArtworks ? (
+                        <LoadingPage />
+                    ) : artworkData.artworks.length === 0 ? (
                         hasSearchParams ? (
                             <NoSearchResultMessage />
                         ) : (
-                            <EmptyCollectionMessage
-                                setShowImportOptions={setShowImportOptions}
-                                jwtToken={jwtToken}
-                            />
+                            <EmptyCollectionMessage setShowImportOptions={setShowImportOptions} jwtToken={jwtToken} />
                         )
                     ) : (
                         allArtworks

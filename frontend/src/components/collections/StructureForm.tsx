@@ -3,9 +3,6 @@ import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg";
 import FormField from './StructureFormField';
 import { Category } from '../../@types/Category';
 
-// function transformToNewStructure(data: Category[], collectionName: string): { categories: Category[]; collectionName: string } {
-//   return { categories: data, collectionName: collectionName };
-// }
 
 interface StructureFormProps {
   initialFormData: Category[];
