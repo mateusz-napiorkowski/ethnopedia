@@ -5,8 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0139a19c-6c98-4121-b72c-d8ab5bbc47c1" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/artwork/ArtworksList.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/collections/StructureForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/collections/StructureForm.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/artwork/EmptyCollectionMessage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/artwork/EmptyCollectionMessage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/artworks/ArtworksListPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/artworks/ArtworksListPage.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,7 +31,7 @@
   }
 }</component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="ProjectErrors" />
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 8
@@ -79,7 +81,7 @@
       <workItem from="1744815313224" duration="2203000" />
       <workItem from="1745419845259" duration="168000" />
       <workItem from="1745919245195" duration="11104000" />
-      <workItem from="1746023531401" duration="327000" />
+      <workItem from="1746023531401" duration="2154000" />
     </task>
     <servers />
   </component>

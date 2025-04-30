@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 type Props = {
     setShowImportOptions: (value: boolean) => void;
-    jwtToken: string | null;
+    jwtToken?: string;
 };
 
 const EmptyCollectionMessage = ({ setShowImportOptions, jwtToken }: Props) => {
