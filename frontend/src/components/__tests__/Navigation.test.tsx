@@ -10,11 +10,12 @@ interface locationState {
     }>
 }
 
+const exampleCollectionId = "67f84d80d2ac8e9a1e67cca4"
 const renderComponent = (url: string, title: string | undefined = undefined, locationState: locationState | undefined = undefined) => {
     return render(
         <MemoryRouter initialEntries={[{pathname: url, state: locationState}]}>
             <Routes>
-                <Route path={url} element={<Navigation artworkTitle={title} />}/>
+                <Route path={url} element={<Navigation/>}/>
             </Routes>  
         </MemoryRouter>
     );
@@ -26,45 +27,30 @@ describe("Navigation tests", () => {
     });
 
     test("component renders correctly on artworks list page", async () => {        
-        const url = "/collections/example-collection/artworks/"
+        const url = `/collections/${exampleCollectionId}/artworks/`
         const { container } = renderComponent(url)
         
         expect(container).toMatchSnapshot()
     })
 
     test("component renders correctly on artwork page", async () => {        
-        const url = "/collections/example-collection/artworks/674386b32a2908778c0ad471"
+        const url = `/collections/${exampleCollectionId}/artworks/674386b32a2908778c0ad471`
         const { container } = renderComponent(url, 'Example artwork title')
         
         expect(container).toMatchSnapshot()
     })
 
-    test("component renders correctly on artwork page when artwork title is undefined", async () => {        
-        const url = "/collections/example-collection/artworks/674386b32a2908778c0ad471"
-        const { container } = renderComponent(url)
-        
-        expect(container).toMatchSnapshot()
-    })
-
     test("component renders correctly on create artwork page", async () => {        
-        const url = "/collections/example-collection/create-artwork"
+        const url = `/collections/${exampleCollectionId}/create-artwork`
         const { container } = renderComponent(url)
         
         expect(container).toMatchSnapshot()
     })
 
     test("component renders correctly on edit artwork page", async () => {        
-        const url = "/collections/example-collection/artworks/674386b32a2908778c0ad471/edit-artwork"
+        const url = `/collections/${exampleCollectionId}/artworks/674386b32a2908778c0ad471/edit-artwork`
         const state = {categories: [{name: "Tytuł", value: 'Example artwork title'}]}
         const { container } = renderComponent(url, undefined, state)
-        
-        expect(container).toMatchSnapshot()
-    })
-
-    test("component renders correctly on edit artwork page when artwork title is undefined", async () => {        
-        const url = "/collections/example-collection/artworks/674386b32a2908778c0ad471/edit-artwork"
-
-        const { container } = renderComponent(url)
         
         expect(container).toMatchSnapshot()
     })
