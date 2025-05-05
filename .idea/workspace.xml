@@ -5,7 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0139a19c-6c98-4121-b72c-d8ab5bbc47c1" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/artwork/EmptyCollectionMessage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/artwork/EmptyCollectionMessage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/Navigation.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Navigation.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/artwork/FormField.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/artwork/FormField.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/artwork/MetadataForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/artwork/MetadataForm.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/artworks/CreateArtworkPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/artworks/CreateArtworkPage.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -78,7 +82,8 @@
       <workItem from="1744815313224" duration="2203000" />
       <workItem from="1745419845259" duration="168000" />
       <workItem from="1745919245195" duration="11104000" />
-      <workItem from="1746023531401" duration="2510000" />
+      <workItem from="1746023531401" duration="4960000" />
+      <workItem from="1746426926823" duration="12977000" />
     </task>
     <servers />
   </component>

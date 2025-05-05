@@ -1,97 +1,60 @@
-import React, { useState } from 'react';
-import { Metadata } from '../../@types/Metadata';
+import React from 'react';
 import DOMPurify from 'dompurify';
 
 interface FormFieldProps {
-    formData: Metadata;
-    index: string;
-    level: number;
-    handleInputChange: (index: string, e: React.ChangeEvent<HTMLInputElement>) => void;
-    handleKeyDown: (index: string, e: React.KeyboardEvent<HTMLInputElement>) => void;
-    errorPaths: string[];
+    id?: string;
+    label: string;
+    value: string;
+    onChange: (value: string) => void;
+    onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+    level?: number;
 }
 
 const MAX_LENGTH = 100;
 
 const FormField: React.FC<FormFieldProps> = ({
-                                                 formData,
-                                                 index,
-                                                 level,
-                                                 handleInputChange,
-                                                 handleKeyDown,
-                                                 errorPaths,
+                                                 id,
+                                                 label,
+                                                 value,
+                                                 onChange,
+                                                 onKeyDown,
+                                                 level = 0,
                                              }) => {
-    const [localError, setLocalError] = useState<string | null>(null);
-
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const input = e.target.value;
-        const sanitized = DOMPurify.sanitize(input);
-
-        if (input !== sanitized) {
-            setLocalError('Wartość zawiera niedozwolone znaki (np. <, >)');
-            return;
+        let sanitized = DOMPurify.sanitize(e.target.value);
+        if (sanitized.length > MAX_LENGTH) {
+            sanitized = sanitized.slice(0, MAX_LENGTH);
         }
-
-        if (input.length > MAX_LENGTH) {
-            setLocalError(`Wartość nie może przekraczać ${MAX_LENGTH} znaków.`);
-            return;
-        }
-
-        setLocalError(null);
-        handleInputChange(index, e);
+        onChange(sanitized);
     };
 
     return (
-        <div className="relative flex flex-col mt-1">
-            {/* Obszar dla pola kategorii i przycisków */}
-            <div className="field-container relative flex items-center">
-                {level > 0 && (
-                    <>
-                        <div className="tree-line vertical" />
-                        <div className="tree-line horizontal" />
-                    </>
-                )}
-                <label className="flex items-center">
-                    <span className="">{formData.name} :</span>
-                </label>
-                <label className="flex items-center px-2">
-                    <input
-                        id={`field-${index}`}
-                        type="text"
-                        name="value"
-                        value={formData.value || ''}
-                        onChange={handleChange}
-                        onKeyDown={(e) => handleKeyDown(index, e)}
-                        maxLength={MAX_LENGTH}
-                        className={`p-2 border rounded ${
-                            errorPaths.includes(index) || localError ? 'border-red-500' : 'border-gray-300'
-                        }`}
-                    />
-                </label>
-            </div>
-            {localError && (
-                <p className="text-sm text-red-500 ml-28 mt-1">{localError}</p>
-            )}
-            {/* Podkategorie */}
-            <div className="children-container ml-8">
-                {formData.subcategories &&
-                    formData.subcategories.map((subCategory, subIndex) => {
-                        const uniqueSubIndex = `${index}-${subIndex}`;
-                        return (
-                            <div key={uniqueSubIndex} className="relative">
-                                <div className="tree-line vertical-helper" />
-                                <FormField
-                                    index={uniqueSubIndex}
-                                    level={level + 1}
-                                    formData={subCategory}
-                                    handleInputChange={handleInputChange}
-                                    handleKeyDown={handleKeyDown}
-                                    errorPaths={errorPaths}
-                                />
-                            </div>
-                        );
-                    })}
-            </div>
+        <div
+            className="relative w-full mb-2"
+        >
+            {/* Etykieta osadzona wewnątrz pola */}
+            <label
+                htmlFor={id}
+                className="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800"
+            >
+                {label}
+            </label>
+
+            <input
+                id={id}
+                type="text"
+                value={value}
+                onChange={handleChange}
+                onKeyDown={onKeyDown}
+                maxLength={MAX_LENGTH}
+                className="block w-full rounded-none border border-gray-300 bg-white px-3 pt-7 pb-2 text-sm
+               placeholder-transparent focus:border-blue-400 focus:outline-none
+               focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]
+               dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500
+               dark:focus:border-blue-400 dark:focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]"
+            />
+
+
         </div>
     );
 };
