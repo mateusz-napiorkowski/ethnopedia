@@ -115,22 +115,31 @@ const CreateArtworkPage: React.FC = () => {
                             {typeof errors.categories === 'string' && touched.categories && (
                                 <p className="mt-2 text-red-500">{errors.categories}</p>
                             )}
-                            <div className="mt-6 flex justify-end">
-                                <button
-                                    type="button"
-                                    onClick={() => navigate(-1)}
-                                    className="px-4 py-2 mr-2"
-                                >
-                                    Anuluj
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={isSubmitting}
-                                    className="px-4 py-2 bg-blue-600 text-white rounded"
-                                >
-                                    {artworkId ? 'Zapisz' : 'Utwórz'}
-                                </button>
+                            {/* sticky bottom bar */}
+                            <div
+                                className="fixed bottom-0 left-0 w-full bg-white dark:bg-gray-900 border-t border-gray-300 dark:border-gray-500 py-3 px-4 flex justify-end gap-2 shadow-[0_-2px_4px_rgba(0,0,0,0.05)] z-50">
+
+                                <div className="max-w-3xl w-full mx-auto flex justify-end">
+                                    <button
+                                        type="button"
+                                        onClick={() => navigate(-1)}
+                                        className="px-4 py-2 border rounded"
+                                    >
+                                        Anuluj
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={isSubmitting}
+                                        className="px-4 py-2 bg-blue-600 text-white rounded ml-2"
+                                    >
+                                        {artworkId ? 'Zapisz' : 'Utwórz'}
+                                    </button>
+                                </div>
                             </div>
+
+                            <div className="h-20"/>
+                            {/* Przestrzeń pod sticky barem */}
+
                         </Form>
                     )}
                 </Formik>
