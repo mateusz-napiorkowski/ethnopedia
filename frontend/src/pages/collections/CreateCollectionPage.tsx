@@ -76,41 +76,56 @@ const CreateCollectionPage = () => {
                             }}
                             validate={(values: FormValues): FormErrors => {
                                 const errors: FormErrors = {};
+
+                                // Walidacja nazwy
                                 if (!values.name) {
                                     errors.name = "Nazwa jest wymagana";
                                 }
+
+                                // Walidacja opisu
                                 if (!values.description) {
                                     errors.description = "Opis jest wymagany";
                                 }
+
+                                // Walidacja kategorii
                                 if (!values.categories || values.categories.length === 0) {
                                     errors.categories = "Struktura metadanych jest wymagana";
+                                } else {
+                                    // Przechodzimy przez kategorie i sprawdzamy, czy nazwa zawiera kropkę
+                                    values.categories.forEach((category, index) => {
+                                        if (category.name.includes(".")) {
+                                            errors.categories = "Nazwa kategorii nie może zawierać kropki";
+                                        }
+                                    });
                                 }
+
                                 return errors;
                             }}
-                            onSubmit={async (values, { setSubmitting, setErrors, setStatus }) => {
+                            onSubmit={async (values, { setSubmitting, setErrors, setStatus, setFieldTouched }) => {
                                 const { name, description, categories } = values;
+
+                                // TODO ustawienie kursora po nieudanym submit'cie tam gdzie błąd
+                                // // Sprawdzamy błędy i ustawiamy flagi dotyku na błędnych polach
+                                // if (Object.keys(errors).length > 0) {
+                                //     // Sprawdzamy, czy są błędy w nazwie, opisie lub strukturze i przesuwamy kursor na pierwsze pole z błędem
+                                //     if (errors.name) setFieldTouched("name");
+                                //     if (errors.description) setFieldTouched("description");
+                                //     if (errors.categories) setFieldTouched("categories");
+                                //     return;
+                                // }
+
+                                // Logika zapisu danych (bez zmian)
                                 try {
                                     if (isEditMode) {
-                                        // Usuń flagi isNew przed aktualizacją
                                         const updatedCategories = removeIsNewFlag(categories);
-                                        console.log("Data to update: id:", collectionId, "name:", name, description, updatedCategories);
-                                        console.log("Type of collectionId:", typeof collectionId);
-                                        await updateCollection(
-                                            collectionId,
-                                            name,
-                                            description,
-                                            updatedCategories,
-                                            jwtToken
-                                        );
+                                        await updateCollection(collectionId, name, description, updatedCategories, jwtToken);
                                     } else {
                                         await createCollection(name, description, categories, jwtToken);
                                     }
                                     setShowErrorMessage(false);
                                     navigate("/"); // Po udanym zapisie przekieruj użytkownika
                                 } catch (error: any) {
-                                    console.error(error);
                                     setShowErrorMessage(true);
-                                    // Obsługa błędów po stronie backendu
                                     if (error.response && error.response.data && error.response.data.error) {
                                         const serverError = error.response.data.error;
                                         if (serverError === "Collection with provided name already exists") {
@@ -128,7 +143,7 @@ const CreateCollectionPage = () => {
                                 }
                             }}
                         >
-                            {({ isSubmitting, setFieldValue, status }) => (
+                            {({ isSubmitting, setFieldValue, status, errors, touched }) => (
                                 <Form>
                                     <label
                                         htmlFor="name"
@@ -140,7 +155,9 @@ const CreateCollectionPage = () => {
                                         id="name"
                                         name="name"
                                         type="text"
-                                        className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none"
+                                        className={`w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none ${
+                                            touched.name && errors.name ? 'border-red-500' : 'border-gray-300'
+                                        }`}
                                     />
                                     <ErrorMessage
                                         name="name"
@@ -159,7 +176,9 @@ const CreateCollectionPage = () => {
                                         id="description"
                                         name="description"
                                         rows={4}
-                                        className="w-full resize-y mb-8 px-4 py-2 border rounded-lg focus:outline-none dark:border-gray-600 dark:bg-gray-800"
+                                        className={`w-full resize-y mb-8 px-4 py-2 border rounded-lg focus:outline-none dark:border-gray-600 dark:bg-gray-800 ${
+                                            touched.description && errors.description ? 'border-red-500' : 'border-gray-300'
+                                        }`}
                                     />
                                     <ErrorMessage
                                         name="description"
@@ -205,6 +224,7 @@ const CreateCollectionPage = () => {
                                 </Form>
                             )}
                         </Formik>
+
                     </div>
                 </div>
             </div>

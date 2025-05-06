@@ -137,9 +137,6 @@ const StructureForm: React.FC<StructureFormProps> = ({ initialFormData, setField
             >
               <PlusIcon/>
             </button>
-            {/*<button type="button" onClick={handleShowJson}>*/}
-            {/*  Show JSON*/}
-            {/*</button>*/}
           </div>
         </form>
         <pre>{jsonOutput}</pre>

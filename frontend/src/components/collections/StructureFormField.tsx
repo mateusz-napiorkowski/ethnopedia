@@ -23,12 +23,25 @@ const StructureFormField: React.FC<FormFieldProps> = ({
                                                           handleRemove,
                                                           handleAddSubcategory,
                                                           isEditMode,
-                                             }) => {
+                                                      }) => {
     const [isHovered, setIsHovered] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { value } = e.target;
+
+        // Walidacja: sprawdzenie czy nazwa zawiera kropkę
+        if (value.includes('.')) {
+            setError('Nazwa kategorii nie może zawierać kropki');
+        } else {
+            setError(null); // Jeśli nie zawiera kropki, usuwamy komunikat o błędzie
+        }
+
+        handleInputChange(index, e); // Wywołanie oryginalnej funkcji zmiany danych
+    };
 
     return (
         <div className="relative flex flex-col mt-1">
-            {/* Obszar dla pola kategorii i przycisków */}
             <div
                 className="field-container relative flex items-center"
                 onMouseEnter={() => setIsHovered(true)}
@@ -36,9 +49,7 @@ const StructureFormField: React.FC<FormFieldProps> = ({
             >
                 {level > 0 && (
                     <>
-                        {/* Pionowa linia */}
                         <div className="tree-line vertical" />
-                        {/* Pozioma linia */}
                         <div className="tree-line horizontal" />
                     </>
                 )}
@@ -47,12 +58,10 @@ const StructureFormField: React.FC<FormFieldProps> = ({
                         type="text"
                         name="name"
                         value={formData.name}
-                        onChange={(e) => handleInputChange(index, e)}
-                        // placeholder={`[${index}] Podaj nazwę kategorii...`}
+                        onChange={handleNameChange} // Zmieniamy na handleNameChange
                         placeholder={`Podaj nazwę kategorii...`}
-                        // className="p-2 border rounded"
                         className={`p-2 border rounded ${
-                            isEditMode && formData.isNew ? 'border-green-500' : 'border-gray-300'
+                            error ? 'border-red-500' : 'border-gray-300'
                         }`}
                     />
                 </label>
@@ -77,7 +86,11 @@ const StructureFormField: React.FC<FormFieldProps> = ({
                     )}
                 </div>
             </div>
-            {/* Obszar renderowania podkategorii – oddzielony od obszaru pola */}
+
+            {error && (
+                <div className="text-red-500 text-sm mt-1">{error}</div>
+            )}
+
             <div className="children-container ml-8">
                 {formData.subcategories &&
                     formData.subcategories.map((subCategory, subIndex) => {
@@ -102,5 +115,7 @@ const StructureFormField: React.FC<FormFieldProps> = ({
         </div>
     );
 };
+
+
 
 export default React.memo(StructureFormField);
