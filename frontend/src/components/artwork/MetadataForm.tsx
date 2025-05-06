@@ -112,26 +112,56 @@ const MetadataForm: React.FC<MetadataFormProps> = ({
     );
 
     // Recursive renderer
-    const renderFields = (list: Metadata[], basePath: number[] = []) =>
+    const renderFields = (
+        list: Metadata[],
+        basePath: number[] = [],
+        parentLast: boolean[] = []
+    ) =>
         list.map((meta, idx) => {
             const path = [...basePath, idx];
             const key = path.join('-');
+            const level = basePath.length;
+            const isLastInThisList = idx === list.length - 1;
+            const updatedParentLast = [...parentLast, isLastInThisList];
+
             return (
-                <div key={key}>
+                <div key={key} className={`relative ${level > 0 ? 'pl-6' : ''}`}>
+                    {/* Pionowa linia */}
+                    {level > 0 && (
+                        <div
+                            className="absolute left-0 w-px bg-gray-300 dark:bg-gray-600"
+                            style={{
+                                top: '-0.5rem',
+                                // Jeśli jest to ostatnia podkategoria na tym poziomie lub tylko jedna podkategoria,
+                                // linia powinna kończyć się przed poziomą linią
+                                bottom: isLastInThisList  ? '2.1rem' : 0,
+                            }}
+                        />
+                    )}
+
+                    {/* Pozioma linia */}
+                    {level > 0 && (
+                        <div className="absolute left-0 top-6 h-px w-6 bg-gray-300 dark:bg-gray-600" />
+                    )}
+
                     <FormField
                         id={`field-${key}`}
                         label={meta.name}
                         value={meta.value || ''}
                         onChange={(val) => updateValue(path, val)}
                         onKeyDown={(e) => handleKeyDown(path, e)}
-                        level={basePath.length}
+                        level={level}
                     />
+
                     {meta.subcategories && (
-                        <div className="ml-8">{renderFields(meta.subcategories, path)}</div>
+                        <div className="ml-4">
+                            {renderFields(meta.subcategories, path, updatedParentLast)}
+                        </div>
                     )}
                 </div>
             );
         });
+
 
     return (
         <div>

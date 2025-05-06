@@ -18,7 +18,7 @@ const FormField: React.FC<FormFieldProps> = ({
                                                  value,
                                                  onChange,
                                                  onKeyDown,
-                                                 level = 0,
+                                                 level,
                                              }) => {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         let sanitized = DOMPurify.sanitize(e.target.value);
