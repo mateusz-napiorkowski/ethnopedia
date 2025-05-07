@@ -78,11 +78,11 @@ const AdvancedSearch: React.FC<SearchComponentProps> = ({ collectionId }) => {
             return
         }
 
-        if (!trimmedRawValue) {
-            setErrorMessage("Wprowadź wartość – to pole nie może być puste.")
-            setValueError(true)
-            return
-        }
+        // if (!trimmedRawValue) {
+        //     setErrorMessage("Wprowadź wartość – to pole nie może być puste.")
+        //     setValueError(true)
+        //     return
+        // }
 
         if (sanitizedValue !== trimmedRawValue) {
             setErrorMessage("Wartość zawiera niedozwolone znaki, np. <, >, lub inne specjalne znaki. Proszę usuń je i spróbuj ponownie.")

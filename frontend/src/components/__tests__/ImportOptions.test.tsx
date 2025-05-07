@@ -223,7 +223,7 @@ describe("Import options tests", () => {
         await user.upload(input, file)
         await user.click(importMetadataButton)
 
-        expect(mockImportData).toHaveBeenCalledWith([fileBits], jwtToken, "example collection")
+        expect(mockImportData).toHaveBeenCalledWith([fileBits], jwtToken, exampleCollectionData._id)
     })
 
     it("should call mockImportDataAsCollection with correct parameters after file, name, and description are provided by user and import metadata button is clicked", async () => {

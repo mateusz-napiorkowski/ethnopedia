@@ -45,11 +45,10 @@ const CollectionsPage = () => {
         // eslint-disable-next-line
     }, [newCollection]);
 
-    const { data: fetchedData, refetch } = useQuery(
-        ["collection", currentPage, pageSize, newCollection],
-        () => getAllCollections(currentPage, pageSize),
-        {
-            keepPreviousData: true,
+    const { data: fetchedData, refetch } = useQuery({
+            queryKey: ["collection", currentPage, pageSize, newCollection],
+            queryFn: () => getAllCollections(currentPage, pageSize),
+            keepPreviousData: true
         }
     );
 
@@ -104,7 +103,7 @@ const CollectionsPage = () => {
         ];
 
         return (
-            <div className="flex flex-col h-full">
+            <div className="flex flex-col h-full" data-testid="collections-page-container">
                 {/* Navbar */}
                 <Navbar />
                 <section className="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5 h-full">

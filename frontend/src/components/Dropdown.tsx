@@ -55,6 +55,7 @@ const Dropdown: React.FC<DropdownProps> = ({ options, value, onChange, placehold
         <div className="relative" ref={dropdownRef}>
             <div
                 ref={buttonRef}
+                data-testid="dropdown-menu"
                 onClick={() => setOpen((prev) => !prev)}
                 className={`cursor-pointer py-2 px-4 border text-sm rounded-lg flex items-center justify-between
                             bg-white dark:bg-gray-800
@@ -83,6 +84,7 @@ const Dropdown: React.FC<DropdownProps> = ({ options, value, onChange, placehold
                         <div
                             key={option.value}
                             onClick={() => handleSelect(option.value)}
+                            aria-label={option.value}
                             className="cursor-pointer py-2 px-4 hover:bg-gray-200 dark:hover:bg-gray-700"
                         >
                             {option.label}
