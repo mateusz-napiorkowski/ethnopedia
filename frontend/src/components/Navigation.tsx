@@ -7,11 +7,11 @@ const renderNavItem = (label: string, to: string, renderAngleRightIcon = true) =
     <>
         {renderAngleRightIcon && 
             <span className="self-center">
-                <AngleRightIcon />
+                <AngleRightIcon className="w-3 h-3 text-gray-600 dark:text-gray-400" />
             </span>
         }
         <li className="inline-flex items-center text-lg">
-            <Link to={to} className="inline-flex items-center font-medium text-gray-800 hover:text-blue-600">
+            <Link to={to} className="inline-flex items-center font-medium text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-600">
                 {label}
             </Link>
         </li>

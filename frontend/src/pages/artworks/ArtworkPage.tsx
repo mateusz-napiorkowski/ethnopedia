@@ -12,7 +12,7 @@ import ArtworkDetails from "../../components/artwork/ArtworkDetails"
 const ArtworkPage = () => {
     const { jwtToken } = useUser()
     const queryClient = useQueryClient()
-    const { artworkId } = useParams<string>()
+    const { collectionId, artworkId } = useParams<string>()
     const navigate = useNavigate()
     const [showDeleteArtworkWarning, setShowDeleteArtworkWarning] = useState(false)
 
@@ -25,7 +25,7 @@ const ArtworkPage = () => {
     const deleteArtworksMutation = useMutation(() => deleteArtworks([artworkId as string], jwtToken as string), {
         onSuccess: () => {
             queryClient.invalidateQueries("artwork")
-            navigate(`/collections/${artworkData.collectionName}/artworks/`)
+            navigate(`/collections/${collectionId}/artworks/`)
         }
     })
 
@@ -37,6 +37,7 @@ const ArtworkPage = () => {
         )
 
     const artworkData = fetchedData.artwork
+
     return (
         <div data-testid="loaded-artwork-page-container">
             <Navbar />

@@ -19,7 +19,8 @@ import { useUser } from "../../providers/UserProvider";
 import { getAllCategories } from "../../api/categories";
 import DisplayCategoriesSelect from "../../components/DisplayCategoriesSelect";
 import { ReactComponent as EditIcon } from "../../assets/icons/edit.svg"
-import EmptyCollectionMessage from "../../components/artwork/EmptyCollectionMessage";
+import ArtworksList from '../../components/artwork/ArtworksList';
+
 
 
 const ArtworksListPage = ({ pageSize = 10 }) => {
@@ -32,11 +33,12 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
     const [selectedDisplayCategories, setSelectedDisplayCategories] = useState<string[]>([]);
     const { jwtToken } = useUser();
     const location = useLocation();
-    // const { collectionId } = location.state as { collectionId?: string } || {};
     const [currentPage, setCurrentPage] = useState(1);
     const { collectionId } = useParams();
     const queryClient = useQueryClient();
     const navigate = useNavigate();
+
+    const hasSearchParams = new URLSearchParams(location.search).toString().length > 0;
 
     // Funkcja wyszukująca wartość dla danej kategorii
     const findValue = (artwork: any, categoryPath: any): string => {
@@ -59,18 +61,30 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
     };
 
 
-    const { data: artworkData } = useQuery({
-        queryKey: ["artwork", currentPage, location.search, sortCategory, sortDirection],
+    const {
+        data: artworkData,
+        isLoading: isLoadingArtworks,
+        isFetching: isFetchingArtworks,
+    } = useQuery({
+        queryKey: [
+            "artwork",
+            collectionId,
+            currentPage,
+            location.search,
+            sortCategory,
+            sortDirection,
+        ],
         queryFn: () =>
             getArtworksForCollectionPage(
                 collectionId as string,
                 currentPage,
                 pageSize,
-                `${sortCategory}-${sortDirection}`, // scalamy kategorię i kierunek w jeden parametr
+                `${sortCategory}-${sortDirection}`,
                 new URLSearchParams(location.search).get("searchText"),
                 Object.fromEntries(new URLSearchParams(location.search).entries())
             ),
         enabled: !!collectionId,
+        keepPreviousData: false,
     });
 
 
@@ -80,35 +94,12 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
         queryFn: () => getCollection(collectionId as string),
     });
 
-    const formatOptionLabel = (option: Option, { context }: { context: string }) => {
-        if (context === "menu") {
-            if (option.value === "select_all" || option.value === "deselect_all") {
-                return (
-                    <div
-                        className="text-gray-500 dark:text-gray-300 underline"
-                    >
-                        {option.label}
-                    </div>
-                );
-            }
-        }
-        return option.label;
-    };
-
-
     const { data: categoriesData } = useQuery({
         queryKey: ["allCategories", collectionId],
         queryFn: () => getAllCategories(collectionId as string),
         enabled: !!collectionId,
     });
 
-
-    // Ustaw domyślnie wybraną kategorię sortowania na pierwszą kategorię z listy (jeśli istnieje)
-    useEffect(() => {
-        if (categoriesData && categoriesData.categories && categoriesData.categories.length > 0 && !sortCategory) {
-            setSortCategory(categoriesData.categories[0]);
-        }
-    }, [categoriesData, sortCategory]);
 
     // Przygotowanie opcji – lista wszyskich kategorii
     const categoryOptions: Option[] =
@@ -117,6 +108,13 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
             label: cat,
         })) || [];
 
+
+    // Ustaw domyślnie wybraną kategorię sortowania na pierwszą kategorię z listy (jeśli istnieje)
+    useEffect(() => {
+        if (categoriesData && categoriesData.categories && categoriesData.categories.length > 0 && !sortCategory) {
+            setSortCategory(categoriesData.categories[0]);
+        }
+    }, [categoriesData, sortCategory]);
 
     // Ustaw domyślnie pierwsze 3 kategorie, jeśli jeszcze nie wybrano żadnych
     useEffect(() => {
@@ -166,53 +164,6 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
     }
 
 
-    const allArtworks = artworkData.artworks.map((artwork: any) => (
-        <div
-            className="px-4 max-w-screen-xl py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4 border border-gray-300 dark:border-gray-600 cursor-pointer"
-            key={artwork._id}
-            data-testid={artwork._id}
-            onClick={() => navigate(`/collections/${collectionId}/artworks/${artwork._id}`)}
-        >
-            <div className="flex flex-row">
-                <span className="mr-4 flex items-center">
-                    <input
-                        type="checkbox"
-                        data-testid={`${artwork._id}-checkbox`}
-                        checked={selectedArtworks[artwork._id] || false}
-                        onClick={(e) => e.stopPropagation()}
-                        onChange={() => handleCheck(artwork._id)}
-                    />
-                </span>
-                <div>
-                    {selectedDisplayCategories.length > 0 ? (
-                        selectedDisplayCategories.map((catName) => {
-                            // Jeśli nazwa zawiera kropkę, pobieramy ostatnią część
-                            const label = catName.includes('.') ? catName.split('.').pop() : catName;
-                            return (
-                                <div key={label} className="text-lg text-gray-800 dark:text-white">
-                                    <p className="text-gray-400 inline">{label}: </p>
-                                    {findValue(artwork, catName)}
-                                </div>
-                            );
-                        })
-                    ) : (
-                        <>
-                            <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-                                {findValue(artwork, "Tytuł")}
-                            </h3>
-                            <p className="text-gray-600 dark:text-gray-400 mb-1">
-                                {findValue(artwork, "Artyści")}
-                            </p>
-                            <p className="text-gray-500 dark:text-gray-300">
-                                {findValue(artwork, "Rok")}
-                            </p>
-                        </>
-                    )}
-                </div>
-            </div>
-        </div>
-    ));
-
     type Option = {
         value: string;
         label: string;
@@ -224,6 +175,21 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
         { value: "deselect_all", label: "Odznacz wszystkie" },
         ...categoryOptions,
     ];
+
+    const formatOptionLabel = (option: Option, { context }: { context: string }) => {
+        if (context === "menu") {
+            if (option.value === "select_all" || option.value === "deselect_all") {
+                return (
+                    <div
+                        className="text-gray-500 dark:text-gray-300 underline"
+                    >
+                        {option.label}
+                    </div>
+                );
+            }
+        }
+        return option.label;
+    };
 
     return (
         <><div data-testid="loaded-artwork-page-container">
@@ -353,7 +319,7 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                         </div>
                     </div>
                     {showImportOptions && <ImportOptions onClose={() => setShowImportOptions(false)} collectionData={collectionData}/>}
-                    {showExportOptions && <ExportOptions onClose={() => setShowExportOptions(false)} selectedArtworks={selectedArtworks} />}
+                    {showExportOptions && <ExportOptions onClose={() => setShowExportOptions(false)} selectedArtworks={selectedArtworks} initialFilename={`${collectionData?.name}.xlsx`} />}
                     <div className="flex w-full md:w-auto pt-4 flex-row items-center text-sm">
                         <p className="pr-2">Wyświetlane kategorie:</p>
                         <DisplayCategoriesSelect
@@ -381,15 +347,20 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
             <div className="flex flex-row">
                 <div className="flex mx-auto flex-1 justify-end w-full"></div>
                 <div data-testid="artworks-listed" className="w-full flex-2 lg:px-6 max-w-screen-xl">
-                    {artworkData.artworks.length === 0 ? (
-                        <EmptyCollectionMessage
-                            setShowImportOptions={setShowImportOptions}
-                            jwtToken={jwtToken}
-                        />
-                    ) : (
-                        allArtworks
-                    )}
+                    <ArtworksList
+                        artworksData={artworkData}
+                        collectionId={collectionId as string}
+                        isLoading={isLoadingArtworks}
+                        isFetching={isFetchingArtworks}
+                        hasSearchParams={hasSearchParams}
+                        selectedDisplayCategories={selectedDisplayCategories}
+                        selectedArtworks={selectedArtworks}
+                        onToggleSelect={handleCheck}
+                        findValue={findValue}
+                        jwtToken={jwtToken}
+                    />
                 </div>
+
                 <div className="mx-auto w-full flex-1"></div>
             </div>
             <div className="flex justify-center mb-2">
@@ -400,7 +371,8 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                     onPageChange={deselectAll}
                 />
             </div>
-        </div></>
+        </div>
+        </>
     );
 };
 

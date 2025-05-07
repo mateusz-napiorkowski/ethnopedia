@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { render, waitFor } from '@testing-library/react'
+import { getByLabelText, getByText, render, waitFor } from '@testing-library/react'
 import AdvancedSearch from "../AdvancedSearch"
 import { QueryClient, QueryClientProvider } from "react-query";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
@@ -19,15 +19,16 @@ jest.mock('../../../api/categories', () => ({
 const queryClient = new QueryClient()
 const user = userEvent.setup()
 
+const exampleCollectionId = "67f84d80d2ac8e9a1e67cca4"
 const renderPage = (
     queryClient: QueryClient,
-    collection = "example collection" 
+    collectionId = exampleCollectionId
     ) => {
         return render(
             <QueryClientProvider client={queryClient}>
-                <MemoryRouter initialEntries={[`/collections/${collection}/artworks`]}>
+                <MemoryRouter initialEntries={[`/collections/${collectionId}/artworks`]}>
                     <Routes>
-                        <Route path="/collections/:collection/artworks" element={<AdvancedSearch collectionName={collection} />}/>
+                        <Route path="/collections/:collectionId/artworks" element={<AdvancedSearch collectionId={collectionId} />}/>
                     </Routes>  
                 </MemoryRouter>
             </QueryClientProvider>
@@ -66,44 +67,47 @@ describe("AdvancedSearch tests", () => {
 
     it("should add and render search rules correctly", async () => {
         mockGetAllCategories.mockReturnValue(fetchedCategories)
-        const {getByTestId, getByRole} = renderPage(queryClient)
+        const {getByTestId, getByRole, getByLabelText} = renderPage(queryClient)
         await waitFor(() => getByTestId("advancedSearchComponent"))
-        const selectField = getByRole("combobox")
+        const dropdownMenu = getByTestId("dropdown-menu")
         const inputField = getByRole("textbox")
         const addRuleButton = getByRole("button", {
             name: /dodaj regułę/i
         })
 
-        await user.selectOptions(selectField, "Tytuł")
+        await user.click(dropdownMenu)
+        await user.click(getByLabelText("Tytuł"))
         await user.type(inputField, "Przykładowy tytuł")
         await user.click(addRuleButton)
 
-        await user.selectOptions(selectField, "Rok")
+        await user.click(dropdownMenu)
+        await user.click(getByLabelText("Rok"))
         await user.click(addRuleButton)
 
-        await user.selectOptions(selectField, "Tytuł.Podtytuł")
+        await user.click(dropdownMenu)
+        await user.click(getByLabelText("Tytuł.Podtytuł"))
         await user.type(inputField, "Przykładowy podtytuł")
         await user.click(addRuleButton)
 
         expect(getByTestId("rules-container")).toMatchSnapshot()
     })
 
-    it("should clear out select and input elements after new rule is added", async () => {
+    it("should clear out dropdown menu and input elements after new rule is added", async () => {
         mockGetAllCategories.mockReturnValue(fetchedCategories)
-        const {getByTestId, getByRole, getByText} = renderPage(queryClient)
+        const {getByTestId, getByRole, getByLabelText, getByText} = renderPage(queryClient)
         await waitFor(() => getByTestId("advancedSearchComponent"))
-        const selectField = getByRole("combobox")
-        const selectOption = (getByText("Wybierz kategorię") as HTMLOptionElement)
+        const dropdownMenu = getByTestId("dropdown-menu")
         const inputField = getByRole("textbox")
         const addRuleButton = getByRole("button", {
             name: /dodaj regułę/i
         })
 
-        await user.selectOptions(selectField, "Tytuł")
+        await user.click(dropdownMenu)
+        await user.click(getByLabelText("Tytuł"))
         await user.type(inputField, "Przykładowy tytuł")
         await user.click(addRuleButton)
 
-        expect(selectOption.selected).toBe(true)
+        expect(getByText("Wybierz kategorię")).toBeInTheDocument()
         expect(inputField).toHaveValue("")
     })
 
@@ -111,27 +115,31 @@ describe("AdvancedSearch tests", () => {
         mockGetAllCategories.mockReturnValue(fetchedCategories)
         const {getByTestId, getByRole, getByLabelText} = renderPage(queryClient)
         await waitFor(() => getByTestId("advancedSearchComponent"))
-        const selectField = getByRole("combobox")
+        const dropdownMenu = getByTestId("dropdown-menu")
         const inputField = getByRole("textbox")
         const addRuleButton = getByRole("button", {
             name: /dodaj regułę/i
         })
 
-        await user.selectOptions(selectField, "Tytuł")
+        await user.click(dropdownMenu)
+        await user.click(getByLabelText("Tytuł"))
         await user.type(inputField, "Przykładowy tytuł")
         await user.click(addRuleButton)
 
-        await user.selectOptions(selectField, "Rok")
+        await user.click(dropdownMenu)
+        await user.click(getByLabelText("Rok"))
         await user.type(inputField, "1410")
         await user.click(addRuleButton)
 
         await user.click(getByLabelText("delete Tytuł"))
 
-        await user.selectOptions(selectField, "Artyści")
+        await user.click(dropdownMenu)
+        await user.click(getByLabelText("Artyści"))
         await user.type(inputField, "Jan Nowak")
         await user.click(addRuleButton)
 
-        await user.selectOptions(selectField, "Tytuł.Podtytuł")
+        await user.click(dropdownMenu)
+        await user.click(getByLabelText("Tytuł.Podtytuł"))
         await user.type(inputField, "Przykładowy podtytuł")
         await user.click(addRuleButton)
 
@@ -142,53 +150,65 @@ describe("AdvancedSearch tests", () => {
 
     it("should render element with error message when user tries to add rule with category name already present in another rule", async () => {
         mockGetAllCategories.mockReturnValue(fetchedCategories)
-        const {getByTestId, getByRole, getByText} = renderPage(queryClient)
+        const {getByTestId, getByRole, getByText, getByLabelText} = renderPage(queryClient)
         await waitFor(() => getByTestId("advancedSearchComponent"))
-        const selectField = getByRole("combobox")
+        const dropdownMenu = getByTestId("dropdown-menu")
         const inputField = getByRole("textbox")
         const addRuleButton = getByRole("button", {
             name: /dodaj regułę/i
         })
 
-        await user.selectOptions(selectField, "Tytuł")
+        await user.click(dropdownMenu)
+        await user.click(getByLabelText("Tytuł"))
         await user.type(inputField, "Przykładowy tytuł")
         await user.click(addRuleButton)
 
-        await user.selectOptions(selectField, "Tytuł")
+        await user.click(dropdownMenu)
+        await user.click(getByLabelText("Tytuł"))
         await user.type(inputField, "Przykładowy tytuł 2")
         await user.click(addRuleButton)
 
-        expect(getByText(/reguła z tą nazwą kategorii już istnieje./i)).toBeInTheDocument()
+        expect(getByText(/reguła dla tej kategorii została już dodana. Wybierz inną kategorię./i)).toBeInTheDocument()
     })
 
-    it("should not render element with error message after user selects any option from select element", async () => {
+    it("should render element with error message when user tries to add rule without choosing category name", async () => {
         mockGetAllCategories.mockReturnValue(fetchedCategories)
-        const {getByTestId, getByRole, queryByText} = renderPage(queryClient)
+        const {getByTestId, getByRole, getByText} = renderPage(queryClient)
         await waitFor(() => getByTestId("advancedSearchComponent"))
-        const selectField = getByRole("combobox")
         const inputField = getByRole("textbox")
         const addRuleButton = getByRole("button", {
             name: /dodaj regułę/i
         })
 
-        await user.selectOptions(selectField, "Tytuł")
         await user.type(inputField, "Przykładowy tytuł")
         await user.click(addRuleButton)
 
-        await user.selectOptions(selectField, "Tytuł")
-        await user.type(inputField, "Przykładowy tytuł 2")
+        expect(getByText(/wybierz kategorię przed dodaniem reguły./i)).toBeInTheDocument()
+    })
+
+    it("should render element with error message when user typed in rule value with forbidden characters", async () => {
+        mockGetAllCategories.mockReturnValue(fetchedCategories)
+        const {getByTestId, getByRole, getByText, getByLabelText} = renderPage(queryClient)
+        await waitFor(() => getByTestId("advancedSearchComponent"))
+        const dropdownMenu = getByTestId("dropdown-menu")
+        const inputField = getByRole("textbox")
+        const addRuleButton = getByRole("button", {
+            name: /dodaj regułę/i
+        })
+
+        await user.click(dropdownMenu)
+        await user.click(getByLabelText("Tytuł"))
+        await user.type(inputField, "Przykładowy tytuł<")
         await user.click(addRuleButton)
 
-        await user.selectOptions(selectField, "Rok")
-
-        expect(queryByText(/reguła z tą nazwą kategorii już istnieje./i)).not.toBeInTheDocument()
+        expect(getByText(/wartość zawiera niedozwolone znaki, np. <, >, lub inne specjalne znaki. Proszę usuń je i spróbuj ponownie./i)).toBeInTheDocument()
     })
 
     it("should navigate to the same page with correctly altered query string and component state after search button is clicked", async () => {
         mockGetAllCategories.mockReturnValue(fetchedCategories)
-        const {getByTestId, getByRole } = renderPage(queryClient)
+        const {getByTestId, getByRole, getByLabelText } = renderPage(queryClient)
         await waitFor(() => getByTestId("advancedSearchComponent"))
-        const selectField = getByRole("combobox")
+        const dropdownMenu = getByTestId("dropdown-menu")
         const inputField = getByRole("textbox")
         const addRuleButton = getByRole("button", {
             name: /dodaj regułę/i
@@ -197,18 +217,20 @@ describe("AdvancedSearch tests", () => {
             name: /wyszukaj/i
         })
 
-        await user.selectOptions(selectField, "Tytuł")
+        await user.click(dropdownMenu)
+        await user.click(getByLabelText("Tytuł"))
         await user.type(inputField, "tytuł")
         await user.click(addRuleButton)
         
-        await user.selectOptions(selectField, "Tytuł.Podtytuł")
+        await user.click(dropdownMenu)
+        await user.click(getByLabelText("Tytuł.Podtytuł"))
         await user.type(inputField, "podtytuł")
         await user.click(addRuleButton)
 
         await user.click(searchButton)
 
         expect(mockUseNavigate).toHaveBeenCalledWith(
-            `/collections/example collection/artworks?Tytuł=tytuł&Tytuł.Podtytuł=podtytuł`,
+            `/collections/${exampleCollectionId}/artworks?Tytuł=tytuł&Tytuł.Podtytuł=podtytuł`,
             {"state":
                 {"rules": [
                     {"field": "Tytuł", "id": expect.any(String), "value": "tytuł"},

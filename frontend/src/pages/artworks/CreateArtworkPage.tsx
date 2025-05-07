@@ -1,194 +1,148 @@
-import React, {useEffect, useState} from "react";
-import {useQuery, useQueryClient} from "react-query";
-import { Form, Formik } from "formik";
-import {useLocation, useNavigate} from "react-router-dom";
-import Navbar from "../../components/navbar/Navbar";
-import { useUser } from "../../providers/UserProvider";
-import Navigation from "../../components/Navigation";
+import React, { useEffect, useState } from 'react';
+import { useQuery, useQueryClient } from 'react-query';
+import { Formik, Form, FormikHelpers } from 'formik';
+import { useNavigate, useParams } from 'react-router-dom';
+import Navbar from '../../components/navbar/Navbar';
+import Navigation from '../../components/Navigation';
+import LoadingPage from '../LoadingPage';
+import { useUser } from '../../providers/UserProvider';
+import { getAllCategories } from '../../api/categories';
+import { getCollection } from '../../api/collections';
+import { getArtwork, createArtwork, editArtwork } from '../../api/artworks';
+import MetadataForm from '../../components/artwork/MetadataForm';
 import { Metadata } from '../../@types/Metadata';
-import {createArtwork, editArtwork, getArtwork} from "../../api/artworks";
-import MetadataForm from "../../components/artwork/MetadataForm";
-// import {getCollection} from "../../api/collections";
-import LoadingPage from "../LoadingPage";
-import {getAllCategories} from "../../api/categories";
-import { getCollection } from "src/api/collections";
 
-let example_data: Metadata[] = [
-    { name: "Tytuł", value: "", subcategories: [] },
-    { name: "Artyści", value: "", subcategories: [] },
-    { name: "Rok", value: "", subcategories: [] }
-];
-
-
-const convertToJson = (data: string[]): Metadata[] => {
-    const result: Metadata[] = [];
-    const map: { [key: string]: Metadata } = {};
-
-    data.forEach((item) => {
-        const parts = item.split('.');
-        let currentLevel = result;
-
-        parts.forEach((part) => {
-            const existingCategory = map[part];
-            if (existingCategory) {
-                currentLevel = existingCategory.subcategories!;
-            } else {
-                const newCategory: Metadata = { name: part, value: "", subcategories: [] };
-                currentLevel.push(newCategory);
-                map[part] = newCategory;
-                currentLevel = newCategory.subcategories!;
-            }
-        });
-    });
-
-    return result;
-};
-
+interface FormValues {
+    categories: Metadata[];
+}
 
 const CreateArtworkPage: React.FC = () => {
-    const location = useLocation();
-    // const { collectionId } = useParams<{ collectionId: string }>();
+    const { collectionId, artworkId } = useParams<{
+        collectionId: string;
+        artworkId?: string;
+    }>();
     const queryClient = useQueryClient();
-    const { jwtToken } = useUser();
     const navigate = useNavigate();
-    const [dataToInsert, setDataToInsert] = useState({});  // Przechowywanie danych do wysłania
-    const [initialFormData, setInitialFormData] = useState<Metadata[]>(example_data);  // Stan dla początkowych danych formularza
+    const { jwtToken } = useUser();
 
-    const [hasSubmitted, setHasSubmitted] = useState(false);
+    // Pobranie kategorii (w formacie dot.notation) lub metadanych rekordu (w trybie edycji)
+    const { data: catData, isLoading: catsLoading } = useQuery(
+        ['categories', collectionId],
+        () => getAllCategories(collectionId!),
+        { enabled: !!collectionId }
+    );
+    const { data: collData } = useQuery(
+        ['collection', collectionId],
+        () => getCollection(collectionId!),
+        { enabled: !!collectionId }
+    );
 
-    // TODO skąd biore collectionId?
-    // // Pobranie danych kolekcji na podstawie collectionId
-    // const { data: collectionData } = useQuery(
-    //     ['collection', collectionId],
-    //     () => getCollection(collectionId!),
-    //     { enabled: !!collectionId }
-    // );
-    // const collectionName = collectionData?.name || "Nieznana kolekcja";
-
-    // Pobranie nazwy kolekcji z URL
-    const pathParts = window.location.pathname.split("/");
-    // const collectionName = decodeURIComponent(pathParts[pathParts.indexOf("collections") + 1] || "Nieznana kolekcja");
-    const collectionId = decodeURIComponent(pathParts[pathParts.indexOf("collections") + 1]) as string
-
-    // Pobierz kategorie
-    const { data: categoriesData, isLoading, error } = useQuery({
-        queryKey: ["allCategories", collectionId],
-        queryFn: () => getAllCategories(collectionId),
-        enabled: !!collectionId
-    });
-
-    const { data: collectionData } = useQuery({
-            queryKey: [collectionId],
-            enabled: !!collectionId,
-            queryFn: () => getCollection(collectionId as string),
-    });
-    const collectionName = collectionData?.name || "Nieznana kolekcja"
+    const [initialCategoryPaths, setInitialCategoryPaths] = useState<string[]>([]);
+    const [initialMetadataTree, setInitialMetadataTree] = useState<Metadata[] | undefined>(
+        undefined
+    );
 
     useEffect(() => {
-        if (!location.state && categoriesData?.categories) {
-            console.log("create");
-            setInitialFormData(convertToJson(categoriesData.categories));  // Ustawienie danych po załadowaniu
-        } else if (location.state) {
-            console.log("edit");
-            const artworkID = window.location.href.split("/")[window.location.href.split("/").length - 2];
-            getArtwork(artworkID).then((artworkData) => {
-                if (artworkData?.artwork?.categories) {
-                    setInitialFormData(artworkData.artwork.categories);  // Ustawienie danych dla edycji
-                }
-            }).catch((error) => {
-                console.error("Error fetching artwork data:", error);
+        if (artworkId) {
+            getArtwork(artworkId).then((res) => {
+                setInitialMetadataTree(res.artwork.categories);
             });
+        } else if (catData?.categories) {
+            setInitialCategoryPaths(catData.categories);
         }
-    }, [categoriesData, location.state]);
+    }, [artworkId, catData]);
 
-
-    if (isLoading) {
+    if (catsLoading || (!initialCategoryPaths.length && !artworkId)) {
         return <LoadingPage />;
     }
-    if (error) {
-        return <div>Error loading categories</div>;
-    }
-
-
-    const handleSubmit = async (formDataList: Metadata[]) => {
-        console.log("Submit");
-        // Przekazanie danych formularza do funkcji createArtwork
-        try {
-            if (!location.state) {
-                // dodawanie rekordu
-                await createArtwork(dataToInsert, jwtToken);
-            } else {
-                // edycja rekordu
-                const artworkID = window.location.href.split("/")[window.location.href.split("/").length - 2];
-                await editArtwork(dataToInsert, artworkID, jwtToken);
-            }
-            queryClient.invalidateQueries(["collection"]);
-            navigate(-1); // Powrót do poprzedniej strony
-        } catch (error) {
-            console.error(error);
-        }
-    };
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
-            {/* Pasek nawigacyjny aplikacji */}
+        <div className="min-h-screen flex flex-col overflow-y-auto">
             <Navbar />
-
-            {/* Główny kontener treści */}
-            <div className="container mx-auto px-24 sm:px-32 md:px-40 lg:px-48 mt-4 max-w-screen-lg">
-                {/* Nawigacja */}
+            <div className="container px-8 mt-6 max-w-3xl mx-auto">
                 <Navigation />
+                <h2 className="text-2xl font-bold mt-2">
+                    {artworkId ? 'Edytuj rekord z kolekcji' : 'Dodaj nowy rekord do kolekcji'}
+                </h2>
+                <h2 className="text-2xl mb-4">
+                    {collData?.name}
+                </h2>
 
-                {/* Formularz */}
-                <div className="mt-4">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border dark:border-gray-600 p-8">
-                        <div className="flex-row items-start rounded-t border-b pb-2">
-                            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-                                {/*{location.state ? "Edytuj rekord z kolekcji" : `Dodaj nowy rekord do kolekcji: ${collectionName}`}*/}
-                                {location.state ? "Edytuj rekord z kolekcji" : `Dodaj nowy rekord do kolekcji:`}
-                            </h3>
-                            <h4 className="text-2xl text-gray-900 dark:text-white">
-                                {collectionName}
-                            </h4>
-                        </div>
-                        <Formik
-                            initialValues={{ formDataList: initialFormData }}
-                            onSubmit={(values, { setSubmitting }) => {
-                                setHasSubmitted(true);
-                                handleSubmit(values.formDataList);
-                                setSubmitting(false);
-                            }}
-                        >
-                            {({ isSubmitting }) => (
-                                <Form>
-                                    <div className="flex-grow">
-                                        <MetadataForm
-                                            initialFormData={initialFormData}
-                                            collectionName={collectionName}
-                                            setDataToInsert={(dataToInsert: any) => setDataToInsert(dataToInsert)}
-                                            hasSubmitted={hasSubmitted} />
-                                    </div>
-                                    <div className="flex justify-end mt-6">
-                                        <button
-                                            type="button"
-                                            onClick={() => navigate(-1)}
-                                            className="px-4 py-2 mr-2"
-                                        >
-                                            Anuluj
-                                        </button>
-                                        <button
-                                            type="submit"
-                                            disabled={isSubmitting}
-                                            className="px-4 py-2 color-button"
-                                        >
-                                            {location.state ? "Edytuj" : "Utwórz"}
-                                        </button>
-                                    </div>
-                                </Form>
+                <Formik<FormValues>
+                    initialValues={{categories: initialMetadataTree || []}}
+                    enableReinitialize
+                    validate={(values) => {
+                        const errs: Partial<Record<keyof FormValues, string>> = {};
+                        const anyFilled = values.categories.some(
+                            (c) => (c.value ?? '').trim().length > 0
+                        );
+                        if (!anyFilled) {
+                            errs.categories = 'Przynajmniej jedno pole musi być wypełnione.';
+                        }
+                        return errs;
+                    }}
+                    onSubmit={async (
+                        values,
+                        {setSubmitting}: FormikHelpers<FormValues>
+                    ) => {
+                        const payload = {
+                            categories: values.categories,
+                            collectionName: collData?.name,
+                        };
+                        try {
+                            if (artworkId) {
+                                await editArtwork(payload, artworkId, jwtToken!);
+                            } else {
+                                await createArtwork(payload, jwtToken!);
+                            }
+                            queryClient.invalidateQueries(['artworks', collectionId]);
+                            navigate(-1);
+                        } catch (e) {
+                            console.error(e);
+                        } finally {
+                            setSubmitting(false);
+                        }
+                    }}
+                >
+                    {({setFieldValue, isSubmitting, errors, touched}) => (
+                        <Form>
+                            <MetadataForm
+                                initialMetadataTree={initialMetadataTree}
+                                categoryPaths={initialCategoryPaths}
+                                setFieldValue={setFieldValue}
+                            />
+                            {/* globalny komunikat jeśli walidacja nie przeszła */}
+                            {typeof errors.categories === 'string' && touched.categories && (
+                                <p className="mt-2 text-red-500">{errors.categories}</p>
                             )}
-                        </Formik>
-                    </div>
-                </div>
+                            {/* sticky bottom bar */}
+                            <div
+                                className="fixed bottom-0 left-0 w-full bg-white dark:bg-gray-900 border-t border-gray-300 dark:border-gray-500 py-3 px-4 flex justify-end gap-2 shadow-[0_-2px_4px_rgba(0,0,0,0.05)] z-50">
+
+                                <div className="max-w-3xl w-full mx-auto flex justify-end">
+                                    <button
+                                        type="button"
+                                        onClick={() => navigate(-1)}
+                                        className="px-4 py-2 border rounded"
+                                    >
+                                        Anuluj
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={isSubmitting}
+                                        className="px-4 py-2 bg-blue-600 text-white rounded ml-2"
+                                    >
+                                        {artworkId ? 'Zapisz' : 'Utwórz'}
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="h-20"/>
+                            {/* Przestrzeń pod sticky barem */}
+
+                        </Form>
+                    )}
+                </Formik>
             </div>
         </div>
     );

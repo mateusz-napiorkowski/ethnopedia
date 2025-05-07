@@ -8,7 +8,8 @@ import LoadingPage from "../pages/LoadingPage"
 
 type Props = {
     onClose: () => void,
-    selectedArtworks: { [key: string]: boolean }
+    selectedArtworks: { [key: string]: boolean },
+    initialFilename: string
 }
 
 enum ExportExtent {
@@ -17,13 +18,13 @@ enum ExportExtent {
     searchResult = "searchResult"
 }
 
-const ExportOptions = ({onClose, selectedArtworks}: Props) => {
+const ExportOptions = ({onClose, selectedArtworks, initialFilename}: Props) => {
     const location = useLocation()
     const searchParams = new URLSearchParams(location.search)
     const { collectionId } = useParams()
     const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
     const [exportExtent, setExportExtent] = useState<ExportExtent>(ExportExtent.all)
-    const [filename, setFilename] = useState(`${collectionId}.xlsx`);
+    const [filename, setFilename] = useState(initialFilename);
 
     const { data: categoriesData } = useQuery({
         queryKey: ["allCategories"],

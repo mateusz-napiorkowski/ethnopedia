@@ -3,9 +3,6 @@ import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg";
 import FormField from './StructureFormField';
 import { Category } from '../../@types/Category';
 
-// function transformToNewStructure(data: Category[], collectionName: string): { categories: Category[]; collectionName: string } {
-//   return { categories: data, collectionName: collectionName };
-// }
 
 interface StructureFormProps {
   initialFormData: Category[];
@@ -140,9 +137,6 @@ const StructureForm: React.FC<StructureFormProps> = ({ initialFormData, setField
             >
               <PlusIcon/>
             </button>
-            {/*<button type="button" onClick={handleShowJson}>*/}
-            {/*  Show JSON*/}
-            {/*</button>*/}
           </div>
         </form>
         <pre>{jsonOutput}</pre>

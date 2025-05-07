@@ -50,6 +50,7 @@ const jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd
     + "lcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaecc"
     + "N-rDSjRS3kApqlA"
 const firstName = "example username"
+const collectionId = "67f84d80d2ac8e9a1e67cca4"
 
 const loggedInUserContextProps = {
     isUserLoggedIn: true,
@@ -144,16 +145,10 @@ describe("Navbar tests", () => {
     })
 
     it.each([
-        {path: "/" ,
-            navigateCalled: false,
-            testnameAppendage: ""},
-        {path: "/collections/example-collection/create-artwork",
-            navigateCalled: true,
-            testnameAppendage: ", useNavigate(-1) should be called"},
-        {path: "/collections/example-collection/artworks/674386b32a2908778c0ad471/edit-artwork",
-            navigateCalled: true,
-            testnameAppendage: ", useNavigate(-1) should be called"},
-      ])(`should logout user after logout button is clicked when on page with path: $path$testnameAppendage`, async ({path, navigateCalled}) => {
+        {path: "/"},
+        {path: `/collections/${collectionId}/create-artwork`},
+        {path: `/collections/${collectionId}/artworks/674386b32a2908778c0ad471/edit-artwork`},
+      ])(`should logout user after logout button is clicked when on page with path: $path, useNavigate('/') should be called`, async ({path}) => {
         const { getByLabelText, getByText, getByRole } = renderPage(queryClient, loggedInUserContextProps, path)
         const userIconButton = getByLabelText("show-dropdown")
         await user.click(userIconButton)
@@ -163,10 +158,7 @@ describe("Navbar tests", () => {
 
         expect(mockSetUserData).toHaveBeenCalledWith(false, "", "", "")
 
-        if(navigateCalled)
-            expect(mockUseNavigate).toHaveBeenCalledWith(-1)
-        else
-            expect(mockUseNavigate).not.toHaveBeenCalled()
+        expect(mockUseNavigate).toHaveBeenCalledWith('/')
     })
 
     it("should show delete account warning popup after delete user button from dropdown menu is clicked", async () => {           

@@ -1,203 +1,173 @@
-import React, { ChangeEvent, useEffect } from 'react';
-// import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg"
-import FormField from './FormField';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { Metadata } from '../../@types/Metadata';
-
+import FormField from './FormField';
 
 interface MetadataFormProps {
-  initialFormData: Metadata[];
-  collectionName: string;
-  setDataToInsert: (data: { categories: Metadata[]; collectionName: string }) => void;
-  hasSubmitted: boolean;
+    initialMetadataTree?: Metadata[];
+    categoryPaths?: string[];
+    setFieldValue: (
+        field: string,
+        value: any,
+        shouldValidate?: boolean
+    ) => void;
 }
 
-const MetadataForm: React.FC<MetadataFormProps> = ({ initialFormData, collectionName, setDataToInsert, hasSubmitted }) => {
-  // Inicjalizujemy stan tylko raz przy pierwszym renderze lub gdy initialFormData się zmieni.
-  const [formDataList, setFormDataList] = React.useState<Metadata[]>(initialFormData);
+const buildHierarchy = (paths: string[]): Metadata[] => {
+    const map: Record<string, Metadata> = {};
+    const result: Metadata[] = [];
 
-  const [errorPaths, setErrorPaths] = React.useState<string[]>([]);
+    paths.forEach((path) => {
+        const parts = path.split('.');
+        let parentList = result;
+        let prefix = '';
 
-  useEffect(() => {
-    if (hasSubmitted) {
-      const pathsWithErrors: string[] = [];
-      const collectErrorPaths = (items: Metadata[], basePath = '') => {
-        items.forEach((item, idx) => {
-          const currentPath = basePath ? `${basePath}-${idx}` : `${idx}`;
-          if (!item.value.trim()) {
-            pathsWithErrors.push(currentPath);
-          }
-          if (item.subcategories && item.subcategories.length > 0) {
-            collectErrorPaths(item.subcategories, currentPath);
-          }
+        parts.forEach((part, idx) => {
+            prefix = idx === 0 ? part : `${prefix}.${part}`;
+            if (!map[prefix]) {
+                map[prefix] = { name: part, value: '', subcategories: [] };
+                parentList.push(map[prefix]);
+            }
+            parentList = map[prefix].subcategories!;
         });
-      };
-      collectErrorPaths(formDataList);
-      setErrorPaths(pathsWithErrors);
-    } else {
-      // Jeśli użytkownik jeszcze nie kliknął submit, nie pokazuj błędów
-      setErrorPaths([]);
-    }
-  }, [formDataList, hasSubmitted]);
-
-
-  // Ustaw stan formularza, gdy initialFormData się zmieni (np. przy pierwszym pobraniu)
-  useEffect(() => {
-    setFormDataList(initialFormData);
-    console.log('Initial Form Data:', initialFormData);
-  }, [initialFormData]);
-
-
-  // Każdorazowo, gdy zmieni się formDataList lub collectionName, przekażemy zmodyfikowane dane do rodzica.
-  useEffect(() => {
-    if (collectionName) {
-      setDataToInsert({ categories: formDataList, collectionName });
-    }
-  }, [formDataList, collectionName, setDataToInsert]);
-
-
-  const handleInputChange = (index: string, e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    const indexParts = index.split('-').map(Number);  // e.g. index '2-0-1' -> [2, 0, 1]
-
-    setFormDataList((prevDataList) =>
-        updateNestedValue(prevDataList, indexParts, name, value)
-    );
-  };
-
-  // recursively update the value of a nested object
-  const updateNestedValue = (dataList: Metadata[], indexParts: number[], name: string, value: string): Metadata[] => {
-    if (indexParts.length === 0) {
-      return dataList;
-    }
-
-    const [currentIndex, ...remainingIndexParts] = indexParts;
-
-    return dataList.map((item, i) => {
-      if (i === currentIndex) {
-        if (remainingIndexParts.length === 0) {
-          if (name === 'value') {
-            // If it is a value field
-            console.log("D")
-            return { ...item, [name]: value };
-          } else {
-            // If it is a name field
-            console.log("GI")
-            return { ...item, [name]: value };
-          }
-        } else {
-          // We need to go deeper, recurse
-          const updatedSubcategories = updateNestedValue(item.subcategories || [], remainingIndexParts, name, value);
-          return { ...item, subcategories: updatedSubcategories };
-        }
-      } else {
-        return item;
-      }
     });
-  };
 
-  // const handleAddCategory = () => {
-  //   setFormDataList((prevDataList) => [...prevDataList, { name: '', value: '', subcategories: [] }]);
-  // };
+    return result;
+};
 
-  const handleAddSubcategory = (index: string) => {
-    const indexParts = index.split('-').map(Number);  // e.g. index '2-0-1' -> [2, 0, 1]
+const MetadataForm: React.FC<MetadataFormProps> = ({
+                                                       initialMetadataTree,
+                                                       categoryPaths,
+                                                       setFieldValue,
+                                                   }) => {
+    const [categories, setCategories] = useState<Metadata[]>([]);
 
-    setFormDataList((prevDataList) =>
-        addSubcategory(prevDataList, indexParts)
-    );
-  };
-
-  const addSubcategory = (dataList: Metadata[], indexParts: number[]): Metadata[] => {
-    if (indexParts.length === 0) {
-      return [...dataList, { name: '', value: '', subcategories: [] }];
-    }
-
-    const [currentIndex, ...remainingIndexParts] = indexParts;
-
-    return dataList.map((item, i) => {
-      if (i === currentIndex) {
-        if (remainingIndexParts.length === 0) {
-          // We're at the correct item, add a subcategory
-          return {
-            ...item,
-            subcategories: [
-              ...(item.subcategories || []),
-              { name: '', value: '', subcategories: [] }
-            ]
-          };
-        } else {
-          // We need to go deeper, recurse
-          const updatedSubcategories = addSubcategory(item.subcategories || [], remainingIndexParts);
-          return { ...item, subcategories: updatedSubcategories };
+    // Build tree from API or dot-paths
+    useEffect(() => {
+        if (initialMetadataTree) {
+            setCategories(initialMetadataTree);
+        } else if (categoryPaths) {
+            setCategories(buildHierarchy(categoryPaths));
         }
-      } else {
-        return item;
-      }
-    });
-  };
+    }, [initialMetadataTree, categoryPaths]);
 
+    // Sync to Formik
+    useEffect(() => {
+        setFieldValue('categories', categories, false);
+    }, [categories, setFieldValue]);
 
-  const handleRemove = (index: string) => {
-    const indexParts = index.split('-').map(Number);  // e.g. index '2-0-1' -> [2, 0, 1]
+    // Flatten all field indices
+    const allPaths = useMemo(() => {
+        const paths: number[][] = [];
+        const traverse = (list: Metadata[], base: number[] = []) => {
+            list.forEach((item, idx) => {
+                const path = [...base, idx];
+                paths.push(path);
+                if (item.subcategories) traverse(item.subcategories, path);
+            });
+        };
+        traverse(categories);
+        return paths;
+    }, [categories]);
 
-    setFormDataList((prevDataList) =>
-        removeCategory(prevDataList, indexParts)
-    );
-  };
+    // Handle Enter → next field
+    const handleKeyDown = useCallback((path: number[], e: React.KeyboardEvent<HTMLInputElement>) => {
+        // nie pozwalamy Enterowi na submit
+        if (e.key === 'Enter' || e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+            e.preventDefault();
 
-  const removeCategory = (dataList: Metadata[], indexParts: number[]): Metadata[] => {
-    if (indexParts.length === 0) {
-      return dataList;
-    }
+            // znajdź nasz indeks w mapa wszystkich ścieżek
+            const idx = allPaths.findIndex(p => p.join('-') === path.join('-'));
+            let targetIdx = idx;
 
-    const [currentIndex, ...remainingIndexParts] = indexParts;
+            if (e.key === 'Enter' || e.key === 'ArrowDown') {
+                // w dół
+                targetIdx = idx + 1;
+            } else if (e.key === 'ArrowUp') {
+                // w górę
+                targetIdx = idx - 1;
+            }
 
-    return dataList.map((item, i) => {
-      if (i === currentIndex) {
-        if (remainingIndexParts.length === 0) {
-          // We're at the correct item, remove it
-          return null;
-        } else {
-          // We need to go deeper, recurse
-          const updatedSubcategories = removeCategory(item.subcategories || [], remainingIndexParts);
-          return { ...item, subcategories: updatedSubcategories };
+            // jeśli target jest w granicach
+            if (targetIdx >= 0 && targetIdx < allPaths.length) {
+                const nextId = `field-${allPaths[targetIdx].join('-')}`;
+                const next = document.getElementById(nextId);
+                if (next) (next as HTMLElement).focus();
+            }
         }
-      } else {
-        return item;
-      }
-    }).filter(item => item !== null) as Metadata[];
-  };
+    }, [allPaths]);
 
-  return (
-      <div style={{ overflowY: 'auto', height: 'auto', minWidth: '2000px'}}> {/* TODO */}
-        <div className="m-4">
-          <form>
-            {formDataList.map((formData, index) => (
-                <FormField
-                    key={index.toString()}
-                    index={index.toString()}
-                    level={0}
-                    formData={formData}
-                    formDataList={formDataList}
-                    handleInputChange={handleInputChange}
-                    handleRemove={handleRemove}
-                    handleAddSubcategory={handleAddSubcategory}
-                    errorPaths={errorPaths}
-                />
-            ))}
-            {/*<div className="actions mt-1">*/}
-            {/*  <button type="button" onClick={handleAddCategory} title="Dodaj kategorię">*/}
-            {/*    <PlusIcon />*/}
-            {/*  </button>*/}
-            {/*  /!*<button type="button" onClick={handleShowJson}>*!/*/}
-            {/*  /!*  Show JSON*!/*/}
-            {/*  /!*</button>*!/*/}
-            {/*</div>*/}
-          </form>
-          {/* <pre>{jsonOutput}</pre> */}
+
+    // Update a single node value
+    const updateValue = useCallback(
+        (path: number[], value: string) => {
+            const newTree = [...categories];
+            let nodeList = newTree;
+            for (let i = 0; i < path.length - 1; i++) {
+                nodeList = nodeList[path[i]].subcategories!;
+            }
+            nodeList[path[path.length - 1]].value = value;
+            setCategories(newTree);
+        },
+        [categories]
+    );
+
+    // Recursive renderer
+    const renderFields = (
+        list: Metadata[],
+        basePath: number[] = [],
+        parentLast: boolean[] = []
+    ) =>
+        list.map((meta, idx) => {
+            const path = [...basePath, idx];
+            const key = path.join('-');
+            const level = basePath.length;
+            const isLastInThisList = idx === list.length - 1;
+            const updatedParentLast = [...parentLast, isLastInThisList];
+
+            return (
+                <div key={key} className={`relative ${level > 0 ? 'pl-6' : ''}`}>
+                    {/* Pionowa linia */}
+                    {level > 0 && (
+                        <div
+                            className="absolute left-0 w-px bg-gray-300 dark:bg-gray-600"
+                            style={{
+                                top: '-0.5rem',
+                                // Jeśli jest to ostatnia podkategoria na tym poziomie lub tylko jedna podkategoria,
+                                // linia powinna kończyć się przed poziomą linią
+                                bottom: isLastInThisList  ? '2.1rem' : 0,
+                            }}
+                        />
+                    )}
+
+                    {/* Pozioma linia */}
+                    {level > 0 && (
+                        <div className="absolute left-0 top-6 h-px w-6 bg-gray-300 dark:bg-gray-600" />
+                    )}
+
+                    <FormField
+                        id={`field-${key}`}
+                        label={meta.name}
+                        value={meta.value || ''}
+                        onChange={(val) => updateValue(path, val)}
+                        onKeyDown={(e) => handleKeyDown(path, e)}
+                        level={level}
+                    />
+
+                    {meta.subcategories && (
+                        <div className="ml-4">
+                            {renderFields(meta.subcategories, path, updatedParentLast)}
+                        </div>
+                    )}
+                </div>
+            );
+        });
+
+
+    return (
+        <div>
+            {renderFields(categories)}
         </div>
-      </div>
-  );
-}
+    );
+};
 
 export default MetadataForm;
