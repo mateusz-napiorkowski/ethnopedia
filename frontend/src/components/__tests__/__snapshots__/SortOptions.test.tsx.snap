@@ -1,31 +1,294 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Sort options tests should render component correctly 1`] = `
+exports[`Sort options tests should change selected category when option from dropdown menu when clicked, should call selectCurrentPage(1) 1`] = `
 <div>
   <div
-    class="flex flex-row items-center ml-2 custom-dropdown text-sm"
+    class="flex items-center space-x-1"
   >
-    <p
-      class="pr-2"
+    <div
+      class="relative"
     >
-      Sortuj:
-    </p>
-    <select
-      class="py-2 px-4 border bg-white border border-gray-300 rounded-lg cursor-pointer"
+      <div
+        aria-label="sortby-category-dropdown"
+        class="cursor-pointer py-2 px-4 border bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-sm rounded-lg flex items-center justify-between"
+        style="min-width: 40px;"
+      >
+        <span>
+          Data nagrania
+        </span>
+        <svg
+          class="h-4 w-4 ml-2 transition-transform duration-200 "
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M19 9l-7 7-7-7"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+          />
+        </svg>
+      </div>
+    </div>
+    <button
+      aria-label="Zmień kierunek sortowania"
+      class="p-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+      title="Sortuj malejąco"
     >
-      <option
-        class="py-2 px-4 cursor-pointer"
-        value="name-asc"
+      <svg
+        class="h-5 w-5 text-gray-700 dark:text-gray-200 transition-transform duration-200 rotate-180"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
       >
-        Nazwa rosnąco
-      </option>
-      <option
-        class="py-2 px-4 cursor-pointer"
-        value="name-desc"
+        <path
+          d="M12 4v16m0 0l6-6m-6 6l-6-6"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+        />
+      </svg>
+    </button>
+  </div>
+</div>
+`;
+
+exports[`Sort options tests should open dropdown menu when it is clicked 1`] = `
+<div>
+  <div
+    class="flex items-center space-x-1"
+  >
+    <div
+      class="relative"
+    >
+      <div
+        aria-label="sortby-category-dropdown"
+        class="cursor-pointer py-2 px-4 border bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-sm rounded-lg flex items-center justify-between"
+        style="min-width: 40px;"
       >
-        Nazwa malejąco
-      </option>
-    </select>
+        <span>
+          Tytuł
+        </span>
+        <svg
+          class="h-4 w-4 ml-2 transition-transform duration-200 rotate-180"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M19 9l-7 7-7-7"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+          />
+        </svg>
+      </div>
+      <div
+        class="absolute top-full mt-1 z-10 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-md max-h-52 overflow-y-auto"
+        style="min-width: 40px;"
+      >
+        <div
+          aria-label="Tytuł"
+          class="cursor-pointer py-2 px-4 hover:bg-gray-200 dark:hover:bg-gray-700"
+        >
+          Tytuł
+        </div>
+        <div
+          aria-label="Tytuł.Podtytuł"
+          class="cursor-pointer py-2 px-4 hover:bg-gray-200 dark:hover:bg-gray-700"
+        >
+          Tytuł.Podtytuł
+        </div>
+        <div
+          aria-label="Data nagrania"
+          class="cursor-pointer py-2 px-4 hover:bg-gray-200 dark:hover:bg-gray-700"
+        >
+          Data nagrania
+        </div>
+      </div>
+    </div>
+    <button
+      aria-label="Zmień kierunek sortowania"
+      class="p-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+      title="Sortuj malejąco"
+    >
+      <svg
+        class="h-5 w-5 text-gray-700 dark:text-gray-200 transition-transform duration-200 rotate-180"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          d="M12 4v16m0 0l6-6m-6 6l-6-6"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+        />
+      </svg>
+    </button>
+  </div>
+</div>
+`;
+
+exports[`Sort options tests should render initial state 1`] = `
+<div>
+  <div
+    class="flex items-center space-x-1"
+  >
+    <div
+      class="relative"
+    >
+      <div
+        aria-label="sortby-category-dropdown"
+        class="cursor-pointer py-2 px-4 border bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-sm rounded-lg flex items-center justify-between"
+        style="min-width: 40px;"
+      >
+        <span>
+          Tytuł
+        </span>
+        <svg
+          class="h-4 w-4 ml-2 transition-transform duration-200 "
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M19 9l-7 7-7-7"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+          />
+        </svg>
+      </div>
+    </div>
+    <button
+      aria-label="Zmień kierunek sortowania"
+      class="p-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+      title="Sortuj malejąco"
+    >
+      <svg
+        class="h-5 w-5 text-gray-700 dark:text-gray-200 transition-transform duration-200 rotate-180"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          d="M12 4v16m0 0l6-6m-6 6l-6-6"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+        />
+      </svg>
+    </button>
+  </div>
+</div>
+`;
+
+exports[`Sort options tests should rotate sorting direction button after sorting direction button is clicked and change its title to 'Sortuj malejąco', should call selectCurrentPage(1) 1`] = `
+<div>
+  <div
+    class="flex items-center space-x-1"
+  >
+    <div
+      class="relative"
+    >
+      <div
+        aria-label="sortby-category-dropdown"
+        class="cursor-pointer py-2 px-4 border bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-sm rounded-lg flex items-center justify-between"
+        style="min-width: 40px;"
+      >
+        <span>
+          Tytuł
+        </span>
+        <svg
+          class="h-4 w-4 ml-2 transition-transform duration-200 "
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M19 9l-7 7-7-7"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+          />
+        </svg>
+      </div>
+    </div>
+    <button
+      aria-label="Zmień kierunek sortowania"
+      class="p-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+      title="Sortuj malejąco"
+    >
+      <svg
+        class="h-5 w-5 text-gray-700 dark:text-gray-200 transition-transform duration-200 rotate-180"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          d="M12 4v16m0 0l6-6m-6 6l-6-6"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+        />
+      </svg>
+    </button>
+  </div>
+</div>
+`;
+
+exports[`Sort options tests should rotate sorting direction button after sorting direction button is clicked and change its title to 'Sortuj rosnąco', should call selectCurrentPage(1) 1`] = `
+<div>
+  <div
+    class="flex items-center space-x-1"
+  >
+    <div
+      class="relative"
+    >
+      <div
+        aria-label="sortby-category-dropdown"
+        class="cursor-pointer py-2 px-4 border bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-sm rounded-lg flex items-center justify-between"
+        style="min-width: 40px;"
+      >
+        <span>
+          Tytuł
+        </span>
+        <svg
+          class="h-4 w-4 ml-2 transition-transform duration-200 "
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M19 9l-7 7-7-7"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+          />
+        </svg>
+      </div>
+    </div>
+    <button
+      aria-label="Zmień kierunek sortowania"
+      class="p-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+      title="Sortuj rosnąco"
+    >
+      <svg
+        class="h-5 w-5 text-gray-700 dark:text-gray-200 transition-transform duration-200 "
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          d="M12 4v16m0 0l6-6m-6 6l-6-6"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+        />
+      </svg>
+    </button>
   </div>
 </div>
 `;
