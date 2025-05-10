@@ -5,8 +5,8 @@ export const prepRecords = async (data: Array<Array<string>>, collectionName: st
     try {
         const header = data[0].map(categoryName => categoryName.trim().replace(/\s*\.\s*/g, '.'))
         const categories = (asCollection) ? data[0] : await getAllCategories(collectionId!)
-        let missingCategories = categories.filter((category: string) => !header.includes(category))
-        let unnecessaryCategories = header.filter((category: string) => !categories.includes(category))
+        const missingCategories = categories.filter((category: string) => !header.includes(category))
+        const unnecessaryCategories = header.filter((category: string) => !categories.includes(category))
         if(missingCategories.length != 0 || unnecessaryCategories.length != 0) {
             throw new Error(`Brakujące kategorie: ${missingCategories}, Nadmiarowe kategorie: ${unnecessaryCategories}`)
         }

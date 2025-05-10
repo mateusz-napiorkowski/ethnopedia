@@ -42,7 +42,7 @@ export const constructQuickSearchFilter = async (searchText: any, collectionId: 
 }
 
 const constructAdvSearchSubcategoriesFilter = (searchRules: Array<Array<string>>, depth: number) => {
-    let subcategoryFilter: any = {$all: []}
+    const subcategoryFilter: any = {$all: []}
     searchRules.forEach(([subcategoryName, subcategoryValue]) => {
         const subcategoryNameSplitByDot = subcategoryName.split('.');
         const isCurrentDepthSubcategory = subcategoryNameSplitByDot.length === depth;
@@ -52,7 +52,7 @@ const constructAdvSearchSubcategoriesFilter = (searchRules: Array<Array<string>>
             deeperSubcategoryName.startsWith(`${subcategoryName}.`)
         );
 
-        let newFilterPart: any = {
+        const newFilterPart: any = {
             $elemMatch: {
                 name: subcategoryNameSplitByDot.slice(depth - 1).join('.'),
             }
@@ -80,7 +80,7 @@ export const constructTopmostCategorySearchTextFilter = (searchText: string) => 
 }
 
 const getOnlySearchRulesArray = (reqQuery: any, forArtworkPage = true) => {
-    let rulesArray: any = []
+    const rulesArray: any = []
     const keywordsToSkip = forArtworkPage ? ["page", "pageSize", "sortOrder", "search"] : ["columnNames", "selectedArtworks", "exportExtent"]
     for(const categoryName in reqQuery) {
         if(!keywordsToSkip.includes(categoryName)) {
