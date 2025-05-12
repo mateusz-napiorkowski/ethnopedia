@@ -73,6 +73,7 @@ const SortOptions: React.FC<SortOptionsProps> = ({
                     onClick={() => setOpen((prev) => !prev)}
                     className="cursor-pointer py-2 px-4 border bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-sm rounded-lg flex items-center justify-between"
                     style={{ minWidth: dropdownWidth }}
+                    aria-label="sortby-category-dropdown"
                 >
                     <span>{options.find((opt) => opt.value === sortCategory)?.label || "Wybierz kategorię"}</span>
                     <svg
@@ -94,6 +95,7 @@ const SortOptions: React.FC<SortOptionsProps> = ({
                                 key={option.value}
                                 onClick={() => handleSelectCategory(option.value)}
                                 className="cursor-pointer py-2 px-4 hover:bg-gray-200 dark:hover:bg-gray-700"
+                                aria-label={option.label}
                             >
                                 {option.label}
                             </div>

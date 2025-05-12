@@ -13,15 +13,16 @@ jest.mock('../../../api/categories', () => ({
 const queryClient = new QueryClient()
 const user = userEvent.setup()
 
+const exampleCollectionId = "67f84d80d2ac8e9a1e67cca4"
 const renderPage = (
     queryClient: QueryClient,
-    collection = "example collection" 
+    collectionId = exampleCollectionId
     ) => {
         return render(
             <QueryClientProvider client={queryClient}>
-                <MemoryRouter initialEntries={[`/collections/${collection}/artworks`]}>
+                <MemoryRouter initialEntries={[`/collections/${exampleCollectionId}/artworks`]}>
                     <Routes>
-                        <Route path="/collections/:collection/artworks" element={<SearchComponent collectionName={collection} />}/>
+                        <Route path="/collections/:collection/artworks" element={<SearchComponent collectionId={collectionId} />}/>
                     </Routes>  
                 </MemoryRouter>
             </QueryClientProvider>
@@ -40,30 +41,10 @@ describe("SearchComponent tests", () => {
         queryClient.clear();
     });
 
-    it("should render loading state", () => {      
+    it("should render initial state", () => {      
         const {getByTestId, queryByTestId} = renderPage(queryClient)
         
         expect(getByTestId("searchComponent")).toBeInTheDocument()
-        expect(getByTestId("loading-advanced-search-container")).toBeInTheDocument()
-        expect(queryByTestId("quickSearchComponent")).not.toBeInTheDocument()
-    })
-
-    it("should render advanced search component after categoriesData is fetched from API", async () => {
-        mockGetAllCategories.mockReturnValue(fetchedCategories)
-        const {getByTestId, queryByTestId} = renderPage(queryClient)
-
-        await waitFor(() => expect(getByTestId("advancedSearchComponent")).toBeInTheDocument())
-        expect(queryByTestId("loading-advanced-search-container")).not.toBeInTheDocument()
-        expect(queryByTestId("quickSearchComponent")).not.toBeInTheDocument()
-    })
-
-    it("should render quicksearch component after quicksearch button is clicked", async () => {
-        mockGetAllCategories.mockReturnValue(fetchedCategories)
-        const {getByTestId, queryByTestId, getByText} = renderPage(queryClient)
-
-        await waitFor(() => getByTestId("advancedSearchComponent"))
-        await user.click(getByText(/szybkie wyszukiwanie/i))
-
         expect(getByTestId("quickSearchComponent")).toBeInTheDocument()
         expect(queryByTestId("advancedSearchComponent")).not.toBeInTheDocument()
     })
@@ -72,11 +53,20 @@ describe("SearchComponent tests", () => {
         mockGetAllCategories.mockReturnValue(fetchedCategories)
         const {getByTestId, queryByTestId, getByText} = renderPage(queryClient)
 
-        await waitFor(() => getByTestId("advancedSearchComponent"))
-        await user.click(getByText(/szybkie wyszukiwanie/i))
         await user.click(getByText(/zaawansowane wyszukiwanie/i))
 
         expect(getByTestId("advancedSearchComponent")).toBeInTheDocument()
         expect(queryByTestId("quickSearchComponent")).not.toBeInTheDocument()
+    })
+
+    it("should render quick search component after quick search button is clicked", async () => {
+        mockGetAllCategories.mockReturnValue(fetchedCategories)
+        const {getByTestId, queryByTestId, getByText} = renderPage(queryClient)
+
+        await user.click(getByText(/zaawansowane wyszukiwanie/i))
+        await user.click(getByText(/szybkie wyszukiwanie/i))
+
+        expect(getByTestId("quickSearchComponent")).toBeInTheDocument()
+        expect(queryByTestId("advancedSearchComponent")).not.toBeInTheDocument()
     })
 })

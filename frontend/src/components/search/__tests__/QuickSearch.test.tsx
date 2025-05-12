@@ -14,15 +14,16 @@ jest.mock('react-router-dom', () => ({
 const queryClient = new QueryClient()
 const user = userEvent.setup()
 
+const exampleCollectionId = "67f84d80d2ac8e9a1e67cca4"
 const renderPage = (
     queryClient: QueryClient,
-    collection = "example collection" 
+    collectionId = exampleCollectionId
     ) => {
         return render(
             <QueryClientProvider client={queryClient}>
-                <MemoryRouter initialEntries={[`/collections/${collection}/artworks`]}>
+                <MemoryRouter initialEntries={[`/collections/${collectionId}/artworks`]}>
                     <Routes>
-                        <Route path="/collections/:collection/artworks" element={<QuickSearch collectionName={collection} />}/>
+                        <Route path="/collections/:collection/artworks" element={<QuickSearch collectionId={collectionId} />}/>
                     </Routes>  
                 </MemoryRouter>
             </QueryClientProvider>
@@ -45,9 +46,19 @@ describe("QuickSearch tests", () => {
         const {getByRole} = renderPage(queryClient)
 
         const inputField = getByRole("textbox")
-        await user.type(inputField, "example search Text")
+        await user.type(inputField, "ExampleTextValue")
         await user.click(getByRole("button"))
 
-        expect(mockUseNavigate).toHaveBeenCalledWith("?searchText=example search Text")
+        expect(mockUseNavigate).toHaveBeenCalledWith("?searchText=ExampleTextValue")
+    })
+
+    it("should render element with error message when user typed in rule value with forbidden characters", async () => {        
+        const {getByRole, getByText} = renderPage(queryClient)
+
+        const inputField = getByRole("textbox")
+        await user.type(inputField, "<")
+        await user.click(getByRole("button"))
+
+        expect(getByText(/wartość zawiera niedozwolone znaki, np. <, >, lub inne specjalne znaki./i)).toBeInTheDocument()
     })
 })
