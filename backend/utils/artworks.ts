@@ -31,7 +31,7 @@ const fillSubcategoriesFilterPart: any = (searchText: string, currentDepth: numb
 }
 
 export const constructQuickSearchFilter = async (searchText: any, collectionId: string, collectionName: string) => {
-    const allCategories = await getAllCategories(collectionId)
+    const allCategories = await getAllCategories([collectionId])
     const maxDepth = allCategories.length > 0 ?
         Math.max.apply(Math, allCategories.map((category) => category.split('.').length)) : 0
     const queryFilter = {

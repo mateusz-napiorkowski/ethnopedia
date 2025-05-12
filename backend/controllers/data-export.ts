@@ -17,7 +17,7 @@ export const getXlsxWithCollectionData = async (req: Request, res: Response) => 
         const workbook = new excelJS.Workbook()
         const sheet = workbook.addWorksheet(collectionName)
 
-        const columnNames = await getAllCategories(collectionId)
+        const columnNames = await getAllCategories([collectionId])
         sheet.columns = columnNames.map((name :string) => {return {header: name, key: name}})
         
         const records = await Artwork.find({collectionName: collectionName}).exec()

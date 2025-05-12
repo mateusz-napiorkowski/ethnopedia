@@ -96,7 +96,7 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
 
     const { data: categoriesData } = useQuery({
         queryKey: ["allCategories", collectionId],
-        queryFn: () => getAllCategories(collectionId as string),
+        queryFn: () => getAllCategories([collectionId as string]),
         enabled: !!collectionId,
     });
 
