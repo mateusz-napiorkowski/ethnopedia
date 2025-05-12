@@ -56,11 +56,14 @@ export const getAllCategories = async (collectionIds: Array<string>) => {
         if(collections.length === 0)
             throw new Error("Collection not found")
         const allCategories: Array<string> = []
-        for(const category of collections[0].categories) {
-            allCategories.push(category.name)
-            allCategories.push(...getNestedCategories(`${category.name}`, category.subcategories))
-        }           
-        return allCategories
+        for(const collection of collections) {
+            for(const category of collection.categories) {
+                allCategories.push(category.name)
+                allCategories.push(...getNestedCategories(`${category.name}`, category.subcategories))
+            }      
+        }
+        console.log(allCategories)
+        return [...new Set(allCategories)]
     } catch (error) {
         const err = error as Error
         console.error(error)
