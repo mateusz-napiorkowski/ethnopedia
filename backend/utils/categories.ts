@@ -61,7 +61,6 @@ export const getAllCategories = async (collectionIds: Array<string>) => {
                 allCategories.push(...getNestedCategories(`${category.name}`, category.subcategories))
             }      
         }
-        console.log(allCategories)
         return [...new Set(allCategories)]
     } catch (error) {
         const err = error as Error

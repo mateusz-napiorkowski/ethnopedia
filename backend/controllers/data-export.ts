@@ -78,8 +78,8 @@ export const getXlsxWithArtworksData = async (req: Request, res: Response) => {
             records.forEach((record: any) => sheet.addRow(fillRow(columnNames, record.categories)))
         } else if(exportExtent === "searchResult") {
             const searchText = req.query.searchText
-            const queryFilter = searchText ? await constructQuickSearchFilter(searchText, collectionId, collectionName) :
-                await constructAdvSearchFilter(req.query, collectionName, false)
+            const queryFilter = searchText ? await constructQuickSearchFilter(searchText, [collectionId], [collectionName]) :
+                await constructAdvSearchFilter(req.query, [collectionName], false)
             const records = await Artwork.find(queryFilter).exec()
             records.forEach((record: any) => sheet.addRow(fillRow(columnNames, record.categories)))
         } else {

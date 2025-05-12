@@ -3,7 +3,7 @@ import { getAllCategories } from "../utils/categories"
 
 export const getCategories = async (req: Request, res: Response) => {
     try {
-        const collectionIds = req.query.collectionIds as Array<string>
+        const collectionIds = typeof req.query.collectionIds === "string" ? Array(req.query.collectionIds) : req.query.collectionIds as Array<string>
         if(!collectionIds)
             throw new Error("Request is missing query params")
         const categories = await getAllCategories(collectionIds)
