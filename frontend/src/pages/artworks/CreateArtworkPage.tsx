@@ -28,7 +28,7 @@ const CreateArtworkPage: React.FC = () => {
     // Pobranie kategorii (w formacie dot.notation) lub metadanych rekordu (w trybie edycji)
     const { data: catData, isLoading: catsLoading } = useQuery(
         ['categories', collectionId],
-        () => getAllCategories(collectionId!),
+        () => getAllCategories([collectionId as string]),
         { enabled: !!collectionId }
     );
     const { data: collData } = useQuery(

@@ -48,7 +48,7 @@ exports[`artworks controller GET endpoints getArtworksBySearchTextMatchedInTopmo
 }
 `;
 
-exports[`artworks controller GET endpoints getArtworksForCollectionPage should respond with status 200 and correct body - advanced search 1`] = `
+exports[`artworks controller GET endpoints getArtworksForPage should respond with status 200 and correct body - advanced search 1`] = `
 {
   "artworks": [
     {
@@ -72,7 +72,7 @@ exports[`artworks controller GET endpoints getArtworksForCollectionPage should r
 }
 `;
 
-exports[`artworks controller GET endpoints getArtworksForCollectionPage should respond with status 200 and correct body - no filtering 1`] = `
+exports[`artworks controller GET endpoints getArtworksForPage should respond with status 200 and correct body - no filtering 1`] = `
 {
   "artworks": [
     {
@@ -96,7 +96,7 @@ exports[`artworks controller GET endpoints getArtworksForCollectionPage should r
 }
 `;
 
-exports[`artworks controller GET endpoints getArtworksForCollectionPage should respond with status 200 and correct body - quicksearch 1`] = `
+exports[`artworks controller GET endpoints getArtworksForPage should respond with status 200 and correct body - quicksearch 1`] = `
 {
   "artworks": [
     {

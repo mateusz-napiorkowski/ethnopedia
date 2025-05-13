@@ -31,7 +31,7 @@ describe('categories controller', () => {
             mockgetAllCategories.mockReturnValue(["Title"])
 
             const res = await request(app)
-                .get(`/all/${collectionId}`)
+                .get(`/all?collectionIds=${collectionId}`)
                 .set('Accept', 'application/json')
 
             expect(res.status).toBe(200)
@@ -42,18 +42,29 @@ describe('categories controller', () => {
             mockgetAllCategories.mockImplementation(() => {throw Error("Collection not found")})
 
             const res = await request(app)
-                .get(`/all/${collectionId}`)
+                .get(`/all?collectionIds=${collectionId}`)
                 .set('Accept', 'application/json')
 
             expect(res.status).toBe(404)
             expect(res.body.error).toBe("Collection not found")
         })
 
+        test("getCollectionCategories should respond with status 400 and correct error message", async () => {
+            mockgetAllCategories.mockImplementation(() => {throw Error("Collection not found")})
+
+            const res = await request(app)
+                .get(`/all`)
+                .set('Accept', 'application/json')
+
+            expect(res.status).toBe(400)
+            expect(res.body.error).toBe("Request is missing query params")
+        })
+
         test("getCollectionCategories should respond with status 503 and correct error message", async () => {
             mockgetAllCategories.mockImplementation(() => {throw Error("Database unavailable")})
 
             const res = await request(app)
-                .get(`/all/${collectionId}`)
+                .get(`/all?collectionIds=${collectionId}`)
                 .set('Accept', 'application/json')
 
             expect(res.status).toBe(503)

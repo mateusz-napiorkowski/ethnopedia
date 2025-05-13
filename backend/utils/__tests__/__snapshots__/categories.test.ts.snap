@@ -1,6 +1,22 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`categories util functions tests getAllCategories test - categories present in collection 1`] = `
+exports[`categories util functions tests getAllCategories test - get categories from many collections 1`] = `
+[
+  "Tytuł",
+  "Tytuł.Podtytuł",
+  "Tytuł.Podtytuł.Podpodtytuł",
+  "Tytuł.Podtytuł alternatywny",
+  "Artyści",
+  "Rok",
+  "Rok.Miesiąc",
+  "Rok.Miesiąc.Dzień",
+  "Tytuł.Podtytuł alternatywny 2",
+  "Gatunek",
+  "Gatunek.Podgatunek",
+]
+`;
+
+exports[`categories util functions tests getAllCategories test - get categories from one collection 1`] = `
 [
   "Tytuł",
   "Tytuł.Podtytuł",
@@ -12,5 +28,3 @@ exports[`categories util functions tests getAllCategories test - categories pres
   "Rok.Miesiąc.Dzień",
 ]
 `;
-
-exports[`categories util functions tests getAllCategories test - no categories in collection 1`] = `[]`;

@@ -6,8 +6,9 @@ jest.mock("../../utils/categories", () => ({
     getAllCategories: () => mockGetAllCategories(),
 }))
 
-const collectionId = "66f2194a6123d7f50558cd8f"
-const collectionName = "collection"
+const collectionIds = ["66f2194a6123d7f50558cd8f", "12f3494a6123d7f50558cd8f"]
+const collectionNames = ["collection", "collection 2"]
+const collectionName = collectionNames[0]
 
 describe('artworks util functions tests', () => {
     beforeEach(() => {
@@ -143,7 +144,7 @@ describe('artworks util functions tests', () => {
         async ({categories}) => {
             mockGetAllCategories.mockReturnValue(categories)
 
-            expect(await constructQuickSearchFilter("text to find", collectionId, collectionName)).toMatchSnapshot()
+            expect(await constructQuickSearchFilter("text to find", collectionIds, collectionNames)).toMatchSnapshot()
         }
     )
 
@@ -176,7 +177,7 @@ describe('artworks util functions tests', () => {
         },
     ])(`constructAdvSearchFilter test - $case`,
         async ({query}) => {
-            expect(await constructAdvSearchFilter(query, collectionName)).toMatchSnapshot()
+            expect(await constructAdvSearchFilter(query, collectionNames)).toMatchSnapshot()
         }
     )
 

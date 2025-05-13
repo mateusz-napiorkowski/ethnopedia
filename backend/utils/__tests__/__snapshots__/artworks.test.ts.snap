@@ -5,7 +5,12 @@ exports[`artworks util functions tests constructAdvSearchFilter test - no search
   "categories": {
     "$all": [],
   },
-  "collectionName": "collection",
+  "collectionName": {
+    "$in": [
+      "collection",
+      "collection 2",
+    ],
+  },
 }
 `;
 
@@ -72,14 +77,24 @@ exports[`artworks util functions tests constructAdvSearchFilter test - standard 
       },
     ],
   },
-  "collectionName": "collection",
+  "collectionName": {
+    "$in": [
+      "collection",
+      "collection 2",
+    ],
+  },
 }
 `;
 
 exports[`artworks util functions tests constructQuickSearchFilter test - maxDepth=0 1`] = `
 {
   "categories": [],
-  "collectionName": "collection",
+  "collectionName": {
+    "$in": [
+      "collection",
+      "collection 2",
+    ],
+  },
 }
 `;
 
@@ -94,7 +109,12 @@ exports[`artworks util functions tests constructQuickSearchFilter test - maxDept
       ],
     },
   },
-  "collectionName": "collection",
+  "collectionName": {
+    "$in": [
+      "collection",
+      "collection 2",
+    ],
+  },
 }
 `;
 
@@ -142,7 +162,12 @@ exports[`artworks util functions tests constructQuickSearchFilter test - maxDept
       ],
     },
   },
-  "collectionName": "collection",
+  "collectionName": {
+    "$in": [
+      "collection",
+      "collection 2",
+    ],
+  },
 }
 `;
 
