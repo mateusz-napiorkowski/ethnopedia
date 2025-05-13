@@ -31,11 +31,12 @@ export const getArtworksForPage = async (req: Request, res: Response) => {
     try {
         const page = parseInt(req.query.page as string)
         const pageSize = parseInt(req.query.pageSize as string)
-
-        if(!page || !pageSize)
-            throw new Error("Request is missing query params")
-
+        const sortOrder = req.query.sortOrder as string
         const collectionIds = req.query.collectionIds as Array<string>
+
+        if(!page || !pageSize || !sortOrder || ! collectionIds)
+            throw new Error("Request is missing query params")
+        
         const collections = await CollectionCollection.find({_id: {$in: collectionIds}}).exec()
 
         if (collections.length === 0)
@@ -44,8 +45,6 @@ export const getArtworksForPage = async (req: Request, res: Response) => {
         const collectionNames = collections.map(collection => collection.name as string);
         
         const searchText = req.query.searchText
-        const sortOrder = req.query.sortOrder as string //TODO check if is not undefined?
-
         const search = req.query.search === "true" ? true : false
         let queryFilter;
         if(!search)
