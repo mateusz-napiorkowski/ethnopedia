@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import ToggleTheme from "./ToggleTheme"
+import GlobalSearch from "./GlobalSearch"
 import { ReactComponent as UserIcon } from "../../assets/icons/user-icon.svg"
 import { deleteAccount } from "../../api/auth"
 import { useMutation } from "react-query"
@@ -90,12 +91,15 @@ const Navbar = () => {
                 <h1 className="logo text-gray-200 dark:text-gray-900 text-6xl ">ethnopedia</h1>
             </div>
             <div className="flex items-center md:order-2">
-                <ToggleTheme />
+                <GlobalSearch/>
+
+                <ToggleTheme/>
+
                 {isUserLoggedIn ?
                     <>
                         <div aria-label="show-dropdown" onClick={() => setIsDropdownOpen(!isDropdownOpen)} className="rounded-full bg-gray-300
                         p-3 cursor-pointer">
-                            <UserIcon />
+                            <UserIcon/>
                         </div>
                         <h2 className="font-semibold ml-2 text-lg dark:text-gray-800 text-white">{firstName}</h2>
                         {isDropdownOpen && <DropdownMenu

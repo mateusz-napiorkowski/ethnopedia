@@ -10,6 +10,7 @@ import { UserProvider } from "./providers/UserProvider"
 import CreateArtworkPage from "./pages/artworks/CreateArtworkPage"
 import CreateCollectionPage from "./pages/collections/CreateCollectionPage";
 import Home from "./pages/Home"
+import GlobalSearchPage from "./pages/artworks/GlobalSearchPage";
 
 const queryClient = new QueryClient()
 
@@ -24,6 +25,7 @@ const App = () => {
                         <Route path="/collections/:collectionId/artworks/:artworkId/edit-artwork" element={<CreateArtworkPage />} />
                         <Route path="/create-collection" element={<CreateCollectionPage />} />
                         <Route path="/collections/:collection/edit" element={<CreateCollectionPage />} />
+                        <Route path="/global-search" element={<GlobalSearchPage />} />
 
                         <Route path="/" element={<Home />} />
                         <Route path="/collections/:collectionId/artworks" element={<Artworks />} />
