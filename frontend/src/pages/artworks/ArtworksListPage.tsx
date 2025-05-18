@@ -189,7 +189,7 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
             }
         }
         return option.label;
-    };
+    }
 
     return (
         <><div data-testid="loaded-artwork-page-container">
@@ -319,7 +319,7 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                         </div>
                     </div>
                     {showImportOptions && <ImportOptions onClose={() => setShowImportOptions(false)} collectionData={collectionData}/>}
-                    {showExportOptions && <ExportOptions onClose={() => setShowExportOptions(false)} selectedArtworks={selectedArtworks} initialFilename={`${collectionData?.name}.xlsx`} />}
+                    {showExportOptions && <ExportOptions onClose={() => setShowExportOptions(false)} selectedArtworks={selectedArtworks} initialFilename={`${collectionData?.name}.xlsx`} collectionIds={[`${collectionData?._id}`]} />}
                     <div className="flex w-full md:w-auto pt-4 flex-row items-center text-sm">
                         <p className="pr-2">Wyświetlane kategorie:</p>
                         <DisplayCategoriesSelect

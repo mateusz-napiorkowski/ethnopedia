@@ -26,7 +26,7 @@ export const getCollection = async (id: string) => {
     const response = await axios.get(`${API_URL}v1/collection/${id}`, {headers: {
         'Content-Type': 'application/json; charset=UTF-8'
     }})
-    return response.data as Collection
+    return response.data
 }
 
 

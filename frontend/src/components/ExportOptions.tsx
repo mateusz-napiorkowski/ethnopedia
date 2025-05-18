@@ -9,7 +9,8 @@ import LoadingPage from "../pages/LoadingPage"
 type Props = {
     onClose: () => void,
     selectedArtworks: { [key: string]: boolean },
-    initialFilename: string
+    initialFilename: string,
+    collectionIds: Array<string>
 }
 
 enum ExportExtent {
@@ -18,18 +19,17 @@ enum ExportExtent {
     searchResult = "searchResult"
 }
 
-const ExportOptions = ({onClose, selectedArtworks, initialFilename}: Props) => {
+const ExportOptions = ({onClose, selectedArtworks, initialFilename, collectionIds}: Props) => {
     const location = useLocation()
     const searchParams = new URLSearchParams(location.search)
-    const { collectionId } = useParams()
     const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
     const [exportExtent, setExportExtent] = useState<ExportExtent>(ExportExtent.all)
     const [filename, setFilename] = useState(initialFilename);
 
     const { data: categoriesData } = useQuery({
         queryKey: ["allCategories"],
-        queryFn: () => getAllCategories([collectionId as string]),
-        enabled: !!collectionId,
+        queryFn: () => getAllCategories(collectionIds),
+        enabled: !!collectionIds,
     })
 
     const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -176,7 +176,7 @@ const ExportOptions = ({onClose, selectedArtworks, initialFilename}: Props) => {
                                     dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
                                     type="submit"
                                     onClick={() => getXlsxWithArtworksData(
-                                        collectionId as string, 
+                                        collectionIds, 
                                         selectedKeys,
                                         exportExtent,
                                         selectedArtworks,

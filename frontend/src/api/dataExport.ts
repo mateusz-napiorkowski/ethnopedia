@@ -7,23 +7,19 @@ enum ExportExtent {
     searchResult = "searchResult"
 }
 
-export const getXlsxWithArtworksData = async (collectionId: string, keysToInclude: Array<string>, exportExtent: ExportExtent, selectedArtworksIds: { [key: string]: boolean }, searchParams: URLSearchParams, filename: string) => {
-    const params = new URLSearchParams();
-    keysToInclude.forEach((value, index) => { 
-        params.append(`columnNames`, value); 
-    });
-    for(const v in selectedArtworksIds) {
-        params.append(`selectedArtworks`, v);
-    }
-    params.append(`exportExtent`, exportExtent.toString())
-    for(const [key, value] of searchParams.entries()) {
-        params.append(key, value);
-    }
+export const getXlsxWithArtworksData = async (collectionIds: Array<string>, keysToInclude: Array<string>, exportExtent: ExportExtent, selectedArtworksIds: { [key: string]: boolean }, searchParams: URLSearchParams, filename: string) => {
     return await axios({
-        url: `${API_URL}v1/dataExport/${collectionId}`,
+        url: `${API_URL}v1/dataExport`,
         method: 'GET',
         responseType: 'blob',
-        params: params
+        // params: params,
+        params: {
+            columnNames: keysToInclude,
+            selectedArtworks: Object.keys(selectedArtworksIds),
+            exportExtent: exportExtent.toString(),
+            collectionIds: collectionIds,
+            ...Object.fromEntries(searchParams.entries())
+        }
     }).then((response) => {
         // create file link in browser's memory
         const href = URL.createObjectURL(response.data);
