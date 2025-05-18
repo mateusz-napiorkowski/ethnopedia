@@ -15,7 +15,8 @@ export const getXlsxWithCollectionData = async (req: Request, res: Response) => 
         const collectionName = collection?.name as string
 
         const workbook = new excelJS.Workbook()
-        const sheet = workbook.addWorksheet(collectionName)
+        const worksheetName = collectionName.slice(0, 31)
+        const sheet = workbook.addWorksheet(worksheetName)
 
         const columnNames = await getAllCategories([collectionId])
         sheet.columns = columnNames.map((name :string) => {return {header: name, key: name}})
@@ -68,7 +69,7 @@ export const getXlsxWithArtworksData = async (req: Request, res: Response) => {
         const collectionNames = collections.map(collection => collection.name as string);
 
         const workbook = new excelJS.Workbook()
-        const worksheetName = collectionNames.length === 1 ? collectionNames[0] : "Arkusz1"
+        const worksheetName = collectionNames.length === 1 ? collectionNames[0].slice(0, 31) : "Arkusz1"
         const sheet = workbook.addWorksheet(worksheetName)
         sheet.columns = columnNames.map((name: string) => {return {header: name, key: name}})
 

@@ -31,13 +31,15 @@ jest.mock("../../models/artwork", () => ({
 }))
 
 const mockCollectionFindOne = jest.fn()
+const mockCollectionFind = jest.fn()
 jest.mock("../../models/collection", () => ({
-    findOne: () => mockCollectionFindOne()
+    findOne: () => mockCollectionFindOne(),
+    find: () => mockCollectionFind()
 }))
 
 const collectionId = "66f2194a6123d7f50558cd8f"
 const collectionName = "collection"
-const collectionFindOneReturnValue = ({exec: () => Promise.resolve(({
+const collectionData = {
     _id: collectionId,
     name: collectionName,
     description: 'collection description',
@@ -45,7 +47,9 @@ const collectionFindOneReturnValue = ({exec: () => Promise.resolve(({
         {name: 'Tytuł', subcategories: []}
     ],
     __v: 0
-}))})
+}
+const collectionFindReturnValue = ({exec: () => Promise.resolve([collectionData])})
+const collectionFindOneReturnValue = ({exec: () => Promise.resolve((collectionData))})
 
 describe('data-export controller', () => {
     beforeEach(() => {
@@ -129,6 +133,7 @@ describe('data-export controller', () => {
                 columnNamesQuery: '&columnNames=Title&columnNames=Year',
                 selectedArtworksQuery: undefined,
                 exportExtentQuery: '&exportExtent=all',
+                collectionIds: [collectionId],
                 searchQuery: undefined,
                 quickSearchCalls: 0, advSearchCalls: 0,
                 find: () => {return {exec: () => Promise.resolve([
@@ -148,6 +153,7 @@ describe('data-export controller', () => {
                 columnNamesQuery: '&columnNames=Title&columnNames=Year',
                 selectedArtworksQuery: '&selectedArtworks=66faa0e88b8813759f44caf4&selectedArtworks=66fbb0e88b8813759f44cae3',
                 exportExtentQuery: '&exportExtent=selected',
+                collectionIds: [collectionId],
                 searchQuery: undefined,
                 quickSearchCalls: 0, advSearchCalls: 0,
                 find: () => {return {exec: () => Promise.resolve([
@@ -176,6 +182,7 @@ describe('data-export controller', () => {
                 columnNamesQuery: '&columnNames=Title&columnNames=Year',
                 selectedArtworksQuery: undefined,
                 exportExtentQuery: '&exportExtent=searchResult',
+                collectionIds: [collectionId],
                 searchQuery: '&searchText=1410',
                 quickSearchCalls: 1, advSearchCalls: 0,
                 find: () => {return {exec: () => Promise.resolve([
@@ -204,6 +211,7 @@ describe('data-export controller', () => {
                 columnNamesQuery: '&columnNames=Title&columnNames=Year',
                 selectedArtworksQuery: undefined,
                 exportExtentQuery: '&exportExtent=searchResult',
+                collectionIds: [collectionId],
                 searchQuery: '&Year=1410',
                 quickSearchCalls: 0, advSearchCalls: 1,
                 find: () => {return {exec: () => Promise.resolve([
@@ -232,6 +240,36 @@ describe('data-export controller', () => {
                 columnNamesQuery: '&columnNames=Title',
                 selectedArtworksQuery: '&selectedArtworks=66faa0e88b8813759f44caf4&selectedArtworks=66fbb0e88b8813759f44cae3',
                 exportExtentQuery: '&exportExtent=selected',
+                collectionIds: [collectionId],
+                searchQuery: undefined,
+                quickSearchCalls: 0, advSearchCalls: 0,
+                find: () => {return {exec: () => Promise.resolve([
+                    {
+                        _id: "66faa0e88b8813759f44caf4",
+                        categories: [ { name: 'Title', value: 'An artwork title', subcategories: [] },
+                            ],
+                        collectionName: 'collection',
+                        __v: 0,
+                        createdAt: '2024-09-25T03:25:16.376Z',
+                        updatedAt: '2024-09-25T03:25:16.376Z'
+                    },
+                    {
+                        _id: "66fbb0e88b8813759f44cae3",
+                        categories: [ { name: 'Title2', value: 'An artwork title2', subcategories: [] },
+                            ],
+                        collectionName: 'collection',
+                        __v: 0,
+                        createdAt: '2024-09-25T03:25:16.376Z',
+                        updatedAt: '2024-09-25T03:25:16.376Z'
+                    },
+                    ])}}
+            },
+            {
+                testName: "req.query.collectionIds is of type string (not Array<string>)",
+                columnNamesQuery: '&columnNames=Title&columnNames=Year',
+                selectedArtworksQuery: '&selectedArtworks=66faa0e88b8813759f44caf4&selectedArtworks=66fbb0e88b8813759f44cae3',
+                exportExtentQuery: '&exportExtent=selected',
+                collectionIds: collectionId,
                 searchQuery: undefined,
                 quickSearchCalls: 0, advSearchCalls: 0,
                 find: () => {return {exec: () => Promise.resolve([
@@ -256,16 +294,21 @@ describe('data-export controller', () => {
                     ])}}
             },
         ])(`getXlsxWithArtworksData should respond with status 200 and correct body - $testName`,
-                async ({ columnNamesQuery, selectedArtworksQuery, exportExtentQuery, searchQuery, quickSearchCalls, advSearchCalls, find}) => {
-                    mockCollectionFindOne.mockReturnValue(collectionFindOneReturnValue)
+                async ({ columnNamesQuery, selectedArtworksQuery, exportExtentQuery, collectionIds, searchQuery, quickSearchCalls, advSearchCalls, find}) => {
+                    mockCollectionFind.mockReturnValue(collectionFindReturnValue)
                     mockArtworkFind.mockImplementation(find)
                     mockFillRow.mockImplementation(() => {})
                     
-                    let queryString = '/collection?'
+                    let queryString = '/?'
                     if (columnNamesQuery) queryString += columnNamesQuery
                     if (selectedArtworksQuery) queryString += selectedArtworksQuery
                     if (exportExtentQuery) queryString += exportExtentQuery
                     if (searchQuery) queryString += searchQuery
+                    if (collectionIds) {
+                        for(const id of collectionIds) {
+                            queryString += `&collectionIds=${id}`
+                        }
+                    }
                     const res = await request(app)
                     .get(queryString)
                     .set('Accept', 'application/json')
@@ -285,7 +328,8 @@ describe('data-export controller', () => {
                 columnNamesQuery: undefined,
                 selectedArtworksQuery: '&selectedArtworks=66faa0e88b8813759f44caf4&selectedArtworks=66fbb0e88b8813759f44cae3',
                 exportExtentQuery: '&exportExtent=selected',
-                collectionFindOne: () => collectionFindOneReturnValue,
+                collectionIds: [collectionId],
+                collectionFind: () => collectionFindReturnValue,
                 artworkFind: () => {}
             },
             {
@@ -293,7 +337,8 @@ describe('data-export controller', () => {
                 columnNamesQuery: '&columnNames=Title&columnNames=Year',
                 selectedArtworksQuery: '&selectedArtworks=66faa0e88b8813759f44caf4&selectedArtworks=66fbb0e88b8813759f44cae3',
                 exportExtentQuery: undefined,
-                collectionFindOne: () => collectionFindOneReturnValue,
+                collectionIds: [collectionId],
+                collectionFind: () => collectionFindReturnValue,
                 artworkFind: () => {}
             },
             {
@@ -301,7 +346,17 @@ describe('data-export controller', () => {
                 columnNamesQuery: '&columnNames=Title&columnNames=Year',
                 selectedArtworksQuery: undefined,
                 exportExtentQuery: '&exportExtent=selected',
-                collectionFindOne: () => collectionFindOneReturnValue,
+                collectionIds: [collectionId],
+                collectionFind: () => collectionFindReturnValue,
+                artworkFind: () => {}
+            },
+            {
+                statusCode: 400, error: 'Request is missing query params',
+                columnNamesQuery: '&columnNames=Title&columnNames=Year',
+                selectedArtworksQuery: '&selectedArtworks=66faa0e88b8813759f44caf4&selectedArtworks=66fbb0e88b8813759f44cae3',
+                exportExtentQuery: '&exportExtent=selected',
+                collectionIds: undefined,
+                collectionFind: () => collectionFindReturnValue,
                 artworkFind: () => {}
             },
             {
@@ -309,7 +364,8 @@ describe('data-export controller', () => {
                 columnNamesQuery: '&columnNames=Title&columnNames=Year',
                 selectedArtworksQuery: undefined,
                 exportExtentQuery: '&exportExtent=all',
-                collectionFindOne: () => ({exec: () => Promise.resolve(null)}),
+                collectionIds: [collectionId],
+                collectionFind: () => ({exec: () => Promise.resolve([])}),
                 artworkFind: () => {}
             },
             {
@@ -317,7 +373,8 @@ describe('data-export controller', () => {
                 columnNamesQuery: '&columnNames=Title&columnNames=Year',
                 selectedArtworksQuery: undefined,
                 exportExtentQuery: '&exportExtent=all',
-                collectionFindOne: () => {throw Error("")},
+                collectionIds: [collectionId],
+                collectionFind: () => {throw Error("")},
                 artworkFind: () => {}
             },
             {
@@ -325,7 +382,8 @@ describe('data-export controller', () => {
                 columnNamesQuery: '&columnNames=Title&columnNames=Year',
                 selectedArtworksQuery: undefined,
                 exportExtentQuery: '&exportExtent=all',
-                collectionFindOne: () => collectionFindOneReturnValue,
+                collectionIds: [collectionId],
+                collectionFind: () => collectionFindReturnValue,
                 artworkFind: () => {throw Error("")}
             },
             {
@@ -333,7 +391,8 @@ describe('data-export controller', () => {
                 columnNamesQuery: '&columnNames=Title&columnNames=Year',
                 selectedArtworksQuery: '&selectedArtworks=66faa0e88b8813759f44caf4&selectedArtworks=66fbb0e88b8813759f44cae3',
                 exportExtentQuery: '&exportExtent=selected',
-                collectionFindOne: () => collectionFindOneReturnValue,
+                collectionIds: [collectionId],
+                collectionFind: () => collectionFindReturnValue,
                 artworkFind: () => {throw Error("")}
             },
             {
@@ -341,19 +400,25 @@ describe('data-export controller', () => {
                 columnNamesQuery: '&columnNames=Title&columnNames=Year',
                 selectedArtworksQuery: '&selectedArtworks=66faa0e88b8813759f44caf4&selectedArtworks=66fbb0e88b8813759f44cae3',
                 exportExtentQuery: '&exportExtent=searchResult&searchText=Year',
-                collectionFindOne: () => collectionFindOneReturnValue,
+                collectionIds: [collectionId],
+                collectionFind: () => collectionFindReturnValue,
                 artworkFind: () => {throw Error("")}
             },
         ])(`getXlsxWithArtworksData should respond with status $statusCode and correct error message`,
-                async ({ statusCode, error, columnNamesQuery, selectedArtworksQuery, exportExtentQuery, collectionFindOne, artworkFind}) => {
-                    mockCollectionFindOne.mockImplementation(collectionFindOne)
+                async ({ statusCode, error, columnNamesQuery, selectedArtworksQuery, exportExtentQuery, collectionIds, collectionFind, artworkFind}) => {
+                    mockCollectionFind.mockImplementation(collectionFind)
                     mockArtworkFind.mockImplementation(artworkFind)
                     mockFillRow.mockReturnValue({ 'Title': 'An artwork title' })
                     
-                    let queryString = '/collection?'
+                    let queryString = '/?'
                     if (columnNamesQuery) queryString += columnNamesQuery
                     if (selectedArtworksQuery) queryString += selectedArtworksQuery
                     if (exportExtentQuery) queryString += exportExtentQuery
+                    if (collectionIds) {
+                        for(const id of collectionIds) {
+                            queryString += `&collectionIds=${id}`
+                        }
+                    }
                     const res = await request(app)
                     .get(queryString)
                     .set('Accept', 'application/json')
