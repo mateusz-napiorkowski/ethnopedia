@@ -49,6 +49,7 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
                             <button
                                 onClick={() => toggle(category.name)}
                                 className="text-blue-500 hover:text-blue-700 transition-colors p-1"
+                                aria-label={`${category.name}-fold/expand-button`}
                             >
                                 {expanded[category.name] ? (
                                     <Fold className="w-4 h-4" />
@@ -70,7 +71,7 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
 
 
     return (
-        <div className="max-w-3xl mx-auto mt-4 bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+        <div className="max-w-3xl mx-auto mt-4 bg-white dark:bg-gray-800 p-6 rounded-lg shadow" data-testid="main-categories-container">
             {/* Nagłówek */}
             <div className="mb-4 border-b pb-2">
                 <p className="text-lg text-gray-500 dark:text-gray-300">
@@ -78,7 +79,7 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
                 </p>
             </div>
             {/* Drzewo kategorii */}
-            <div>{detailsToShow.categories && renderTree(detailsToShow.categories)}</div>
+            <div data-testid="category-tree">{detailsToShow.categories && renderTree(detailsToShow.categories)}</div>
             {/* Przyciski akcji */}
             <div className="mt-10 flex justify-end space-x-4">
                 <button
