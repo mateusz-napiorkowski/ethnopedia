@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { getArtworksForCollectionPage, deleteArtworks } from "../../api/artworks";
+import { getArtworksForPage, deleteArtworks } from "../../api/artworks";
 import { getCollection } from "../../api/collections";
 import LoadingPage from "../LoadingPage";
 import { useEffect, useState } from "react";
@@ -68,15 +68,15 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
     } = useQuery({
         queryKey: [
             "artwork",
-            collectionId,
+            [collectionId],
             currentPage,
             location.search,
             sortCategory,
             sortDirection,
         ],
         queryFn: () =>
-            getArtworksForCollectionPage(
-                collectionId as string,
+            getArtworksForPage(
+                [collectionId as string],
                 currentPage,
                 pageSize,
                 `${sortCategory}-${sortDirection}`,
@@ -96,7 +96,7 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
 
     const { data: categoriesData } = useQuery({
         queryKey: ["allCategories", collectionId],
-        queryFn: () => getAllCategories(collectionId as string),
+        queryFn: () => getAllCategories([collectionId as string]),
         enabled: !!collectionId,
     });
 

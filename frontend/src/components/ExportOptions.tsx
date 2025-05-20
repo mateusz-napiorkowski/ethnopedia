@@ -28,7 +28,7 @@ const ExportOptions = ({onClose, selectedArtworks, initialFilename}: Props) => {
 
     const { data: categoriesData } = useQuery({
         queryKey: ["allCategories"],
-        queryFn: () => getAllCategories(collectionId as string),
+        queryFn: () => getAllCategories([collectionId as string]),
         enabled: !!collectionId,
     })
 

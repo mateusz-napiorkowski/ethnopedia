@@ -17,7 +17,7 @@ export const getXlsxWithCollectionData = async (req: Request, res: Response) => 
         const workbook = new excelJS.Workbook()
         const sheet = workbook.addWorksheet(collectionName)
 
-        const columnNames = await getAllCategories(collectionId)
+        const columnNames = await getAllCategories([collectionId])
         sheet.columns = columnNames.map((name :string) => {return {header: name, key: name}})
         
         const records = await Artwork.find({collectionName: collectionName}).exec()
@@ -78,8 +78,8 @@ export const getXlsxWithArtworksData = async (req: Request, res: Response) => {
             records.forEach((record: any) => sheet.addRow(fillRow(columnNames, record.categories)))
         } else if(exportExtent === "searchResult") {
             const searchText = req.query.searchText
-            const queryFilter = searchText ? await constructQuickSearchFilter(searchText, collectionId, collectionName) :
-                await constructAdvSearchFilter(req.query, collectionName, false)
+            const queryFilter = searchText ? await constructQuickSearchFilter(searchText, [collectionId], [collectionName]) :
+                await constructAdvSearchFilter(req.query, [collectionName], false)
             const records = await Artwork.find(queryFilter).exec()
             records.forEach((record: any) => sheet.addRow(fillRow(columnNames, record.categories)))
         } else {

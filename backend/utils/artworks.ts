@@ -30,12 +30,12 @@ const fillSubcategoriesFilterPart: any = (searchText: string, currentDepth: numb
     }
 }
 
-export const constructQuickSearchFilter = async (searchText: any, collectionId: string, collectionName: string) => {
-    const allCategories = await getAllCategories(collectionId)
+export const constructQuickSearchFilter = async (searchText: any, collectionIds: Array<string>, collectionNames: Array<string>) => {
+    const allCategories = await getAllCategories(collectionIds)
     const maxDepth = allCategories.length > 0 ?
         Math.max.apply(Math, allCategories.map((category) => category.split('.').length)) : 0
     const queryFilter = {
-        collectionName: collectionName,
+        collectionName: {$in: collectionNames},
         categories: fillSubcategoriesFilterPart(searchText, 1, maxDepth)
     }
     return queryFilter
@@ -81,7 +81,7 @@ export const constructTopmostCategorySearchTextFilter = (searchText: string) => 
 
 const getOnlySearchRulesArray = (reqQuery: any, forArtworkPage = true) => {
     const rulesArray: any = []
-    const keywordsToSkip = forArtworkPage ? ["page", "pageSize", "sortOrder", "search"] : ["columnNames", "selectedArtworks", "exportExtent"]
+    const keywordsToSkip = forArtworkPage ? ["page", "pageSize", "sortOrder", "search", "collectionIds"] : ["columnNames", "selectedArtworks", "exportExtent"]
     for(const categoryName in reqQuery) {
         if(!keywordsToSkip.includes(categoryName)) {
             rulesArray.push([categoryName, reqQuery[categoryName]])
@@ -97,11 +97,11 @@ const getOnlySearchRulesArray = (reqQuery: any, forArtworkPage = true) => {
     return rulesArray
 }
 
-export const constructAdvSearchFilter = (requestQuery: any, collectionName: string, forArtworkPage = true) => {
+export const constructAdvSearchFilter = (requestQuery: any, collectionNames: Array<string>, forArtworkPage = true) => {
     const searchRules = getOnlySearchRulesArray(requestQuery, forArtworkPage)
 
     const queryFilter: any = {
-        collectionName: collectionName,
+        collectionName: {$in: collectionNames},
         categories: {$all: []}
     }
 
