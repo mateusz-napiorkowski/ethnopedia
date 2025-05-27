@@ -129,7 +129,7 @@ const CreateCollectionPage = () => {
                                     if (error.response && error.response.data && error.response.data.error) {
                                         const serverError = error.response.data.error;
                                         if (serverError === "Collection with provided name already exists") {
-                                            setErrors({ name: serverError });
+                                            setErrors({ name: "Kolekcja o podanej nazwie już istnieje" });
                                         } else if (serverError === "Incorrect request body provided") {
                                             setStatus({ generalError: "Niepoprawne dane formularza" });
                                         } else {
@@ -154,6 +154,7 @@ const CreateCollectionPage = () => {
                                     <Field
                                         id="name"
                                         name="name"
+                                        aria-label="name"
                                         type="text"
                                         className={`w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none ${
                                             touched.name && errors.name ? 'border-red-500' : 'border-gray-300'
@@ -175,6 +176,7 @@ const CreateCollectionPage = () => {
                                         as="textarea"
                                         id="description"
                                         name="description"
+                                        aria-label="description"
                                         rows={4}
                                         className={`w-full resize-y mb-8 px-4 py-2 border rounded-lg focus:outline-none dark:border-gray-600 dark:bg-gray-800 ${
                                             touched.description && errors.description ? 'border-red-500' : 'border-gray-300'
