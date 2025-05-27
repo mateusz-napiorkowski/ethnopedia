@@ -41,6 +41,7 @@ const FormField: React.FC<FormFieldProps> = ({
             </label>
 
             <input
+                aria-label={`${label}-input`}
                 id={id}
                 type="text"
                 value={value}

@@ -1,0 +1,533 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EmptyCollectionMessage should fill and clear form fields correctly when focusing on input fields by clicking them 1`] = `
+<div>
+  <div
+    data-testid="category-tree"
+  >
+    <div
+      class="relative "
+    >
+      <div
+        class="relative w-full mb-2"
+      >
+        <label
+          class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800"
+          for="field-0"
+        >
+          Tytuł
+        </label>
+        <input
+          aria-label="Tytuł-input"
+          class="block w-full rounded-none border border-gray-300 bg-white px-3 pt-7 pb-2 text-sm
+               placeholder-transparent focus:border-blue-400 focus:outline-none
+               focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]
+               dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500
+               dark:focus:border-blue-400 dark:focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]"
+          id="field-0"
+          maxlength="100"
+          type="text"
+          value=""
+        />
+      </div>
+      <div
+        class="ml-4"
+      >
+        <div
+          class="relative pl-6"
+        >
+          <div
+            class="absolute left-0 w-px bg-gray-300 dark:bg-gray-600"
+            style="top: -0.5rem; bottom: 2.1rem;"
+          />
+          <div
+            class="absolute left-0 top-6 h-px w-6 bg-gray-300 dark:bg-gray-600"
+          />
+          <div
+            class="relative w-full mb-2"
+          >
+            <label
+              class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800"
+              for="field-0-0"
+            >
+              Podtytuł
+            </label>
+            <input
+              aria-label="Podtytuł-input"
+              class="block w-full rounded-none border border-gray-300 bg-white px-3 pt-7 pb-2 text-sm
+               placeholder-transparent focus:border-blue-400 focus:outline-none
+               focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]
+               dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500
+               dark:focus:border-blue-400 dark:focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]"
+              id="field-0-0"
+              maxlength="100"
+              type="text"
+              value="an artwork subtitle"
+            />
+          </div>
+          <div
+            class="ml-4"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      class="relative "
+    >
+      <div
+        class="relative w-full mb-2"
+      >
+        <label
+          class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800"
+          for="field-1"
+        >
+          Artyści
+        </label>
+        <input
+          aria-label="Artyści-input"
+          class="block w-full rounded-none border border-gray-300 bg-white px-3 pt-7 pb-2 text-sm
+               placeholder-transparent focus:border-blue-400 focus:outline-none
+               focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]
+               dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500
+               dark:focus:border-blue-400 dark:focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]"
+          id="field-1"
+          maxlength="100"
+          type="text"
+          value="artist name"
+        />
+      </div>
+      <div
+        class="ml-4"
+      />
+    </div>
+    <div
+      class="relative "
+    >
+      <div
+        class="relative w-full mb-2"
+      >
+        <label
+          class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800"
+          for="field-2"
+        >
+          Rok
+        </label>
+        <input
+          aria-label="Rok-input"
+          class="block w-full rounded-none border border-gray-300 bg-white px-3 pt-7 pb-2 text-sm
+               placeholder-transparent focus:border-blue-400 focus:outline-none
+               focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]
+               dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500
+               dark:focus:border-blue-400 dark:focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]"
+          id="field-2"
+          maxlength="100"
+          type="text"
+          value="199"
+        />
+      </div>
+      <div
+        class="ml-4"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`EmptyCollectionMessage should fill and clear form fields correctly when focusing on input fields by using keyboard keys 1`] = `
+<div>
+  <div
+    data-testid="category-tree"
+  >
+    <div
+      class="relative "
+    >
+      <div
+        class="relative w-full mb-2"
+      >
+        <label
+          class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800"
+          for="field-0"
+        >
+          Tytuł
+        </label>
+        <input
+          aria-label="Tytuł-input"
+          class="block w-full rounded-none border border-gray-300 bg-white px-3 pt-7 pb-2 text-sm
+               placeholder-transparent focus:border-blue-400 focus:outline-none
+               focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]
+               dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500
+               dark:focus:border-blue-400 dark:focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]"
+          id="field-0"
+          maxlength="100"
+          type="text"
+          value="tytuł utworu"
+        />
+      </div>
+      <div
+        class="ml-4"
+      >
+        <div
+          class="relative pl-6"
+        >
+          <div
+            class="absolute left-0 w-px bg-gray-300 dark:bg-gray-600"
+            style="top: -0.5rem; bottom: 2.1rem;"
+          />
+          <div
+            class="absolute left-0 top-6 h-px w-6 bg-gray-300 dark:bg-gray-600"
+          />
+          <div
+            class="relative w-full mb-2"
+          >
+            <label
+              class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800"
+              for="field-0-0"
+            >
+              Podtytuł
+            </label>
+            <input
+              aria-label="Podtytuł-input"
+              class="block w-full rounded-none border border-gray-300 bg-white px-3 pt-7 pb-2 text-sm
+               placeholder-transparent focus:border-blue-400 focus:outline-none
+               focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]
+               dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500
+               dark:focus:border-blue-400 dark:focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]"
+              id="field-0-0"
+              maxlength="100"
+              type="text"
+              value="podtytuł utworu"
+            />
+          </div>
+          <div
+            class="ml-4"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      class="relative "
+    >
+      <div
+        class="relative w-full mb-2"
+      >
+        <label
+          class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800"
+          for="field-1"
+        >
+          Artyści
+        </label>
+        <input
+          aria-label="Artyści-input"
+          class="block w-full rounded-none border border-gray-300 bg-white px-3 pt-7 pb-2 text-sm
+               placeholder-transparent focus:border-blue-400 focus:outline-none
+               focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]
+               dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500
+               dark:focus:border-blue-400 dark:focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]"
+          id="field-1"
+          maxlength="100"
+          type="text"
+          value="nazwa artysty"
+        />
+      </div>
+      <div
+        class="ml-4"
+      />
+    </div>
+    <div
+      class="relative "
+    >
+      <div
+        class="relative w-full mb-2"
+      >
+        <label
+          class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800"
+          for="field-2"
+        >
+          Rok
+        </label>
+        <input
+          aria-label="Rok-input"
+          class="block w-full rounded-none border border-gray-300 bg-white px-3 pt-7 pb-2 text-sm
+               placeholder-transparent focus:border-blue-400 focus:outline-none
+               focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]
+               dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500
+               dark:focus:border-blue-400 dark:focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]"
+          id="field-2"
+          maxlength="100"
+          type="text"
+          value="1999"
+        />
+      </div>
+      <div
+        class="ml-4"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`EmptyCollectionMessage should render component correctly when in create mode 1`] = `
+<div>
+  <div
+    data-testid="category-tree"
+  >
+    <div
+      class="relative "
+    >
+      <div
+        class="relative w-full mb-2"
+      >
+        <label
+          class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800"
+          for="field-0"
+        >
+          Tytuł
+        </label>
+        <input
+          aria-label="Tytuł-input"
+          class="block w-full rounded-none border border-gray-300 bg-white px-3 pt-7 pb-2 text-sm
+               placeholder-transparent focus:border-blue-400 focus:outline-none
+               focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]
+               dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500
+               dark:focus:border-blue-400 dark:focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]"
+          id="field-0"
+          maxlength="100"
+          type="text"
+          value=""
+        />
+      </div>
+      <div
+        class="ml-4"
+      >
+        <div
+          class="relative pl-6"
+        >
+          <div
+            class="absolute left-0 w-px bg-gray-300 dark:bg-gray-600"
+            style="top: -0.5rem; bottom: 2.1rem;"
+          />
+          <div
+            class="absolute left-0 top-6 h-px w-6 bg-gray-300 dark:bg-gray-600"
+          />
+          <div
+            class="relative w-full mb-2"
+          >
+            <label
+              class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800"
+              for="field-0-0"
+            >
+              Podtytuł
+            </label>
+            <input
+              aria-label="Podtytuł-input"
+              class="block w-full rounded-none border border-gray-300 bg-white px-3 pt-7 pb-2 text-sm
+               placeholder-transparent focus:border-blue-400 focus:outline-none
+               focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]
+               dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500
+               dark:focus:border-blue-400 dark:focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]"
+              id="field-0-0"
+              maxlength="100"
+              type="text"
+              value=""
+            />
+          </div>
+          <div
+            class="ml-4"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      class="relative "
+    >
+      <div
+        class="relative w-full mb-2"
+      >
+        <label
+          class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800"
+          for="field-1"
+        >
+          Artyści
+        </label>
+        <input
+          aria-label="Artyści-input"
+          class="block w-full rounded-none border border-gray-300 bg-white px-3 pt-7 pb-2 text-sm
+               placeholder-transparent focus:border-blue-400 focus:outline-none
+               focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]
+               dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500
+               dark:focus:border-blue-400 dark:focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]"
+          id="field-1"
+          maxlength="100"
+          type="text"
+          value=""
+        />
+      </div>
+      <div
+        class="ml-4"
+      />
+    </div>
+    <div
+      class="relative "
+    >
+      <div
+        class="relative w-full mb-2"
+      >
+        <label
+          class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800"
+          for="field-2"
+        >
+          Rok
+        </label>
+        <input
+          aria-label="Rok-input"
+          class="block w-full rounded-none border border-gray-300 bg-white px-3 pt-7 pb-2 text-sm
+               placeholder-transparent focus:border-blue-400 focus:outline-none
+               focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]
+               dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500
+               dark:focus:border-blue-400 dark:focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]"
+          id="field-2"
+          maxlength="100"
+          type="text"
+          value=""
+        />
+      </div>
+      <div
+        class="ml-4"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`EmptyCollectionMessage should render component correctly when in edit mode 1`] = `
+<div>
+  <div
+    data-testid="category-tree"
+  >
+    <div
+      class="relative "
+    >
+      <div
+        class="relative w-full mb-2"
+      >
+        <label
+          class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800"
+          for="field-0"
+        >
+          Tytuł
+        </label>
+        <input
+          aria-label="Tytuł-input"
+          class="block w-full rounded-none border border-gray-300 bg-white px-3 pt-7 pb-2 text-sm
+               placeholder-transparent focus:border-blue-400 focus:outline-none
+               focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]
+               dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500
+               dark:focus:border-blue-400 dark:focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]"
+          id="field-0"
+          maxlength="100"
+          type="text"
+          value="Tytuł utworu"
+        />
+      </div>
+      <div
+        class="ml-4"
+      >
+        <div
+          class="relative pl-6"
+        >
+          <div
+            class="absolute left-0 w-px bg-gray-300 dark:bg-gray-600"
+            style="top: -0.5rem; bottom: 2.1rem;"
+          />
+          <div
+            class="absolute left-0 top-6 h-px w-6 bg-gray-300 dark:bg-gray-600"
+          />
+          <div
+            class="relative w-full mb-2"
+          >
+            <label
+              class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800"
+              for="field-0-0"
+            >
+              Podtytuł
+            </label>
+            <input
+              aria-label="Podtytuł-input"
+              class="block w-full rounded-none border border-gray-300 bg-white px-3 pt-7 pb-2 text-sm
+               placeholder-transparent focus:border-blue-400 focus:outline-none
+               focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]
+               dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500
+               dark:focus:border-blue-400 dark:focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]"
+              id="field-0-0"
+              maxlength="100"
+              type="text"
+              value="Podtytuł utworu"
+            />
+          </div>
+          <div
+            class="ml-4"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      class="relative "
+    >
+      <div
+        class="relative w-full mb-2"
+      >
+        <label
+          class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800"
+          for="field-1"
+        >
+          Artyści
+        </label>
+        <input
+          aria-label="Artyści-input"
+          class="block w-full rounded-none border border-gray-300 bg-white px-3 pt-7 pb-2 text-sm
+               placeholder-transparent focus:border-blue-400 focus:outline-none
+               focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]
+               dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500
+               dark:focus:border-blue-400 dark:focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]"
+          id="field-1"
+          maxlength="100"
+          type="text"
+          value="Nazwa Artysty"
+        />
+      </div>
+      <div
+        class="ml-4"
+      />
+    </div>
+    <div
+      class="relative "
+    >
+      <div
+        class="relative w-full mb-2"
+      >
+        <label
+          class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800"
+          for="field-2"
+        >
+          Rok
+        </label>
+        <input
+          aria-label="Rok-input"
+          class="block w-full rounded-none border border-gray-300 bg-white px-3 pt-7 pb-2 text-sm
+               placeholder-transparent focus:border-blue-400 focus:outline-none
+               focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]
+               dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500
+               dark:focus:border-blue-400 dark:focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]"
+          id="field-2"
+          maxlength="100"
+          type="text"
+          value="1999"
+        />
+      </div>
+      <div
+        class="ml-4"
+      />
+    </div>
+  </div>
+</div>
+`;
