@@ -1,0 +1,89 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Footer tests should render footer component 1`] = `
+<div>
+  <section
+    class="bg-white dark:bg-gray-800 py-10 w-full"
+  >
+    <div
+      class="max-w-screen-xl mx-auto px-4 lg:px-12 text-center text-gray-600 dark:text-gray-300 space-y-10"
+    >
+      <div
+        class="text-sm"
+      >
+        <p
+          class="mb-2"
+        >
+          Narzędzie jest realizowane w ramach projektu
+           
+          <a
+            class="text-primary-500 hover:text-primary-700"
+            href="https://www.dariah.pl"
+          >
+            Cyfrowa Infrastruktura Badawcza dla Humanistyki i Nauk o Sztuce DARIAH-PL
+          </a>
+           
+          finansowanego z funduszy Krajowego Planu Odbudowy (KPOD.01.18-IW.03-0013/23) przez Politechnikę Poznańską we współpracy z Instytutem Sztuki PAN.
+        </p>
+      </div>
+      <div
+        class="flex flex-wrap justify-center items-center gap-16"
+      >
+        <img
+          alt="Logo Krajowego Planu Odbudowy"
+          class="h-20"
+          src="test-file-stub"
+        />
+        <img
+          alt="Logo Barw RP"
+          class="h-20"
+          src="test-file-stub"
+        />
+        <img
+          alt="Logo NextGenerationEU"
+          class="h-20"
+          src="test-file-stub"
+        />
+      </div>
+      <div
+        class="flex flex-wrap justify-center items-center gap-16"
+      >
+        <img
+          alt="Logo Dariah-PL"
+          class="h-14"
+          src="test-file-stub"
+        />
+        <img
+          alt="Logo Politechniki Poznańskiej"
+          class="h-28"
+          src="[object Object]"
+        />
+        <img
+          alt="Logo Instytutu Sztuki Polskiej Akademi Nauk"
+          class="h-10"
+          src="test-file-stub"
+        />
+      </div>
+      <div
+        class="text-sm text-gray-500 dark:text-gray-400 space-y-1"
+      >
+        <p>
+          © 
+          2025
+           Politechnika Poznańska – MusicPUT Team
+        </p>
+        <p>
+          Kontakt:
+           
+          <a
+            class="text-primary-500 hover:text-primary-700"
+            href="mailto:dariah@cs.put.poznan.pl"
+          >
+            dariah@cs.put.poznan.pl
+          </a>
+        </p>
+      </div>
+    </div>
+  </section>
+</div>
+`;
