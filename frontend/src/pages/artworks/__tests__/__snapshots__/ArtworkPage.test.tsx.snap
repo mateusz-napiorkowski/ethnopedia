@@ -1,124 +1,328 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ArtworkPage tests should render artwork page component correctly after data is fetched from API when main categories are specified 1`] = `
+exports[`ArtworkPage tests should render artwork page component correctly after data is fetched from API 1`] = `
 <div
-  class="mt-2 flex-2 "
+  class="max-w-3xl mx-auto mt-4 bg-white dark:bg-gray-800 p-6 rounded-lg shadow"
   data-testid="main-categories-container"
 >
-  <h1
-    class="text-4xl font-bold text-gray-800 dark:text-white mb-2"
+  <div
+    class="mb-4 border-b pb-2"
   >
-    testowy
-  </h1>
-  <p
-    class="text-xl text-gray-600 dark:text-gray-400 mt-1"
-  >
-    Artyści: 
-    testowi
-  </p>
-  <p
-    class="text-lg text-gray-500 dark:text-gray-300 mt-1"
-  >
-    Rok: 
-    966
-  </p>
-  <p
-    class="text-lg text-gray-500 dark:text-gray-300 mt-1"
-  >
-    Kolekcja: 
-    example collection
-  </p>
-</div>
-`;
-
-exports[`ArtworkPage tests should render artwork page component correctly after data is fetched from API when main categories are unspecified 1`] = `
-<div
-  class="mt-2 flex-2 "
-  data-testid="main-categories-container"
->
-  <h1
-    class="text-4xl font-bold text-gray-800 dark:text-white mb-2"
-  />
-  <p
-    class="text-xl text-gray-600 dark:text-gray-400 mt-1"
-  >
-    Artyści: 
-  </p>
-  <p
-    class="text-lg text-gray-500 dark:text-gray-300 mt-1"
-  >
-    Rok: 
-  </p>
-  <p
-    class="text-lg text-gray-500 dark:text-gray-300 mt-1"
-  >
-    Kolekcja: 
-    example collection
-  </p>
-</div>
-`;
-
-exports[`ArtworkPage tests should render categories list correctly when there aren't any categories 1`] = `
-<ul
-  class="px-4 list-[circle]"
-  data-testid="details-list"
-/>
-`;
-
-exports[`ArtworkPage tests should render nested categories list correctly 1`] = `
-<ul
-  class="px-4 list-[circle]"
-  data-testid="details-list"
->
-  <li>
-    Tytuł
-    : 
-    testowy
-    <ul
-      class="px-4 list-[square]"
+    <p
+      class="text-lg text-gray-500 dark:text-gray-300"
     >
-      <li>
-        Podtytuł
-        : 
-        testowy podtytuł
+      Kolekcja: 
+      example collection
+    </p>
+  </div>
+  <div
+    data-testid="category-tree"
+  >
+    <ul>
+      <li
+        class="mb-2 bg-gray-50 dark:bg-gray-700"
+        style="margin-left: 0px;"
+      >
+        <div
+          class="flex justify-between items-center p-2"
+        >
+          <span>
+            Tytuł
+            : 
+            testowy
+          </span>
+          <button
+            aria-label="Tytuł-fold/expand-button"
+            class="text-blue-500 hover:text-blue-700 transition-colors p-1"
+          >
+            <svg
+              class="w-4 h-4"
+            />
+          </button>
+        </div>
+      </li>
+      <li
+        class="mb-2 bg-gray-50 dark:bg-gray-700"
+        style="margin-left: 0px;"
+      >
+        <div
+          class="flex justify-between items-center p-2"
+        >
+          <span>
+            Artyści
+            : 
+            testowi
+          </span>
+        </div>
+      </li>
+      <li
+        class="mb-2 bg-gray-50 dark:bg-gray-700"
+        style="margin-left: 0px;"
+      >
+        <div
+          class="flex justify-between items-center p-2"
+        >
+          <span>
+            Rok
+            : 
+            966
+          </span>
+          <button
+            aria-label="Rok-fold/expand-button"
+            class="text-blue-500 hover:text-blue-700 transition-colors p-1"
+          >
+            <svg
+              class="w-4 h-4"
+            />
+          </button>
+        </div>
       </li>
     </ul>
-  </li>
-  <li>
-    Artyści
-    : 
-    testowi
-    <ul
-      class="px-4 list-[square]"
-    />
-  </li>
-  <li>
-    Rok
-    : 
-    966
-    <ul
-      class="px-4 list-[square]"
+  </div>
+  <div
+    class="mt-10 flex justify-end space-x-4"
+  >
+    <button
+      class="text-sm text-blue-600 hover:underline rounded"
     >
-      <li>
-        Miesiąc
-        : 
-        Wrzesień
-        <ul
-          class="px-4 list-[disc]"
+      ← Powrót do kolekcji
+    </button>
+    <button
+      class="flex items-center px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors opacity-50 cursor-not-allowed"
+      disabled=""
+    >
+      <svg
+        class="w-5 h-5"
+      />
+      <span
+        class="ml-2"
+      >
+        Edytuj
+      </span>
+    </button>
+    <button
+      class="flex items-center px-4 py-2 rounded border border-red-700 text-red-700 bg-red-50 hover:bg-red-100 transition-colors opacity-50 cursor-not-allowed"
+      disabled=""
+    >
+      <svg
+        class="w-5 h-5"
+      />
+      <span
+        class="ml-2"
+      >
+        Usuń
+      </span>
+    </button>
+  </div>
+</div>
+`;
+
+exports[`ArtworkPage tests should render category tree correctly after subcategories are hidden by clicking fold buttons 1`] = `
+<div
+  data-testid="category-tree"
+>
+  <ul>
+    <li
+      class="mb-2 bg-gray-50 dark:bg-gray-700"
+      style="margin-left: 0px;"
+    >
+      <div
+        class="flex justify-between items-center p-2"
+      >
+        <span>
+          Tytuł
+          : 
+          testowy
+        </span>
+        <button
+          aria-label="Tytuł-fold/expand-button"
+          class="text-blue-500 hover:text-blue-700 transition-colors p-1"
         >
-          <li>
-            Dzień
-            : 
-            13
+          <svg
+            class="w-4 h-4"
+          />
+        </button>
+      </div>
+    </li>
+    <li
+      class="mb-2 bg-gray-50 dark:bg-gray-700"
+      style="margin-left: 0px;"
+    >
+      <div
+        class="flex justify-between items-center p-2"
+      >
+        <span>
+          Artyści
+          : 
+          testowi
+        </span>
+      </div>
+    </li>
+    <li
+      class="mb-2 bg-gray-50 dark:bg-gray-700"
+      style="margin-left: 0px;"
+    >
+      <div
+        class="flex justify-between items-center p-2"
+      >
+        <span>
+          Rok
+          : 
+          966
+        </span>
+        <button
+          aria-label="Rok-fold/expand-button"
+          class="text-blue-500 hover:text-blue-700 transition-colors p-1"
+        >
+          <svg
+            class="w-4 h-4"
+          />
+        </button>
+      </div>
+    </li>
+  </ul>
+</div>
+`;
+
+exports[`ArtworkPage tests should render category tree correctly after subcategories are shown by clicking expand button 1`] = `
+<div
+  data-testid="category-tree"
+>
+  <ul>
+    <li
+      class="mb-2 bg-gray-50 dark:bg-gray-700"
+      style="margin-left: 0px;"
+    >
+      <div
+        class="flex justify-between items-center p-2"
+      >
+        <span>
+          Tytuł
+          : 
+          testowy
+        </span>
+        <button
+          aria-label="Tytuł-fold/expand-button"
+          class="text-blue-500 hover:text-blue-700 transition-colors p-1"
+        >
+          <svg
+            class="w-4 h-4"
+          />
+        </button>
+      </div>
+      <div>
+        <ul>
+          <li
+            class="mb-2 bg-gray-50 dark:bg-gray-700"
+            style="margin-left: 16px;"
+          >
+            <div
+              class="flex justify-between items-center p-2"
+            >
+              <span>
+                Podtytuł
+                : 
+                testowy podtytuł
+              </span>
+            </div>
           </li>
         </ul>
-      </li>
-      <li>
-        Pora roku
-        : 
-        lato
-      </li>
-    </ul>
-  </li>
-</ul>
+      </div>
+    </li>
+    <li
+      class="mb-2 bg-gray-50 dark:bg-gray-700"
+      style="margin-left: 0px;"
+    >
+      <div
+        class="flex justify-between items-center p-2"
+      >
+        <span>
+          Artyści
+          : 
+          testowi
+        </span>
+      </div>
+    </li>
+    <li
+      class="mb-2 bg-gray-50 dark:bg-gray-700"
+      style="margin-left: 0px;"
+    >
+      <div
+        class="flex justify-between items-center p-2"
+      >
+        <span>
+          Rok
+          : 
+          966
+        </span>
+        <button
+          aria-label="Rok-fold/expand-button"
+          class="text-blue-500 hover:text-blue-700 transition-colors p-1"
+        >
+          <svg
+            class="w-4 h-4"
+          />
+        </button>
+      </div>
+      <div>
+        <ul>
+          <li
+            class="mb-2 bg-gray-50 dark:bg-gray-700"
+            style="margin-left: 16px;"
+          >
+            <div
+              class="flex justify-between items-center p-2"
+            >
+              <span>
+                Miesiąc
+                : 
+                Wrzesień
+              </span>
+              <button
+                aria-label="Miesiąc-fold/expand-button"
+                class="text-blue-500 hover:text-blue-700 transition-colors p-1"
+              >
+                <svg
+                  class="w-4 h-4"
+                />
+              </button>
+            </div>
+            <div>
+              <ul>
+                <li
+                  class="mb-2 bg-gray-50 dark:bg-gray-700"
+                  style="margin-left: 16px;"
+                >
+                  <div
+                    class="flex justify-between items-center p-2"
+                  >
+                    <span>
+                      Dzień
+                      : 
+                      13
+                    </span>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </li>
+          <li
+            class="mb-2 bg-gray-50 dark:bg-gray-700"
+            style="margin-left: 16px;"
+          >
+            <div
+              class="flex justify-between items-center p-2"
+            >
+              <span>
+                Pora roku
+                : 
+                lato
+              </span>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </li>
+  </ul>
+</div>
 `;

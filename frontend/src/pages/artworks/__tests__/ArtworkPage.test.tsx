@@ -22,7 +22,7 @@ jest.mock('../../../api/artworks', () => ({
 const queryClient = new QueryClient();
 const user = userEvent.setup()
 
-const collection = "example collection"
+const exampleCollectionId = "66f2194a6123d7f50558cd8f"
 const artworkId = "670c2aecc29b79e5aaef1b9b"
 const renderPage = (
     queryClient: QueryClient, 
@@ -33,15 +33,15 @@ const renderPage = (
         jwtToken: undefined,
         setUserData: jest.fn()
     },
-    collection: string = "example collection",
+    collectionId: string = exampleCollectionId,
     artworkId: string = "670c2aecc29b79e5aaef1b9b"
     ) => {
         return render(
             <UserContext.Provider value={ userContextProps }>
                 <QueryClientProvider client={queryClient}>
-                    <MemoryRouter initialEntries={[`/collections/${collection}/artworks/${artworkId}`]}>
+                    <MemoryRouter initialEntries={[`/collections/${collectionId}/artworks/${artworkId}`]}>
                         <Routes>
-                            <Route path="/collections/:collection/artworks/:artworkId" element={<ArtworkPage />}/>
+                            <Route path="/collections/:collectionId/artworks/:artworkId" element={<ArtworkPage />}/>
                         </Routes>  
                     </MemoryRouter>
                 </QueryClientProvider>    
@@ -150,18 +150,8 @@ describe("ArtworkPage tests", () => {
         expect(queryByTestId("loaded-artwork-page-container")).not.toBeInTheDocument()
     })
 
-    it("should render artwork page component correctly after data is fetched from API when main categories are specified", async () => {
+    it("should render artwork page component correctly after data is fetched from API", async () => {
         mockGetArtwork.mockReturnValue(artworkData)
-        const {getByTestId, queryByTestId} = renderPage(queryClient)
-
-        await waitFor(() => getByTestId('loaded-artwork-page-container'))
-
-        expect(queryByTestId("loading-page-container")).not.toBeInTheDocument()
-        expect(getByTestId("main-categories-container")).toMatchSnapshot()
-    })
-
-    it("should render artwork page component correctly after data is fetched from API when main categories are unspecified", async () => {
-        mockGetArtwork.mockReturnValue(artworkDataWithoutCategories)
         const {getByTestId, queryByTestId} = renderPage(queryClient)
 
         await waitFor(() => getByTestId('loaded-artwork-page-container'))
@@ -260,63 +250,68 @@ describe("ArtworkPage tests", () => {
         user.click(getByLabelText("confirm"))
 
         await waitFor(() => expect(mockDeleteArtworks).toHaveBeenCalledWith([artworkId], jwtToken))
-        expect(mockUseNavigate).toHaveBeenCalledWith(`/collections/${collection}/artworks/`)      
+        expect(mockUseNavigate).toHaveBeenCalledWith(`/collections/${exampleCollectionId}/artworks/`)      
     })
 
-    it("should render categories list after show more button is clicked", async () => {
+    it("should call use navigate(-1) when go back to collection button is clicked", async () => {
+        mockGetArtwork.mockReturnValue(artworkData)
+        const {getByTestId, getByRole} = renderPage(queryClient, loggedInUserContextProps)
+
+        await waitFor(() => getByTestId('loaded-artwork-page-container'))
+        await user.click(getByRole("button", {
+            name: /powrót do kolekcji/i
+        }))
+
+        expect(mockUseNavigate).toHaveBeenCalledWith(-1)
+    })
+
+    it("should render category tree correctly after subcategories are shown by clicking expand button", async () => {
         mockGetArtwork.mockReturnValue(artworkData)
         const {getByTestId, getByRole} = renderPage(queryClient)
 
         await waitFor(() => getByTestId('loaded-artwork-page-container'))
+        
         await user.click(getByRole("button", {
-            name: /pokaż więcej/i
-        }))
-
-        expect(getByRole("button", {
-            name: /pokaż mniej/i
-        })).toBeInTheDocument()
-        expect(getByTestId("details-list")).toBeInTheDocument()
-    })
-
-    it("should not render categories list after show less button is clicked", async () => {
-        mockGetArtwork.mockReturnValue(artworkData)
-        const {getByTestId, getByRole, queryByTestId} = renderPage(queryClient)
-
-        await waitFor(() => getByTestId('loaded-artwork-page-container'))
-        await user.click(getByRole("button", {
-            name: /pokaż więcej/i
-        }))
-        await user.click(getByRole("button", {
-            name: /pokaż mniej/i
+            name: /rok-fold\/expand-button/i
         }))
         
-        await expect(getByRole("button", {
-            name: /pokaż więcej/i
-        })).toBeInTheDocument()
-        expect(queryByTestId("details-list")).not.toBeInTheDocument()
+        await user.click(getByRole("button", {
+            name: /miesiąc-fold\/expand-button/i
+        }))
+
+        await user.click(getByRole("button", {
+            name: /tytuł-fold\/expand-button/i
+        }))
+
+        expect(getByTestId("category-tree")).toMatchSnapshot()
     })
 
-    it("should render nested categories list correctly", async () => {
+    it("should render category tree correctly after subcategories are hidden by clicking fold buttons", async () => {
         mockGetArtwork.mockReturnValue(artworkData)
         const {getByTestId, getByRole} = renderPage(queryClient)
 
         await waitFor(() => getByTestId('loaded-artwork-page-container'))
+        
         await user.click(getByRole("button", {
-            name: /pokaż więcej/i
+            name: /rok-fold\/expand-button/i
+        }))
+        
+        await user.click(getByRole("button", {
+            name: /miesiąc-fold\/expand-button/i
         }))
 
-        expect(getByTestId("details-list")).toMatchSnapshot()
-    })
-
-    it("should render categories list correctly when there aren't any categories", async () => {
-        mockGetArtwork.mockReturnValue(artworkDataWithoutCategories)
-        const {getByTestId, getByRole} = renderPage(queryClient)
-
-        await waitFor(() => getByTestId('loaded-artwork-page-container'))
         await user.click(getByRole("button", {
-            name: /pokaż więcej/i
+            name: /tytuł-fold\/expand-button/i
         }))
 
-        expect(getByTestId("details-list")).toMatchSnapshot()
+        await user.click(getByRole("button", {
+            name: /rok-fold\/expand-button/i
+        }))
+
+        await user.click(getByRole("button", {
+            name: /tytuł-fold\/expand-button/i
+        }))
+
+        expect(getByTestId("category-tree")).toMatchSnapshot()
     })
 })

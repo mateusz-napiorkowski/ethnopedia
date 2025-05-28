@@ -6,10 +6,27 @@ jest.mock('../../models/collection', () => ({
 		find: () => mockCollectionFind()
 }))
 
-const collectionName = 'collection'
+const firstCollectionCategories = [
+	{name: "Tytuł", subcategories: [
+		{name: "Podtytuł", subcategories: [{name: "Podpodtytuł", subcategories: []}]},
+		{name: "Podtytuł alternatywny", subcategories: []},
+	]},
+	{name: "Artyści", subcategories: []},
+	{name: "Rok", subcategories: [{name: "Miesiąc", subcategories: [{name: "Dzień", subcategories: []}]}]}
+]
+const secondCollectionCategories = [
+	{name: "Tytuł", subcategories: [
+		{name: "Podtytuł", subcategories: [{name: "Podpodtytuł", subcategories: []}]},
+		{name: "Podtytuł alternatywny", subcategories: []},
+		{name: "Podtytuł alternatywny 2", subcategories: []},
+	]},
+	{name: "Rok", subcategories: [{name: "Miesiąc", subcategories: [{name: "Dzień", subcategories: []}]}]},
+	{name: "Gatunek", subcategories: [{name: "Podgatunek", subcategories: []}]}
+]
+
 describe('categories util functions tests', () => {
 		beforeEach(() => {
-				jest.resetAllMocks()
+			jest.resetAllMocks()
 		})
 
 		test.each([
@@ -309,52 +326,78 @@ describe('categories util functions tests', () => {
 
 		test.each([
 				{
-						testName: 'getAllCategories test - categories present in collection',
-						categories: [
-							{name: "Tytuł", subcategories: [
-								{name: "Podtytuł", subcategories: [{name: "Podpodtytuł", subcategories: []}]},
-								{name: "Podtytuł alternatywny", subcategories: []},
-							]},
-							{name: "Artyści", subcategories: []},
-							{name: "Rok", subcategories: [{name: "Miesiąc", subcategories: [{name: "Dzień", subcategories: []}]}]}
-						],
+					testName: 'getAllCategories test - get categories from one collection',
+					collectionFind: () => {return {exec: () => Promise.resolve([
+						{
+								_id: "6717d46c666e8575d873ee57",
+								name: "collection",
+								description: 'collection description',
+								categories: firstCollectionCategories,
+								__v: 0
+						}
+					])}},
+					collectionIds: ["6717d46c666e8575d873ee57"]
 				},
 				{
-						testName: 'getAllCategories test - no categories in collection',
-						categories: []
-				},
+					testName: 'getAllCategories test - get categories from many collections',
+					collectionFind: () => {return {exec: () => Promise.resolve([
+						{
+								_id: "6717d46c666e8575d873ee57",
+								name: "collection",
+								description: 'collection description',
+								categories: firstCollectionCategories,
+								__v: 0
+						},
+						{
+							_id: "1234d46c666e8575d873ee12",
+							name: "second collection name",
+							description: 'collection description',
+							categories: secondCollectionCategories,
+							__v: 0
+					}
+					])}},
+					collectionIds: ["6717d46c666e8575d873ee57", "1234d46c666e8575d873ee12"],
+				}
 		])(`$testName`,
-				async ({categories}) => {
-						mockCollectionFind.mockImplementation(() => {return {exec: () => Promise.resolve([
-								{
-										_id: "6717d46c666e8575d873ee57",
-										name: collectionName,
-										description: 'collection description',
-										categories: categories,
-										__v: 0
-								}
-						])}})
+				async ({collectionFind, collectionIds}) => {
+						mockCollectionFind.mockImplementation(collectionFind)
 		
-						expect(await getAllCategories(collectionName)).toMatchSnapshot();
+						expect(await getAllCategories(collectionIds)).toMatchSnapshot();
 				}
 		)
 
 		test.each([
 				{
-						testName: 'getAllCategories test - throw error when collection not found',
+						testName: 'getAllCategories test - throw error when no collection was found',
 						collectionFind: () => {return {exec: () => Promise.resolve([])}},
+						collectionIds: ["6717d46c666e8575d873ee57"],
 						error: "Collection not found"
+				},
+				{
+					testName: 'getAllCategories test - throw error when not all collections were found',
+					collectionFind: () => {return {exec: () => Promise.resolve([
+						{
+								_id: "6717d46c666e8575d873ee57",
+								name: "collection",
+								description: 'collection description',
+								categories: firstCollectionCategories,
+								__v: 0
+						}
+					])}},
+					collectionIds: ["6717d46c666e8575d873ee57", "1234d46c666e8575d873ee12"],
+					error: "Collection not found"
 				},
 				{
 						testName: 'getAllCategories test - Collection.find() throws error',
 						collectionFind: () => {throw Error()},
+						collectionIds: ["6717d46c666e8575d873ee57"],
 						error: "Database unavailable"
 				}
 		])(`$testName`,
-				async ({collectionFind, error}) => {
+				async ({collectionFind, collectionIds, error}) => {
 						mockCollectionFind.mockImplementation(collectionFind)
 
-						expect(() => getAllCategories(collectionName)).rejects.toThrow(error);
+						expect(() => getAllCategories(collectionIds)).rejects.toThrow(error);
 				}
 		)
 

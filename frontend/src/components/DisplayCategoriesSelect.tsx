@@ -81,6 +81,7 @@ const DisplayCategoriesSelect: React.FC<DisplayCategoriesSelectProps> = ({
                 >
                     <input
                         type="checkbox"
+                        aria-label={`${option.value}-check/uncheck`}
                         checked={isChecked}
                         readOnly
                         className="mr-2"
@@ -96,6 +97,7 @@ const DisplayCategoriesSelect: React.FC<DisplayCategoriesSelectProps> = ({
             {/* Pole wyboru – wyświetla liczbę zaznaczonych kategorii*/}
             <div
                 onClick={() => setOpen(!open)}
+                aria-label="open/close-display-categories-select"
                 className="cursor-pointer py-2 px-4 border bg-white dark:bg-gray-800 border-gray-300 rounded-lg text-sm flex items-center justify-between w-full"
             >
     <span className="pr-4">
@@ -117,6 +119,7 @@ const DisplayCategoriesSelect: React.FC<DisplayCategoriesSelectProps> = ({
             {open && (
                 <div
                     className="absolute z-10 bg-white dark:bg-gray-800 border border-gray-300 mt-1 rounded shadow-md max-h-60 overflow-y-auto"
+                    data-testid="DisplayCategoriesSelectExpanded"
                     style={{minWidth: "100%", width: "auto"}}
                 >
                     {customOptions.map((option) => renderOptionItem(option))}

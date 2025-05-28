@@ -27,31 +27,32 @@ export const getArtwork = async (req: Request, res: Response) => {
     }
 }
 
-export const getArtworksForCollectionPage = async (req: Request, res: Response) => {
+export const getArtworksForPage = async (req: Request, res: Response) => {
     try {
         const page = parseInt(req.query.page as string)
         const pageSize = parseInt(req.query.pageSize as string)
+        const sortOrder = req.query.sortOrder as string
+        const collectionIds = req.query.collectionIds as Array<string>
 
-        if(!page || !pageSize)
+        if(!page || !pageSize || !sortOrder || ! collectionIds)
             throw new Error("Request is missing query params")
-
-        const collectionId = req.params.collectionId
-        const collection = await CollectionCollection.findOne({_id: collectionId}).exec()
-        if (collection == null)
-            throw new Error(`Collection not found`)
         
-        const collectionName = collection?.name as string
-        const searchText = req.query.searchText
-        const sortOrder = req.params.sortOrder
+        const collections = await CollectionCollection.find({_id: {$in: collectionIds}}).exec()
 
+        if (collections.length === 0)
+            throw new Error(`Collection not found`)
+
+        const collectionNames = collections.map(collection => collection.name as string);
+        
+        const searchText = req.query.searchText
         const search = req.query.search === "true" ? true : false
         let queryFilter;
         if(!search)
-            queryFilter = { collectionName: collectionName }
+            queryFilter = { collectionName: {$in: collectionNames} }
         else if(searchText)
-            queryFilter = await constructQuickSearchFilter(searchText, collectionId, collectionName)
+            queryFilter = await constructQuickSearchFilter(searchText, collectionIds, collectionNames)
         else
-            queryFilter = await constructAdvSearchFilter(req.query, collectionName)
+            queryFilter = await constructAdvSearchFilter(req.query, collectionNames)
 
         const artworksFiltered = await Artwork.find(queryFilter).exec()
         const artworksSorted = sortRecordsByCategory(artworksFiltered, sortOrder)

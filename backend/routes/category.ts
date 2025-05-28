@@ -1,9 +1,9 @@
 import express from "express"
 
-import {getCollectionCategories} from "../controllers/categories";
+import {getCategories} from "../controllers/categories";
 
 const router = express.Router()
 
-router.route("/all/:collectionId").get(getCollectionCategories)
+router.route("/all").get(getCategories)
 
 export default router;

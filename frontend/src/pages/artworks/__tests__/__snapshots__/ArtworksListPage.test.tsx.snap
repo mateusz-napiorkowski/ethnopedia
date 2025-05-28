@@ -24,13 +24,35 @@ exports[`ArtworksListPage tests should refetch artworks list when artwork page i
         <div
           class="text-lg text-gray-800 dark:text-white"
         >
-          <p
+          <span
             class="text-gray-400 inline"
           >
             Tytuł
             : 
-          </p>
+          </span>
           Jakym jechoł koło dworu
+        </div>
+        <div
+          class="text-lg text-gray-800 dark:text-white"
+        >
+          <span
+            class="text-gray-400 inline"
+          >
+            Podtytuł
+            : 
+          </span>
+          Tradycyjna pieśń ludowa o młodzieńcu przejeżdżającym obok dworu.
+        </div>
+        <div
+          class="text-lg text-gray-800 dark:text-white"
+        >
+          <span
+            class="text-gray-400 inline"
+          >
+            Artyści
+            : 
+          </span>
+          Józefa Piaskowska
         </div>
       </div>
     </div>
@@ -54,13 +76,35 @@ exports[`ArtworksListPage tests should refetch artworks list when artwork page i
         <div
           class="text-lg text-gray-800 dark:text-white"
         >
-          <p
+          <span
             class="text-gray-400 inline"
           >
             Tytuł
             : 
-          </p>
+          </span>
           Ojcze, ojcze, kup mi kónia
+        </div>
+        <div
+          class="text-lg text-gray-800 dark:text-white"
+        >
+          <span
+            class="text-gray-400 inline"
+          >
+            Podtytuł
+            : 
+          </span>
+          Serdeczna prośba dziecka do ojca o konia.
+        </div>
+        <div
+          class="text-lg text-gray-800 dark:text-white"
+        >
+          <span
+            class="text-gray-400 inline"
+          >
+            Artyści
+            : 
+          </span>
+          Magdalena Figlak
         </div>
       </div>
     </div>
@@ -84,13 +128,35 @@ exports[`ArtworksListPage tests should refetch artworks list when artwork page i
         <div
           class="text-lg text-gray-800 dark:text-white"
         >
-          <p
+          <span
             class="text-gray-400 inline"
           >
             Tytuł
             : 
-          </p>
+          </span>
           Piękna jagoda
+        </div>
+        <div
+          class="text-lg text-gray-800 dark:text-white"
+        >
+          <span
+            class="text-gray-400 inline"
+          >
+            Podtytuł
+            : 
+          </span>
+          Tradycyjna pieśń ludowa o młodzieńcu przejeżdżającym obok dworu.
+        </div>
+        <div
+          class="text-lg text-gray-800 dark:text-white"
+        >
+          <span
+            class="text-gray-400 inline"
+          >
+            Artyści
+            : 
+          </span>
+          Zespół Mazowsze
         </div>
       </div>
     </div>
@@ -122,13 +188,35 @@ exports[`ArtworksListPage tests should refetch artworks list when artwork page i
         <div
           class="text-lg text-gray-800 dark:text-white"
         >
-          <p
+          <span
             class="text-gray-400 inline"
           >
             Tytuł
             : 
-          </p>
+          </span>
           W górach, nad rzeką
+        </div>
+        <div
+          class="text-lg text-gray-800 dark:text-white"
+        >
+          <span
+            class="text-gray-400 inline"
+          >
+            Podtytuł
+            : 
+          </span>
+          Opowieść o życiu w sercu natury
+        </div>
+        <div
+          class="text-lg text-gray-800 dark:text-white"
+        >
+          <span
+            class="text-gray-400 inline"
+          >
+            Artyści
+            : 
+          </span>
+          Józefa Piaskowska
         </div>
       </div>
     </div>
@@ -152,13 +240,35 @@ exports[`ArtworksListPage tests should refetch artworks list when artwork page i
         <div
           class="text-lg text-gray-800 dark:text-white"
         >
-          <p
+          <span
             class="text-gray-400 inline"
           >
             Tytuł
             : 
-          </p>
+          </span>
           Skrzypce na polu
+        </div>
+        <div
+          class="text-lg text-gray-800 dark:text-white"
+        >
+          <span
+            class="text-gray-400 inline"
+          >
+            Podtytuł
+            : 
+          </span>
+          Pieśń zagrana wśród zbóż
+        </div>
+        <div
+          class="text-lg text-gray-800 dark:text-white"
+        >
+          <span
+            class="text-gray-400 inline"
+          >
+            Artyści
+            : 
+          </span>
+          Magdalena Figlak
         </div>
       </div>
     </div>
@@ -182,13 +292,35 @@ exports[`ArtworksListPage tests should refetch artworks list when artwork page i
         <div
           class="text-lg text-gray-800 dark:text-white"
         >
-          <p
+          <span
             class="text-gray-400 inline"
           >
             Tytuł
             : 
-          </p>
+          </span>
           Pragnom uoczka, pragnom
+        </div>
+        <div
+          class="text-lg text-gray-800 dark:text-white"
+        >
+          <span
+            class="text-gray-400 inline"
+          >
+            Podtytuł
+            : 
+          </span>
+          Tęsknota zapisana w spojrzeniu
+        </div>
+        <div
+          class="text-lg text-gray-800 dark:text-white"
+        >
+          <span
+            class="text-gray-400 inline"
+          >
+            Artyści
+            : 
+          </span>
+          Zespół Mazowsze
         </div>
       </div>
     </div>
@@ -214,6 +346,19 @@ exports[`ArtworksListPage tests should render artworks list component after data
     >
       example collection description
     </p>
+  </div>
+  <div>
+    <button
+      class="text-sm font-semibold h-fit mr-4 bg-gray-100 hover:bg-gray-100 flex items-center"
+      disabled=""
+    >
+      <svg />
+      <p
+        class="ml-1"
+      >
+        Edytuj
+      </p>
+    </button>
   </div>
 </div>
 `;

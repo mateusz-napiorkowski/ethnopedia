@@ -39,7 +39,7 @@ const ArtworksList: React.FC<ArtworksListProps> = ({
                                                    }) => {
     const navigate = useNavigate();
 
-    if (isLoading || isFetching || !artworksData) {
+    if (isLoading || !artworksData) {
         return <LoadingPage />;
     }
 

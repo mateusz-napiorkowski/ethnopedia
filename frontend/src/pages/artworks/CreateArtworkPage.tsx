@@ -28,7 +28,7 @@ const CreateArtworkPage: React.FC = () => {
     // Pobranie kategorii (w formacie dot.notation) lub metadanych rekordu (w trybie edycji)
     const { data: catData, isLoading: catsLoading } = useQuery(
         ['categories', collectionId],
-        () => getAllCategories(collectionId!),
+        () => getAllCategories([collectionId as string]),
         { enabled: !!collectionId }
     );
     const { data: collData } = useQuery(
@@ -53,11 +53,15 @@ const CreateArtworkPage: React.FC = () => {
     }, [artworkId, catData]);
 
     if (catsLoading || (!initialCategoryPaths.length && !artworkId)) {
-        return <LoadingPage />;
+        return <>
+            <div data-testid="loading-page-container">
+                <LoadingPage />
+            </div>
+        </>;
     }
 
     return (
-        <div className="min-h-screen flex flex-col overflow-y-auto">
+        <div className="min-h-screen flex flex-col overflow-y-auto" data-testid="create-artwork-page-container">
             <Navbar />
             <div className="container px-8 mt-6 max-w-3xl mx-auto">
                 <Navigation />

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { getArtworksForCollectionPage, deleteArtworks } from "../../api/artworks";
+import { getArtworksForPage, deleteArtworks } from "../../api/artworks";
 import { getCollection } from "../../api/collections";
 import LoadingPage from "../LoadingPage";
 import { useEffect, useState } from "react";
@@ -68,15 +68,15 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
     } = useQuery({
         queryKey: [
             "artwork",
-            collectionId,
+            [collectionId],
             currentPage,
             location.search,
             sortCategory,
             sortDirection,
         ],
         queryFn: () =>
-            getArtworksForCollectionPage(
-                collectionId as string,
+            getArtworksForPage(
+                [collectionId as string],
                 currentPage,
                 pageSize,
                 `${sortCategory}-${sortDirection}`,
@@ -84,7 +84,7 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                 Object.fromEntries(new URLSearchParams(location.search).entries())
             ),
         enabled: !!collectionId,
-        keepPreviousData: false,
+        keepPreviousData: true,
     });
 
 
@@ -96,7 +96,7 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
 
     const { data: categoriesData } = useQuery({
         queryKey: ["allCategories", collectionId],
-        queryFn: () => getAllCategories(collectionId as string),
+        queryFn: () => getAllCategories([collectionId as string]),
         enabled: !!collectionId,
     });
 
@@ -189,7 +189,7 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
             }
         }
         return option.label;
-    };
+    }
 
     return (
         <><div data-testid="loaded-artwork-page-container">
@@ -319,7 +319,7 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                         </div>
                     </div>
                     {showImportOptions && <ImportOptions onClose={() => setShowImportOptions(false)} collectionData={collectionData}/>}
-                    {showExportOptions && <ExportOptions onClose={() => setShowExportOptions(false)} selectedArtworks={selectedArtworks} initialFilename={`${collectionData?.name}.xlsx`} />}
+                    {showExportOptions && <ExportOptions onClose={() => setShowExportOptions(false)} selectedArtworks={selectedArtworks} initialFilename={`${collectionData?.name}.xlsx`} collectionIds={[`${collectionData?._id}`]} />}
                     <div className="flex w-full md:w-auto pt-4 flex-row items-center text-sm">
                         <p className="pr-2">Wyświetlane kategorie:</p>
                         <DisplayCategoriesSelect

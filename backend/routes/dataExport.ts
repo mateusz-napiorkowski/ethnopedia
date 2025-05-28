@@ -5,6 +5,6 @@ import {getXlsxWithCollectionData, getXlsxWithArtworksData} from "../controllers
 const router = express.Router()
 
 router.route("/collection/:collectionId").get(getXlsxWithCollectionData)
-router.route("/:collectionId").get(getXlsxWithArtworksData)
+router.route("/").get(getXlsxWithArtworksData)
 
 export default router;

@@ -31,7 +31,7 @@ const renderComponent = (collectionId = exampleCollectionId, selectedArtworks = 
         <QueryClientProvider client={queryClient}>
             <MemoryRouter initialEntries={[`/collections/${collectionId}/artworks/`]}>
                 <Routes>
-                    <Route path="/collections/:collectionId/artworks/" element={<ExportOptions onClose={mockOnClose} selectedArtworks={selectedArtworks} initialFilename='example-collection.xlsx'/>}/>
+                    <Route path="/collections/:collectionId/artworks/" element={<ExportOptions onClose={mockOnClose} selectedArtworks={selectedArtworks} initialFilename='example-collection.xlsx' collectionIds={[collectionId]}/>}/>
                 </Routes>  
             </MemoryRouter>
         </QueryClientProvider>
@@ -216,7 +216,7 @@ describe("Export options tests", () => {
         await user.clear(filenameInput)
         await user.type(filenameInput, "another-collection-name.xlsx")
         await user.click(getByText("Eksportuj metadane"))
-        expect(mockGetXlsxWithArtworksData).toHaveBeenCalledWith(exampleCollectionId, ["Region", "Artyści"], "all", {}, new URLSearchParams, "another-collection-name.xlsx")
+        expect(mockGetXlsxWithArtworksData).toHaveBeenCalledWith([exampleCollectionId], ["Region", "Artyści"], "all", {}, new URLSearchParams, "another-collection-name.xlsx")
     })
 
     it("should call getXlsxWithArtworksData function with correct parameters after export metadata button is clicked and 'export selected' checkbox is checked", async () => {
@@ -230,7 +230,7 @@ describe("Export options tests", () => {
         const exportSelectedCheckbox = getByDisplayValue("onlyChecked")
         await user.click(exportSelectedCheckbox)
         await user.click(getByText("Eksportuj metadane"))
-        expect(mockGetXlsxWithArtworksData).toHaveBeenCalledWith(exampleCollectionId, ["Region", "Artyści"], "selected", {'674386b32a2908778c0ad471': true, '674386b32a2908778c0ad470': true}, new URLSearchParams, "example-collection.xlsx")
+        expect(mockGetXlsxWithArtworksData).toHaveBeenCalledWith([exampleCollectionId], ["Region", "Artyści"], "selected", {'674386b32a2908778c0ad471': true, '674386b32a2908778c0ad470': true}, new URLSearchParams, "example-collection.xlsx")
     })
 
     it("should call getXlsxWithArtworksData function with correct parameters after export metadata button is clicked and 'export search results' checkbox is checked", async () => {
@@ -248,6 +248,6 @@ describe("Export options tests", () => {
         const exportSelectedCheckbox = getByDisplayValue("onlySearchResult")
         await user.click(exportSelectedCheckbox)
         await user.click(getByText("Eksportuj metadane"))
-        expect(mockGetXlsxWithArtworksData).toHaveBeenCalledWith(exampleCollectionId, ["Region", "Artyści"], "searchResult", {}, expect.any(URLSearchParams), "another-collection-name.xlsx")
+        expect(mockGetXlsxWithArtworksData).toHaveBeenCalledWith([exampleCollectionId], ["Region", "Artyści"], "searchResult", {}, expect.any(URLSearchParams), "another-collection-name.xlsx")
     })
 })

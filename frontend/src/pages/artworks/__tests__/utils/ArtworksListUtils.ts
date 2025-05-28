@@ -14,11 +14,20 @@ export const collectionData = {
     "_id": "675ddf8c1e6d01766fbc5b2e",
     "name": "example collection",
     "description": "example collection description",
+    "categories": [
+        {name: 'Tytuł', subcategories: [{name: "Podtytuł", subcategories: []}]},
+        {name: 'Artyści', subcategories: []},
+        {name: 'Rok', subcategories: []},
+    ],
     "__v": 0
 }
 
 export const artworkIds = ["6752ddca46e3ca48231024dc", "6752ddca46e3ca48231024aa", "6752ddca46e3ca48231024bb"]
 export const artworkTitles = ["Jakym jechoł koło dworu", "Ojcze, ojcze, kup mi kónia", "Piękna jagoda"]
+export const artworkSubTitles = [
+    "Tradycyjna pieśń ludowa o młodzieńcu przejeżdżającym obok dworu.", 
+    "Serdeczna prośba dziecka do ojca o konia.", 
+    "Liryczny hołd dla piękna, symbolizowanego przez dojrzałą jagodę."]
 
 export const artworksData = {
     "artworks": [
@@ -30,7 +39,12 @@ export const artworksData = {
                     "value": 
                         artworkTitles[0]
                     ,
-                    "subcategories": []
+                    "subcategories": [
+                        {
+                            name: "Podtytuł",
+                            value: artworkSubTitles[0]
+                        }
+                    ]
                 },
                 {
                     "name": "Artyści",
@@ -60,7 +74,12 @@ export const artworksData = {
                     "value": 
                         artworkTitles[1]
                     ,
-                    "subcategories": []
+                    "subcategories": [
+                        {
+                            name: "Podtytuł",
+                            value: artworkSubTitles[1]
+                        }
+                    ]
                 },
                 {
                     "name": "Artyści",
@@ -90,7 +109,12 @@ export const artworksData = {
                     "value": 
                         artworkTitles[2]
                     ,
-                    "subcategories": []
+                    "subcategories": [
+                        {
+                            name: "Podtytuł",
+                            value: artworkSubTitles[0]
+                        }
+                    ]
                 },
                 {
                     "name": "Artyści",
@@ -128,7 +152,12 @@ export const artworksDataSecondPage = {
                     "value": 
                         "W górach, nad rzeką"
                     ,
-                    "subcategories": []
+                    "subcategories": [
+                        {
+                            name: "Podtytuł",
+                            value: "Opowieść o życiu w sercu natury"
+                        }
+                    ]
                 },
                 {
                     "name": "Artyści",
@@ -158,7 +187,12 @@ export const artworksDataSecondPage = {
                     "value": 
                         "Skrzypce na polu"
                     ,
-                    "subcategories": []
+                    "subcategories": [
+                        {
+                            name: "Podtytuł",
+                            value: "Pieśń zagrana wśród zbóż"
+                        }
+                    ]
                 },
                 {
                     "name": "Artyści",
@@ -188,7 +222,12 @@ export const artworksDataSecondPage = {
                     "value": 
                         "Pragnom uoczka, pragnom"
                     ,
-                    "subcategories": []
+                    "subcategories": [
+                        {
+                            name: "Podtytuł",
+                            value: "Tęsknota zapisana w spojrzeniu"
+                        }
+                    ]
                 },
                 {
                     "name": "Artyści",

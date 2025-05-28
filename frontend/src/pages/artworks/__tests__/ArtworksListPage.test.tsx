@@ -13,10 +13,10 @@ jest.mock('react-router-dom', () => ({
   useNavigate: () => mockUseNavigate,
 }));
 
-const mockGetArtworksForCollectionPage = jest.fn()
+const mockGetArtworksForPage = jest.fn()
 const mockDeleteArtworks = jest.fn()
 jest.mock('../../../api/artworks', () => ({
-    getArtworksForCollectionPage: () => mockGetArtworksForCollectionPage,
+    getArtworksForPage: () => mockGetArtworksForPage,
     deleteArtworks: (artworkId: string, jwtToken: string) => mockDeleteArtworks(artworkId, jwtToken)
 }))
 
@@ -42,15 +42,15 @@ const renderPage = (
         jwtToken: undefined,
         setUserData: jest.fn()
     },
-    collection: string = collectionData.name,
+    collectionId: string = collectionData._id,
     pageSize = 3
     ) => {
         return render(
             <UserContext.Provider value={ userContextProps }>
                 <QueryClientProvider client={queryClient}>
-                    <MemoryRouter initialEntries={[`/collections/${collection}/artworks/`]}>
+                    <MemoryRouter initialEntries={[`/collections/${collectionId}/artworks/`]}>
                         <Routes>
-                            <Route path="/collections/:collection/artworks/" element={<ArtworksListPage pageSize={pageSize}/>}/>
+                            <Route path="/collections/:collectionId/artworks/" element={<ArtworksListPage pageSize={pageSize}/>}/>
                         </Routes>  
                     </MemoryRouter>
                 </QueryClientProvider>    
@@ -72,7 +72,7 @@ describe("ArtworksListPage tests", () => {
     })
 
     it("should render artworks list component after data is fetched from API, collection name and description should be displayed", async () => {
-        mockGetArtworksForCollectionPage.mockReturnValue(artworksData)
+        mockGetArtworksForPage.mockReturnValue(artworksData)
         mockGetCollection.mockReturnValue(collectionData)
         const {getByTestId, queryByTestId} = renderPage(queryClient)
 
@@ -84,38 +84,63 @@ describe("ArtworksListPage tests", () => {
         await waitFor(() => expect(getByTestId('collection-name-and-description-container')).toMatchSnapshot())
     })
 
-    it("should have add record, import file, and delete selected buttons disabled when user is not logged in", async () => {
-        mockGetArtworksForCollectionPage.mockReturnValue(artworksData)
+    it("should have edit collection, add record, import file, and delete selected buttons disabled when user is not logged in", async () => {
+        mockGetArtworksForPage.mockReturnValue(artworksData)
         mockGetCollection.mockReturnValue(collectionData)
         const {getByRole, getByTestId} = renderPage(queryClient)
 
         await waitFor(() => getByTestId('loaded-artwork-page-container'))
+        const editCollectionButton = getByRole("button", {name: /edytuj/i})
         const addNewRecordButton = getByRole("button", {name: /nowy rekord/i})
         const importFileButton = getByRole("button", {name: /importuj plik/i})
         const deleteSelectedButton = getByRole("button", {name: /usuń zaznaczone/i})
 
+        expect(editCollectionButton).toBeDisabled()
         expect(addNewRecordButton).toBeDisabled()
         expect(importFileButton).toBeDisabled()
         expect(deleteSelectedButton).toBeDisabled()
     })
 
-    it("should have add record and import file buttons enabled when user is logged in, delete selected button should stay disabled when no artworks are selected", async () => {
-        mockGetArtworksForCollectionPage.mockReturnValue(artworksData)
+    it("should have edit collection, add record and import file buttons enabled when user is logged in, delete selected button should stay disabled when no artworks are selected", async () => {
+        mockGetArtworksForPage.mockReturnValue(artworksData)
         mockGetCollection.mockReturnValue(collectionData)
         const {getByRole, getByTestId} = renderPage(queryClient, loggedInUserContextProps)
 
         await waitFor(() => getByTestId('loaded-artwork-page-container'))
+        const editCollectionButton = getByRole("button", {name: /edytuj/i})
         const addNewRecordButton = getByRole("button", {name: /nowy rekord/i})
         const importFileButton = getByRole("button", {name: /importuj plik/i})
         const deleteSelectedButton = getByRole("button", {name: /usuń zaznaczone/i})
 
+        expect(editCollectionButton).not.toBeDisabled()
         expect(addNewRecordButton).not.toBeDisabled()
         expect(importFileButton).not.toBeDisabled()
         expect(deleteSelectedButton).toBeDisabled()
     })
  
+    it("should navigate to edit collection page when enabled edit collection button is clicked and pass state with current collection data", async () => {
+        mockGetArtworksForPage.mockReturnValue(artworksData)
+        mockGetCollection.mockReturnValue(collectionData)
+        const {getByRole, getByTestId} = renderPage(queryClient, loggedInUserContextProps)
+
+        await waitFor(() => getByTestId('loaded-artwork-page-container'))
+        const addNewRecordButton = getByRole("button", {name: /edytuj/i})
+        await user.click(addNewRecordButton)
+
+        expect(mockUseNavigate).toHaveBeenCalledWith(`/collections/${collectionData._id}/edit`,
+            {"state":
+                {
+                    "categories": collectionData.categories,
+                    "collectionId": collectionData._id,
+                    "description": collectionData.description,
+                    "mode": "edit",
+                    "name": collectionData.name}
+            }
+        )
+    })
+
     it("should navigate to add record page when enabled add record button is clicked", async () => {
-        mockGetArtworksForCollectionPage.mockReturnValue(artworksData)
+        mockGetArtworksForPage.mockReturnValue(artworksData)
         mockGetCollection.mockReturnValue(collectionData)
         const {getByRole, getByTestId} = renderPage(queryClient, loggedInUserContextProps)
 
@@ -123,11 +148,11 @@ describe("ArtworksListPage tests", () => {
         const addNewRecordButton = getByRole("button", {name: /nowy rekord/i})
         await user.click(addNewRecordButton)
 
-        expect(mockUseNavigate).toHaveBeenCalledWith("/collections/example collection/create-artwork")
+        expect(mockUseNavigate).toHaveBeenCalledWith(`/collections/${collectionData._id}/create-artwork`)
     })
 
     it("should open upload file window when enabled import file button is clicked", async () => {
-        mockGetArtworksForCollectionPage.mockReturnValue(artworksData)
+        mockGetArtworksForPage.mockReturnValue(artworksData)
         mockGetCollection.mockReturnValue(collectionData)
         const {getByRole, getByTestId, getByText} = renderPage(queryClient, loggedInUserContextProps)
 
@@ -139,21 +164,36 @@ describe("ArtworksListPage tests", () => {
     })
 
     it("should open export options window when export file button is clicked", async () => {
-        mockGetArtworksForCollectionPage.mockReturnValue(artworksData)
+        mockGetArtworksForPage.mockReturnValue(artworksData)
         mockGetCollection.mockReturnValue(collectionData)
-        mockGetAllCategories.mockReturnValue({categories: ["Tytuł"]})
+        mockGetAllCategories.mockReturnValue({categories: ["Tytuł", "Tytuł.Podtytuł", "Artyści", "Rok"]})
         const {getByRole, getByTestId, getByText, container} = renderPage(queryClient, loggedInUserContextProps)
         await waitFor(() => getByTestId('loaded-artwork-page-container'))
+
         const exportFileButton = getByRole("button", {name: /eksportuj plik/i})
         
         await user.click(exportFileButton)
         await waitFor(() => getByTestId("export-options-container"))
         
         expect(getByText(/ustawienia eksportu metadanych do pliku .xlsx/i)).toBeInTheDocument()
+       
+    })
+
+    it("should expand display categories select menu when it is clicked", async () => {
+        mockGetArtworksForPage.mockReturnValue(artworksData)
+        mockGetCollection.mockReturnValue(collectionData)
+        mockGetAllCategories.mockReturnValue({categories: ["Tytuł", "Tytuł.Podtytuł", "Artyści", "Rok"]})
+        const {getByRole, getByTestId, getByLabelText} = renderPage(queryClient, loggedInUserContextProps)
+        await waitFor(() => getByTestId('loaded-artwork-page-container'))
+
+        const expandDisplayCategoriesSelectElement = getByLabelText("open/close-display-categories-select")
+
+        await user.click(expandDisplayCategoriesSelectElement)
+        expect(getByTestId("DisplayCategoriesSelectExpanded")).toBeInTheDocument()
     })
 
     it("should navigate to appropriate artwork page when entry from artworks list is clicked", async () => {
-        mockGetArtworksForCollectionPage.mockReturnValue(artworksData)
+        mockGetArtworksForPage.mockReturnValue(artworksData)
         mockGetCollection.mockReturnValue(collectionData)
         const {getByTestId} = renderPage(queryClient)
 
@@ -161,11 +201,11 @@ describe("ArtworksListPage tests", () => {
 
         await user.click(getByTestId(artworkIds[0]))
         
-        expect(mockUseNavigate).toHaveBeenCalledWith(`/collections/${collectionData.name}/artworks/${artworkIds[0]}`)
+        expect(mockUseNavigate).toHaveBeenCalledWith(`/collections/${collectionData._id}/artworks/${artworkIds[0]}`)
     })
 
     it("should have delete selected button enabled if any artworks are selected", async () => {
-        mockGetArtworksForCollectionPage.mockReturnValue(artworksData)
+        mockGetArtworksForPage.mockReturnValue(artworksData)
         mockGetCollection.mockReturnValue(collectionData)
         const {getByRole, getByTestId} = renderPage(queryClient, loggedInUserContextProps)
         await waitFor(() => getByTestId('loaded-artwork-page-container'))
@@ -178,14 +218,14 @@ describe("ArtworksListPage tests", () => {
     })
 
     it("should refetch artworks list when artwork page is changed", async () => {
-        mockGetArtworksForCollectionPage.mockReturnValue(artworksData)
+        mockGetArtworksForPage.mockReturnValue(artworksData)
         mockGetCollection.mockReturnValue(collectionData)
         const {getByTestId} = renderPage(queryClient)
         await waitFor(() => getByTestId('loaded-artwork-page-container'))
 
         await waitFor(() => expect(getByTestId('artworks-listed')).toMatchSnapshot("page 1"))
 
-        mockGetArtworksForCollectionPage.mockReturnValueOnce(artworksDataSecondPage)
+        mockGetArtworksForPage.mockReturnValueOnce(artworksDataSecondPage)
         await user.click(getByTestId("page-2"))
 
         await waitFor(() => expect(getByTestId('artworks-listed')).toMatchSnapshot("page 2"))
@@ -214,7 +254,7 @@ describe("ArtworksListPage tests", () => {
             },
           ])('should have correct artworks checked and call deleteArtwork with correct args for checkboxes/buttons clicked in sequence: $clickSequenceWithTitles', async ({clickSequence, expectedChecked}) => {
             const expectedUnchecked = artworkIds.filter(category => !expectedChecked.includes(category))
-            mockGetArtworksForCollectionPage.mockReturnValue(artworksData)
+            mockGetArtworksForPage.mockReturnValue(artworksData)
             mockGetCollection.mockReturnValue(collectionData)
             const {getByTestId, getByRole, getByLabelText, getByText} = renderPage(queryClient, loggedInUserContextProps)
             

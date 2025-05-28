@@ -164,7 +164,7 @@ const MetadataForm: React.FC<MetadataFormProps> = ({
 
 
     return (
-        <div>
+        <div data-testid='category-tree'>
             {renderFields(categories)}
         </div>
     );
