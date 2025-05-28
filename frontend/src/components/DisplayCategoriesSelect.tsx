@@ -81,6 +81,7 @@ const DisplayCategoriesSelect: React.FC<DisplayCategoriesSelectProps> = ({
                 >
                     <input
                         type="checkbox"
+                        aria-label={`${option.value}-check/uncheck`}
                         checked={isChecked}
                         readOnly
                         className="mr-2"
