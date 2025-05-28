@@ -349,7 +349,6 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                 <div data-testid="artworks-listed" className="w-full flex-2 lg:px-6 max-w-screen-xl">
                     <ArtworksList
                         artworksData={artworkData}
-                        collectionId={collectionId as string}
                         isLoading={isLoadingArtworks}
                         isFetching={isFetchingArtworks}
                         hasSearchParams={hasSearchParams}

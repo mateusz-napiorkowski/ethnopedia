@@ -206,8 +206,7 @@ const GlobalSearchPage = ({ pageSize = 10 }) => {
         return option.label;
     };
 
-    // TODO
-    const collectionId =  allCollectionIds[0];
+
 
     return (
         <><div data-testid="loaded-artwork-page-container">
@@ -233,7 +232,7 @@ const GlobalSearchPage = ({ pageSize = 10 }) => {
                         </div>
 
                     </div>
-                    {collectionId && <SearchComponent collectionIds={allCollectionIds} mode="global" />}
+                    {allCollectionIds && <SearchComponent collectionIds={allCollectionIds} mode="global" />}
                     <div className="flex w-full md:w-auto">
                         <div className="flex flex-1 space-x-2">
 
@@ -312,7 +311,6 @@ const GlobalSearchPage = ({ pageSize = 10 }) => {
                 <div data-testid="artworks-listed" className="w-full flex-2 lg:px-6 max-w-screen-xl">
                     <ArtworksList
                         artworksData={artworkData}
-                        collectionId={collectionId as string}
                         isLoading={isLoadingArtworks}
                         isFetching={isFetchingArtworks}
                         hasSearchParams={hasSearchParams}

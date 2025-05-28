@@ -14,7 +14,6 @@ interface ArtworksListProps {
     artworksData: {
         artworks: Artwork[];
     } | undefined;
-    collectionId: string;
     isLoading: boolean;
     isFetching: boolean;
     hasSearchParams: boolean;
@@ -27,7 +26,6 @@ interface ArtworksListProps {
 
 const ArtworksList: React.FC<ArtworksListProps> = ({
                                                        artworksData,
-                                                       collectionId,
                                                        isLoading,
                                                        isFetching,
                                                        hasSearchParams,
@@ -59,7 +57,7 @@ const ArtworksList: React.FC<ArtworksListProps> = ({
                     key={artwork._id}
                     className="px-4 max-w-screen-xl py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4 border border-gray-300 dark:border-gray-600 cursor-pointer"
                     data-testid={artwork._id}
-                    onClick={() => navigate(`/collections/${collectionId}/artworks/${artwork._id}`)}
+                    onClick={() => navigate(`/collections/${artwork.collectionId}/artworks/${artwork._id}`)}
                 >
                     <div className="flex flex-row">
             <span className="mr-4 flex items-center">
@@ -73,7 +71,7 @@ const ArtworksList: React.FC<ArtworksListProps> = ({
             </span>
                         <div>
                             {selectedDisplayCategories.length > 0
-                                ? selectedDisplayCategories.map((cat) => {
+                                && selectedDisplayCategories.map((cat) => {
                                     const label = cat.includes('.') ? cat.split('.').pop() : cat;
                                     return (
                                         <div key={cat} className="text-lg text-gray-800 dark:text-white">
@@ -81,20 +79,7 @@ const ArtworksList: React.FC<ArtworksListProps> = ({
                                             {findValue(artwork, cat)}
                                         </div>
                                     );
-                                })
-                                : (
-                                    <>
-                                        <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-                                            {findValue(artwork, 'Tytuł')}
-                                        </h3>
-                                        <p className="text-gray-600 dark:text-gray-400 mb-1">
-                                            {findValue(artwork, 'Artyści')}
-                                        </p>
-                                        <p className="text-gray-500 dark:text-gray-300">
-                                            {findValue(artwork, 'Rok')}
-                                        </p>
-                                    </>
-                                )}
+                                })}
                         </div>
                     </div>
                 </div>
