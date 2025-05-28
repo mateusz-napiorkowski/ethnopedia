@@ -12,8 +12,10 @@ import DOMPurify from "dompurify"
 import Dropdown from "../Dropdown"
 
 interface SearchComponentProps {
-    collectionId: string
+    collectionIds: string | string[];
+    mode: "local" | "global";
 }
+
 
 interface Rule {
     field: string
@@ -21,7 +23,7 @@ interface Rule {
     id: string
 }
 
-const AdvancedSearch: React.FC<SearchComponentProps> = ({ collectionId }) => {
+const AdvancedSearch: React.FC<SearchComponentProps> = ({ collectionIds, mode }) => {
     const navigate = useNavigate()
     const location = useLocation()
     const [rules, setRules] = useState<Rule[]>([])
@@ -39,17 +41,47 @@ const AdvancedSearch: React.FC<SearchComponentProps> = ({ collectionId }) => {
         }
     }, [location])
 
-    const { data: categoriesData } = useQuery({
-        queryKey: ["allCategories"],
-        queryFn: () => getAllCategories([collectionId as string]),
-        enabled: !!collectionId,
-    })
+    const { data: categoriesData, isLoading } = useQuery({
+        queryKey: ["allCategories", mode, collectionIds],
+        queryFn: () =>
+            Array.isArray(collectionIds)
+                ? getAllCategories(collectionIds)
+                : getAllCategories([collectionIds]),
+        enabled: !!collectionIds,
+    });
+
+    useEffect(() => {
+        console.log("AdvancedSearch collectionIds:", collectionIds);
+    }, [collectionIds]);
+
+    const options: { label: string; value: string }[] = React.useMemo(() => {
+        if (!categoriesData?.categories) return [];
+
+        const allCategories = categoriesData.categories;
+
+        // Jeśli global – usuwamy duplikaty
+        const uniqueCategories = mode === "global"
+            ? Array.from(new Set(allCategories))
+            : allCategories;
+
+        return uniqueCategories.map((cat: string) => ({
+            value: cat,
+            label: cat,
+        }));
+    }, [categoriesData, mode]);
+
+
 
     const formik = useFormik({
         initialValues: {},
         onSubmit: () => {
-            const queryString = rules.map(rule => `${rule.field}=${rule.value}`).join("&")
-            navigate(`/collections/${collectionId}/artworks?${queryString}`, { state: { rules } })
+            const queryString = rules.map(rule => `${rule.field}=${rule.value}`).join("&");
+
+            if (mode === "global") {
+                navigate(`/global-search?${queryString}`, { state: { rules } });
+            } else {
+                navigate(`/collections/${collectionIds}/artworks?${queryString}`, { state: { rules } });
+            }
         },
     })
 
@@ -128,10 +160,7 @@ const AdvancedSearch: React.FC<SearchComponentProps> = ({ collectionId }) => {
             <form onSubmit={formik.handleSubmit} className="flex flex-col gap-4">
                 <div className="flex items-center gap-2 flex-wrap">
                     <Dropdown
-                        options={categoriesData.categories.map((category: string) => ({
-                            label: category,
-                            value: category,
-                        }))}
+                        options={options}
                         value={currentRuleCategory}
                         onChange={handleCurrentRuleCategoryChange}
                         placeholder="Wybierz kategorię"

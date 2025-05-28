@@ -4,40 +4,43 @@ import { ReactComponent as SearchLoopIcon } from "../../assets/icons/searchLoop.
 import { useNavigate } from "react-router-dom"
 import DOMPurify from 'dompurify'
 
-
-interface SearchComponentProps {
-    collectionId: string;
+interface QuickSearchProps {
+    collectionIds: string | string[];
+    mode: 'global' | 'local';
 }
 
-const QuickSearch: React.FC<SearchComponentProps> = ({ collectionId }) => {
+const QuickSearch: React.FC<QuickSearchProps> = ({ collectionIds, mode }) => {
     const navigate = useNavigate()
     const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
     const handleSearch = (searchText: string) => {
         const query = searchText ? `?searchText=${encodeURIComponent(searchText)}` : "";
-        navigate(query);
-    }
+
+        if (mode === "global") {
+            navigate(`/global-search${query}`);
+        } else {
+            navigate(`/collections/${collectionIds}/artworks${query}`);
+        }
+    };
 
     const formik = useFormik({
         initialValues: {
-            collectionId: collectionId,
             searchText: "",
         },
         onSubmit: (values, { resetForm }) => {
             const trimmedText = values.searchText.trim();
             const sanitizedText = DOMPurify.sanitize(trimmedText);
 
-            // Walidacja: sprawdzenie, czy tekst zawiera niedozwolone znaki
             if (sanitizedText !== trimmedText) {
                 setErrorMessage("Wartość zawiera niedozwolone znaki, np. <, >, lub inne specjalne znaki.");
                 return;
             }
 
-            setErrorMessage(null); // Resetowanie błędu, jeśli wszystko jest poprawne
+            setErrorMessage(null);
             handleSearch(sanitizedText);
             resetForm();
         },
-    })
+    });
 
     return (
         <>

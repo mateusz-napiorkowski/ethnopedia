@@ -85,7 +85,7 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
                     onClick={() => navigate(-1)}
                     className="text-sm text-blue-600 hover:underline rounded"
                 >
-                    ← Powrót do kolekcji
+                    ← Powrót do listy
                 </button>
                 <button
                     disabled={!jwtToken}

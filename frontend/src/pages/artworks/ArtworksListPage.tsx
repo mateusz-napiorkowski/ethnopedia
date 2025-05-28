@@ -241,7 +241,7 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
 
                         </div>
                     </div>
-                    {collectionId && <SearchComponent collectionId={collectionId} />}
+                    {collectionId && <SearchComponent collectionIds={collectionId} mode="local" />}
                     <div className="flex w-full md:w-auto">
                         <div className="flex flex-1 space-x-2">
                             <button
