@@ -8,6 +8,7 @@ module.exports = {
   setupFilesAfterEnv: [
     "@testing-library/jest-dom"
   ],
+  setupFiles: ["dotenv/config"],
   roots: ["./src"],
   moduleNameMapper: {
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
