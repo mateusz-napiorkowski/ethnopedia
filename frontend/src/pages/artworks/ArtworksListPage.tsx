@@ -17,7 +17,7 @@ import Navigation from "../../components/Navigation";
 import Pagination from "../../components/Pagination";
 import { useUser } from "../../providers/UserProvider";
 import { getAllCategories } from "../../api/categories";
-import DisplayCategoriesSelect from "../../components/DisplayCategoriesSelect";
+import MultiselectDropdown from "../../components/MultiselectDropdown";
 import { ReactComponent as EditIcon } from "../../assets/icons/edit.svg"
 import ArtworksList from '../../components/artwork/ArtworksList';
 
@@ -322,13 +322,24 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                     {showExportOptions && <ExportOptions onClose={() => setShowExportOptions(false)} selectedArtworks={selectedArtworks} initialFilename={`${collectionData?.name}.xlsx`} />}
                     <div className="flex w-full md:w-auto pt-4 flex-row items-center text-sm">
                         <p className="pr-2">Wyświetlane kategorie:</p>
-                        <DisplayCategoriesSelect
-                            selectedDisplayCategories={selectedDisplayCategories}
-                            setSelectedDisplayCategories={setSelectedDisplayCategories}
-                            categoryOptions={categoryOptions} // wcześniej zdefiniowana tablica opcji
-                            customOptions={customOptions}     // wcześniej zdefiniowana tablica z opcjami specjalnymi i zwykłymi
-                            formatOptionLabel={formatOptionLabel} // funkcja wyróżniająca opcje specjalne
+                        <MultiselectDropdown
+                            selectedValues={selectedDisplayCategories}
+                            setSelectedValues={setSelectedDisplayCategories}
+                            options={categoryOptions}
+                            specialOptions={[
+                                { value: "select_all", label: "Zaznacz wszystko" },
+                                { value: "deselect_all", label: "Odznacz wszystko" }
+                            ]}
+                            formatOptionLabel={(option, context) =>
+                                context.context === "menu" ? (
+                                    <span className="text-gray-500 font-semibold">{option.label}</span>
+                                ) : (
+                                    option.label
+                                )
+                            }
+                            placeholder="Wybierz kategorię"
                         />
+
                         <p className="pl-2 pr-2">Sortuj według:</p>
                         {categoryOptions && (
                             <SortOptions
