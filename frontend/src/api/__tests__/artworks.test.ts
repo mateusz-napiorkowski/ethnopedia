@@ -13,7 +13,7 @@ describe("artworks tests", () => {
     });
 
     describe("getArtwork tests", () => {
-        it("should call axios.get with correct url and return correct artwork data if API call succeeds", async () => {
+        it("should call axios.get with correct parameters and return correct artwork data if API call succeeds", async () => {
             mockAxios.get.mockResolvedValueOnce({ data: getArtworkMockReturnValue });
 
             const result = await getArtwork(artworkId);

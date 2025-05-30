@@ -83,3 +83,78 @@ export const deleteArtworksReturnValue = {
     "acknowledged": true,
     "deletedCount": 1
 }
+
+export const registerUserFormData = {
+    "username": "nowy",
+    "firstName": "nowy",
+    "password": "nowy"
+}
+
+export const registerUserReturnData = {
+    "data": {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImIiLCJmaXJzdE5hbWUiOiJiIiwidXNlcklkIjoiNjgzOThiYTE3MzdhZGU5ODEyZDEwYTc1IiwiaWF0IjoxNzQ4NjAxNzYxLCJleHAiOjE3NDk2MDE3NjF9.K8u4_WfhyqA13TjzKhQvjECl98zx94lZolhKPFjRxnY"
+    },
+    "status": 201,
+    "statusText": "Created",
+    "headers": {
+        "content-length": "229",
+        "content-type": "application/json; charset=utf-8"
+    },
+    "config": {
+        "transitional": {
+            "silentJSONParsing": true,
+            "forcedJSONParsing": true,
+            "clarifyTimeoutError": false
+        },
+        "adapter": [
+            "xhr",
+            "http"
+        ],
+        "transformRequest": [
+            null
+        ],
+        "transformResponse": [
+            null
+        ],
+        "timeout": 0,
+        "xsrfCookieName": "XSRF-TOKEN",
+        "xsrfHeaderName": "X-XSRF-TOKEN",
+        "maxContentLength": -1,
+        "maxBodyLength": -1,
+        "env": {},
+        "headers": {
+            "Accept": "application/json, text/plain, */*",
+            "Content-Type": "application/json"
+        },
+        "method": "post",
+        "url": "http://localhost:8080/api/v1/auth/register",
+        "data": "{\"username\":\"nowy\",\"firstName\":\"nowy\",\"password\":\"nowy\"}"
+    },
+    "request": {}
+}
+
+export const useLoginMutationReturnValue = {
+    "error": null,
+    "failureCount": 0,
+    "isPaused": false,
+    "status": "loading",
+    "variables": {
+        "username": "a",
+        "password": "a"
+    },
+    "isLoading": true,
+    "isSuccess": false,
+    "isError": false,
+    "isIdle": false
+}
+
+export const userId = '66d71fd54c148fb8f827c2c3'
+
+export const deleteAccountReturnValue = {
+    "_id": userId,
+    "username": "nowy",
+    "password": "$2b$10$bqra7NvKvlAQ45R2rnIC0uFXrqgJCfmUhQ88p0UOK.FTVCshqUkXi",
+    "firstName": "nowy",
+    "accountCreationDate": "2025-05-30T10:42:41.903Z",
+    "__v": 0
+}

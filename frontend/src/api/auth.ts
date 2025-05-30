@@ -1,17 +1,7 @@
 import axios from "axios"
 import { useMutation } from "react-query"
 import { API_URL } from "../config"
-
-type FormValues = {
-    username: string
-    firstName: string,
-    password: string
-}
-
-type LoginValues = {
-    username: string
-    password: string
-}
+import { FormValues, LoginValues } from "../@types/Auth"
 
 export const registerUser = async (userData: FormValues) => {
     return await axios.post(`${API_URL}v1/auth/register`, userData)
@@ -22,6 +12,5 @@ export const useLoginMutation = () => {
 }
 
 export const deleteAccount = async (id: string, jwtToken: string) => {
-    const response = await axios.delete(`${API_URL}v1/auth/${id}`, { headers: { "Authorization": `Bearer ${jwtToken}` } })
-    return response.data
+    return await axios.delete(`${API_URL}v1/auth/${id}`, { headers: { "Authorization": `Bearer ${jwtToken}` } }).then((res) => res.data)
 }
