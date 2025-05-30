@@ -6,16 +6,16 @@ export const getArtwork = async (id: string) => {
         .then(res => res.data)
 }
 
-export const getArtworksForPage = async (collectionIds: Array<string>, page: number, pageSize: number, sortOrder: string, searchText: string | null, queryParams: any) => {
+export const getArtworksForPage = async (collectionIds: Array<string>, page: number, pageSize: number, sortOrder: string, searchText: string | null, searchRules: any) => {
     return await axios.get(`${API_URL}v1/artworks/`, {
         params: {
             page: page,
             pageSize: pageSize,
             searchText: searchText,
             sortOrder: sortOrder,
-            search: Object.entries(queryParams).length !== 0 ? true : false,
+            search: Object.entries(searchRules).length !== 0 || searchText ? true : false,
             collectionIds: collectionIds,
-            ...queryParams
+            ...searchRules
         }
     })
     .then(res => res.data)
