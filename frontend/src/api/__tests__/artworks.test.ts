@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom';
-import { getArtwork, getArtworksForPage } from '../artworks';
+import { createArtwork, editArtwork, getArtwork, getArtworksForPage, deleteArtworks } from '../artworks';
 import axios from "axios"
 import 'dotenv/config'
-import { artworkId, collectionId, axiosError, getArtworkMockReturnValue, getArtworkForPageMockReturnValue } from './utils/consts';
+import { artworkId, collectionId, axiosError, getArtworkMockReturnValue, getArtworkForPageMockReturnValue, jwtToken, artworkPayload, createArtworkMockReturnValue, editArtworkReturnValue, deleteArtworksReturnValue } from './utils/consts';
 
 jest.mock("axios");
 const mockAxios = axios as jest.Mocked<typeof axios>;
@@ -66,6 +66,71 @@ describe("artworks tests", () => {
             mockAxios.get.mockRejectedValueOnce(new Error("Network Error"));
 
             await expect(getArtworksForPage([collectionId], 1, 10, "Tytuł-asc", null, {Tytuł: 'testowy'})).rejects.toThrow(axiosError);
+        });
+    })
+
+    describe("createArtwork tests", () => {
+        it("should call axios.post with correct parameters and return correct data if API call succeeds", async () => {
+            mockAxios.post.mockResolvedValueOnce({ data: createArtworkMockReturnValue });
+
+            const result = await createArtwork(artworkPayload, jwtToken);
+
+            expect(mockAxios.post).toHaveBeenCalledWith(
+                `${process.env.REACT_APP_API_URL}v1/artworks/create`,
+                artworkPayload,
+                {headers: {Authorization: `Bearer ${jwtToken}`}}
+            )
+            expect(result).toEqual(createArtworkMockReturnValue);
+        });
+
+        it("should throw error if API call fails", async () => {
+            mockAxios.post.mockRejectedValueOnce(new Error("Network Error"));
+
+            await expect(createArtwork(artworkPayload, jwtToken)).rejects.toThrow(axiosError);
+        });
+    })
+
+    describe("editArtwork tests", () => {
+        it("should call axios.put with correct parameters and return correct data if API call succeeds", async () => {
+            mockAxios.put.mockResolvedValueOnce({ data: editArtworkReturnValue });
+
+            const result = await editArtwork(artworkPayload, artworkId, jwtToken)
+
+            expect(mockAxios.put).toHaveBeenCalledWith(
+                `${process.env.REACT_APP_API_URL}v1/artworks/edit/${artworkId}`,
+                artworkPayload,
+                {headers: {Authorization: `Bearer ${jwtToken}`}}
+            )
+            expect(result).toEqual(editArtworkReturnValue);
+        });
+
+        it("should throw error if API call fails", async () => {
+            mockAxios.put.mockRejectedValueOnce(new Error("Network Error"));
+
+            await expect(editArtwork(artworkPayload, artworkId, jwtToken)).rejects.toThrow(axiosError);
+        });
+    })
+
+    describe("deleteArtworks tests", () => {
+        it("should call axios.delete with correct parameters and return correct data if API call succeeds", async () => {
+            mockAxios.delete.mockResolvedValueOnce({ data: deleteArtworksReturnValue });
+
+            const result = await deleteArtworks([artworkId], jwtToken)
+
+            expect(mockAxios.delete).toHaveBeenCalledWith(
+                `${process.env.REACT_APP_API_URL}v1/artworks/delete`,
+                {
+                    headers: {Authorization: `Bearer ${jwtToken}`},
+                    data: {ids: [artworkId]}
+                }
+            )
+            expect(result).toEqual(deleteArtworksReturnValue);
+        });
+
+        it("should throw error if API call fails", async () => {
+            mockAxios.delete.mockRejectedValueOnce(new Error("Network Error"));
+
+            await expect(deleteArtworks([artworkId], jwtToken)).rejects.toThrow(axiosError);
         });
     })
 });

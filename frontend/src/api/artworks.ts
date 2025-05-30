@@ -22,7 +22,6 @@ export const getArtworksForPage = async (collectionIds: Array<string>, page: num
 }
 
 export const createArtwork = async (artworkData: any, jwtToken: any) => {
-    console.log("front api", artworkData);
     const config = {
         headers: { Authorization: `Bearer ${jwtToken}` }
     };

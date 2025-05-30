@@ -137,11 +137,11 @@ export const editArtwork = authAsyncWrapper((async (req: Request, res: Response)
         const artworkId = req.params.artworkId
         if(!req.body.categories || !req.body.collectionName)
             throw new Error('Incorrect request body provided')
-        const editedArtwork = await Artwork.replaceOne({_id: artworkId, collectionName: req.body.collectionName}, req.body).exec()
-        if(editedArtwork.modifiedCount === 0) {
+        const resultInfo = await Artwork.replaceOne({_id: artworkId, collectionName: req.body.collectionName}, req.body).exec()
+        if(resultInfo.modifiedCount === 0) {
             throw new Error('Artwork not found')
         }
-        return res.status(201).json(editedArtwork)
+        return res.status(201).json(resultInfo)
     } catch (error) {
         const err = error as Error
         console.error(error)
