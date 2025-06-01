@@ -3,6 +3,8 @@ const collectionName = "collection"
 export const artworkId = "66ce0bf156199c1b8df5db7d"
 
 export const collectionId = "66f2194a6123d7f50558cd8f"
+export const collectionId2 = "66f2194a6123d7f50558cd7e"
+
 
 export const axiosError = {
     "message": "Network Error",
@@ -158,3 +160,9 @@ export const deleteAccountReturnValue = {
     "accountCreationDate": "2025-05-30T10:42:41.903Z",
     "__v": 0
 }
+
+export const getAllCategoriesMockReturnValue = [
+    "Tytuł",
+    "Artyści",
+    "Rok"
+]
