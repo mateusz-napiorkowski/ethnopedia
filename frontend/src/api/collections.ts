@@ -12,21 +12,19 @@ interface CollectionsResponse {
 }
 
 export const getAllCollections = async (page: number = 1, pageSize: number = 10): Promise<CollectionsResponse> => {
-    const response = await axios.get(`${API_URL}v1/collection`, {
+    return axios.get(`${API_URL}v1/collection`, {
         params: {
             page: page,
             pageSize: pageSize,
             sortOrder: 'asc'
         },
-    })
-    return response.data as CollectionsResponse
+    }).then(res => res.data)
 }
 
 export const getCollection = async (id: string) => {
-    const response = await axios.get(`${API_URL}v1/collection/${id}`, {headers: {
+    return await axios.get(`${API_URL}v1/collection/${id}`, {headers: {
         'Content-Type': 'application/json; charset=UTF-8'
-    }})
-    return response.data
+    }}).then(res => res.data)
 }
 
 
@@ -46,17 +44,11 @@ export const updateCollection = async (
     categories: Category[],
     jwtToken: string
 ) => {
-    console.log("Frontend API: id:", id, "name:", name, description, categories);
-    console.log("Type of collectionId:", typeof id);
-    const config = {
-        headers: { Authorization: `Bearer ${jwtToken}` },
-    };
-    const res = await axios.put(
+    return await axios.put(
         `${API_URL}v1/collection/edit/${id}`,
         { name, description, categories },
-        config
-    );
-    return res.data;
+        { headers: { Authorization: `Bearer ${jwtToken}` } }
+    ).then(res => res.data)
 };
 
 export const useBatchDeleteCollectionMutation = () => {

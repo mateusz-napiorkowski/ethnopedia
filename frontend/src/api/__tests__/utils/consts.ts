@@ -1,10 +1,12 @@
-const collectionName = "collection"
+export const collectionName = "collection"
+export const collectionDescription = "collection description"
+export const collectionName2 = "collection 2"
+export const collectionDescription2 = "collection description 2"
 
 export const artworkId = "66ce0bf156199c1b8df5db7d"
 
 export const collectionId = "66f2194a6123d7f50558cd8f"
 export const collectionId2 = "66f2194a6123d7f50558cd7e"
-
 
 export const axiosError = {
     "message": "Network Error",
@@ -166,3 +168,66 @@ export const getAllCategoriesMockReturnValue = [
     "Artyści",
     "Rok"
 ]
+
+export const getAllCollectionsMockReturnValue = {
+    "collections": [
+        {
+            "id": collectionId,
+            "name": collectionName,
+            "description": collectionDescription,
+            "artworksCount": 3
+        },
+        {
+            "id": collectionId2,
+            "name": collectionName2,
+            "description": collectionDescription2,
+            "artworksCount": 0
+        },
+    ],
+    "total": 2,
+    "currentPage": 1,
+    "pageSize": 10
+}
+
+export const getCollectionMockReturnValue = {
+    "_id": collectionId,
+    "name": collectionName,
+    "description": collectionDescription,
+    "categories": [
+        {
+            "name": "Tytuł",
+            "subcategories": []
+        },
+    ],
+    "__v": 0
+}
+
+export const collectionCategories = [
+    {
+        "name": "Tytuł",
+        "subcategories": []
+    }
+]
+
+export const createCollectionMockReturnValue = [
+    {
+        "name": collectionName,
+        "description": collectionDescription,
+        "categories": collectionCategories,
+        "_id": collectionId,
+        "__v": 0
+    }
+]
+
+export const updateCollectionMockReturnValue = {
+    "_id": collectionId,
+    "name": collectionName,
+    "description": collectionDescription,
+    "categories": collectionCategories,
+    "__v": 1
+}
+
+export const useBatchDeleteCollectionMutationMockReturnValue = {
+    "deletedCount": 1,
+    "deletedArtworksCount": 3
+}
