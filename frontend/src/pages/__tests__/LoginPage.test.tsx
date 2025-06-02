@@ -1,88 +1,126 @@
-import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { BrowserRouter } from "react-router-dom";
+import { render, waitForElementToBeRemoved } from "@testing-library/react";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { useLoginMutation } from "../../api/auth";
 import LoginPage from "../../pages/LoginPage";
+import userEvent from "@testing-library/user-event";
+import { LoginValues } from "src/@types/Auth";
 
-// Mockowanie useLoginMutation
-jest.mock("../../api/auth", () => ({
-    useLoginMutation: jest.fn(),
+const mockUseNavigate = jest.fn();
+jest.mock('react-router-dom', () => ({
+    ...jest.requireActual('react-router-dom') as any,
+    useNavigate: () => mockUseNavigate,
 }));
 
-const mockLoginMutation = jest.fn();
+const mockLoginUser = jest.fn()
+jest.mock("../../api/auth", () => ({
+    loginUser: ({username, password}: LoginValues) => mockLoginUser({username, password}),
+}));
 
-beforeEach(() => {
-    (useLoginMutation as jest.Mock).mockReturnValue({
-        mutate: mockLoginMutation,
-    });
-});
+const queryClient = new QueryClient();
+const user = userEvent.setup()
 
-const renderWithProviders = (component: React.ReactNode) => {
-    const queryClient = new QueryClient();
+const jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXN"
+    + "lcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaecc"
+    + "N-rDSjRS3kApqlA"
+
+const renderPage = () => {    
     return render(
         <QueryClientProvider client={queryClient}>
-            <BrowserRouter>{component}</BrowserRouter>
-        </QueryClientProvider>
+            <MemoryRouter initialEntries={[`/login`]}>
+                <Routes>
+                    <Route path="/login" element={<LoginPage/>}/>
+                </Routes>  
+            </MemoryRouter>
+        </QueryClientProvider>       
     );
 };
 
-describe("LoginPage", () => {
-    test("renders the login form correctly", () => {
-        renderWithProviders(<LoginPage />);
-        expect(screen.getByLabelText(/Nazwa użytkownika/i)).toBeInTheDocument();
-        expect(screen.getByLabelText(/Hasło/i)).toBeInTheDocument();
-        expect(screen.getByTestId("login-button")).toBeInTheDocument();
-        expect(screen.getByText(/Zaloguj się/i, { selector: "h1" })).toBeInTheDocument();
+describe("LoginPage tests", () => {
+    beforeEach(() => {
+        queryClient.clear();
+        jest.clearAllMocks()
     });
 
-
-    test("shows validation errors when inputs are empty", async () => {
-        renderWithProviders(<LoginPage />);
-        const loginButton = screen.getByTestId("login-button");
-        fireEvent.click(loginButton);
-
-        expect(await screen.findByText(/Nazwa użytkownika jest wymagana/i)).toBeInTheDocument();
-        expect(await screen.findByText(/Hasło jest wymagane/i)).toBeInTheDocument();
+    it("should render initial state", () => {
+        const {container} = renderPage();
+        expect(container).toMatchSnapshot()
     });
 
-    test("calls login mutation on valid form submission", async () => {
-        renderWithProviders(<LoginPage />);
-        const usernameInput = screen.getByLabelText(/Nazwa użytkownika/i);
-        const passwordInput = screen.getByLabelText(/Hasło/i);
-        const loginButton = screen.getByTestId("login-button");
+    it("should show appropriate error when username input field is empty after login button is clicked", async () => {
+        const {getByPlaceholderText, getByRole, getByText, queryByText} = renderPage();
+        const passwordInputField = getByPlaceholderText(/••••••••/i)
+        const loginButton = getByRole("button", {name: /zaloguj się/i})
 
-        fireEvent.change(usernameInput, { target: { value: "testuser" } });
-        fireEvent.change(passwordInput, { target: { value: "password123" } });
-        fireEvent.click(loginButton);
+        await user.type(passwordInputField, "password")
+        await user.click(loginButton)
 
-        await waitFor(() =>
-            expect(mockLoginMutation).toHaveBeenCalledWith(
-                { username: "testuser", password: "password123" },
-                expect.any(Object)
-            )
-        );
+        expect(getByText(/nazwa użytkownika jest wymagana/i)).toBeInTheDocument()
+        expect(queryByText(/hasło jest wymagane/i)).not.toBeInTheDocument()
     });
 
-    test("shows error toast on login failure", async () => {
-        const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {}); // Wyciszenie console.error
+    it("should show appropriate error when password input field is empty after login button is clicked", async () => {
+        const {getByPlaceholderText, getByRole, getByText, queryByText} = renderPage();
+        const usernameInputField = getByPlaceholderText(/nazwa użytkownika/i)
+        const loginButton = getByRole("button", {name: /zaloguj się/i})
 
-        mockLoginMutation.mockImplementation((_, { onError }) => {
-            onError(new Error("Invalid username or password"));
-        });
+        await user.type(usernameInputField, "username")
+        await user.click(loginButton)
 
-        renderWithProviders(<LoginPage />);
-        const usernameInput = screen.getByLabelText(/Nazwa użytkownika/i);
-        const passwordInput = screen.getByLabelText(/Hasło/i);
-        const loginButton = screen.getByTestId("login-button");
-
-        fireEvent.change(usernameInput, { target: { value: "testuser" } });
-        fireEvent.change(passwordInput, { target: { value: "wrongpassword" } });
-        fireEvent.click(loginButton);
-
-        expect(await screen.findByText(/Nieprawidłowa nazwa użytkownika lub hasło./i)).toBeInTheDocument();
-
-        consoleErrorSpy.mockRestore(); // Przywrócenie oryginalnego console.error
+        expect(getByText(/hasło jest wymagane/i)).toBeInTheDocument()
+        expect(queryByText(/nazwa użytkownika jest wymagana/i)).not.toBeInTheDocument()
     });
 
+    it("should call loginUser with correct parameters when both input fields are filled in and login button is clicked", async () => {
+        mockLoginUser.mockReturnValue({token: jwtToken})
+        const {getByPlaceholderText, getByRole} = renderPage();
+        const usernameInputField = getByPlaceholderText(/nazwa użytkownika/i)
+        const passwordInputField = getByPlaceholderText(/••••••••/i)
+        const loginButton = getByRole("button", {name: /zaloguj się/i})
+
+        await user.type(usernameInputField, "username")
+        await user.type(passwordInputField, "password")
+        await user.click(loginButton)
+
+        expect(mockLoginUser).toHaveBeenCalledWith({username: "username", password: "password"})
+    });
+
+    it("should call useNavigate('/register') after register button is clicked", async () => {
+        const { getByText } = renderPage();
+        const registerButton = getByText(/zarejestruj się/i)
+        
+        await user.click(registerButton)
+
+        expect(mockUseNavigate).toHaveBeenCalledWith("/register")
+    });
+
+    it("should show error toast when user with provided username and password doesn't exist, toast should disappear after a few seconds", async () => {
+        mockLoginUser.mockImplementation(() => {throw Error("Mocked loginUser error")})          
+        const { getByPlaceholderText, getByRole, getByText, queryByText } = renderPage()
+        const usernameInputField = getByPlaceholderText(/nazwa użytkownika/i)
+        const passwordInputField = getByPlaceholderText(/••••••••/i)
+        const loginButton = getByRole("button", {name: /zaloguj się/i})
+
+        await user.type(usernameInputField, "username")
+        await user.type(passwordInputField, "password")
+        await user.click(loginButton)
+
+        expect(getByText(/nieprawidłowa nazwa użytkownika lub hasło./i)).toBeInTheDocument()
+        await waitForElementToBeRemoved(() => queryByText(/nieprawidłowa nazwa użytkownika lub hasło./i), {timeout: 5000})
+        expect(queryByText(/nieprawidłowa nazwa użytkownika lub hasło./i)).not.toBeInTheDocument()
+    })
+
+    it("should hide error toast when user clicks the 'X' button on it", async () => {
+        mockLoginUser.mockImplementation(() => {throw Error("Mocked loginUser error")})          
+        const { getByPlaceholderText, getByRole, getByLabelText, queryByText } = renderPage()
+        const usernameInputField = getByPlaceholderText(/nazwa użytkownika/i)
+        const passwordInputField = getByPlaceholderText(/••••••••/i)
+        const loginButton = getByRole("button", {name: /zaloguj się/i})
+
+        await user.type(usernameInputField, "username")
+        await user.type(passwordInputField, "password")
+        await user.click(loginButton)
+        await user.click(getByLabelText("Close"))
+
+        expect(queryByText(/nieprawidłowa nazwa użytkownika lub hasło./i)).not.toBeInTheDocument()
+    })
 });

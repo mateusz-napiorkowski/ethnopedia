@@ -94,6 +94,11 @@ export const registerUserFormData = {
     "password": "nowy"
 }
 
+export const loginUserFormData = {
+    "username": "nowy",
+    "password": "nowy"
+}
+
 export const registerUserReturnData = {
     "data": {
         "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImIiLCJmaXJzdE5hbWUiOiJiIiwidXNlcklkIjoiNjgzOThiYTE3MzdhZGU5ODEyZDEwYTc1IiwiaWF0IjoxNzQ4NjAxNzYxLCJleHAiOjE3NDk2MDE3NjF9.K8u4_WfhyqA13TjzKhQvjECl98zx94lZolhKPFjRxnY"
@@ -135,6 +140,10 @@ export const registerUserReturnData = {
         "data": "{\"username\":\"nowy\",\"firstName\":\"nowy\",\"password\":\"nowy\"}"
     },
     "request": {}
+}
+
+export const loginUserReturnData = {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzQ4ODcxMDY4LCJleHAiOjE3NDk4NzEwNjh9.FJnjP7XQ8hpPgyXcQejbjiwXe8pX7mzVuS1diFwXw_w"
 }
 
 export const useLoginMutationReturnValue = {
