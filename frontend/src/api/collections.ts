@@ -51,14 +51,12 @@ export const updateCollection = async (
     ).then(res => res.data)
 };
 
-export const useBatchDeleteCollectionMutation = () => {
-    return useMutation(async (data: Array<any>) => {
-        const url = `${API_URL}v1/collection/delete`
-        const config = {
-            headers: { Authorization: `Bearer ${data[1]}` },
-            data: { ids: data[0]}
-        };
-        const res = await axios.delete(url, config)
-        return res.data
-    })
+export const deleteCollections = async (collectionIds: Array<string>, jwtToken: string) => {
+    return await axios.delete(
+        `${API_URL}v1/collection/delete`,
+        {
+            headers: { Authorization: `Bearer ${jwtToken}` },
+            data: { ids: collectionIds}
+        }
+    ).then(res => res.data)
 }

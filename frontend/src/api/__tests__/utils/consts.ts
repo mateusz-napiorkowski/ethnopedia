@@ -236,9 +236,9 @@ export const updateCollectionMockReturnValue = {
     "__v": 1
 }
 
-export const useBatchDeleteCollectionMutationMockReturnValue = {
-    "deletedCount": 1,
-    "deletedArtworksCount": 3
+export const deleteCollectionsMockReturnValue = {
+    "deletedCount": 2,
+    "deletedArtworksCount": 1
 }
 
 export const dataToImport = [

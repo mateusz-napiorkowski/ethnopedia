@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom';
-import {getAllCollections, getCollection, createCollection, updateCollection, useBatchDeleteCollectionMutation} from '../collections';
+import {getAllCollections, getCollection, createCollection, updateCollection, deleteCollections} from '../collections';
 import axios from "axios"
 import 'dotenv/config'
-import { collectionId, collectionId2, collectionName, axiosError, getAllCategoriesMockReturnValue, getAllCollectionsMockReturnValue, getCollectionMockReturnValue, createCollectionMockReturnValue, collectionDescription, jwtToken, collectionCategories, updateCollectionMockReturnValue, useBatchDeleteCollectionMutationMockReturnValue } from './utils/consts';
+import { collectionId, collectionId2, collectionName, axiosError, getAllCategoriesMockReturnValue, getAllCollectionsMockReturnValue, getCollectionMockReturnValue, createCollectionMockReturnValue, collectionDescription, jwtToken, collectionCategories, updateCollectionMockReturnValue, deleteCollectionsMockReturnValue } from './utils/consts';
 
 jest.mock("axios");
 const mockAxios = axios as jest.Mocked<typeof axios>;
@@ -135,21 +135,26 @@ describe("collections tests", () => {
         });
     })
 
-    // TODO write useBatchDeleteCollectionMutation tests
-    // describe("useBatchDeleteCollectionMutation tests", () => {
-    //     it("should call axios.delete with correct parameters and return correct data if API call succeeds", async () => {
-    //         mockAxios.delete.mockResolvedValueOnce({ data: useBatchDeleteCollectionMutationMockReturnValue });
+    describe("deleteCollections tests", () => {
+        it("should call axios.delete with correct parameters and return correct data if API call succeeds", async () => {
+            mockAxios.delete.mockResolvedValueOnce({ data: deleteCollectionsMockReturnValue });
 
-    //         const result = await useBatchDeleteCollectionMutation();
+            const result = await deleteCollections([collectionId, collectionId2], jwtToken);
 
-    //         expect(mockAxios.delete).toHaveBeenCalledWith(
-    //             `${process.env.REACT_APP_API_URL}v1/collection/delete`,
-    //             {
-    //                 headers: {Authorization: `Bearer ${jwtToken}`},
-    //                 data: { ids: [collectionId]}
-    //             },
-    //         )
-    //         expect(result).toEqual(useBatchDeleteCollectionMutationMockReturnValue);
-    //     });
-    // })
+            expect(mockAxios.delete).toHaveBeenCalledWith(
+                `${process.env.REACT_APP_API_URL}v1/collection/delete`,
+                {
+                    headers: { Authorization: `Bearer ${jwtToken}` },
+                    data: { ids: [collectionId, collectionId2]}
+                }
+            )
+            expect(result).toEqual(deleteCollectionsMockReturnValue);
+        });
+
+        it("should throw error if API call fails", async () => {
+            mockAxios.delete.mockRejectedValueOnce(new Error("Network Error"));
+
+            await expect(deleteCollections([collectionId, collectionId2], jwtToken)).rejects.toThrow(axiosError);
+        });
+    })
 })

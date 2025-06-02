@@ -6,9 +6,9 @@ import { Collection } from "../../@types/Collection";
 import { ReactComponent as FileExportIcon } from "../../assets/icons/fileExport.svg";
 import { ReactComponent as FileImportIcon } from "../../assets/icons/fileImport.svg";
 import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg";
-import { getAllCollections, useBatchDeleteCollectionMutation } from "../../api/collections";
+import { deleteCollections, getAllCollections } from "../../api/collections";
 import { useNavigate } from "react-router-dom";
-import { useQuery, useQueryClient } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useUser } from "../../providers/UserProvider";
 import Pagination from "../../components/Pagination";
 import { getXlsxWithCollectionData } from "../../api/dataExport";
@@ -31,7 +31,14 @@ const CollectionsPage = () => {
     const pageSize = 10;
     const navigate = useNavigate();
     const queryClient = useQueryClient();
-    const { mutate: batchDeleteMutation } = useBatchDeleteCollectionMutation();
+    const selectedIds = Object.keys(checkedCollections).filter(id => checkedCollections[id]);
+    
+    const deleteCollectionMutation = useMutation(() => deleteCollections(selectedIds, jwtToken), {
+        onSuccess: () => {
+            queryClient.invalidateQueries(["collection"]);
+            setShowWarningPopup(!showWarningPopup);
+        }
+    })
 
     // Nowe stany dla sortowania
     const [sortCategory, setSortCategory] = useState<string>("name");
@@ -71,15 +78,9 @@ const CollectionsPage = () => {
         setCheckedCollections((prev) => ({ ...prev, [id]: !prev[id] }));
     };
 
-    const deleteSelected = () => {
-        const selectedIds = Object.keys(checkedCollections).filter(id => checkedCollections[id]);
+    const deleteSelected = () => { 
         if (selectedIds.length > 0) {
-            batchDeleteMutation([selectedIds, jwtToken], {
-                onSuccess: () => {
-                    queryClient.invalidateQueries(["collection"]);
-                    setShowWarningPopup(!showWarningPopup);
-                },
-            });
+            deleteCollectionMutation.mutate()
         }
     };
 
