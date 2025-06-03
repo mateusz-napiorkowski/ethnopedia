@@ -84,7 +84,7 @@ const MultiselectDropdown: React.FC<MultiselectDropdownProps> = ({
                         readOnly
                         className="mr-2"
                     />
-                    <span>{option.label}</span>
+                    <span>{highlightMatch(option.label, searchTerm)}</span>
                 </div>
             );
         }
@@ -93,6 +93,23 @@ const MultiselectDropdown: React.FC<MultiselectDropdownProps> = ({
     const filteredOptions = options.filter((option) =>
         option.label.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    const highlightMatch = (label: string, search: string) => {
+        if (!search) return label;
+        const regex = new RegExp(`(${search})`, "i");
+        const parts = label.split(regex);
+
+        return parts.map((part, i) =>
+            regex.test(part) ? (
+                <span key={i} className="font-semibold">
+                {part}
+            </span>
+            ) : (
+                <span key={i}>{part}</span>
+            )
+        );
+    };
+
 
 
     return (
