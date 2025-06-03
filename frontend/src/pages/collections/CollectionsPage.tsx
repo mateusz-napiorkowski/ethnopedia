@@ -28,7 +28,7 @@ const CollectionsPage = () => {
     const [showWarningPopup, setShowWarningPopup] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [exportErrorMessage, setExportErrorMessage] = useState("");
-    const pageSize = 10;
+    const pageSize = 9;
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const selectedIds = Object.keys(checkedCollections).filter(id => checkedCollections[id]);
@@ -53,8 +53,8 @@ const CollectionsPage = () => {
     }, [newCollection]);
 
     const { data: fetchedData, refetch } = useQuery({
-            queryKey: ["collection", currentPage, pageSize, newCollection],
-            queryFn: () => getAllCollections(currentPage, pageSize),
+            queryKey: ["collection", currentPage, pageSize, newCollection, sortDirection],
+            queryFn: () => getAllCollections(currentPage, pageSize, sortDirection),
             keepPreviousData: true
         }
     );
@@ -95,18 +95,7 @@ const CollectionsPage = () => {
     if (fetchedData === undefined) {
         return <LoadingPage />;
     } else {
-        // Sortowanie kolekcji – sortujemy wyłącznie po nazwie, zgodnie ze stanem sortDirection
         const sortedCollections = fetchedData.collections
-            ? [...fetchedData.collections].sort((a, b) => {
-                if (sortDirection === "asc") {
-                    return a.name.localeCompare(b.name);
-                } else {
-                    return b.name.localeCompare(a.name);
-                }
-            })
-            : [];
-
-        // Opcje dla sortowania kategorii – tutaj mamy tylko jedną opcję (sortuj po nazwie)
         const categorySortOptions: Option[] = [
             { value: "name", label: "Nazwa kolekcji" }
         ];
@@ -130,7 +119,7 @@ const CollectionsPage = () => {
                         <div className="flex flex-row">
                             <div className="w-full">
                                 <h1 className="font-bold text-4xl mb-4">
-                                    Witaj{firstName ? ` ${firstName}` : ""}!
+                                    Witaj {firstName}!
                                 </h1>
                                 <h2 className="mb-2 text-lg">
                                     Twoje kolekcje:
@@ -139,14 +128,9 @@ const CollectionsPage = () => {
 
                             <div className="flex items-center justify-end w-full">
                                 <button
-                                    disabled={!jwtToken}
                                     type="button"
                                     className={`flex items-center justify-center dark:text-white text-sm px-4 py-2 mb-2
-                    text-white border-gray-800 font-semibold mr-2 ${
-                                        jwtToken
-                                            ? "bg-gray-800 hover:bg-gray-700"
-                                            : "bg-gray-600 hover:bg-gray-600"
-                                    }`}
+                    text-white border-gray-800 font-semibold mr-2 bg-gray-800 hover:bg-gray-700`}
                                     onClick={() => navigate("/create-collection")}
                                 >
                   <span className="mr-2">

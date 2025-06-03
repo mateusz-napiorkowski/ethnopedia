@@ -108,7 +108,7 @@ const SortOptions: React.FC<SortOptionsProps> = ({
                 onClick={toggleSortDirection}
                 className="p-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                 aria-label="Zmień kierunek sortowania"
-                title={sortDirection === "asc" ? "Sortuj malejąco" : "Sortuj rosnąco"}
+                title={sortDirection === "asc" ? "Sortuj rosnąco" : "Sortuj malejąco"}
             >
                 <svg
                     className={`h-5 w-5 text-gray-700 dark:text-gray-200 transition-transform duration-200 ${

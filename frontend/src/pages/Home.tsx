@@ -5,7 +5,7 @@ import LandingPage from "./LandingPage";
 
 const Home = () => {
     const { jwtToken } = useUser();
-
+    console.log(jwtToken)
     return jwtToken ? <CollectionsPage /> : <LandingPage />;
 };
 

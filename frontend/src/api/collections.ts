@@ -11,12 +11,12 @@ interface CollectionsResponse {
     pageSize: number;
 }
 
-export const getAllCollections = async (page: number = 1, pageSize: number = 10): Promise<CollectionsResponse> => {
+export const getAllCollections = async (page: number = 1, pageSize: number = 10, sortOrder: string): Promise<CollectionsResponse> => {
     return axios.get(`${API_URL}v1/collection`, {
         params: {
             page: page,
             pageSize: pageSize,
-            sortOrder: 'asc'
+            sortOrder: sortOrder
         },
     }).then(res => res.data)
 }

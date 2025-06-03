@@ -16,6 +16,7 @@ export const getAllCollections = async (req: Request, res: Response) => {
             throw new Error("Request is missing query params")
 
         const collections = await CollectionCollection.find()
+            .collation({ locale: 'en', strength: 1 })
             .sort({name: sortOrder as SortOrder})
             .skip((page - 1) * pageSize)
             .limit(pageSize)

@@ -14,6 +14,8 @@ import { HiOutlineFolderAdd } from "react-icons/hi";
 import { BsDiagram3 } from "react-icons/bs";
 import { AiOutlinePlusSquare } from "react-icons/ai";
 import { FiSearch } from "react-icons/fi";
+import { useQuery } from "react-query";
+import LoadingPage from "./LoadingPage";
 
 const LandingPage = () => {
     const navigate = useNavigate();
@@ -28,19 +30,17 @@ const LandingPage = () => {
     const [sortDirection, setSortDirection] = useState<string>("asc");
 
     useEffect(() => {
-        getAllCollections(currentPage, pageSize).then((data) => {
+        getAllCollections(currentPage, pageSize, sortDirection).then((data) => {
             setCollections(data.collections);
             setTotalCollections(data.total);
         });
+        refetch();
     }, [currentPage]);
 
-    // Sortowanie kolekcji – zmieniamy kolejność sortowania w zależności od sortDirection.
-    const sortedCollections = [...collections].sort((a, b) => {
-        if (sortDirection === "asc") {
-            return a.name.localeCompare(b.name);
-        } else {
-            return b.name.localeCompare(a.name);
-        }
+    const { data: fetchedData, refetch } = useQuery({
+        queryKey: ["collection", currentPage, pageSize, sortDirection],
+        queryFn: () => getAllCollections(currentPage, pageSize, sortDirection),
+        keepPreviousData: true
     });
 
     const scrollToCollections = () => {
@@ -49,6 +49,9 @@ const LandingPage = () => {
             element.scrollIntoView({ behavior: "smooth" });
         }
     };
+
+    if(!fetchedData?.collections)
+        return <LoadingPage></LoadingPage>
 
     return (
         <div className="flex flex-col h-full w-full">
@@ -161,7 +164,7 @@ const LandingPage = () => {
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                            {sortedCollections.map((collection) => (
+                            {fetchedData?.collections.map((collection) => (
                                 <div
                                     key={collection.id}
                                     className="relative group px-4 py-3 bg-white dark:bg-gray-800 shadow-md rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"

@@ -16,7 +16,7 @@ describe("collections tests", () => {
             it("should call axios.get with correct parameters and return correct artwork data if API call succeeds", async () => {
                 mockAxios.get.mockResolvedValueOnce({ data: getAllCollectionsMockReturnValue });
     
-                const result = await getAllCollections(1, 10);
+                const result = await getAllCollections(1, 10, "asc");
     
     
                 expect(mockAxios.get).toHaveBeenCalledWith(
@@ -35,7 +35,7 @@ describe("collections tests", () => {
             it("should throw error if API call fails", async () => {
                 mockAxios.get.mockRejectedValueOnce(new Error("Network Error"));
     
-                await expect(getAllCollections(1, 10)).rejects.toThrow(axiosError);
+                await expect(getAllCollections(1, 10, "asc")).rejects.toThrow(axiosError);
             });
     })
 

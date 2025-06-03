@@ -34,7 +34,7 @@ exports[`Sort options tests should change selected category when option from dro
     <button
       aria-label="Zmień kierunek sortowania"
       class="p-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-      title="Sortuj malejąco"
+      title="Sortuj rosnąco"
     >
       <svg
         class="h-5 w-5 text-gray-700 dark:text-gray-200 transition-transform duration-200 rotate-180"
@@ -111,7 +111,7 @@ exports[`Sort options tests should open dropdown menu when it is clicked 1`] = `
     <button
       aria-label="Zmień kierunek sortowania"
       class="p-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-      title="Sortuj malejąco"
+      title="Sortuj rosnąco"
     >
       <svg
         class="h-5 w-5 text-gray-700 dark:text-gray-200 transition-transform duration-200 rotate-180"
@@ -165,7 +165,7 @@ exports[`Sort options tests should render initial state 1`] = `
     <button
       aria-label="Zmień kierunek sortowania"
       class="p-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-      title="Sortuj malejąco"
+      title="Sortuj rosnąco"
     >
       <svg
         class="h-5 w-5 text-gray-700 dark:text-gray-200 transition-transform duration-200 rotate-180"
@@ -219,7 +219,7 @@ exports[`Sort options tests should rotate sorting direction button after sorting
     <button
       aria-label="Zmień kierunek sortowania"
       class="p-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-      title="Sortuj malejąco"
+      title="Sortuj rosnąco"
     >
       <svg
         class="h-5 w-5 text-gray-700 dark:text-gray-200 transition-transform duration-200 rotate-180"
@@ -273,7 +273,7 @@ exports[`Sort options tests should rotate sorting direction button after sorting
     <button
       aria-label="Zmień kierunek sortowania"
       class="p-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-      title="Sortuj rosnąco"
+      title="Sortuj malejąco"
     >
       <svg
         class="h-5 w-5 text-gray-700 dark:text-gray-200 transition-transform duration-200 "
