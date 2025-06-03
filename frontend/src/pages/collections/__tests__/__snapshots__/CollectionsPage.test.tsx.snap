@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CollectionsPage tests renders loading state 1`] = `
+<div>
+  <div
+    class="flex justify-center items-center h-screen bg-gray-50 dark:bg-gray-900"
+    role="status"
+  >
+    <svg />
+  </div>
+</div>
+`;

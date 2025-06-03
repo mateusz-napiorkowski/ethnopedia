@@ -75,7 +75,15 @@ const CollectionsPage = () => {
     };
 
     const handleCheck = (id: string) => {
-        setCheckedCollections((prev) => ({ ...prev, [id]: !prev[id] }));
+        setCheckedCollections((prev) => {
+            const newSelection = { ...prev };
+            if (newSelection[id]) {
+                delete newSelection[id];
+            } else {
+                newSelection[id] = true;
+            }
+            return newSelection;
+        });
     };
 
     const deleteSelected = () => { 
@@ -150,58 +158,35 @@ const CollectionsPage = () => {
                                     className="flex items-center justify-center dark:text-white text-sm px-4 py-2 mb-2 hover:bg-gray-700 bg-gray-800 text-white border-gray-800 font-semibold mr-2"
                                     type="button"
                                     onClick={() => {
-                                        if (Object.keys(checkedCollections).length === 1) {
-                                            for (const key in fetchedData.collections) {
-                                                if (fetchedData.collections[key].id === Object.keys(checkedCollections)[0]) {
-                                                    getXlsxWithCollectionData(fetchedData.collections[key].id);
-                                                    setExportErrorMessage("");
-                                                }
-                                            }
-                                        } else {
-                                            if (Object.keys(checkedCollections).length === 0) {
-                                                setExportErrorMessage("Najpierw należy zaznaczyć kolekcję do wyeksportowania.");
-                                            } else {
-                                                const checkedCollectionsIds = Object.keys(checkedCollections)
-                                                    .filter((checkedCollection) => checkedCollections[checkedCollection])
-                                                    .map((checkedCollection) => {
-                                                        const collection = fetchedData.collections.find((col) => col.id === checkedCollection);
-                                                        return collection!.id;
-                                                    });
-                                                for (const collectionId of checkedCollectionsIds) {
-                                                    getXlsxWithCollectionData(collectionId);
-                                                }
-                                                setExportErrorMessage("");
-                                            }
+                                        if(Object.keys(checkedCollections).length === 0) {
+                                            setExportErrorMessage("Najpierw należy zaznaczyć kolekcję do wyeksportowania.");
+                                            return
                                         }
+                                        const checkedCollectionsIds = Object.keys(checkedCollections)
+                                            .filter((checkedCollection) => checkedCollections[checkedCollection])
+                                            .map((checkedCollection) => {
+                                                const collection = fetchedData.collections.find((col) => col.id === checkedCollection);
+                                                return collection!.id;
+                                            });
+                                        for (const collectionId of checkedCollectionsIds) {
+                                            getXlsxWithCollectionData(collectionId);
+                                        }
+                                        setExportErrorMessage("");
                                     }}
                                 >
                   <span className="text-white">
                     <FileExportIcon />
                   </span>
-                                    Eksportuj kolekcję
+                                    Eksportuj kolekcje
+                                </button>  
+                                <button
+                                    className="flex items-center justify-center dark:text-white text-sm px-4 py-2 mb-2 hover:bg-gray-700 bg-gray-800 text-white border-gray-800 font-semibold"
+                                    type="button"
+                                    onClick={() => setShowImportOptions((prev) => !prev)}
+                                >
+                                    <FileImportIcon />
+                                    Importuj kolekcję
                                 </button>
-                                {jwtToken && (
-                                    <button
-                                        className="flex items-center justify-center dark:text-white text-sm px-4 py-2 mb-2 hover:bg-gray-700 bg-gray-800 text-white border-gray-800 font-semibold"
-                                        type="button"
-                                        onClick={() => setShowImportOptions((prev) => !prev)}
-                                    >
-                                        <FileImportIcon />
-                                        Importuj kolekcję
-                                    </button>
-                                )}
-                                {!jwtToken && (
-                                    <button
-                                        className="flex items-center justify-center dark:text-white text-sm px-4 py-2 mb-2 hover:bg-gray-600 bg-gray-600 text-white border-gray-800 font-semibold"
-                                        type="button"
-                                        disabled={true}
-                                        title={"Aby zaimportować kolekcję musisz się zalogować."}
-                                        onClick={() => setShowImportOptions((prev) => !prev)}
-                                    >
-                                        <FileImportIcon />
-                                        Importuj kolekcję
-                                    </button>
-                                )}
                             </div>
                         </div>
                         {showImportOptions && <ImportOptions onClose={() => setShowImportOptions(false)} />}
@@ -213,32 +198,13 @@ const CollectionsPage = () => {
                                 <button type="button" className="px-4 py-2 mb-2 ml-2 bg-white" onClick={uncheckAll}>
                                     Odznacz wszystkie
                                 </button>
-                                {jwtToken && (
-                                    <button
-                                        type="button"
-                                        className="px-4 py-2 mb-2 ml-2 bg-white"
-                                        onClick={() => {
-                                            if (Object.keys(checkedCollections).length !== 0)
-                                                setShowWarningPopup((prev) => !prev);
-                                        }}
-                                    >
-                                        Usuń zaznaczone
-                                    </button>
-                                )}
-                                {!jwtToken && (
-                                    <button
-                                        type="button"
-                                        disabled={true}
-                                        title={"Aby usuwać kolekcje musisz się zalogować."}
-                                        className="px-4 py-2 mb-2 ml-2 bg-gray-100 hover:bg-gray-100"
-                                        onClick={() => {
-                                            if (Object.keys(checkedCollections).length !== 0)
-                                                setShowWarningPopup((prev) => !prev);
-                                        }}
-                                    >
-                                        Usuń zaznaczone
-                                    </button>
-                                )}
+                                <button type="button"
+                                    disabled={Object.keys(checkedCollections).length === 0}
+                                    className={`px-4 py-2 mb-2 ml-2 ${Object.keys(checkedCollections).length === 0 ? "bg-gray-100 hover:bg-gray-100" : "bg-white"}`}
+                                    onClick={() => setShowWarningPopup((prev) => !prev)}
+                                >
+                                    Usuń zaznaczone
+                                </button>
                             </div>
                             <span className="mb-2">
                 <SortOptions
@@ -258,6 +224,7 @@ const CollectionsPage = () => {
                                 return (
                                     <div
                                         key={collection.id}
+                                        aria-label={collection.id}
                                         className="relative group px-4 py-3 bg-white dark:bg-gray-800 shadow-md rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                                         onClick={() => navigate(`/collections/${collection.id}/artworks`, { state: { collectionId: collection.id } })}
                                     >

@@ -137,7 +137,15 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
     };
 
     const handleCheck = (id: string) => {
-        setSelectedArtworks((prev) => ({ ...prev, [id]: !prev[id] }));
+        setSelectedArtworks((prev) => {
+            const newSelection = { ...prev };
+            if (newSelection[id]) {
+                delete newSelection[id];
+            } else {
+                newSelection[id] = true;
+            }
+            return newSelection;
+        });
     };
 
     const deleteArtworksMutation = useMutation(
