@@ -33,6 +33,7 @@ const GlobalSearchPage = ({ pageSize = 10 }) => {
     const queryClient = useQueryClient();
     const navigate = useNavigate();
     const [allCollectionIds, setAllCollectionIds] = useState<string[]>([]);
+    const [selectedCollectionIds, setSelectedCollectionIds] = useState<string[]>([]);
 
     const hasSearchParams = new URLSearchParams(location.search).toString().length > 0;
 

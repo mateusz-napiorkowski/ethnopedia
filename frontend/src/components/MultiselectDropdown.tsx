@@ -24,6 +24,8 @@ const MultiselectDropdown: React.FC<MultiselectDropdownProps> = ({
                                                                  }) => {
     const [open, setOpen] = useState<boolean>(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const [searchTerm, setSearchTerm] = useState<string>("");
+
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -88,6 +90,11 @@ const MultiselectDropdown: React.FC<MultiselectDropdownProps> = ({
         }
     };
 
+    const filteredOptions = options.filter((option) =>
+        option.label.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+
     return (
         <div className="relative" ref={dropdownRef}>
             <div
@@ -103,17 +110,32 @@ const MultiselectDropdown: React.FC<MultiselectDropdownProps> = ({
                     stroke="currentColor"
                     viewBox="0 0 24 24"
                 >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"/>
                 </svg>
             </div>
+
             {open && (
                 <div
-                    className="absolute z-10 bg-white dark:bg-gray-800 border border-gray-300 mt-1 rounded shadow-md max-h-60 overflow-y-auto"
-                    style={{ minWidth: "100%", width: "auto" }}
+                    className="absolute z-10 bg-white dark:bg-gray-800 border border-gray-300 mt-1 rounded shadow-md max-h-60 overflow-y-auto min-w-full w-max"
                 >
-                    {[...specialOptions, ...options].map(renderOptionItem)}
+
+                    <div
+                        className="sticky top-0 bg-white dark:bg-gray-800 px-4 py-2 border-b border-gray-300 z-10"
+                    >
+                        <input
+                            type="text"
+                            placeholder="Szukaj..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full p-2 border border-gray-300 rounded text-sm"
+                        />
+                    </div>
+
+                    {specialOptions.map(renderOptionItem)}
+                    {filteredOptions.map(renderOptionItem)}
                 </div>
             )}
+
         </div>
     );
 };
