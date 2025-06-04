@@ -86,7 +86,7 @@ const Navbar = () => {
                 warningMessage={"Czy na pewno chcesz usunąć konto?"}
             />
         )}
-        <div className="max-w-screen-xl flex flex-wrap justify-between mx-auto p-2">
+        <div className="max-w-screen-xl flex flex-wrap justify-between mx-auto p-1">
             <div className="flex items-center mt-1">
                 <h1 className="logo text-gray-200 dark:text-gray-900 text-6xl ">ethnopedia</h1>
             </div>

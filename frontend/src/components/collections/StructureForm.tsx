@@ -1,8 +1,13 @@
-import React, { useState, ChangeEvent, useEffect } from 'react';
-import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg";
-import FormField from './StructureFormField';
+import React, { useEffect, useState } from 'react';
+import { DndContext, closestCenter } from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import { Category } from '../../@types/Category';
-
+import FormField from './StructureFormField';
+import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg";
 
 interface StructureFormProps {
   initialFormData: Category[];
@@ -14,21 +19,27 @@ const StructureForm: React.FC<StructureFormProps> = ({ initialFormData, setField
   const [formDataList, setFormDataList] = useState<Category[]>(initialFormData);
 
   useEffect(() => {
-    setFieldValue('categories', formDataList); // Update Formik's categories field whenever formDataList changes
+    setFieldValue('categories', formDataList);
   }, [formDataList, setFieldValue]);
 
-  const [jsonOutput] = useState<string>('');
+  const handleDragEnd = (event: any) => {
+    const { active, over } = event;
 
-  const handleInputChange = (index: string, e: ChangeEvent<HTMLInputElement>) => {
+    if (active.id !== over?.id) {
+      const oldIndex = parseInt(active.id as string);
+      const newIndex = parseInt(over.id as string);
+
+      setFormDataList((items) => arrayMove(items, oldIndex, newIndex));
+    }
+  };
+
+  const handleInputChange = (index: string, e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     const indexParts = index.split('-').map(Number);
-
     setFormDataList((prevDataList) => {
-      // Tworzymy kopię poprzedniego stanu
       const newDataList = [...prevDataList];
       let currentLevel = newDataList;
 
-      // Przechodzimy przez zagnieżdżone poziomy na podstawie indexParts
       for (let i = 0; i < indexParts.length - 1; i++) {
         const part = indexParts[i];
         currentLevel[part] = {
@@ -38,7 +49,6 @@ const StructureForm: React.FC<StructureFormProps> = ({ initialFormData, setField
         currentLevel = currentLevel[part].subcategories!;
       }
 
-      // Aktualizujemy docelowe pole
       const finalPart = indexParts[indexParts.length - 1];
       currentLevel[finalPart] = {
         ...currentLevel[finalPart],
@@ -49,7 +59,6 @@ const StructureForm: React.FC<StructureFormProps> = ({ initialFormData, setField
     });
   };
 
-
   const handleAddCategory = () => {
     setFormDataList((prevDataList) => [
       ...prevDataList,
@@ -57,14 +66,12 @@ const StructureForm: React.FC<StructureFormProps> = ({ initialFormData, setField
     ]);
   };
 
-
   const handleAddSubcategory = (index: string) => {
     const indexParts = index.split('-').map(Number);
     setFormDataList((prevDataList) =>
-        addSubcategory(prevDataList, indexParts, true) // Flaga dla nowych subkategorii
+        addSubcategory(prevDataList, indexParts, true)
     );
   };
-
 
   const addSubcategory = (dataList: Category[], indexParts: number[], isNew: boolean): Category[] => {
     if (indexParts.length === 0) {
@@ -87,7 +94,6 @@ const StructureForm: React.FC<StructureFormProps> = ({ initialFormData, setField
       }
     });
   };
-
 
   const handleRemove = (index: string) => {
     const indexParts = index.split('-').map(Number);
@@ -114,33 +120,37 @@ const StructureForm: React.FC<StructureFormProps> = ({ initialFormData, setField
   };
 
   return (
-      <div style={{ overflowY: 'auto' }}>
-        <form>
-          {formDataList.map((formData, index) => (
-              <FormField
-                  key={index.toString()}
-                  index={index.toString()}
-                  level={0}
-                  formData={formData}
-                  formDataList={formDataList}
-                  handleInputChange={handleInputChange}
-                  handleRemove={handleRemove}
-                  handleAddSubcategory={handleAddSubcategory}
-                  isEditMode={isEditMode}
-              />
-          ))}
-          <div className="actions mt-1">
-            <button
-                type="button"
-                onClick={handleAddCategory}
-                title="Dodaj kategorię"
-            >
-              <PlusIcon/>
-            </button>
-          </div>
-        </form>
-        <pre>{jsonOutput}</pre>
-      </div>
+      <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <SortableContext items={formDataList.map((_, i) => i.toString())} strategy={verticalListSortingStrategy}>
+          <form className="flex flex-col">
+            {formDataList.map((formData, index) => (
+                <FormField
+                    key={index.toString()}
+                    id={index.toString()}
+                    index={index.toString()}
+                    level={0}
+                    formData={formData}
+                    formDataList={formDataList}
+                    handleInputChange={handleInputChange}
+                    handleRemove={handleRemove}
+                    handleAddSubcategory={handleAddSubcategory}
+                    isEditMode={isEditMode}
+                />
+            ))}
+          </form>
+        </SortableContext>
+        {!isEditMode && (
+            <div className="actions mt-1">
+              <button
+                  type="button"
+                  onClick={handleAddCategory}
+                  title="Dodaj kategorię"
+              >
+                <PlusIcon/>
+              </button>
+            </div>
+        )}
+      </DndContext>
   );
 };
 

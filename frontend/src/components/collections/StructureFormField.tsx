@@ -1,121 +1,122 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Category } from '../../@types/Category';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { HiDotsVertical as DotsIcon } from "react-icons/hi";
 import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg";
 import { ReactComponent as MinusIcon } from "../../assets/icons/minus.svg";
 
 interface FormFieldProps {
-    formData: Category;
-    formDataList: Category[];
+    id: string;
     index: string;
     level: number;
+    formData: Category;
+    formDataList: Category[];
     handleInputChange: (index: string, e: React.ChangeEvent<HTMLInputElement>) => void;
     handleRemove: (index: string) => void;
     handleAddSubcategory: (index: string) => void;
     isEditMode: boolean;
 }
 
-const StructureFormField: React.FC<FormFieldProps> = ({
-                                                          formData,
-                                                          formDataList,
-                                                          index,
-                                                          level,
-                                                          handleInputChange,
-                                                          handleRemove,
-                                                          handleAddSubcategory,
-                                                          isEditMode,
-                                                      }) => {
-    const [isHovered, setIsHovered] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+const FormField: React.FC<FormFieldProps> = ({
+                                                 id,
+                                                 index,
+                                                 level,
+                                                 formData,
+                                                 handleInputChange,
+                                                 handleRemove,
+                                                 handleAddSubcategory,
+                                                 isEditMode,
+                                             }) => {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging,
+    } = useSortable({ id });
 
-    const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { value } = e.target;
-
-        // Walidacja: sprawdzenie czy nazwa zawiera kropkę
-        if (value.includes('.')) {
-            setError('Nazwa kategorii nie może zawierać kropki');
-        } else {
-            setError(null); // Jeśli nie zawiera kropki, usuwamy komunikat o błędzie
-        }
-
-        handleInputChange(index, e); // Wywołanie oryginalnej funkcji zmiany danych
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.4 : 1,
     };
 
     return (
-        <div className="relative flex flex-col mt-1">
-            <div
-                className="field-container relative flex items-center"
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-            >
-                {level > 0 && (
-                    <>
-                        <div className="tree-line vertical" />
-                        <div className="tree-line horizontal" />
-                    </>
+        <div
+            ref={setNodeRef}
+            style={{...style, marginLeft: `${level * 20}px`}}
+            className="form-field group flex flex-col"
+        >
+            <div className="flex items-center gap-2 py-1">
+                {/* Drag handle */}
+                {!isEditMode && (
+                    <div
+                        className="cursor-grab"
+                        {...attributes}
+                        {...listeners}
+                        title="Przeciągnij"
+                    >
+                        <DotsIcon className="w-4 h-4 text-gray-400 hover:text-gray-600"/>
+                    </div>
                 )}
-                <label className="flex items-center">
-                    <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleNameChange} // Zmieniamy na handleNameChange
-                        placeholder={`Podaj nazwę kategorii...`}
-                        className={`p-2 border rounded ${
-                            error ? 'border-red-500' : 'border-gray-300'
-                        }`}
-                    />
-                </label>
-                <div className="actions ml-1 space-x-1">
-                    {level < 5 && isHovered && (
+
+                {/* Pole tekstowe */}
+                <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={(e) => handleInputChange(index, e)}
+                    className="flex-grow border-b border-gray-300 focus:outline-none px-1"
+                    placeholder={level === 0 ? 'Nazwa kategorii' : 'Nazwa podkategorii'}
+                />
+
+                {/* Akcje */}
+                {!isEditMode && (
+                    <div className="flex gap-1 items-center">
                         <button
                             type="button"
                             onClick={() => handleAddSubcategory(index)}
-                            title={`Dodaj podkategorię`}
+                            title="Dodaj podkategorię"
+                            className="p-0 m-0 w-5 h-5 flex items-center justify-center bg-transparent border-none"
                         >
-                            <PlusIcon />
+                            <PlusIcon className="w-4 h-4 text-green-500 hover:text-green-700"/>
                         </button>
-                    )}
-                    {isHovered && formData.isNew && (
                         <button
                             type="button"
                             onClick={() => handleRemove(index)}
-                            title={`Usuń kategorię`}
+                            title="Usuń"
+                            className="p-0 m-0 w-5 h-5 flex items-center justify-center bg-transparent border-none"
                         >
-                            <MinusIcon />
+                            <MinusIcon className="w-4 h-4 text-red-500 hover:text-red-700"/>
                         </button>
-                    )}
-                </div>
+                    </div>
+
+                )}
             </div>
 
-            {error && (
-                <div className="text-red-500 text-sm mt-1">{error}</div>
-            )}
-
-            <div className="children-container ml-8">
-                {formData.subcategories &&
-                    formData.subcategories.map((subCategory, subIndex) => {
-                        const uniqueSubIndex = `${index}-${subIndex}`;
-                        return (
-                            <div key={uniqueSubIndex} className="relative">
-                                <div className="tree-line vertical-helper" />
-                                <StructureFormField
-                                    index={uniqueSubIndex}
-                                    level={level + 1}
-                                    formData={subCategory}
-                                    formDataList={formDataList}
-                                    handleInputChange={handleInputChange}
-                                    handleRemove={handleRemove}
-                                    handleAddSubcategory={handleAddSubcategory}
-                                    isEditMode={isEditMode}
-                                />
-                            </div>
-                        );
-                    })}
-            </div>
+            {/* Subcategories */}
+            {formData.subcategories && formData.subcategories.map((sub, subIndex) => {
+                const subIndexPath = `${index}-${subIndex}`;
+                return (
+                    <FormField
+                        key={subIndexPath}
+                        id={subIndexPath}
+                        index={subIndexPath}
+                        level={level + 1}
+                        formData={sub}
+                        formDataList={formData.subcategories ?? []}
+                        handleInputChange={handleInputChange}
+                        handleRemove={handleRemove}
+                        handleAddSubcategory={handleAddSubcategory}
+                        isEditMode={isEditMode}
+                    />
+                );
+            })}
         </div>
+
     );
 };
 
-
-
-export default React.memo(StructureFormField);
+export default FormField;
