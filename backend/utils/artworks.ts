@@ -18,12 +18,18 @@ export const updateArtworkCategories = (artworkSubcategories: Array<artworkCateg
 
 const fillSubcategoriesFilterPart: any = (searchText: string, currentDepth: number, maxDepth: number) => {
     if (maxDepth === 0) return []
+
+    const wordsToMatch = searchText
+        .split(/\s+/)
+        .filter(Boolean)
+        .map(word => new RegExp(`(^|\\s)${word}($|\\s)`, 'i'));
+
     return {
         $elemMatch: {
             $or: currentDepth === maxDepth 
-                ? [{ value: searchText }] 
+                ? [{ $and: wordsToMatch.map(regex => ({ value: regex })) } ] 
                 : [
-                    { value: searchText },
+                    { $and: wordsToMatch.map(regex => ({ value: regex })) },
                     { subcategories: fillSubcategoriesFilterPart(searchText, currentDepth + 1, maxDepth) }
                 ]
         }
@@ -54,12 +60,18 @@ const constructAdvSearchSubcategoriesFilter = (searchRules: Array<Array<string>>
 
         const newFilterPart: any = {
             $elemMatch: {
-                name: subcategoryNameSplitByDot.slice(depth - 1).join('.'),
+                name: subcategoryNameSplitByDot.slice(depth - 1).join('.')
             }
         };
 
-        if(subcategoryValue)
-            newFilterPart.$elemMatch.value = subcategoryValue
+        if(subcategoryValue) {
+            const wordsToMatch = subcategoryValue
+                .split(/\s+/)
+                .filter(Boolean)
+                .map(word => new RegExp(`(^|\\s)${word}($|\\s)`, 'i'));
+            newFilterPart.$elemMatch.$and = wordsToMatch.map(regex => ({ value: regex }))
+        }
+            
 
         if(deeperSubcategoriesSearchRules.length != 0)
             newFilterPart.$elemMatch.subcategories = constructAdvSearchSubcategoriesFilter(deeperSubcategoriesSearchRules, depth + 1)
@@ -114,12 +126,17 @@ export const constructAdvSearchFilter = (requestQuery: any, collectionNames: Arr
 
         const categoryFilter: any = { 
             $elemMatch: { 
-                name: categoryName 
+                name: categoryName
             }
         };
 
-        if(categoryValue)
-            categoryFilter.$elemMatch.value = categoryValue;
+        if(categoryValue) {
+            const wordsToMatch = categoryValue
+                .split(/\s+/)
+                .filter(Boolean)
+                .map((word: string) => new RegExp(`(^|\\s)${word}($|\\s)`, 'i'));
+            categoryFilter.$elemMatch.$and = wordsToMatch.map((regex: any) => ({ value: regex }))
+        }
         
         if(currentCategorySubcategoriesSearchRules.length > 0)
             categoryFilter.$elemMatch.subcategories = constructAdvSearchSubcategoriesFilter(currentCategorySubcategoriesSearchRules, 2);
