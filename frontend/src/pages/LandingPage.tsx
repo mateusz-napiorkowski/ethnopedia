@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "../components/navbar/Navbar";
 import { useNavigate } from "react-router-dom";
 import { ReactComponent as ArrowRight } from "../assets/icons/angleRight.svg";
@@ -6,7 +6,6 @@ import { ReactComponent as HeroGraphic } from "../assets/icons/HeroSectionIcon.s
 import { ReactComponent as HeroGraphicDark } from "../assets/icons/HeroSectionIconDark.svg";
 import SortOptions from "../components/SortOptions";
 import { getAllCollections } from "../api/collections";
-import { Collection } from "../@types/Collection";
 import Pagination from "../components/Pagination";
 import Footer from "../components/Footer";
 
@@ -19,29 +18,27 @@ import LoadingPage from "./LoadingPage";
 
 const LandingPage = () => {
     const navigate = useNavigate();
-    const [collections, setCollections] = useState<Collection[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const pageSize = 6;
-    const [totalCollections, setTotalCollections] = useState(0);
 
     // Nowe stany dla sortowania – w tym przypadku sortujemy jedynie po nazwie,
     // więc sortCategory jest stały ("name"), a użytkownik może wybrać kierunek sortowania.
     const [sortCategory, setSortCategory] = useState<string>("name");
     const [sortDirection, setSortDirection] = useState<string>("asc");
 
+    const [newCollection] = useState<string>("");
+    
     useEffect(() => {
-        getAllCollections(currentPage, pageSize, sortDirection).then((data) => {
-            setCollections(data.collections);
-            setTotalCollections(data.total);
-        });
         refetch();
-    }, [currentPage]);
+        // eslint-disable-next-line
+    }, [newCollection]);
 
     const { data: fetchedData, refetch } = useQuery({
-        queryKey: ["collection", currentPage, pageSize, sortDirection],
-        queryFn: () => getAllCollections(currentPage, pageSize, sortDirection),
-        keepPreviousData: true
-    });
+            queryKey: ["collection", currentPage, pageSize, newCollection, sortDirection],
+            queryFn: () => getAllCollections(currentPage, pageSize, sortDirection),
+            keepPreviousData: true
+        }
+    );
 
     const scrollToCollections = () => {
         const element = document.getElementById("collections-section");
@@ -74,12 +71,14 @@ const LandingPage = () => {
                                 <div className="flex flex-wrap gap-4">
                                     <button
                                         type="button"
+                                        aria-label="landing-page-login"
                                         onClick={() => navigate("/login")}
                                         className="px-16 py-2 dark:text-white hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
                                     >
                                         Zaloguj się
                                     </button>
                                     <button type="button" onClick={() => navigate("/register")}
+                                            aria-label="landing-page-register"
                                             className="px-16 py-2 bg-white">
                                         Zarejestruj się
                                     </button>
@@ -87,6 +86,7 @@ const LandingPage = () => {
                                 <div className="mt-8">
                                     <button
                                         onClick={scrollToCollections}
+                                        aria-label={'browse-without-logging-in'}
                                         className="text-lg font-normal p-1 text-gray-500 dark:text-gray-400 hover:text-gray-600 flex items-center gap-2 border-0 bg-transparent dark:border-0 dark:bg-transparent"
                                     >
                                         <span>Przeglądaj bez logowania</span>
@@ -157,7 +157,6 @@ const LandingPage = () => {
                                 sortDirection={sortDirection}
                                 onSelectCategory={setSortCategory}
                                 onSelectDirection={setSortDirection}
-                                // W LandingPage nie korzystamy z paginacji przy sortowaniu, więc funkcja może pozostać pusta.
                                 setCurrentPage={() => {
                                 }}
                             />
@@ -167,6 +166,7 @@ const LandingPage = () => {
                             {fetchedData?.collections.map((collection) => (
                                 <div
                                     key={collection.id}
+                                    aria-label={collection.id}
                                     className="relative group px-4 py-3 bg-white dark:bg-gray-800 shadow-md rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                                     onClick={() =>
                                         navigate(`/collections/${collection.id}/artworks`, {
@@ -196,7 +196,7 @@ const LandingPage = () => {
                     <div className="flex justify-center mb-16">
                         <Pagination
                             currentPage={currentPage}
-                            totalPages={Math.ceil(totalCollections / pageSize)}
+                            totalPages={Math.ceil(fetchedData.total / pageSize)}
                             setCurrentPage={setCurrentPage}
                             onPageChange={() => {
                             }}
