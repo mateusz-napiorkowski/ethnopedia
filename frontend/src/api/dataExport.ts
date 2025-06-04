@@ -1,18 +1,10 @@
 import axios from "axios"
 import { API_URL } from "../config"
-
-enum ExportExtent {
-    all = "all",
-    selected = "selected",
-    searchResult = "searchResult"
-}
+import {ExportExtent} from "../@types/DataExport"
 
 export const getXlsxWithArtworksData = async (collectionIds: Array<string>, keysToInclude: Array<string>, exportExtent: ExportExtent, selectedArtworksIds: { [key: string]: boolean }, searchParams: URLSearchParams, filename: string) => {
-    return await axios({
-        url: `${API_URL}v1/dataExport`,
-        method: 'GET',
+    return await axios.get(`${API_URL}v1/dataExport`, {
         responseType: 'blob',
-        // params: params,
         params: {
             columnNames: keysToInclude,
             selectedArtworks: Object.keys(selectedArtworksIds),
@@ -38,13 +30,10 @@ export const getXlsxWithArtworksData = async (collectionIds: Array<string>, keys
 }
 
 export const getXlsxWithCollectionData = async (collectionId: string | undefined) => {
-    const params = new URLSearchParams();
-    return await axios({
-        url: `${API_URL}v1/dataExport/collection/${collectionId}`,
-        method: 'GET',
-        responseType: 'blob',
-        params: params
-    }).then((response) => {
+    return await axios.get(
+        `${API_URL}v1/dataExport/collection/${collectionId}`,
+        { responseType: 'blob' }
+    ).then((response) => {
         // create file link in browser's memory
         const href = URL.createObjectURL(response.data);
     

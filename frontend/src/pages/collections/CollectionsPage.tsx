@@ -6,9 +6,9 @@ import { Collection } from "../../@types/Collection";
 import { ReactComponent as FileExportIcon } from "../../assets/icons/fileExport.svg";
 import { ReactComponent as FileImportIcon } from "../../assets/icons/fileImport.svg";
 import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg";
-import { getAllCollections, useBatchDeleteCollectionMutation } from "../../api/collections";
+import { deleteCollections, getAllCollections } from "../../api/collections";
 import { useNavigate } from "react-router-dom";
-import { useQuery, useQueryClient } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useUser } from "../../providers/UserProvider";
 import Pagination from "../../components/Pagination";
 import { getXlsxWithCollectionData } from "../../api/dataExport";
@@ -28,10 +28,17 @@ const CollectionsPage = () => {
     const [showWarningPopup, setShowWarningPopup] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [exportErrorMessage, setExportErrorMessage] = useState("");
-    const pageSize = 10;
+    const pageSize = 9;
     const navigate = useNavigate();
     const queryClient = useQueryClient();
-    const { mutate: batchDeleteMutation } = useBatchDeleteCollectionMutation();
+    const selectedIds = Object.keys(checkedCollections).filter(id => checkedCollections[id]);
+    
+    const deleteCollectionMutation = useMutation(() => deleteCollections(selectedIds, jwtToken), {
+        onSuccess: () => {
+            queryClient.invalidateQueries(["collection"]);
+            setShowWarningPopup(!showWarningPopup);
+        }
+    })
 
     // Nowe stany dla sortowania
     const [sortCategory, setSortCategory] = useState<string>("name");
@@ -46,8 +53,8 @@ const CollectionsPage = () => {
     }, [newCollection]);
 
     const { data: fetchedData, refetch } = useQuery({
-            queryKey: ["collection", currentPage, pageSize, newCollection],
-            queryFn: () => getAllCollections(currentPage, pageSize),
+            queryKey: ["collection", currentPage, pageSize, newCollection, sortDirection],
+            queryFn: () => getAllCollections(currentPage, pageSize, sortDirection),
             keepPreviousData: true
         }
     );
@@ -68,36 +75,27 @@ const CollectionsPage = () => {
     };
 
     const handleCheck = (id: string) => {
-        setCheckedCollections((prev) => ({ ...prev, [id]: !prev[id] }));
+        setCheckedCollections((prev) => {
+            const newSelection = { ...prev };
+            if (newSelection[id]) {
+                delete newSelection[id];
+            } else {
+                newSelection[id] = true;
+            }
+            return newSelection;
+        });
     };
 
-    const deleteSelected = () => {
-        const selectedIds = Object.keys(checkedCollections).filter(id => checkedCollections[id]);
+    const deleteSelected = () => { 
         if (selectedIds.length > 0) {
-            batchDeleteMutation([selectedIds, jwtToken], {
-                onSuccess: () => {
-                    queryClient.invalidateQueries(["collection"]);
-                    setShowWarningPopup(!showWarningPopup);
-                },
-            });
+            deleteCollectionMutation.mutate()
         }
     };
 
     if (fetchedData === undefined) {
         return <LoadingPage />;
     } else {
-        // Sortowanie kolekcji – sortujemy wyłącznie po nazwie, zgodnie ze stanem sortDirection
         const sortedCollections = fetchedData.collections
-            ? [...fetchedData.collections].sort((a, b) => {
-                if (sortDirection === "asc") {
-                    return a.name.localeCompare(b.name);
-                } else {
-                    return b.name.localeCompare(a.name);
-                }
-            })
-            : [];
-
-        // Opcje dla sortowania kategorii – tutaj mamy tylko jedną opcję (sortuj po nazwie)
         const categorySortOptions: Option[] = [
             { value: "name", label: "Nazwa kolekcji" }
         ];
@@ -121,7 +119,7 @@ const CollectionsPage = () => {
                         <div className="flex flex-row">
                             <div className="w-full">
                                 <h1 className="font-bold text-4xl mb-4">
-                                    Witaj{firstName ? ` ${firstName}` : ""}!
+                                    Witaj {firstName}!
                                 </h1>
                                 <h2 className="mb-2 text-lg">
                                     Twoje kolekcje:
@@ -130,14 +128,9 @@ const CollectionsPage = () => {
 
                             <div className="flex items-center justify-end w-full">
                                 <button
-                                    disabled={!jwtToken}
                                     type="button"
                                     className={`flex items-center justify-center dark:text-white text-sm px-4 py-2 mb-2
-                    text-white border-gray-800 font-semibold mr-2 ${
-                                        jwtToken
-                                            ? "bg-gray-800 hover:bg-gray-700"
-                                            : "bg-gray-600 hover:bg-gray-600"
-                                    }`}
+                    text-white border-gray-800 font-semibold mr-2 bg-gray-800 hover:bg-gray-700`}
                                     onClick={() => navigate("/create-collection")}
                                 >
                   <span className="mr-2">
@@ -149,58 +142,35 @@ const CollectionsPage = () => {
                                     className="flex items-center justify-center dark:text-white text-sm px-4 py-2 mb-2 hover:bg-gray-700 bg-gray-800 text-white border-gray-800 font-semibold mr-2"
                                     type="button"
                                     onClick={() => {
-                                        if (Object.keys(checkedCollections).length === 1) {
-                                            for (const key in fetchedData.collections) {
-                                                if (fetchedData.collections[key].id === Object.keys(checkedCollections)[0]) {
-                                                    getXlsxWithCollectionData(fetchedData.collections[key].id);
-                                                    setExportErrorMessage("");
-                                                }
-                                            }
-                                        } else {
-                                            if (Object.keys(checkedCollections).length === 0) {
-                                                setExportErrorMessage("Najpierw należy zaznaczyć kolekcję do wyeksportowania.");
-                                            } else {
-                                                const checkedCollectionsIds = Object.keys(checkedCollections)
-                                                    .filter((checkedCollection) => checkedCollections[checkedCollection])
-                                                    .map((checkedCollection) => {
-                                                        const collection = fetchedData.collections.find((col) => col.id === checkedCollection);
-                                                        return collection!.id;
-                                                    });
-                                                for (const collectionId of checkedCollectionsIds) {
-                                                    getXlsxWithCollectionData(collectionId);
-                                                }
-                                                setExportErrorMessage("");
-                                            }
+                                        if(Object.keys(checkedCollections).length === 0) {
+                                            setExportErrorMessage("Najpierw należy zaznaczyć kolekcję do wyeksportowania.");
+                                            return
                                         }
+                                        const checkedCollectionsIds = Object.keys(checkedCollections)
+                                            .filter((checkedCollection) => checkedCollections[checkedCollection])
+                                            .map((checkedCollection) => {
+                                                const collection = fetchedData.collections.find((col) => col.id === checkedCollection);
+                                                return collection!.id;
+                                            });
+                                        for (const collectionId of checkedCollectionsIds) {
+                                            getXlsxWithCollectionData(collectionId);
+                                        }
+                                        setExportErrorMessage("");
                                     }}
                                 >
                   <span className="text-white">
                     <FileExportIcon />
                   </span>
-                                    Eksportuj kolekcję
+                                    Eksportuj kolekcje
+                                </button>  
+                                <button
+                                    className="flex items-center justify-center dark:text-white text-sm px-4 py-2 mb-2 hover:bg-gray-700 bg-gray-800 text-white border-gray-800 font-semibold"
+                                    type="button"
+                                    onClick={() => setShowImportOptions((prev) => !prev)}
+                                >
+                                    <FileImportIcon />
+                                    Importuj kolekcję
                                 </button>
-                                {jwtToken && (
-                                    <button
-                                        className="flex items-center justify-center dark:text-white text-sm px-4 py-2 mb-2 hover:bg-gray-700 bg-gray-800 text-white border-gray-800 font-semibold"
-                                        type="button"
-                                        onClick={() => setShowImportOptions((prev) => !prev)}
-                                    >
-                                        <FileImportIcon />
-                                        Importuj kolekcję
-                                    </button>
-                                )}
-                                {!jwtToken && (
-                                    <button
-                                        className="flex items-center justify-center dark:text-white text-sm px-4 py-2 mb-2 hover:bg-gray-600 bg-gray-600 text-white border-gray-800 font-semibold"
-                                        type="button"
-                                        disabled={true}
-                                        title={"Aby zaimportować kolekcję musisz się zalogować."}
-                                        onClick={() => setShowImportOptions((prev) => !prev)}
-                                    >
-                                        <FileImportIcon />
-                                        Importuj kolekcję
-                                    </button>
-                                )}
                             </div>
                         </div>
                         {showImportOptions && <ImportOptions onClose={() => setShowImportOptions(false)} />}
@@ -212,32 +182,13 @@ const CollectionsPage = () => {
                                 <button type="button" className="px-4 py-2 mb-2 ml-2 bg-white" onClick={uncheckAll}>
                                     Odznacz wszystkie
                                 </button>
-                                {jwtToken && (
-                                    <button
-                                        type="button"
-                                        className="px-4 py-2 mb-2 ml-2 bg-white"
-                                        onClick={() => {
-                                            if (Object.keys(checkedCollections).length !== 0)
-                                                setShowWarningPopup((prev) => !prev);
-                                        }}
-                                    >
-                                        Usuń zaznaczone
-                                    </button>
-                                )}
-                                {!jwtToken && (
-                                    <button
-                                        type="button"
-                                        disabled={true}
-                                        title={"Aby usuwać kolekcje musisz się zalogować."}
-                                        className="px-4 py-2 mb-2 ml-2 bg-gray-100 hover:bg-gray-100"
-                                        onClick={() => {
-                                            if (Object.keys(checkedCollections).length !== 0)
-                                                setShowWarningPopup((prev) => !prev);
-                                        }}
-                                    >
-                                        Usuń zaznaczone
-                                    </button>
-                                )}
+                                <button type="button"
+                                    disabled={Object.keys(checkedCollections).length === 0}
+                                    className={`px-4 py-2 mb-2 ml-2 ${Object.keys(checkedCollections).length === 0 ? "bg-gray-100 hover:bg-gray-100" : "bg-white"}`}
+                                    onClick={() => setShowWarningPopup((prev) => !prev)}
+                                >
+                                    Usuń zaznaczone
+                                </button>
                             </div>
                             <span className="mb-2">
                 <SortOptions
@@ -257,6 +208,7 @@ const CollectionsPage = () => {
                                 return (
                                     <div
                                         key={collection.id}
+                                        aria-label={collection.id}
                                         className="relative group px-4 py-3 bg-white dark:bg-gray-800 shadow-md rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                                         onClick={() => navigate(`/collections/${collection.id}/artworks`, { state: { collectionId: collection.id } })}
                                     >

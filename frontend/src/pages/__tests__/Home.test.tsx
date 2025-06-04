@@ -56,7 +56,9 @@ describe("Home tests", () => {
 
     it("should render landing page for a non-logged-in user", async () => {       
         const {getByText} = renderComponent()
-        expect(getByText("Zarządzaj metadanymi tekstowymi i transkrypcją utworów muzycznych")).toBeInTheDocument()
+        await waitFor(() => 
+            expect(getByText("Zarządzaj metadanymi tekstowymi i transkrypcją utworów muzycznych")).toBeInTheDocument()
+        )
     })
 
     it("should render landing page for a logged-in user", async () => { 

@@ -1,0 +1,588 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`LandingPage tests renders loading state 1`] = `
+<div>
+  <div
+    class="flex justify-center items-center h-screen bg-gray-50 dark:bg-gray-900"
+    role="status"
+  >
+    <svg />
+  </div>
+</div>
+`;
+
+exports[`LandingPage tests renders page when collection data is fetched from API 1`] = `
+<div>
+  <div
+    class="flex flex-col h-full w-full"
+  >
+    <nav
+      class="bg-gray-800 border-gray-200 dark:bg-gray-200 w-full border-b dark:border-gray-600"
+    >
+      <div
+        class="max-w-screen-xl flex flex-wrap justify-between mx-auto p-4"
+      >
+        <div
+          class="flex items-center mt-1"
+        >
+          <h1
+            class="logo text-gray-200 dark:text-gray-900 text-6xl "
+          >
+            ethnopedia
+          </h1>
+        </div>
+        <div
+          class="flex items-center md:order-2"
+        >
+          <button
+            class="text-gray-800 bg-white border border-gray-300 focus:outline-none
+                           hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm
+                           p-2.5 mr-2 dark:bg-gray-800 dark:text-white dark:border-gray-600
+                           dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+            type="button"
+          >
+            <svg
+              class="w-4 h-4 m-0.5"
+            />
+          </button>
+          <button
+            class="mr-2 bg-blue-500 hover:bg-blue-400 font-semibold text-white border-none"
+            type="button"
+          >
+            Zaloguj się
+          </button>
+          <button
+            class="bg-blue-500 hover:bg-blue-400 font-semibold text-white border-none"
+            type="button"
+          >
+            Zarejestruj się
+          </button>
+        </div>
+      </div>
+    </nav>
+    <section
+      class="h-full"
+    >
+      <div
+        class="mx-auto max-w-screen-xl px-4 lg:px-12"
+      >
+        <section
+          class="hero bg-gray-50 dark:bg-gray-900"
+        >
+          <div
+            class="mt-24 flex flex-col lg:flex-row items-center justify-between gap-8"
+          >
+            <div
+              class="flex-1 text-left pb-10"
+            >
+              <h1
+                class="text-2xl font-semibold mb-4"
+              >
+                Zarządzaj metadanymi tekstowymi i transkrypcją utworów muzycznych
+              </h1>
+              <p
+                class="text-lg mb-8 max-w-2xl text-gray-600 dark:text-gray-300"
+              >
+                Ethnopedia to system do zarządzania metadanymi dla projektów naukowych i dokumentacyjnych. Twórz i organizuj kolekcje opisujące artefakty, nagrania, zbiory archiwalne i inne zasoby wiedzy...
+              </p>
+              <div
+                class="flex flex-wrap gap-4"
+              >
+                <button
+                  aria-label="landing-page-login"
+                  class="px-16 py-2 dark:text-white hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
+                  type="button"
+                >
+                  Zaloguj się
+                </button>
+                <button
+                  aria-label="landing-page-register"
+                  class="px-16 py-2 bg-white"
+                  type="button"
+                >
+                  Zarejestruj się
+                </button>
+              </div>
+              <div
+                class="mt-8"
+              >
+                <button
+                  aria-label="browse-without-logging-in"
+                  class="text-lg font-normal p-1 text-gray-500 dark:text-gray-400 hover:text-gray-600 flex items-center gap-2 border-0 bg-transparent dark:border-0 dark:bg-transparent"
+                >
+                  <span>
+                    Przeglądaj bez logowania
+                  </span>
+                  <svg
+                    class="w-4 h-4"
+                  />
+                </button>
+              </div>
+            </div>
+            <div
+              class="flex-1 flex items-center justify-center"
+            >
+              <svg
+                class="max-w-lg w-auto h-full max-h-lg block dark:hidden"
+              />
+              <svg
+                class="max-w-lg w-auto h-full max-h-lg hidden dark:block"
+              />
+            </div>
+          </div>
+        </section>
+      </div>
+      <section
+        class="bg-white dark:bg-gray-800 py-16 w-full"
+      >
+        <div
+          class="max-w-screen-xl mx-auto px-4 lg:px-12"
+        >
+          <h2
+            class="text-2xl font-semibold mb-12 text-center"
+          >
+            Jak działa Ethnopedia?
+          </h2>
+          <div
+            class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center"
+          >
+            <div
+              class="flex flex-col items-center"
+            >
+              <svg
+                aria-hidden="true"
+                class="w-12 h-12 mb-4 text-gray-700 dark:text-gray-400"
+                fill="none"
+                height="1em"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="1em"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              <h3
+                class="text-lg font-medium mb-2"
+              >
+                Utwórz kolekcję
+              </h3>
+              <p
+                class="text-gray-600 dark:text-gray-300 text-sm max-w-xs"
+              >
+                Kolekcja to zbiór metadanych o ustalonej strukturze, który może dotyczyć różnych zasobów, takich jak nagrania audio, zdjęcia, dokumenty i inne dane.
+              </p>
+            </div>
+            <div
+              class="flex flex-col items-center"
+            >
+              <svg
+                class="w-12 h-12 mb-4 text-gray-700 dark:text-gray-400"
+                fill="currentColor"
+                height="1em"
+                stroke="currentColor"
+                stroke-width="0"
+                viewBox="0 0 16 16"
+                width="1em"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M6 3.5A1.5 1.5 0 0 1 7.5 2h1A1.5 1.5 0 0 1 10 3.5v1A1.5 1.5 0 0 1 8.5 6v1H14a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0v-1A.5.5 0 0 1 2 7h5.5V6A1.5 1.5 0 0 1 6 4.5v-1zM8.5 5a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1zM0 11.5A1.5 1.5 0 0 1 1.5 10h1A1.5 1.5 0 0 1 4 11.5v1A1.5 1.5 0 0 1 2.5 14h-1A1.5 1.5 0 0 1 0 12.5v-1zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zm4.5.5A1.5 1.5 0 0 1 7.5 10h1a1.5 1.5 0 0 1 1.5 1.5v1A1.5 1.5 0 0 1 8.5 14h-1A1.5 1.5 0 0 1 6 12.5v-1zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zm4.5.5a1.5 1.5 0 0 1 1.5-1.5h1a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-1.5 1.5h-1a1.5 1.5 0 0 1-1.5-1.5v-1zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+              <h3
+                class="text-lg font-medium mb-2"
+              >
+                Zaprojektuj strukturę
+              </h3>
+              <p
+                class="text-gray-600 dark:text-gray-300 text-sm max-w-xs"
+              >
+                Określ kategorie, które będą opisem Twoich danych. System pozwala tworzyć rozbudowane, hierarchiczne układy metadanych.
+              </p>
+            </div>
+            <div
+              class="flex flex-col items-center"
+            >
+              <svg
+                class="w-12 h-12 mb-4 text-gray-700 dark:text-gray-400"
+                fill="currentColor"
+                height="1em"
+                stroke="currentColor"
+                stroke-width="0"
+                viewBox="0 0 1024 1024"
+                width="1em"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M328 544h152v152c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8V544h152c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8H544V328c0-4.4-3.6-8-8-8h-48c-4.4 0-8 3.6-8 8v152H328c-4.4 0-8 3.6-8 8v48c0 4.4 3.6 8 8 8z"
+                />
+                <path
+                  d="M880 112H144c-17.7 0-32 14.3-32 32v736c0 17.7 14.3 32 32 32h736c17.7 0 32-14.3 32-32V144c0-17.7-14.3-32-32-32zm-40 728H184V184h656v656z"
+                />
+              </svg>
+              <h3
+                class="text-lg font-medium mb-2"
+              >
+                Dodawaj rekordy
+              </h3>
+              <p
+                class="text-gray-600 dark:text-gray-300 text-sm max-w-xs"
+              >
+                Wprowadzaj opisy poszczególnych obiektów zgodnie z ustaloną strukturą kolekcji. Każdy rekord to komplet metadanych.
+              </p>
+            </div>
+            <div
+              class="flex flex-col items-center"
+            >
+              <svg
+                class="w-12 h-12 mb-4 text-gray-700 dark:text-gray-400"
+                fill="none"
+                height="1em"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="1em"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle
+                  cx="11"
+                  cy="11"
+                  r="8"
+                />
+                <line
+                  x1="21"
+                  x2="16.65"
+                  y1="21"
+                  y2="16.65"
+                />
+              </svg>
+              <h3
+                class="text-lg font-medium mb-2"
+              >
+                Wyszukuj i przeglądaj dane
+              </h3>
+              <p
+                class="text-gray-600 dark:text-gray-300 text-sm max-w-xs"
+              >
+                Korzystaj z wygodnych narzędzi wyszukiwania i filtrowania, aby szybko znaleźć potrzebne informacje w swoich zbiorach.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <div
+        class="mx-auto max-w-screen-xl px-4 lg:px-12"
+      >
+        <section
+          class="py-12 mt-4 bg-gray-50 dark:bg-gray-900"
+          id="collections-section"
+        >
+          <div
+            class="flex justify-between items-center mb-6"
+          >
+            <h2
+              class="text-xl font-semibold px-4"
+            >
+              Przeglądaj istniejące kolekcje:
+            </h2>
+            <div
+              class="flex items-center space-x-1"
+            >
+              <div
+                class="relative"
+              >
+                <div
+                  aria-label="sortby-category-dropdown"
+                  class="cursor-pointer py-2 px-4 border bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-sm rounded-lg flex items-center justify-between"
+                  style="min-width: 40px;"
+                >
+                  <span>
+                    Nazwa kolekcji
+                  </span>
+                  <svg
+                    class="h-4 w-4 ml-2 transition-transform duration-200 "
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M19 9l-7 7-7-7"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </div>
+              </div>
+              <button
+                aria-label="Zmień kierunek sortowania"
+                class="p-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                title="Sortuj rosnąco"
+              >
+                <svg
+                  class="h-5 w-5 text-gray-700 dark:text-gray-200 transition-transform duration-200 rotate-180"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 4v16m0 0l6-6m-6 6l-6-6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div
+            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
+          >
+            <div
+              aria-label="1"
+              class="relative group px-4 py-3 bg-white dark:bg-gray-800 shadow-md rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            >
+              <div
+                class="flex flex-col h-full"
+              >
+                <h2
+                  class="text-lg font-semibold mb-2"
+                >
+                  Kolekcja A
+                </h2>
+                <p
+                  class="text-gray-600 dark:text-gray-300 flex-grow"
+                >
+                  Opis A
+                </p>
+                <div
+                  class="mt-2 text-md flex items-center"
+                >
+                  <span
+                    class="font-bold mr-1"
+                  >
+                    1
+                  </span>
+                  rekord
+                </div>
+              </div>
+            </div>
+            <div
+              aria-label="2"
+              class="relative group px-4 py-3 bg-white dark:bg-gray-800 shadow-md rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            >
+              <div
+                class="flex flex-col h-full"
+              >
+                <h2
+                  class="text-lg font-semibold mb-2"
+                >
+                  Kolekcja B
+                </h2>
+                <p
+                  class="text-gray-600 dark:text-gray-300 flex-grow"
+                >
+                  Opis B
+                </p>
+                <div
+                  class="mt-2 text-md flex items-center"
+                >
+                  <span
+                    class="font-bold mr-1"
+                  >
+                    3
+                  </span>
+                  rekordy
+                </div>
+              </div>
+            </div>
+            <div
+              aria-label="3"
+              class="relative group px-4 py-3 bg-white dark:bg-gray-800 shadow-md rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            >
+              <div
+                class="flex flex-col h-full"
+              >
+                <h2
+                  class="text-lg font-semibold mb-2"
+                >
+                  Kolekcja C
+                </h2>
+                <p
+                  class="text-gray-600 dark:text-gray-300 flex-grow"
+                >
+                  Opis C
+                </p>
+                <div
+                  class="mt-2 text-md flex items-center"
+                >
+                  <span
+                    class="font-bold mr-1"
+                  >
+                    5
+                  </span>
+                  rekordów
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <div
+          class="flex justify-center mb-16"
+        >
+          <nav
+            aria-label="Page navigation example"
+            class="flex space-x-2"
+            data-testid="pagination-menu"
+          >
+            <span
+              class="flex items-center justify-center text-gray-700 text-sm h-8"
+            >
+              Strona
+              <input
+                class="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-12 mx-2 text-center"
+                type="number"
+                value="1"
+              />
+              z 
+              1
+              <button
+                class="font-normal h-6 mx-2 flex items-center justify-center px-3 leading-tight
+                     text-gray-500 border-gray-300 rounded-s-lg border bg-white hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white cursor-pointer
+                        "
+              >
+                Przejdź
+              </button>
+            </span>
+            <ul
+              class="inline-flex -space-x-px text-sm"
+            >
+              <li>
+                <div
+                  class="flex items-center justify-center px-3 h-8 leading-tight
+                     text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100
+                     hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
+                     dark:hover:text-white cursor-pointer"
+                >
+                  Poprzednia strona
+                </div>
+              </li>
+              <li>
+                <div
+                  class="cursor-pointer flex items-center justify-center px-3 h-8 leading-tight text-blue-600 bg-blue-50 border border-gray-300 
+                                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 
+                                            dark:hover:text-white"
+                  data-testid="page-1"
+                >
+                  1
+                </div>
+              </li>
+              <li>
+                <div
+                  class="flex items-center justify-center px-3 h-8 leading-tight
+                            text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700
+                            dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
+                            dark:hover:text-white cursor-pointer"
+                >
+                  Następna strona
+                </div>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+      <section
+        class="bg-white dark:bg-gray-800 py-10 w-full"
+      >
+        <div
+          class="max-w-screen-xl mx-auto px-4 lg:px-12 text-center text-gray-600 dark:text-gray-300 space-y-10"
+        >
+          <div
+            class="text-sm"
+          >
+            <p
+              class="mb-2"
+            >
+              Narzędzie jest realizowane w ramach projektu
+               
+              <a
+                class="text-primary-500 hover:text-primary-700"
+                href="https://www.dariah.pl"
+              >
+                Cyfrowa Infrastruktura Badawcza dla Humanistyki i Nauk o Sztuce DARIAH-PL
+              </a>
+               
+              finansowanego z funduszy Krajowego Planu Odbudowy (KPOD.01.18-IW.03-0013/23) przez Politechnikę Poznańską we współpracy z Instytutem Sztuki PAN.
+            </p>
+          </div>
+          <div
+            class="flex flex-wrap justify-center items-center gap-16"
+          >
+            <img
+              alt="Logo Krajowego Planu Odbudowy"
+              class="h-20"
+              src="test-file-stub"
+            />
+            <img
+              alt="Logo Barw RP"
+              class="h-20"
+              src="test-file-stub"
+            />
+            <img
+              alt="Logo NextGenerationEU"
+              class="h-20"
+              src="test-file-stub"
+            />
+          </div>
+          <div
+            class="flex flex-wrap justify-center items-center gap-16"
+          >
+            <img
+              alt="Logo Dariah-PL"
+              class="h-14"
+              src="test-file-stub"
+            />
+            <img
+              alt="Logo Politechniki Poznańskiej"
+              class="h-28"
+              src="[object Object]"
+            />
+            <img
+              alt="Logo Instytutu Sztuki Polskiej Akademi Nauk"
+              class="h-10"
+              src="test-file-stub"
+            />
+          </div>
+          <div
+            class="text-sm text-gray-500 dark:text-gray-400 space-y-1"
+          >
+            <p>
+              © 
+              2025
+               Politechnika Poznańska – MusicPUT Team
+            </p>
+            <p>
+              Kontakt:
+               
+              <a
+                class="text-primary-500 hover:text-primary-700"
+                href="mailto:dariah@cs.put.poznan.pl"
+              >
+                dariah@cs.put.poznan.pl
+              </a>
+            </p>
+          </div>
+        </div>
+      </section>
+    </section>
+  </div>
+</div>
+`;

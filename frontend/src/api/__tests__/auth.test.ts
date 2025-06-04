@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom';
-import { registerUser, deleteAccount } from '../auth';
+import { registerUser, deleteAccount, loginUser } from '../auth';
 import axios from "axios"
 import 'dotenv/config'
-import { axiosError, deleteAccountReturnValue, jwtToken, registerUserFormData, registerUserReturnData, userId } from './utils/consts';
+import { axiosError, deleteAccountReturnValue, jwtToken, loginUserFormData, loginUserReturnData, registerUserFormData, registerUserReturnData, userId } from './utils/consts';
 
 jest.mock("axios");
 const mockAxios = axios as jest.Mocked<typeof axios>;
@@ -29,23 +29,22 @@ describe("auth tests", () => {
         });
     })
 
-    // TODO fix useLoginMutation tests
-    // describe("useLoginMutation tests", () => {
-    //     it("should call axios.post with correct parameters and return correct data if API call succeeds", async () => {
-    //         mockAxios.post.mockResolvedValueOnce(useLoginMutationReturnValue);
+    describe("loginUser tests", () => {
+        it("should call axios.post with correct parameters and return correct data if API call succeeds", async () => {
+            mockAxios.post.mockResolvedValueOnce({data: loginUserReturnData});
 
-    //         const result = await useLoginMutation();
+            const result = await loginUser(loginUserFormData);
 
-    //         expect(mockAxios.post).toHaveBeenCalledWith(`${process.env.REACT_APP_API_URL}v1/auth/login`, registerUserFormData)
-    //         expect(result).toEqual(useLoginMutationReturnValue);
-    //     });
+            expect(mockAxios.post).toHaveBeenCalledWith(`${process.env.REACT_APP_API_URL}v1/auth/login`, loginUserFormData)
+            expect(result).toEqual(loginUserReturnData);
+        });
 
-    //     it("should throw error if API call fails", async () => {
-    //         mockAxios.post.mockRejectedValueOnce(new Error("Network Error"));
+        it("should throw error if API call fails", async () => {
+            mockAxios.post.mockRejectedValueOnce(new Error("Network Error"));
 
-    //         await expect(useLoginMutation()).rejects.toThrow(axiosError);
-    //     });
-    // })
+            await expect(loginUser(loginUserFormData)).rejects.toThrow(axiosError);
+        });
+    })
 
     describe("deleteAccount tests", () => {
         it("should call axios.delete with correct parameters and return correct data if API call succeeds", async () => {

@@ -240,7 +240,7 @@ describe("ArtworksListPage tests", () => {
             {
                 clickSequence: [artworkIds[1], artworkIds[2], artworkIds[0], artworkIds[2], artworkIds[1], artworkIds[2]],
                 clickSequenceWithTitles: [artworkTitles[1], artworkTitles[2], artworkTitles[0], artworkTitles[2], artworkTitles[1], artworkTitles[2]],
-                expectedChecked: [artworkIds[2], artworkIds[0]]
+                expectedChecked: [artworkIds[0], artworkIds[2]]
             },
             {
                 clickSequence: [artworkIds[1], artworkIds[0], artworkIds[2], artworkIds[0], "Odznacz wszystkie"],

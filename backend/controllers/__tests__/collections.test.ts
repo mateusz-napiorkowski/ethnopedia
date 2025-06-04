@@ -64,7 +64,7 @@ describe('collections controller', () =>{
     describe('GET endpoints', () =>{
 
         test("getAllCollections should respond with status 200 and correct body", async () => {
-            mockCollectionFind.mockReturnValue({sort: () => ({skip: () => ({limit: () => ({exec: () => Promise.resolve([
+            mockCollectionFind.mockReturnValue({collation: () => ({sort: () => ({skip: () => ({limit: () => ({exec: () => Promise.resolve([
                 {
                     _id: "66f2194a6123d7f50558cd8f",
                     name: 'collection 1',
@@ -83,7 +83,7 @@ describe('collections controller', () =>{
                     description: 'description 3',
                     __v: 0
                 },
-            ])})})})})
+            ])})})})})})
             mockCollectionCountDocuments.mockReturnValue(Promise.resolve(3))
             mockArtworkAggregate.mockReturnValue({exec: () => Promise.resolve([
                 { _id: 'collection 1', count: 33 },
@@ -118,7 +118,7 @@ describe('collections controller', () =>{
             },
             {statusCode: 503, error: 'Database unavailable',
                 pageQuery: "&page=1", pageSizeQuery: "&pageSize=3", sortOrderQuery: "&sortOrder=asc",
-                collectionFind: () => ({sort: () => ({skip: () => ({limit: () => ({exec: () => Promise.resolve([
+                collectionFind: () => ({collation: () => ({sort: () => ({skip: () => ({limit: () => ({exec: () => Promise.resolve([
                     {
                         _id: "66f2194a6123d7f50558cd8f",
                         name: 'collection 1',
@@ -137,13 +137,13 @@ describe('collections controller', () =>{
                         description: 'description 3',
                         __v: 0
                     },
-                ])})})})}),
+                ])})})})})}),
                 collectionCountDocuments: () => {throw Error()},
                 aggregate: () => {}
             },
             {statusCode: 503, error: 'Database unavailable',
                 pageQuery: "&page=1", pageSizeQuery: "&pageSize=3", sortOrderQuery: "&sortOrder=asc",
-                collectionFind: () => ({sort: () => ({skip: () => ({limit: () => ({exec: () => Promise.resolve([
+                collectionFind: () => ({collation: () => ({sort: () => ({skip: () => ({limit: () => ({exec: () => Promise.resolve([
                     {
                         _id: "66f2194a6123d7f50558cd8f",
                         name: 'collection 1',
@@ -162,7 +162,7 @@ describe('collections controller', () =>{
                         description: 'description 3',
                         __v: 0
                     },
-                ])})})})}),
+                ])})})})})}),
                 collectionCountDocuments: () => 3,
                 aggregate: () => {throw Error()}
             },

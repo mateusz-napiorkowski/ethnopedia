@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
 import { Toast, ToastToggle } from "flowbite-react";
 import { HiExclamation } from "react-icons/hi";
-import { useLoginMutation } from "../api/auth";
 import { JWT, useUser } from "../providers/UserProvider";
 import { jwtDecode } from "jwt-decode";
+import { useMutation } from "react-query"
+import { loginUser } from "../api/auth";
 
 const LoginPage = () => {
-    const loginMutation = useLoginMutation();
     const { setUserData } = useUser();
     const [showErrorToast, setShowErrorToast] = useState(false);
     const navigate = useNavigate();
@@ -19,7 +19,21 @@ const LoginPage = () => {
         password: Yup.string().required("Hasło jest wymagane"),
     });
 
-    const { mutate: loginUser } = loginMutation;
+    const loginUserMutation = useMutation(
+        (data: { username: string; password: string }) => loginUser(data),
+        {
+            onSuccess: (response) => {
+                const token = response.token;
+                localStorage.setItem("token", token);
+                const decodedToken = jwtDecode<JWT>(token);
+                setUserData(true, decodedToken.firstName, token, decodedToken.userId);
+                navigate("/");
+            },
+            onError: (error: any) => {
+                setShowErrorToast(true);
+            },
+        }
+    );
 
     useEffect(() => {
         let timer: any;
@@ -55,20 +69,11 @@ const LoginPage = () => {
                             onSubmit={(values, { setSubmitting }) => {
                                 const { username, password } = values;
 
-                                loginUser({ username, password }, {
-                                    onSuccess: (response) => {
-                                        const { token } = response.data;
-                                        localStorage.setItem("token", token);
-                                        const decodedToken = jwtDecode<JWT>(token);
-                                        setUserData(true, decodedToken.firstName, token, decodedToken.userId);
-                                        navigate("/");
-                                    },
-                                    onError: (error: any) => {
-                                        console.error(error);
-                                        setShowErrorToast(true);
-                                        setSubmitting(false);
-                                    },
-                                });
+                                loginUserMutation.mutate({ username, password }, {
+                                onSettled: () => {
+                                    setSubmitting(false);
+                                },
+                            });
                             }}
                         >
                             {({ errors, touched }) => (

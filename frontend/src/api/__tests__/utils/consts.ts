@@ -1,10 +1,12 @@
-const collectionName = "collection"
+export const collectionName = "collection"
+export const collectionDescription = "collection description"
+export const collectionName2 = "collection 2"
+export const collectionDescription2 = "collection description 2"
 
 export const artworkId = "66ce0bf156199c1b8df5db7d"
 
 export const collectionId = "66f2194a6123d7f50558cd8f"
 export const collectionId2 = "66f2194a6123d7f50558cd7e"
-
 
 export const axiosError = {
     "message": "Network Error",
@@ -92,6 +94,11 @@ export const registerUserFormData = {
     "password": "nowy"
 }
 
+export const loginUserFormData = {
+    "username": "nowy",
+    "password": "nowy"
+}
+
 export const registerUserReturnData = {
     "data": {
         "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImIiLCJmaXJzdE5hbWUiOiJiIiwidXNlcklkIjoiNjgzOThiYTE3MzdhZGU5ODEyZDEwYTc1IiwiaWF0IjoxNzQ4NjAxNzYxLCJleHAiOjE3NDk2MDE3NjF9.K8u4_WfhyqA13TjzKhQvjECl98zx94lZolhKPFjRxnY"
@@ -135,6 +142,10 @@ export const registerUserReturnData = {
     "request": {}
 }
 
+export const loginUserReturnData = {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzQ4ODcxMDY4LCJleHAiOjE3NDk4NzEwNjh9.FJnjP7XQ8hpPgyXcQejbjiwXe8pX7mzVuS1diFwXw_w"
+}
+
 export const useLoginMutationReturnValue = {
     "error": null,
     "failureCount": 0,
@@ -166,3 +177,210 @@ export const getAllCategoriesMockReturnValue = [
     "Artyści",
     "Rok"
 ]
+
+export const getAllCollectionsMockReturnValue = {
+    "collections": [
+        {
+            "id": collectionId,
+            "name": collectionName,
+            "description": collectionDescription,
+            "artworksCount": 3
+        },
+        {
+            "id": collectionId2,
+            "name": collectionName2,
+            "description": collectionDescription2,
+            "artworksCount": 0
+        },
+    ],
+    "total": 2,
+    "currentPage": 1,
+    "pageSize": 10
+}
+
+export const getCollectionMockReturnValue = {
+    "_id": collectionId,
+    "name": collectionName,
+    "description": collectionDescription,
+    "categories": [
+        {
+            "name": "Tytuł",
+            "subcategories": []
+        },
+    ],
+    "__v": 0
+}
+
+export const collectionCategories = [
+    {
+        "name": "Tytuł",
+        "subcategories": []
+    }
+]
+
+export const createCollectionMockReturnValue = [
+    {
+        "name": collectionName,
+        "description": collectionDescription,
+        "categories": collectionCategories,
+        "_id": collectionId,
+        "__v": 0
+    }
+]
+
+export const updateCollectionMockReturnValue = {
+    "_id": collectionId,
+    "name": collectionName,
+    "description": collectionDescription,
+    "categories": collectionCategories,
+    "__v": 1
+}
+
+export const deleteCollectionsMockReturnValue = {
+    "deletedCount": 2,
+    "deletedArtworksCount": 1
+}
+
+export const dataToImport = [
+    [
+        "Tytuł",
+        "Artyści",
+        "Rok"
+    ],
+    [
+        "Nowy tytuł",
+        "Jan Kowalski",
+        "1410"
+    ],
+    [
+        "Nowy tytuł 2",
+        "Anna Nowak",
+        "1410",
+    ]
+]
+
+export const importDataMockReturnValue = [
+    {
+        "collectionName": collectionName,
+        "categories": [
+            {
+                "name": "Tytuł",
+                "value": "Nowy tytuł",
+                "subcategories": []
+            },
+            {
+                "name": "Artyści",
+                "value": "Jan Kowalski",
+                "subcategories": []
+            },
+            {
+                "name": "Rok",
+                "value": "1410",
+                "subcategories": []
+            }
+        ],
+        "_id": "683d95ca14504f56670e5445",
+        "__v": 0,
+        "createdAt": "2025-06-02T12:15:06.048Z",
+        "updatedAt": "2025-06-02T12:15:06.048Z"
+    },
+    {
+        "collectionName": collectionName,
+        "categories": [
+            {
+                "name": "Tytuł",
+                "value": "Nowy tytuł 2",
+                "subcategories": []
+            },
+            {
+                "name": "Artyści",
+                "value": "Anna Nowak",
+                "subcategories": []
+            },
+            {
+                "name": "Rok",
+                "value": "1410",
+                "subcategories": []
+            }
+        ],
+        "_id": "683d95ca14504f56670e5446",
+        "__v": 0,
+        "createdAt": "2025-06-02T12:15:06.048Z",
+        "updatedAt": "2025-06-02T12:15:06.048Z"
+    }
+]
+
+export const importDataAsCollectionMockReturnData = {
+    "newCollection": [
+        {
+            "name": collectionName,
+            "description": collectionDescription,
+            "categories": [
+                {
+                    "name": "Tytuł",
+                    "subcategories": []
+                },
+                {
+                    "name": "Artyści",
+                    "subcategories": []
+                },
+                {
+                    "name": "Rok",
+                    "subcategories": []
+                }
+            ],
+            "_id": "683d96ef14504f56670e545d",
+            "__v": 0
+        }
+    ],
+    "result": [
+        {
+            "collectionName": collectionName,
+            "categories": [
+                {
+                    "name": "Tytuł",
+                    "value": "Nowy tytuł",
+                    "subcategories": []
+                },
+                {
+                    "name": "Artyści",
+                    "value": "Jan Kowalski",
+                    "subcategories": []
+                },
+                {
+                    "name": "Rok",
+                    "value": "1410",
+                    "subcategories": []
+                }
+            ],
+            "_id": "683d96ef14504f56670e545f",
+            "__v": 0,
+            "createdAt": "2025-06-02T12:19:59.995Z",
+            "updatedAt": "2025-06-02T12:19:59.995Z"
+        },
+        {
+            "collectionName": collectionName,
+            "categories": [
+                {
+                    "name": "Tytuł",
+                    "value": "Nowy tytuł 2",
+                    "subcategories": []
+                },
+                {
+                    "name": "Artyści",
+                    "value": "Anna Nowak",
+                    "subcategories": []
+                },
+                {
+                    "name": "Rok",
+                    "value": "1410",
+                    "subcategories": []
+                }
+            ],
+            "_id": "683d96ef14504f56670e5460",
+            "__v": 0,
+            "createdAt": "2025-06-02T12:19:59.995Z",
+            "updatedAt": "2025-06-02T12:19:59.995Z"
+        }
+    ]
+}

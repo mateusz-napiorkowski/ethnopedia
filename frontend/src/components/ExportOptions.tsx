@@ -5,18 +5,13 @@ import { getXlsxWithArtworksData } from "../api/dataExport"
 import { useQuery } from "react-query"
 import { getAllCategories } from "../api/categories"
 import LoadingPage from "../pages/LoadingPage"
+import {ExportExtent} from "../@types/DataExport"
 
 type Props = {
     onClose: () => void,
     selectedArtworks: { [key: string]: boolean },
     initialFilename: string,
     collectionIds: Array<string>
-}
-
-enum ExportExtent {
-    all = "all",
-    selected = "selected",
-    searchResult = "searchResult"
 }
 
 const ExportOptions = ({onClose, selectedArtworks, initialFilename, collectionIds}: Props) => {
