@@ -14,7 +14,7 @@ interface Category {
 
 interface ArtworkDetailsProps {
     collectionName: string;
-    detailsToShow: { categories: Category[];};
+    detailsToShow: { categories: Category[]; createdAt: string, updatedAt: string};
     handleEditClick: () => void;
     setShowDeleteArtworkWarning: (value: boolean) => void;
 }
@@ -69,6 +69,14 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
         </ul>
     );
 
+    const createdAtDate = new Date(detailsToShow.createdAt).toLocaleDateString(
+        "pl-pl",
+        { year: "numeric", month: "numeric", day: "numeric" , hour: "numeric", minute: "numeric", second: "numeric"}
+    )
+    const updatedAtDate = new Date(detailsToShow.updatedAt).toLocaleDateString(
+        "pl-pl",
+        { year: "numeric", month: "numeric", day: "numeric" , hour: "numeric", minute: "numeric", second: "numeric"}
+    )
 
     return (
         <div className="max-w-3xl mx-auto mt-4 bg-white dark:bg-gray-800 p-6 rounded-lg shadow" data-testid="main-categories-container">
@@ -80,6 +88,15 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
             </div>
             {/* Drzewo kategorii */}
             <div data-testid="category-tree">{detailsToShow.categories && renderTree(detailsToShow.categories)}</div>
+            <div className="mb-4 border-t pb-2 pt-2">
+                <p className="text-sm text-gray-500 dark:text-gray-300">
+                    Data utworzenia rekordu: {createdAtDate.toString()}
+                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-300">
+                    Data ostatniej modyfikacji: {updatedAtDate.toString()}
+                </p>
+            </div>
+            
             {/* Przyciski akcji */}
             <div className="mt-10 flex justify-end space-x-4">
                 <button

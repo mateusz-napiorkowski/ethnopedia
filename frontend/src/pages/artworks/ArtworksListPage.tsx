@@ -340,12 +340,12 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                         <p className="pl-2 pr-2">Sortuj według:</p>
                         {categoryOptions && (
                             <SortOptions
-                            options={categoryOptions}
-                            sortCategory={sortCategory}
-                            sortDirection={sortDirection}
-                            onSelectCategory={setSortCategory}
-                            onSelectDirection={setSortDirection}
-                            setCurrentPage={setCurrentPage}
+                                options={categoryOptions}
+                                sortCategory={sortCategory}
+                                sortDirection={sortDirection}
+                                onSelectCategory={setSortCategory}
+                                onSelectDirection={setSortDirection}
+                                setCurrentPage={setCurrentPage}
                             />
                         )}
                     </div>
