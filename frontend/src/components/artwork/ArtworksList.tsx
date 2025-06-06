@@ -8,6 +8,8 @@ interface Artwork {
     _id: string;
     collectionId: string;
     categories: any[];
+    createdAt: any,
+    updatedAt: any
 }
 
 interface ArtworksListProps {
@@ -52,6 +54,19 @@ const ArtworksList: React.FC<ArtworksListProps> = ({
         );
     }
 
+    const formatDate = (date: any) => {
+        const newDate = new Date(date).toLocaleDateString(
+            "pl-pl",
+            { year: "numeric", month: "numeric", day: "numeric" , hour: "numeric", minute: "numeric", second: "numeric"}
+        )
+        return newDate.toString()
+    }
+
+    const specialLabels: Record<string, string> = {
+        createdAt: "Data utworzenia Rekordu",
+        updatedAt: "Data ostatniej modyfikacji",
+    };
+
     return (
         <>
             {artworks.map((artwork) => (
@@ -74,11 +89,22 @@ const ArtworksList: React.FC<ArtworksListProps> = ({
                         <div>
                             {selectedDisplayCategories.length > 0
                                 ? selectedDisplayCategories.map((cat) => {
-                                    const label = cat.includes('.') ? cat.split('.').pop() : cat;
+                                    const label = cat.includes(".")
+                                        ? cat.split(".").pop()!
+                                        : specialLabels[cat] ?? cat;
+                                    const isSpecialLabel = label == specialLabels["createdAt"] || label == specialLabels["updatedAt"]
+                                    let value: string;
+                                    if (label === specialLabels["createdAt"])
+                                        value = formatDate(artwork.createdAt);
+                                    else if (label === specialLabels["updatedAt"])
+                                        value = formatDate(artwork.updatedAt);
+                                    else
+                                        value = findValue(artwork, cat);
+
                                     return (
-                                        <div key={cat} className="text-lg text-gray-800 dark:text-white">
+                                        <div key={cat} className={ `text-${isSpecialLabel ? "sm" : "lg"} text-gray-800 dark:text-white`}>
                                             <span className="text-gray-400 inline">{label}: </span>
-                                            {findValue(artwork, cat)}
+                                            {value}
                                         </div>
                                     );
                                 })

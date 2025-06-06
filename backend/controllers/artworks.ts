@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import mongoose, { ClientSession } from "mongoose"
+import mongoose, { ClientSession, SortOrder } from "mongoose"
 import { authAsyncWrapper } from "../middleware/auth"
 import Artwork from "../models/artwork";
 import CollectionCollection from "../models/collection"
@@ -54,8 +54,16 @@ export const getArtworksForPage = async (req: Request, res: Response) => {
         else
             queryFilter = await constructAdvSearchFilter(req.query, collectionNames)
 
-        const artworksFiltered = await Artwork.find(queryFilter).exec()
-        const artworksSorted = sortRecordsByCategory(artworksFiltered, sortOrder)
+        const sortByDateKey = ["createdAt-asc", "createdAt-desc", "updatedAt-asc", "updatedAt-desc"].includes(sortOrder) ?
+            sortOrder.split("-")[0] : undefined
+        const sortDirection = sortOrder.split("-")[1] as SortOrder
+        
+        const artworksFiltered = await Artwork.find(queryFilter)
+            .sort(sortByDateKey ? {[sortByDateKey]: sortDirection} : {}) //sort by createdAt or updatedAt if it was requested
+            .exec()
+
+        // if artworks were not requested to be sorted by createdAt or updatedAt - sort by category
+        const artworksSorted = sortByDateKey ? artworksFiltered : sortRecordsByCategory(artworksFiltered, sortOrder)
         const artworksForPage = artworksSorted.slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize)
 
         return res.status(200).json({

@@ -102,12 +102,14 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
 
 
     // Przygotowanie opcji – lista wszyskich kategorii
-    const categoryOptions: Option[] =
-        categoriesData?.categories?.map((cat: string) => ({
+    const categoryOptions: Option[] = [
+        ...(categoriesData?.categories?.map((cat: string) => ({
             value: cat,
             label: cat,
-        })) || [];
-
+        })) || []),
+        {value: "createdAt", label: "Data utworzenia rekordu"},
+        {value: "updatedAt", label: "Data ostatniej modyfikacji"}
+    ]
 
     // Ustaw domyślnie wybraną kategorię sortowania na pierwszą kategorię z listy (jeśli istnieje)
     useEffect(() => {
@@ -181,9 +183,8 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
     const customOptions = [
         { value: "select_all", label: "Zaznacz wszystkie" },
         { value: "deselect_all", label: "Odznacz wszystkie" },
-        ...categoryOptions,
+        ...categoryOptions
     ];
-
     const formatOptionLabel = (option: Option, { context }: { context: string }) => {
         if (context === "menu") {
             if (option.value === "select_all" || option.value === "deselect_all") {

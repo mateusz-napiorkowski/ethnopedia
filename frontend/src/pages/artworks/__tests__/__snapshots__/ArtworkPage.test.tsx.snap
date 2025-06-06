@@ -80,6 +80,22 @@ exports[`ArtworkPage tests should render artwork page component correctly after 
     </ul>
   </div>
   <div
+    class="mb-4 border-t pb-2 pt-2"
+  >
+    <p
+      class="text-sm text-gray-500 dark:text-gray-300"
+    >
+      Data utworzenia rekordu: 
+      5.11.2024, 21:14:22
+    </p>
+    <p
+      class="text-sm text-gray-500 dark:text-gray-300"
+    >
+      Data ostatniej modyfikacji: 
+      5.11.2024, 21:14:22
+    </p>
+  </div>
+  <div
     class="mt-10 flex justify-end space-x-4"
   >
     <button
