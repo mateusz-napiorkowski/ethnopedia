@@ -444,6 +444,93 @@ exports[`artworks util functions tests sortRecordsByCategory test - nonexistent 
 ]
 `;
 
+exports[`artworks util functions tests sortRecordsByCategory test - return unchanged records if categoryToSortBy is createdAt or updatedAt 1`] = `
+[
+  {
+    "__v": 0,
+    "_id": "6718f272c89e4d053eebb5d8",
+    "categories": [
+      {
+        "name": "Tytuł",
+        "subcategories": [
+          {
+            "name": "Podtytuł",
+            "value": "podtytuł",
+          },
+        ],
+        "value": "Tytułowy",
+      },
+      {
+        "name": "Artyści",
+        "subcategories": [],
+        "value": "Jan Nowak",
+      },
+      {
+        "name": "Rok",
+        "subcategories": [],
+        "value": "567",
+      },
+    ],
+    "collectionName": "collection",
+    "createdAt": "2024-10-23T12:56:18.209Z",
+    "updatedAt": "2024-10-23T12:56:18.209Z",
+  },
+  {
+    "__v": 0,
+    "_id": "6718f28bc89e4d053eebb5df",
+    "categories": [
+      {
+        "name": "Tytuł",
+        "subcategories": [],
+        "value": "Inny tytuł",
+      },
+      {
+        "name": "Artyści",
+        "subcategories": [],
+        "value": "Inny artysta",
+      },
+      {
+        "name": "Rok",
+        "subcategories": [],
+        "value": "1410",
+      },
+    ],
+    "collectionName": "collection",
+    "createdAt": "2024-10-23T12:56:43.182Z",
+    "updatedAt": "2024-10-23T12:56:43.182Z",
+  },
+  {
+    "__v": 0,
+    "_id": "6718f2bfc89e4d053eebb5e6",
+    "categories": [
+      {
+        "name": "Tytuł",
+        "subcategories": [
+          {
+            "name": "Podtytuł",
+            "value": "Jakiś podtytuł",
+          },
+        ],
+        "value": "Kolejny tytuł",
+      },
+      {
+        "name": "Artyści",
+        "subcategories": [],
+        "value": "Pierwsi",
+      },
+      {
+        "name": "Rok",
+        "subcategories": [],
+        "value": "444",
+      },
+    ],
+    "collectionName": "collection",
+    "createdAt": "2024-10-23T12:57:35.366Z",
+    "updatedAt": "2024-10-23T12:57:35.366Z",
+  },
+]
+`;
+
 exports[`artworks util functions tests sortRecordsByCategory test - sort by Artyści asc 1`] = `
 [
   {

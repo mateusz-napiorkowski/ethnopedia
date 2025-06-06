@@ -1,5 +1,6 @@
 import {describe, expect, test, jest, beforeEach} from "@jest/globals"
 import { constructQuickSearchFilter, constructAdvSearchFilter, sortRecordsByCategory, updateArtworkCategories, constructTopmostCategorySearchTextFilter } from "../artworks"
+import { SortOrder } from "mongoose"
 
 const mockGetAllCategories = jest.fn()
 jest.mock("../../utils/categories", () => ({
@@ -234,7 +235,8 @@ describe('artworks util functions tests', () => {
                   __v: 0
                 }
               ],
-            order: 'Tytuł-asc'
+            sortBy: "Tytuł",
+            order: 'asc'
         },
         {
             case: "sort by Tytuł desc",
@@ -288,7 +290,8 @@ describe('artworks util functions tests', () => {
                   __v: 0
                 }
               ],
-            order: 'Tytuł-desc'
+            sortBy:"Tytuł",
+            order: 'desc'
         },
         {
             case: "sort by Artyści asc",
@@ -342,7 +345,8 @@ describe('artworks util functions tests', () => {
                   __v: 0
                 }
               ],
-            order: 'Artyści-asc'
+            sortBy: "Artyści",
+            order: 'asc'
         },
         {
             case: "nonexistent category to sort by",
@@ -396,7 +400,8 @@ describe('artworks util functions tests', () => {
                   __v: 0
                 }
               ],
-            order: 'Nonexistent-asc'
+            sortBy: "Nonexistent",
+            order: 'asc'
         },
         {
             case: "category to sort records by doesn't exist on some records",
@@ -456,11 +461,67 @@ describe('artworks util functions tests', () => {
                   __v: 0
                 }
               ],
-            order: 'Tytuł-asc'
+            sortBy: "Tytuł",
+            order: 'asc'
+        },
+        {
+            case: "return unchanged records if categoryToSortBy is createdAt or updatedAt",
+            records: [
+                {
+                  _id: "6718f272c89e4d053eebb5d8",
+                  categories: [
+                    {
+                      name: 'Tytuł',
+                      value: 'Tytułowy',
+                      subcategories: [ { name: 'Podtytuł', value: 'podtytuł' } ]
+                    },
+                    { name: 'Artyści', value: 'Jan Nowak', subcategories: [] },
+                    { name: 'Rok', value: '567', subcategories: [] }
+                  ],
+                  collectionName: collectionName,
+                  createdAt: '2024-10-23T12:56:18.209Z',
+                  updatedAt: '2024-10-23T12:56:18.209Z',
+                  __v: 0
+                },
+                {
+                  _id: "6718f28bc89e4d053eebb5df",
+                  categories: [
+                    { name: 'Tytuł', value: 'Inny tytuł', subcategories: [] },
+                    {
+                      name: 'Artyści',
+                      value: 'Inny artysta',
+                      subcategories: []
+                    },
+                    { name: 'Rok', value: '1410', subcategories: [] }
+                  ],
+                  collectionName: collectionName,
+                  createdAt: '2024-10-23T12:56:43.182Z',
+                  updatedAt: '2024-10-23T12:56:43.182Z',
+                  __v: 0
+                },
+                {
+                  _id: "6718f2bfc89e4d053eebb5e6",
+                  categories: [
+                    {
+                      name: 'Tytuł',
+                      value: 'Kolejny tytuł',
+                      subcategories: [ { name: 'Podtytuł', value: 'Jakiś podtytuł' } ]
+                    },
+                    { name: 'Artyści', value: 'Pierwsi', subcategories: [] },
+                    { name: 'Rok', value: '444', subcategories: [] }
+                  ],
+                  collectionName: collectionName,
+                  createdAt: '2024-10-23T12:57:35.366Z',
+                  updatedAt: '2024-10-23T12:57:35.366Z',
+                  __v: 0
+                }
+              ],
+            sortBy: "createdAt",
+            order: 'asc'
         },
     ])(`sortRecordsByCategory test - $case`,
-        async ({records, order}) => {
-            expect(sortRecordsByCategory(records, order)).toMatchSnapshot()
+        async ({records, sortBy, order}) => {
+            expect(sortRecordsByCategory(records, sortBy, order as SortOrder)).toMatchSnapshot()
         }
     )
 })

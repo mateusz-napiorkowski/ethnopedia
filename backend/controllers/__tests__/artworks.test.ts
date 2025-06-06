@@ -123,11 +123,11 @@ describe('artworks controller', () => {
         test.each([
             {
                 case: "no filtering",
-                page: "page=1&", pageSize: "pageSize=10&", sortOrder: "sortOrder=Tytuł-asc&",
+                page: "page=1&", pageSize: "pageSize=10&", sortBy: "sortBy=Tytuł&", sortOrder: "sortOrder=asc&",
                 collectionIds: [collectionId],
                 search: "search=false&", searchText: undefined,
                 quickSearchCalls: 0, advSearchCalls: 0,
-                artworkFind: () => {return {exec: () => Promise.resolve([
+                artworkFind: () => {return {sort: () => ({exec: () => Promise.resolve([
                     {
                       _id: artworkId,
                       createdAt: '2024-10-22T20:12:12.209Z',
@@ -142,7 +142,7 @@ describe('artworks controller', () => {
                       ],
                       collectionName: collectionName
                     },
-                ])}},
+                ])})}},
                 sortRecordsByCategory: () => [
                     {
                       _id: artworkId,
@@ -163,11 +163,11 @@ describe('artworks controller', () => {
             },
             {
                 case: "quicksearch",
-                page: "page=1&", pageSize: "pageSize=10&", sortOrder: "sortOrder=Tytuł-asc&",
+                page: "page=1&", pageSize: "pageSize=10&", sortBy: "sortBy=Tytuł&", sortOrder: "sortOrder=asc&",
                 collectionIds: [collectionId],
                 search: "search=true&", searchText: "searchText=Testowy&",
                 quickSearchCalls: 1, advSearchCalls: 0,
-                artworkFind: () => {return {exec: () => Promise.resolve([
+                artworkFind: () => {return {sort: () => ({exec: () => Promise.resolve([
                     {
                       _id: artworkId,
                       createdAt: '2024-10-22T20:12:12.209Z',
@@ -182,7 +182,7 @@ describe('artworks controller', () => {
                       ],
                       collectionName: collectionName
                     },
-                ])}},
+                ])})}},
                 sortRecordsByCategory: () => [
                     {
                       _id: artworkId,
@@ -203,11 +203,11 @@ describe('artworks controller', () => {
             },
             {
                 case: "advanced search",
-                page: "page=1&", pageSize: "pageSize=10&", sortOrder: "sortOrder=Tytuł-asc&",
+                page: "page=1&", pageSize: "pageSize=10&", sortBy: "sortBy=Tytuł&", sortOrder: "sortOrder=asc&",
                 collectionIds: [collectionId],
                 search: "search=true&", searchText: undefined,
                 quickSearchCalls: 0, advSearchCalls: 1,
-                artworkFind: () => {return {exec: () => Promise.resolve([
+                artworkFind: () => {return {sort: () => ({exec: () => Promise.resolve([
                     {
                       _id: artworkId,
                       createdAt: '2024-10-22T20:12:12.209Z',
@@ -222,7 +222,7 @@ describe('artworks controller', () => {
                       ],
                       collectionName: collectionName
                     },
-                ])}},
+                ])})}},
                 sortRecordsByCategory: () => [
                     {
                       _id: artworkId,
@@ -242,7 +242,7 @@ describe('artworks controller', () => {
                 statusCode: 200
             },
         ])(`getArtworksForPage should respond with status 200 and correct body - $case`,
-            async ({page, pageSize, sortOrder, collectionIds, search, searchText, quickSearchCalls, advSearchCalls, artworkFind, sortRecordsByCategory, statusCode}) => {
+            async ({page, pageSize, sortBy, sortOrder, collectionIds, search, searchText, quickSearchCalls, advSearchCalls, artworkFind, sortRecordsByCategory, statusCode}) => {
                 mockCollectionFind.mockReturnValue({exec: () => ([{
                     _id: collectionId,
                     name: collectionName,
@@ -261,6 +261,7 @@ describe('artworks controller', () => {
                 if (pageSize) queryString += pageSize
                 if (search) queryString += search
                 if (searchText) queryString += searchText
+                if (sortBy) queryString += sortBy
                 if (sortOrder) queryString += sortOrder
                 if (collectionIds) {
                     for(const id of collectionIds) {
@@ -281,49 +282,56 @@ describe('artworks controller', () => {
 
         test.each([
             {
-                page: undefined, pageSize: "pageSize=10&", sortOrder: "sortOrder=Tytuł-asc&",
+                page: undefined, pageSize: "pageSize=10&", sortBy: "sortBy=Tytuł&", sortOrder: "sortOrder=asc&",
                 collectionIds: [collectionId],
                 collectionFind: () => {throw Error()},
                 artworkFind: () => {throw Error()},
                 statusCode: 400, error: 'Request is missing query params'
             },
             {
-                page: "page=1&", pageSize: undefined, sortOrder: "sortOrder=Tytuł-asc&",
+                page: "page=1&", pageSize: undefined, sortBy: "sortBy=Tytuł&", sortOrder: "sortOrder=asc&",
                 collectionIds: [collectionId],
                 collectionFind: () => {throw Error()},
                 artworkFind: () => {throw Error()},
                 statusCode: 400, error: 'Request is missing query params'
             },
             {
-                page: "page=1&", pageSize: "pageSize=10&", sortOrder: undefined,
+                page: "page=1&", pageSize: "pageSize=10&", sortBy: undefined, sortOrder: "sortOrder=asc&",
                 collectionIds: [collectionId],
                 collectionFind: () => {throw Error()},
                 artworkFind: () => {throw Error()},
                 statusCode: 400, error: 'Request is missing query params'
             },
             {
-                page: "page=1&", pageSize: "pageSize=10&", sortOrder: "sortOrder=Tytuł-asc&",
+                page: "page=1&", pageSize: "pageSize=10&", sortBy: "sortBy=Tytuł&", sortOrder: undefined,
+                collectionIds: [collectionId],
+                collectionFind: () => {throw Error()},
+                artworkFind: () => {throw Error()},
+                statusCode: 400, error: 'Request is missing query params'
+            },
+            {
+                page: "page=1&", pageSize: "pageSize=10&", sortBy: "sortBy=Tytuł&", sortOrder: "sortOrder=asc&",
                 collectionIds: [],
                 collectionFind: () => {throw Error()},
                 artworkFind: () => {throw Error()},
                 statusCode: 400, error: 'Request is missing query params'
             },
             {
-                page: "page=1&", pageSize: "pageSize=10&", sortOrder: "sortOrder=Tytuł-asc&",
+                page: "page=1&", pageSize: "pageSize=10&", sortBy: "sortBy=Tytuł&", sortOrder: "sortOrder=asc&",
                 collectionIds: [collectionId],
                 collectionFind: () => {return {exec: () => Promise.resolve([])}},
                 artworkFind: () => {throw Error()},
                 statusCode: 404, error: 'Collection not found'
             },
             {
-                page: "page=1&", pageSize: "pageSize=10&", sortOrder: "sortOrder=Tytuł-asc&",
+                page: "page=1&", pageSize: "pageSize=10&", sortBy: "sortBy=Tytuł&", sortOrder: "sortOrder=asc&",
                 collectionIds: [collectionId],
                 collectionFind: () => {throw Error()},
                 artworkFind: () => {},
                 statusCode: 503, error: 'Database unavailable'
             },
             {
-                page: "page=1&", pageSize: "pageSize=10&", sortOrder: "sortOrder=Tytuł-asc&",
+                page: "page=1&", pageSize: "pageSize=10&", sortBy: "sortBy=Tytuł&", sortOrder: "sortOrder=asc&",
                 collectionIds: [collectionId],
                 collectionFind: () => ({exec: () => ([{
                     _id: collectionId,
@@ -338,13 +346,14 @@ describe('artworks controller', () => {
                 statusCode: 503, error: 'Database unavailable'
             },
         ])(`getArtworksForPage should respond with status $statusCode and correct error message`,
-            async ({page, pageSize, sortOrder, collectionIds, collectionFind, artworkFind, statusCode, error}) => {
+            async ({page, pageSize, sortBy, sortOrder, collectionIds, collectionFind, artworkFind, statusCode, error}) => {
                 mockCollectionFind.mockImplementation(collectionFind)
                 mockArtworkFind.mockImplementation(artworkFind)
 
                 let queryString = `/?`
                 if (page) queryString += page
                 if (pageSize) queryString += pageSize
+                if (sortBy) queryString += sortBy
                 if (sortOrder) queryString += sortOrder
                 if (collectionIds) {
                     for(const id of collectionIds) {

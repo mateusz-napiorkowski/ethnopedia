@@ -44,6 +44,7 @@ describe("artworks tests", () => {
                     "pageSize": 10,
                     "search": search,
                     "searchText": searchText,
+                    "sortBy": "Tytuł",
                     "sortOrder": "Tytuł-asc",
                     ...searchRules
                 }
@@ -53,6 +54,7 @@ describe("artworks tests", () => {
                 queryParams.params.collectionIds,
                 queryParams.params.page,
                 queryParams.params.pageSize,
+                queryParams.params.sortBy,
                 queryParams.params.sortOrder,
                 queryParams.params.searchText,
                 searchRules
@@ -65,7 +67,7 @@ describe("artworks tests", () => {
         it("should throw error if API call fails", async () => {
             mockAxios.get.mockRejectedValueOnce(new Error("Network Error"));
 
-            await expect(getArtworksForPage([collectionId], 1, 10, "Tytuł-asc", null, {Tytuł: 'testowy'})).rejects.toThrow(axiosError);
+            await expect(getArtworksForPage([collectionId], 1, 10, "Tytuł", "asc", null, {Tytuł: 'testowy'})).rejects.toThrow(axiosError);
         });
     })
 

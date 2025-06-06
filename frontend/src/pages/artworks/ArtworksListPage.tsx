@@ -79,7 +79,8 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                 [collectionId as string],
                 currentPage,
                 pageSize,
-                `${sortCategory}-${sortDirection}`,
+                sortCategory,
+                sortDirection,
                 new URLSearchParams(location.search).get("searchText"),
                 Object.fromEntries(new URLSearchParams(location.search).entries())
             ),

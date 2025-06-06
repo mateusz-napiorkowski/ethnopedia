@@ -31,10 +31,11 @@ export const getArtworksForPage = async (req: Request, res: Response) => {
     try {
         const page = parseInt(req.query.page as string)
         const pageSize = parseInt(req.query.pageSize as string)
-        const sortOrder = req.query.sortOrder as string
+        const sortBy = req.query.sortBy as string
+        const sortOrder = req.query.sortOrder as SortOrder
         const collectionIds = req.query.collectionIds as Array<string>
 
-        if(!page || !pageSize || !sortOrder || ! collectionIds)
+        if(!page || !pageSize || !sortBy || !sortOrder || ! collectionIds)
             throw new Error("Request is missing query params")
         
         const collections = await CollectionCollection.find({_id: {$in: collectionIds}}).exec()
@@ -54,16 +55,10 @@ export const getArtworksForPage = async (req: Request, res: Response) => {
         else
             queryFilter = await constructAdvSearchFilter(req.query, collectionNames)
 
-        const sortByDateKey = ["createdAt-asc", "createdAt-desc", "updatedAt-asc", "updatedAt-desc"].includes(sortOrder) ?
-            sortOrder.split("-")[0] : undefined
-        const sortDirection = sortOrder.split("-")[1] as SortOrder
-        
         const artworksFiltered = await Artwork.find(queryFilter)
-            .sort(sortByDateKey ? {[sortByDateKey]: sortDirection} : {}) //sort by createdAt or updatedAt if it was requested
+            .sort(["createdAt", "updatedAt"].includes(sortBy) ? {[sortBy]: sortOrder} : {}) //sort by createdAt or updatedAt if it was requested
             .exec()
-
-        // if artworks were not requested to be sorted by createdAt or updatedAt - sort by category
-        const artworksSorted = sortByDateKey ? artworksFiltered : sortRecordsByCategory(artworksFiltered, sortOrder)
+        const artworksSorted = sortRecordsByCategory(artworksFiltered, sortBy, sortOrder) //returns artworksFiltered if sortBy equals createdAt or updatedAt
         const artworksForPage = artworksSorted.slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize)
 
         return res.status(200).json({

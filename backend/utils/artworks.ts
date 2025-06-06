@@ -1,3 +1,4 @@
+import { SortOrder } from "mongoose";
 import { getAllCategories } from "./categories";
 import { artworkCategory, collectionCategory } from "./interfaces";
 
@@ -158,8 +159,9 @@ const findMatchingCategory: any = (categoryFullName: string, record: any) => {
         : findMatchingCategory(categoryNameWithoutTopmostPart.join("."), matchedObject);
 }
 
-export const sortRecordsByCategory = (records: any, order: string) => {
-    const [categoryToSortBy, ascOrDesc] = order.split('-')
+export const sortRecordsByCategory = (records: any, categoryToSortBy: string, ascOrDesc: SortOrder) => {
+    if(["createdAt", "updatedAt"].includes(categoryToSortBy))
+        return records
 
     const recordAndCategoryValuePairs = records.map((record: any) => {
         const matchingCategory = findMatchingCategory(categoryToSortBy, record)
