@@ -69,6 +69,15 @@ const ImportCollectionPage = () => {
         );
     })
 
+    const showServerError = ((error: any) => {
+        if(error.error == 'Incorrect request body provided')
+            setServerError("Nieprawidłowe dane w treści żądania")
+        else if(error.error == "Invalid data in the spreadsheet file" || error.error == "Invalid categories data")
+            setServerError(error.cause)
+        else
+            setServerError("Import kolekcji nie powiódł się")
+    })
+
     const handleCollectionNameChange = ((event: ChangeEvent<HTMLTextAreaElement>) => {
         setCollectionName(event.target.value)
     })
@@ -132,10 +141,7 @@ const ImportCollectionPage = () => {
                 navigate("/")
             },
             onError: (error: any) => {
-                if(error.response.data.cause)
-                    setServerError(error.response.data.cause)
-                else
-                    setServerError(error.response.data.error)
+                showServerError(error.response.data)
             }
     })
 
