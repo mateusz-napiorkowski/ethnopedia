@@ -1,13 +1,13 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as XLSX from 'xlsx';
-import Navbar from "src/components/navbar/Navbar";
-import Navigation from "src/components/Navigation";
+import Navbar from "../../components/navbar/Navbar"
+import Navigation from "../../components/Navigation";
 import { ReactComponent as DragAndDrop } from "../../assets/icons/dragAndDrop.svg"
 import { ReactComponent as ExcelIcon } from "../../assets/icons/excel.svg"
 import { useMutation, useQueryClient } from "react-query";
 import { importDataAsCollection } from "../../api/dataImport";
-import { useUser } from "src/providers/UserProvider";
+import { useUser } from "../../providers/UserProvider";
 
 const ImportCollectionPage = () => {
     const nbsp = "\u00A0"
