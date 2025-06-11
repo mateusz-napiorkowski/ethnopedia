@@ -147,7 +147,7 @@ const CreateCollectionPage = () => {
                                 <Form>
                                     <label
                                         htmlFor="name"
-                                        className="block text-sm font-bold text-gray-700 dark:text-white my-2"
+                                        className="block text-sm text-gray-700 dark:text-white my-2"
                                     >
                                         Nazwa
                                     </label>
@@ -167,7 +167,7 @@ const CreateCollectionPage = () => {
 
                                     <label
                                         htmlFor="description"
-                                        className="block text-sm font-bold text-gray-700 dark:text-white my-2"
+                                        className="block text-sm text-gray-700 dark:text-white my-2"
                                     >
                                         Opis
                                     </label>
@@ -176,7 +176,7 @@ const CreateCollectionPage = () => {
                                         id="description"
                                         name="description"
                                         rows={4}
-                                        className={`w-full resize-y mb-8 px-4 py-2 border rounded-lg focus:outline-none dark:border-gray-600 dark:bg-gray-800 ${
+                                        className={`w-full resize-y px-4 py-2 border rounded-lg focus:outline-none dark:border-gray-600 dark:bg-gray-800 ${
                                             touched.description && errors.description ? 'border-red-500' : 'border-gray-300'
                                         }`}
                                     />
@@ -186,7 +186,7 @@ const CreateCollectionPage = () => {
                                         className="text-red-500 text-sm"
                                     />
 
-                                    <hr />
+                                    <hr className="mt-6"/>
                                     <label className="block text-sm mt-4 font-bold text-gray-700 dark:text-white my-2">
                                         Struktura metadanych w kolekcji
                                     </label>

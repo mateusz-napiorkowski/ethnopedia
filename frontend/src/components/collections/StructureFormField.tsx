@@ -1,32 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Category } from '../../@types/Category';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { HiDotsVertical as DotsIcon } from "react-icons/hi";
-import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg";
-import { ReactComponent as MinusIcon } from "../../assets/icons/minus.svg";
+import { HiDotsVertical as DotsIcon, HiPlus as PlusIcon, HiTrash as DeleteIcon } from 'react-icons/hi';
 
-interface FormFieldProps {
+interface Props {
     id: string;
     index: string;
     level: number;
     formData: Category;
-    formDataList: Category[];
-    handleInputChange: (index: string, e: React.ChangeEvent<HTMLInputElement>) => void;
-    handleRemove: (index: string) => void;
-    handleAddSubcategory: (index: string) => void;
+    handleInputChange: (idx: string, e: React.ChangeEvent<HTMLInputElement>) => void;
+    handleRemove: (idx: string) => void;
+    handleAddSubcategory: (idx: string) => void;
     isEditMode: boolean;
 }
 
-const FormField: React.FC<FormFieldProps> = ({
-                                                 id,
-                                                 index,
-                                                 level,
-                                                 formData,
-                                                 handleInputChange,
-                                                 handleRemove,
-                                                 handleAddSubcategory,
-                                                 isEditMode,
+const StructureFormField: React.FC<Props> = ({
+                                                 id, index, level, formData,
+                                                 handleInputChange, handleRemove, handleAddSubcategory,
+                                                 isEditMode
                                              }) => {
     const {
         attributes,
@@ -36,87 +28,70 @@ const FormField: React.FC<FormFieldProps> = ({
         transition,
         isDragging,
     } = useSortable({ id });
+    const [hover, setHover] = useState(false);
 
-    const style = {
-        transform: CSS.Transform.toString(transform),
-        transition,
-        opacity: isDragging ? 0.4 : 1,
-    };
+    const canAdd = level < 5;
+    const addTitle = canAdd
+        ? 'Dodaj podkategorię'
+        : 'Osiągnięto maksymalny poziom zagnieżdżenia';
 
     return (
         <div
             ref={setNodeRef}
-            style={{...style, marginLeft: `${level * 20}px`}}
-            className="form-field group flex flex-col"
+            style={{
+                transform: CSS.Transform.toString(transform),
+                transition,
+                opacity: isDragging ? 0.4 : 1,
+                marginLeft: `${level * 20}px`,
+            }}
+            className="mb-1"
+            onMouseEnter={() => setHover(true)}
+            onMouseLeave={() => setHover(false)}
         >
-            <div className="flex items-center gap-2 py-1">
-                {/* Drag handle */}
+            <div className="inline-flex items-center gap-2 group w-full">
                 {!isEditMode && (
-                    <div
-                        className="cursor-grab"
+                    <DotsIcon
                         {...attributes}
                         {...listeners}
-                        title="Przeciągnij"
-                    >
-                        <DotsIcon className="w-4 h-4 text-gray-400 hover:text-gray-600"/>
-                    </div>
+                        className="w-4 h-4 cursor-grab text-gray-400 hover:text-gray-600"
+                    />
                 )}
-
-                {/* Pole tekstowe */}
                 <input
                     type="text"
                     name="name"
                     value={formData.name}
-                    onChange={(e) => handleInputChange(index, e)}
-                    className="flex-grow border-b border-gray-300 focus:outline-none px-1"
-                    placeholder={level === 0 ? 'Nazwa kategorii' : 'Nazwa podkategorii'}
+                    onChange={e => handleInputChange(index, e)}
+                    placeholder={level === 0 ? "Nazwa kategorii" : "Nazwa podkategorii"}
+                    className="border-b border-gray-300 focus:outline-none p-1 w-full"
                 />
-
-                {/* Akcje */}
                 {!isEditMode && (
-                    <div className="flex gap-1 items-center">
+                    <div
+                        className="inline-flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
                         <button
-                            type="button"
-                            onClick={() => handleAddSubcategory(index)}
-                            title="Dodaj podkategorię"
-                            className="p-0 m-0 w-5 h-5 flex items-center justify-center bg-transparent border-none"
+                            onClick={() => canAdd && handleAddSubcategory(index)}
+                            disabled={!canAdd}
+                            title={addTitle}
+                            className={`p-2 text-sm rounded-md transition-colors
+                                        ${hover ? 'opacity-100' : 'opacity-0'}
+                                        ${canAdd
+                                            ? 'text-blue-600 hover:text-blue-800 cursor-pointer'
+                                            : 'text-gray-400 cursor-not-allowed'}
+                                        `}
                         >
-                            <PlusIcon className="w-4 h-4 text-green-500 hover:text-green-700"/>
+                            <PlusIcon className="w-4 h-4"/>
                         </button>
                         <button
-                            type="button"
                             onClick={() => handleRemove(index)}
+                            className="p-2 text-sm text-red-600 hover:text-red-800 rounded-md transition-colors"
                             title="Usuń"
-                            className="p-0 m-0 w-5 h-5 flex items-center justify-center bg-transparent border-none"
                         >
-                            <MinusIcon className="w-4 h-4 text-red-500 hover:text-red-700"/>
+                            <DeleteIcon className="w-4 h-4"/>
                         </button>
                     </div>
-
                 )}
             </div>
-
-            {/* Subcategories */}
-            {formData.subcategories && formData.subcategories.map((sub, subIndex) => {
-                const subIndexPath = `${index}-${subIndex}`;
-                return (
-                    <FormField
-                        key={subIndexPath}
-                        id={subIndexPath}
-                        index={subIndexPath}
-                        level={level + 1}
-                        formData={sub}
-                        formDataList={formData.subcategories ?? []}
-                        handleInputChange={handleInputChange}
-                        handleRemove={handleRemove}
-                        handleAddSubcategory={handleAddSubcategory}
-                        isEditMode={isEditMode}
-                    />
-                );
-            })}
         </div>
-
     );
 };
 
-export default FormField;
+export default React.memo(StructureFormField);
