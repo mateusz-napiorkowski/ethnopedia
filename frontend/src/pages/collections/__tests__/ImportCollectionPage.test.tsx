@@ -1,12 +1,11 @@
 import '@testing-library/jest-dom';
-import { getByLabelText, render } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from "react-query";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import { UserContext } from '../../../providers/UserProvider';
 import ImportCollectionPage from '../ImportCollectionPage';
 import * as XLSX from 'xlsx';
-
 
 const queryClient = new QueryClient();
 const user = userEvent.setup()
@@ -110,17 +109,17 @@ describe("ImportCollectionPage tests", () => {
         expect(container).toMatchSnapshot()
     })
 
-    it("should show file not loaded error if file is not loaded when clicking import collection button", async () => {           
-        const {getByRole, getByText, getByLabelText, queryByText} = renderComponent()
+    it("should have import collection button disabled if file was not loaded", async () => {           
+        const {getByRole, getByLabelText, queryByText} = renderComponent()
         const importCollectionButton = getByRole("button", {name: /importuj kolekcję/i})
         const collectionNameInputField = getByLabelText("name")
         const descriptionInputField = getByLabelText("description")
 
-        await user.type(collectionNameInputField, "collection name")
-        await user.type(descriptionInputField, "collection description")
+        await user.type(collectionNameInputField, exampleCollectionData.name)
+        await user.type(descriptionInputField, exampleCollectionData.description)
         await user.click(importCollectionButton)
-        
-        expect(getByText(/nie wczytano pliku/i)).toBeInTheDocument()
+        expect(importCollectionButton).toBeDisabled()
+
         expect(queryByText(/nazwa kolekcji jest wymagana/i)).not.toBeInTheDocument()
         expect(queryByText(/opis kolekcji jest wymagany/i)).not.toBeInTheDocument()
     })
@@ -133,7 +132,7 @@ describe("ImportCollectionPage tests", () => {
         const importCollectionButton = getByRole("button", {name: /importuj kolekcję/i})
         
         await user.upload(uploadField, file)
-        await user.type(descriptionInputField, "collection description")
+        await user.type(descriptionInputField, exampleCollectionData.description)
         await user.click(importCollectionButton)
 
         expect(getByText(/nazwa kolekcji jest wymagana/i)).toBeInTheDocument()
@@ -149,12 +148,71 @@ describe("ImportCollectionPage tests", () => {
         const importCollectionButton = getByRole("button", {name: /importuj kolekcję/i})
 
         await user.upload(uploadField, file)
-        await user.type(nameInputField, "collection description")
+        await user.type(nameInputField, exampleCollectionData.name)
         await user.click(importCollectionButton)
 
         expect(getByText(/opis kolekcji jest wymagany/i)).toBeInTheDocument()
         expect(queryByText(/nie wczytano pliku/i)).not.toBeInTheDocument()
         expect(queryByText(/nazwa kolekcji jest wymagana/i)).not.toBeInTheDocument()
+    })
+
+    it("should call importDataAsCollection with correct arguments when import collection button is clicked", async () => {           
+        const {getByRole, getByText, queryByText, getByLabelText} = renderComponent()
+        const file = createXlsxFile(fileData, "example.xlsx")      
+        const uploadField = getByLabelText("upload")
+        const nameInputField = getByLabelText("name")
+        const descriptionInputField = getByLabelText("description")
+        const importCollectionButton = getByRole("button", {name: /importuj kolekcję/i})
+
+        await user.upload(uploadField, file)
+        await user.type(nameInputField, exampleCollectionData.name)
+        await user.type(descriptionInputField, exampleCollectionData.description)
+        await user.click(importCollectionButton)
+
+        expect(mockImportDataAsCollection).toHaveBeenCalledWith(
+            fileData,
+            exampleCollectionData.name,
+            exampleCollectionData.description,
+            jwtToken
+        )
+    })
+
+    it("should change select option when another option is selected by user and call importDataAsCollection with correct arguments when import collection button is clicked", async () => {           
+        const {getByRole, getByText, queryByText, getByLabelText} = renderComponent()
+        const file = createXlsxFile(fileData, "example.xlsx")      
+        const uploadField = getByLabelText("upload")
+        const importCollectionButton = getByRole("button", {name: /importuj kolekcję/i})
+        const fileDataModified = JSON.parse(JSON.stringify(fileData))
+        fileDataModified[0][3] = "Title.Subtitle.Subsubtitle.Artists"
+
+        await user.upload(uploadField, file)
+
+        const artistsParentSelect = getByLabelText("Artists-parent-select")
+        expect(artistsParentSelect).toHaveValue("-")
+        await user.selectOptions(artistsParentSelect, "Subsubtitle")
+        expect(artistsParentSelect).toHaveValue("Subsubtitle")
+        await user.click(importCollectionButton)
+        
+        expect(mockImportDataAsCollection).toHaveBeenCalledWith(fileDataModified, "", "", jwtToken)
+    })
+
+    it("should show circular references error when options selected by users create it", async () => {           
+        const {getByRole, getByText, queryByText, getByLabelText} = renderComponent()
+        const file = createXlsxFile(fileData, "example.xlsx")      
+        const uploadField = getByLabelText("upload")
+        const importCollectionButton = getByRole("button", {name: /importuj kolekcję/i})
+        const fileDataModified = JSON.parse(JSON.stringify(fileData))
+        fileDataModified[0][3] = "Title.Subtitle.Subsubtitle.Artists"
+
+        await user.upload(uploadField, file)
+
+        const subsubtitleParentSelect = getByLabelText("Title-parent-select")
+
+        await user.selectOptions(subsubtitleParentSelect, "Subsubtitle")
+
+        expect(subsubtitleParentSelect).toHaveValue("Subsubtitle")
+        expect(getByText(/wykryto cykliczne referencje/i)).toBeInTheDocument()
+        expect(importCollectionButton).toBeDisabled()
     })
 
 })

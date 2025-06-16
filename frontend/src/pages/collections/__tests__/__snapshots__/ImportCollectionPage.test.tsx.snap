@@ -199,6 +199,7 @@ exports[`ImportCollectionPage tests should render initial state 1`] = `
               </button>
               <button
                 class="px-4 py-2 color-button"
+                disabled=""
                 type="submit"
               >
                 Importuj kolekcję
@@ -434,6 +435,7 @@ exports[`ImportCollectionPage tests should update upload component and show load
                   Title
                 </label>
                 <select
+                  aria-label="Title-parent-select"
                   class="block w-1/2 text-sm font-semibold text-gray-700 dark:text-white my-2"
                   id="Title-parent"
                 >
@@ -469,6 +471,7 @@ exports[`ImportCollectionPage tests should update upload component and show load
                   Subtitle
                 </label>
                 <select
+                  aria-label="Subtitle-parent-select"
                   class="block w-1/2 text-sm font-semibold text-gray-700 dark:text-white my-2"
                   id="Subtitle-parent"
                 >
@@ -504,6 +507,7 @@ exports[`ImportCollectionPage tests should update upload component and show load
                   Subsubtitle
                 </label>
                 <select
+                  aria-label="Subsubtitle-parent-select"
                   class="block w-1/2 text-sm font-semibold text-gray-700 dark:text-white my-2"
                   id="Subsubtitle-parent"
                 >
@@ -539,6 +543,7 @@ exports[`ImportCollectionPage tests should update upload component and show load
                   Artists
                 </label>
                 <select
+                  aria-label="Artists-parent-select"
                   class="block w-1/2 text-sm font-semibold text-gray-700 dark:text-white my-2"
                   id="Artists-parent"
                 >

@@ -262,6 +262,7 @@ const ImportCollectionPage = () => {
                                                 <select 
                                                     className="block w-1/2 text-sm font-semibold text-gray-700 dark:text-white my-2"
                                                     id={`${pair[0]}-parent`}
+                                                    aria-label={`${pair[0]}-parent-select`}
                                                     onChange={handleOptionChange}   
                                                 >
                                                     <option
@@ -308,6 +309,7 @@ const ImportCollectionPage = () => {
                                 </button>
                                 <button
                                     type="submit"
+                                    disabled={!fileLoaded || circularReferences.length != 0 ? true : false }
                                     className="px-4 py-2 color-button"
                                 >
                                     Importuj kolekcję
