@@ -1,0 +1,608 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ImportCollectionPage tests should render initial state 1`] = `
+<div>
+  <div
+    class="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col"
+  >
+    <nav
+      class="bg-gray-800 border-gray-200 dark:bg-gray-200 w-full border-b dark:border-gray-600"
+    >
+      <div
+        class="max-w-screen-xl flex flex-wrap justify-between mx-auto p-4"
+      >
+        <div
+          class="flex items-center mt-1"
+        >
+          <h1
+            class="logo text-gray-200 dark:text-gray-900 text-6xl "
+          >
+            ethnopedia
+          </h1>
+        </div>
+        <div
+          class="flex items-center md:order-2"
+        >
+          <button
+            class="text-gray-800 bg-white border border-gray-300 focus:outline-none
+                           hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm
+                           p-2.5 mr-2 dark:bg-gray-800 dark:text-white dark:border-gray-600
+                           dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+            type="button"
+          >
+            <svg
+              class="w-4 h-4 m-0.5"
+            />
+          </button>
+          <div
+            aria-label="show-dropdown"
+            class="rounded-full bg-gray-300
+                        p-3 cursor-pointer"
+          >
+            <svg />
+          </div>
+          <h2
+            class="font-semibold ml-2 text-lg dark:text-gray-800 text-white"
+          >
+            123
+          </h2>
+        </div>
+      </div>
+    </nav>
+    <div
+      class="container mx-auto px-24 sm:px-32 md:px-40 lg:px-48 mt-4 max-w-screen-lg"
+    >
+      <nav
+        class="flex"
+      >
+        <ol
+          class="inline-flex items-center space-x-1 md:space-x-2"
+        >
+          <li
+            class="inline-flex items-center text-lg"
+          >
+            <a
+              class="inline-flex items-center font-medium text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-600"
+              href="/"
+            >
+              Strona główna
+            </a>
+          </li>
+          <span
+            class="self-center"
+          >
+            <svg
+              class="w-3 h-3 text-gray-600 dark:text-gray-400"
+            />
+          </span>
+          <li
+            class="inline-flex items-center text-lg"
+          >
+            <a
+              class="inline-flex items-center font-medium text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-600"
+              href="/import-collection"
+            >
+              Importuj kolekcję
+            </a>
+          </li>
+        </ol>
+      </nav>
+      <div
+        class="mt-4"
+      >
+        <div
+          class="bg-white dark:bg-gray-800 rounded-lg shadow-md border dark:border-gray-600 p-8"
+        >
+          <div
+            class="flex items-start rounded-t border-b pb-2"
+          >
+            <h3
+              class="text-2xl font-bold text-gray-900 dark:text-white"
+            >
+              Importuj kolekcję
+            </h3>
+          </div>
+          <form>
+            <label
+              class="block text-sm font-bold text-gray-700 dark:text-white my-2"
+              for="dropzone-file"
+            >
+              Plik
+            </label>
+            <label
+              aria-label="upload"
+              class="flex flex-col items-start justify-start p-2 border-2 border-gray-200
+                                    border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-600
+                                    dark:bg-gray-800 hover:bg-gray-100 dark:border-gray-600
+                                    dark:hover:border-gray-500 dark:hover:bg-gray-700"
+              for="dropzone-file"
+            >
+              <div
+                class="flex flex-row items-center justify-center gap-4"
+              >
+                <svg
+                  class="w-12 h-12 text-gray-500 dark:text-gray-400"
+                />
+                <p
+                  class="text-sm font-normal text-gray-500 dark:text-gray-400"
+                >
+                  Kliknij, aby przesłać plik lub przeciągnij go i upuść
+                </p>
+              </div>
+              <input
+                class="hidden"
+                id="dropzone-file"
+                type="file"
+              />
+            </label>
+            <p
+              class="block text-sm font-semibold text-gray-700 dark:text-white my-2"
+            >
+               
+            </p>
+            <label
+              class="block text-sm font-bold text-gray-700 dark:text-white my-2"
+              for="name"
+            >
+              Nazwa
+            </label>
+            <textarea
+              aria-label="name"
+              class="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none"
+              id="name"
+              name="name"
+            />
+            <div
+              class="text-red-500 text-sm"
+            >
+               
+            </div>
+            <label
+              class="block text-sm font-bold text-gray-700 dark:text-white my-2"
+              for="description"
+            >
+              Opis
+            </label>
+            <textarea
+              aria-label="description"
+              class="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none"
+              id="description"
+              name="description"
+            />
+            <div
+              class="text-red-500 text-sm mb-2"
+            >
+               
+            </div>
+            <hr />
+            <div
+              class="text-red-500 text-sm"
+            >
+               
+            </div>
+            <div
+              class="text-red-500 text-sm h-15 overflow-y-scroll"
+            />
+            <div
+              class="text-red-500 text-sm"
+            >
+               
+            </div>
+            <div
+              class="flex justify-end mt-6"
+            >
+              <button
+                class="px-4 py-2 mr-2"
+                type="button"
+              >
+                Anuluj
+              </button>
+              <button
+                class="px-4 py-2 color-button"
+                disabled=""
+                type="submit"
+              >
+                Importuj kolekcję
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ImportCollectionPage tests should update upload component and show loaded categories configuration menu with correct initial category structure after file is loaded 1`] = `
+<div>
+  <div
+    class="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col"
+  >
+    <nav
+      class="bg-gray-800 border-gray-200 dark:bg-gray-200 w-full border-b dark:border-gray-600"
+    >
+      <div
+        class="max-w-screen-xl flex flex-wrap justify-between mx-auto p-4"
+      >
+        <div
+          class="flex items-center mt-1"
+        >
+          <h1
+            class="logo text-gray-200 dark:text-gray-900 text-6xl "
+          >
+            ethnopedia
+          </h1>
+        </div>
+        <div
+          class="flex items-center md:order-2"
+        >
+          <button
+            class="text-gray-800 bg-white border border-gray-300 focus:outline-none
+                           hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm
+                           p-2.5 mr-2 dark:bg-gray-800 dark:text-white dark:border-gray-600
+                           dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+            type="button"
+          >
+            <svg
+              class="w-4 h-4 m-0.5"
+            />
+          </button>
+          <div
+            aria-label="show-dropdown"
+            class="rounded-full bg-gray-300
+                        p-3 cursor-pointer"
+          >
+            <svg />
+          </div>
+          <h2
+            class="font-semibold ml-2 text-lg dark:text-gray-800 text-white"
+          >
+            123
+          </h2>
+        </div>
+      </div>
+    </nav>
+    <div
+      class="container mx-auto px-24 sm:px-32 md:px-40 lg:px-48 mt-4 max-w-screen-lg"
+    >
+      <nav
+        class="flex"
+      >
+        <ol
+          class="inline-flex items-center space-x-1 md:space-x-2"
+        >
+          <li
+            class="inline-flex items-center text-lg"
+          >
+            <a
+              class="inline-flex items-center font-medium text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-600"
+              href="/"
+            >
+              Strona główna
+            </a>
+          </li>
+          <span
+            class="self-center"
+          >
+            <svg
+              class="w-3 h-3 text-gray-600 dark:text-gray-400"
+            />
+          </span>
+          <li
+            class="inline-flex items-center text-lg"
+          >
+            <a
+              class="inline-flex items-center font-medium text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-600"
+              href="/import-collection"
+            >
+              Importuj kolekcję
+            </a>
+          </li>
+        </ol>
+      </nav>
+      <div
+        class="mt-4"
+      >
+        <div
+          class="bg-white dark:bg-gray-800 rounded-lg shadow-md border dark:border-gray-600 p-8"
+        >
+          <div
+            class="flex items-start rounded-t border-b pb-2"
+          >
+            <h3
+              class="text-2xl font-bold text-gray-900 dark:text-white"
+            >
+              Importuj kolekcję
+            </h3>
+          </div>
+          <form>
+            <label
+              class="block text-sm font-bold text-gray-700 dark:text-white my-2"
+              for="dropzone-file"
+            >
+              Plik
+            </label>
+            <label
+              aria-label="upload"
+              class="flex flex-col items-start justify-start p-2 border-2 border-gray-200
+                                    border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-600
+                                    dark:bg-gray-800 hover:bg-gray-100 dark:border-gray-600
+                                    dark:hover:border-gray-500 dark:hover:bg-gray-700"
+              for="dropzone-file"
+            >
+              <div
+                class="flex flex-row items-center justify-center gap-4"
+              >
+                <svg
+                  class="w-12 h-12"
+                />
+                <p
+                  class="text-sm font-bold text-gray-500 dark:text-gray-400"
+                >
+                  example.xlsx
+                </p>
+              </div>
+              <input
+                class="hidden"
+                id="dropzone-file"
+                type="file"
+              />
+            </label>
+            <p
+              class="block text-sm font-semibold text-gray-700 dark:text-white my-2"
+            >
+              <span>
+                Liczba rekordów: 
+                <span
+                  class="font-normal"
+                >
+                  1
+                </span>
+              </span>
+            </p>
+            <label
+              class="block text-sm font-bold text-gray-700 dark:text-white my-2"
+              for="name"
+            >
+              Nazwa
+            </label>
+            <textarea
+              aria-label="name"
+              class="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none"
+              id="name"
+              name="name"
+            />
+            <div
+              class="text-red-500 text-sm"
+            >
+              Nazwa kolekcji jest wymagana
+            </div>
+            <label
+              class="block text-sm font-bold text-gray-700 dark:text-white my-2"
+              for="description"
+            >
+              Opis
+            </label>
+            <textarea
+              aria-label="description"
+              class="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none"
+              id="description"
+              name="description"
+            />
+            <div
+              class="text-red-500 text-sm mb-2"
+            >
+              Opis kolekcji jest wymagany
+            </div>
+            <hr />
+            <p
+              class="text-sm font-bold text-gray-700 dark:text-white my-2"
+            >
+              Wczytane kategorie
+            </p>
+            <p
+              class="text-sm font-normal text-gray-700 dark:text-white my-2"
+            >
+              Sprawdz, czy kategorie zostały poprawnie wczytane. Zaznacz, które kategorie są główne, a które są podkategoriami.
+            </p>
+            <div
+              class="flex flex-col items-center justify-center mt-4 mb-4 p-4 border-2 border-gray-200
+                                    border-solid rounded-lg bg-gray-50 dark:hover:bg-gray-600
+                                    dark:bg-gray-800 dark:border-gray-600
+                                    dark:hover:border-gray-500"
+            >
+              <div
+                class="flex flex-row w-full items-start justify-start"
+              >
+                <span
+                  class="block w-1/2 text-sm font-semibold text-gray-700 dark:text-white my-2"
+                >
+                  Kategoria:
+                </span>
+                <span
+                  class="block w-1/2 text-sm font-semibold text-gray-700 dark:text-white my-2"
+                >
+                  Kategoria nadrzędna:
+                </span>
+              </div>
+              <div
+                class="flex flex-row w-full items-start justify-start"
+              >
+                <label
+                  class="block w-1/2 text-sm font-semibold text-gray-700 dark:text-white my-2"
+                  for="Title-parent"
+                >
+                  Title
+                </label>
+                <select
+                  aria-label="Title-parent-select"
+                  class="block w-1/2 text-sm font-semibold text-gray-700 dark:text-white my-2"
+                  id="Title-parent"
+                >
+                  <option
+                    value="-"
+                  >
+                    -
+                  </option>
+                  <option
+                    value="Subtitle"
+                  >
+                    Subtitle
+                  </option>
+                  <option
+                    value="Subsubtitle"
+                  >
+                    Subsubtitle
+                  </option>
+                  <option
+                    value="Artists"
+                  >
+                    Artists
+                  </option>
+                </select>
+              </div>
+              <div
+                class="flex flex-row w-full items-start justify-start"
+              >
+                <label
+                  class="block w-1/2 text-sm font-semibold text-gray-700 dark:text-white my-2"
+                  for="Subtitle-parent"
+                >
+                  Subtitle
+                </label>
+                <select
+                  aria-label="Subtitle-parent-select"
+                  class="block w-1/2 text-sm font-semibold text-gray-700 dark:text-white my-2"
+                  id="Subtitle-parent"
+                >
+                  <option
+                    value="-"
+                  >
+                    -
+                  </option>
+                  <option
+                    value="Title"
+                  >
+                    Title
+                  </option>
+                  <option
+                    value="Subsubtitle"
+                  >
+                    Subsubtitle
+                  </option>
+                  <option
+                    value="Artists"
+                  >
+                    Artists
+                  </option>
+                </select>
+              </div>
+              <div
+                class="flex flex-row w-full items-start justify-start"
+              >
+                <label
+                  class="block w-1/2 text-sm font-semibold text-gray-700 dark:text-white my-2"
+                  for="Subsubtitle-parent"
+                >
+                  Subsubtitle
+                </label>
+                <select
+                  aria-label="Subsubtitle-parent-select"
+                  class="block w-1/2 text-sm font-semibold text-gray-700 dark:text-white my-2"
+                  id="Subsubtitle-parent"
+                >
+                  <option
+                    value="-"
+                  >
+                    -
+                  </option>
+                  <option
+                    value="Title"
+                  >
+                    Title
+                  </option>
+                  <option
+                    value="Subtitle"
+                  >
+                    Subtitle
+                  </option>
+                  <option
+                    value="Artists"
+                  >
+                    Artists
+                  </option>
+                </select>
+              </div>
+              <div
+                class="flex flex-row w-full items-start justify-start"
+              >
+                <label
+                  class="block w-1/2 text-sm font-semibold text-gray-700 dark:text-white my-2"
+                  for="Artists-parent"
+                >
+                  Artists
+                </label>
+                <select
+                  aria-label="Artists-parent-select"
+                  class="block w-1/2 text-sm font-semibold text-gray-700 dark:text-white my-2"
+                  id="Artists-parent"
+                >
+                  <option
+                    value="-"
+                  >
+                    -
+                  </option>
+                  <option
+                    value="Title"
+                  >
+                    Title
+                  </option>
+                  <option
+                    value="Subtitle"
+                  >
+                    Subtitle
+                  </option>
+                  <option
+                    value="Subsubtitle"
+                  >
+                    Subsubtitle
+                  </option>
+                </select>
+              </div>
+            </div>
+            <div
+              class="text-red-500 text-sm"
+            >
+               
+            </div>
+            <div
+              class="text-red-500 text-sm h-15 overflow-y-scroll"
+            />
+            <div
+              class="text-red-500 text-sm"
+            >
+               
+            </div>
+            <div
+              class="flex justify-end mt-6"
+            >
+              <button
+                class="px-4 py-2 mr-2"
+                type="button"
+              >
+                Anuluj
+              </button>
+              <button
+                class="px-4 py-2 color-button"
+                type="submit"
+              >
+                Importuj kolekcję
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

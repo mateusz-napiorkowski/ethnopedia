@@ -22,11 +22,15 @@ const Navigation = () => {
     const location = useLocation()
     const pathSegments = decodeURIComponent(location.pathname).split("/").filter(Boolean)
     const [, collectionName, , urlArtworkTitle] = pathSegments;
-
     return <nav className="flex">
         <ol className="inline-flex items-center space-x-1 md:space-x-2">
             {renderNavItem("Strona główna", `/`, false)}
-            {renderNavItem("Kolekcja", `/collections/${collectionName}/artworks`)}
+            {pathSegments[0] == "import-collection" &&
+                renderNavItem("Importuj kolekcję", `/import-collection`)
+            }
+            {pathSegments[0] == "collections" &&
+                renderNavItem("Kolekcja", `/collections/${collectionName}/artworks`)
+            }
             {pathSegments[2] === "create-artwork" &&
                 renderNavItem("Dodaj nowy rekord", `/collections/${collectionName}/create-artwork`)
             }

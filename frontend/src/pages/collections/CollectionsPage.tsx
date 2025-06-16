@@ -12,7 +12,6 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useUser } from "../../providers/UserProvider";
 import Pagination from "../../components/Pagination";
 import { getXlsxWithCollectionData } from "../../api/dataExport";
-import ImportOptions from "../../components/ImportOptions";
 import Navbar from "../../components/navbar/Navbar";
 import Footer from "../../components/Footer";
 
@@ -166,14 +165,13 @@ const CollectionsPage = () => {
                                 <button
                                     className="flex items-center justify-center dark:text-white text-sm px-4 py-2 mb-2 hover:bg-gray-700 bg-gray-800 text-white border-gray-800 font-semibold"
                                     type="button"
-                                    onClick={() => setShowImportOptions((prev) => !prev)}
+                                    onClick={() => navigate("/import-collection")}
                                 >
                                     <FileImportIcon />
                                     Importuj kolekcję
                                 </button>
                             </div>
                         </div>
-                        {showImportOptions && <ImportOptions onClose={() => setShowImportOptions(false)} />}
                         <div className="flex flex-row">
                             <div className="flex flex-1">
                                 <button type="button" className="px-4 py-2 mb-2 bg-white" onClick={checkAll}>
