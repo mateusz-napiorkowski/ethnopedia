@@ -92,7 +92,7 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
             </div>
             {/* Drzewo kategorii */}
             <div data-testid="category-tree">{detailsToShow.categories && renderTree(detailsToShow.categories)}</div>
-            <div>
+            <div className="mb-4 mt-4">
                 <label
                     htmlFor="dropzone-file"
                     className="block text-sm font-bold text-gray-700 dark:text-white my-2"
@@ -102,19 +102,22 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
                 <div
                     role="button"
                     aria-label="download-file"
-                    onClick={() => downloadMidiOrMeiFile(detailsToShow.fileName, detailsToShow._id)}
-                    className="flex flex-col items-start justify-start p-2 border-2 border-gray-200
-                            border-solid rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-600
-                            dark:bg-gray-800 hover:bg-gray-100 dark:border-gray-600
-                            dark:hover:border-gray-500 dark:hover:bg-gray-700"
+                    onClick={() => {if(detailsToShow.fileName) downloadMidiOrMeiFile(detailsToShow.fileName, detailsToShow._id)}}
+                    className={`flex flex-col items-start justify-start p-2 border-2 border-gray-200
+                            border-solid rounded-lg ${detailsToShow.fileName ? "cursor-pointer" : "cursor-default"} bg-gray-50 
+                            dark:bg-gray-800 dark:border-gray-600
+                            ${detailsToShow.fileName ? "hover:bg-gray-100 dark:hover:border-gray-500 dark:hover:bg-gray-700" : ""}`}
                 >
                 <div className="flex flex-row items-center justify-between w-full">
                     <div className="flex flex-row items-center justify-center gap-4">
-                        {/\.(mei|mid|midi)$/i.test(detailsToShow.fileName)
+                        {detailsToShow.fileName &&
+                            <>{/\.(mei|mid|midi)$/i.test(detailsToShow.fileName)
                             ? <MusicNoteIcon className="w-12 h-12" />
-                            : <UnknownFileIcon className="w-12 h-12" />}
+                            : <UnknownFileIcon className="w-12 h-12" />}</>
+                            
+                        } 
                         <p className="text-sm font-bold text-gray-500 dark:text-gray-400">
-                            {detailsToShow.fileName}
+                            {detailsToShow.fileName ? detailsToShow.fileName : "Brak wgranego pliku"}
                         </p>
                     </div>
                 </div>
