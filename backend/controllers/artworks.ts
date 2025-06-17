@@ -155,12 +155,33 @@ export const createArtwork = authAsyncWrapper((async (req: Request, res: Respons
 
 export const editArtwork = authAsyncWrapper((async (req: Request, res: Response) => {
     try {
+        const file = req.file
         const artworkId = req.params.artworkId
-        if(!req.body.categories || !req.body.collectionName)
+        const categories = JSON.parse(req.body.categories)
+        const collectionName = req.body.collectionName
+        if(!categories || !collectionName)
             throw new Error('Incorrect request body provided')
-        const resultInfo = await Artwork.replaceOne({_id: artworkId, collectionName: req.body.collectionName}, req.body).exec()
+        const resultInfo = await Artwork.replaceOne(
+            {_id: artworkId, collectionName: collectionName},
+            {
+                categories: categories,
+                collectionName: collectionName,
+                fileName: file ? `${file.originalname}` : undefined,
+                filePath: file ? `uploads/${artworkId}-${file.originalname}` : undefined,
+            }
+        ).exec()
         if(resultInfo.modifiedCount === 0) {
             throw new Error('Artwork not found')
+        } else {
+            if (file) {
+                const uploadsDir = path.join(__dirname, "..", "uploads");
+                if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
+
+                const fileName = `${artworkId}-${file.originalname}`;
+                const filePath = `uploads/${fileName}`;
+
+                fs.writeFileSync(filePath, file.buffer);
+            }   
         }
         return res.status(201).json(resultInfo)
     } catch (error) {

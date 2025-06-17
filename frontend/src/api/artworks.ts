@@ -37,13 +37,19 @@ export const createArtwork = async (artworkData: any, jwtToken: any) => {
 }
 
 export const editArtwork = async (artworkData: any, artworkId: string, jwtToken: any) => {
+    const formData = new FormData();
+    formData.append("file", artworkData.file);
+    formData.append("categories", JSON.stringify(artworkData.categories));
+    formData.append("collectionName", artworkData.collectionName);
     const config = {
-        headers: { Authorization: `Bearer ${jwtToken}` }
+        headers: {
+            Authorization: `Bearer ${jwtToken}`,
+        },
     };
     return await axios
-        .put(`${API_URL}v1/artworks/edit/${artworkId}`, artworkData, config)
-        .then(res => res.data)
-}
+        .put(`${API_URL}v1/artworks/edit/${artworkId}`, formData, config)
+        .then(res => res.data);
+};
 
 export const deleteArtworks = async (artworkIds: Array<string>, jwtToken: string) => {
     const config = {
