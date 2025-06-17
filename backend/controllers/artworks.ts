@@ -107,17 +107,19 @@ export const getArtworksBySearchTextMatchedInTopmostCategory = async (req: Reque
 
 export const createArtwork = authAsyncWrapper((async (req: Request, res: Response) => {
     try {
-        console.log("back api")
+        const file = req.file
+        console.log(file)
         const collectionName = req.body.collectionName
-        if(!req.body.categories || !collectionName)
+        const categories = JSON.parse(req.body.categories)
+        if(!categories || !collectionName)
             throw new Error(`Incorrect request body provided`)
         const foundCollections = await CollectionCollection.find({name: collectionName}).exec()
         if (foundCollections.length !== 1)
             throw new Error(`Collection not found`)
         const collectionCategories = foundCollections[0].categories
-        if(!artworkCategoriesHaveValidFormat(req.body.categories, collectionCategories))
+        if(!artworkCategoriesHaveValidFormat(categories, collectionCategories))
             throw new Error(`Incorrect request body provided`)
-        const newArtwork = await Artwork.create(req.body)
+        const newArtwork = await Artwork.create({categories: categories, collectionName: collectionName})
         console.log(req.body);
         res.status(201).json(newArtwork)
     } catch (error) {

@@ -1,9 +1,14 @@
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { Metadata } from '../../@types/Metadata';
 import FormField from './FormField';
+import { ReactComponent as MusicNoteIcon } from "../../assets/icons/music-note.svg"
+import { ReactComponent as UnknownFileIcon } from "../../assets/icons/unknown-file.svg"
+import { ReactComponent as DragAndDrop } from "../../assets/icons/dragAndDrop.svg"
+import { ReactComponent as Close } from "../../assets/icons/close.svg"
 
 interface MetadataFormProps {
-    initialMetadataTree?: Metadata[];
+    initialMetadataTree?: Metadata[],
+    setUploadedFile: (file: any) => void,
     categoryPaths?: string[];
     setFieldValue: (
         field: string,
@@ -36,10 +41,13 @@ const buildHierarchy = (paths: string[]): Metadata[] => {
 
 const MetadataForm: React.FC<MetadataFormProps> = ({
                                                        initialMetadataTree,
+                                                       setUploadedFile,
                                                        categoryPaths,
                                                        setFieldValue,
                                                    }) => {
     const [categories, setCategories] = useState<Metadata[]>([]);
+    const [fileLoaded, setFileLoaded] = useState(false)
+    const [fileName, setFileName] = useState("")
 
     // Build tree from API or dot-paths
     useEffect(() => {
@@ -162,11 +170,77 @@ const MetadataForm: React.FC<MetadataFormProps> = ({
             );
         });
 
+    const handleFileUpload = (event: any) => {
+        const file = event.target.files[0]
+        if(!file) return
+
+        const reader = new FileReader();
+        reader.onload = (evt: any) => {
+            setFileLoaded(true)
+            setUploadedFile(file)
+            setFileName(file.name)
+        };
+
+        reader.readAsArrayBuffer(file)
+    }
+
+    const handleFileRemove = (event: any) => {
+        event.preventDefault()
+        setFileLoaded(false)
+        setFileName("")
+    }
 
     return (
-        <div data-testid='category-tree'>
-            {renderFields(categories)}
-        </div>
+        <>
+            <div data-testid='category-tree'>
+                {renderFields(categories)}
+            </div>
+            <div>
+                <label
+                    htmlFor="dropzone-file"
+                    className="block text-sm font-bold text-gray-700 dark:text-white my-2"
+                >
+                    Plik MIDI/MEI
+                </label>
+                <label
+                    aria-label="upload"
+                    htmlFor="dropzone-file"
+                    className="flex flex-col items-start justify-start p-2 border-2 border-gray-200
+                                border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-600
+                                dark:bg-gray-800 hover:bg-gray-100 dark:border-gray-600
+                                dark:hover:border-gray-500 dark:hover:bg-gray-700"
+                >
+                    {fileLoaded ? <div className="flex flex-row items-center justify-between w-full">
+                        <div className='flex flex-row items-center justify-center gap-4'>
+                        {/\.(mei|mid|midi)$/i.test(fileName) ? <MusicNoteIcon className="w-12 h-12"/> : <UnknownFileIcon className="w-12 h-12"/>}
+                        <p className="text-sm font-bold text-gray-500 dark:text-gray-400">
+                            {fileName}
+                        </p>
+                        </div>
+                        <button
+                            aria-label="exit"
+                            type="button"
+                            className="text-gray-400 hover:bg-gray-200 hover:text-gray-900 text-sm
+                                    dark:hover:bg-gray-600 dark:hover:text-white p-2 rounded-lg"
+                            onClick={handleFileRemove}
+                        >
+                            <Close />
+                        </button>
+                    </div> : <div className="flex flex-row items-center justify-center gap-4">
+                        <DragAndDrop className="w-12 h-12 text-gray-500 dark:text-gray-400"/>
+                        <p className="text-sm font-normal text-gray-500 dark:text-gray-400">
+                            Kliknij, aby przesłać plik lub przeciągnij go i upuść
+                        </p>
+                    </div>}
+                    <input
+                        id="dropzone-file"
+                        type="file"
+                        className="hidden"
+                        onChange={handleFileUpload}
+                    />
+                </label>
+            </div>
+        </>
     );
 };
 

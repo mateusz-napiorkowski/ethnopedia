@@ -13,7 +13,8 @@ import MetadataForm from '../../components/artwork/MetadataForm';
 import { Metadata } from '../../@types/Metadata';
 
 interface FormValues {
-    categories: Metadata[];
+    categories: Metadata[],
+    file: any
 }
 
 const CreateArtworkPage: React.FC = () => {
@@ -41,11 +42,13 @@ const CreateArtworkPage: React.FC = () => {
     const [initialMetadataTree, setInitialMetadataTree] = useState<Metadata[] | undefined>(
         undefined
     );
+    const [uploadedFile, setUploadedFile] = useState("")
 
     useEffect(() => {
         if (artworkId) {
             getArtwork(artworkId).then((res) => {
                 setInitialMetadataTree(res.artwork.categories);
+                setUploadedFile(res.artwork.file)
             });
         } else if (catData?.categories) {
             setInitialCategoryPaths(catData.categories);
@@ -73,7 +76,7 @@ const CreateArtworkPage: React.FC = () => {
                 </h2>
 
                 <Formik<FormValues>
-                    initialValues={{categories: initialMetadataTree || []}}
+                    initialValues={{categories: initialMetadataTree || [], file: uploadedFile}}
                     enableReinitialize
                     validate={(values) => {
                         const errs: Partial<Record<keyof FormValues, string>> = {};
@@ -92,6 +95,7 @@ const CreateArtworkPage: React.FC = () => {
                         const payload = {
                             categories: values.categories,
                             collectionName: collData?.name,
+                            file: uploadedFile
                         };
                         try {
                             if (artworkId) {
@@ -112,6 +116,7 @@ const CreateArtworkPage: React.FC = () => {
                         <Form>
                             <MetadataForm
                                 initialMetadataTree={initialMetadataTree}
+                                setUploadedFile={setUploadedFile}
                                 categoryPaths={initialCategoryPaths}
                                 setFieldValue={setFieldValue}
                             />

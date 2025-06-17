@@ -23,11 +23,16 @@ export const getArtworksForPage = async (collectionIds: Array<string>, page: num
 }
 
 export const createArtwork = async (artworkData: any, jwtToken: any) => {
+    const formData = new FormData();
+    formData.append("file", artworkData.file);
+    formData.append("categories", JSON.stringify(artworkData.categories));
+    formData.append("collectionName", artworkData.collectionName);
     const config = {
-        headers: { Authorization: `Bearer ${jwtToken}` }
+        headers: { Authorization: `Bearer ${jwtToken}` },
+        'Content-Type': 'multipart/form-data'
     };
     return await axios
-        .post(`${API_URL}v1/artworks/create`, artworkData, config)
+        .post(`${API_URL}v1/artworks/create`, formData, config)
         .then(res => res.data)
 }
 
