@@ -5,6 +5,8 @@ import Artwork from "../models/artwork";
 import CollectionCollection from "../models/collection"
 import { constructQuickSearchFilter, constructAdvSearchFilter, sortRecordsByCategory, constructTopmostCategorySearchTextFilter } from "../utils/artworks"
 import { artworkCategoriesHaveValidFormat } from "../utils/categories";
+import path from "path"
+import fs from "fs";
 
 export const getArtwork = async (req: Request, res: Response) => {
     try {
@@ -120,7 +122,21 @@ export const createArtwork = authAsyncWrapper((async (req: Request, res: Respons
         if(!artworkCategoriesHaveValidFormat(categories, collectionCategories))
             throw new Error(`Incorrect request body provided`)
         const newArtwork = await Artwork.create({categories: categories, collectionName: collectionName})
-        console.log(req.body);
+
+        if (file) {
+            const uploadsDir = path.join(__dirname, "..", "uploads");
+            if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
+
+            const fileName = `${file.originalname}`;
+            const filePath = `uploads/${fileName}`;
+
+            fs.writeFileSync(filePath, file.buffer);
+
+            newArtwork.filePath = filePath;
+            newArtwork.fileName = file.originalname;
+            await newArtwork.save();
+        }
+
         res.status(201).json(newArtwork)
     } catch (error) {
         const err = error as Error
