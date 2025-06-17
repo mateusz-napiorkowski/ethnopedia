@@ -3,8 +3,12 @@ import { ReactComponent as Expand } from "../../assets/icons/plus.svg";
 import { ReactComponent as Fold } from "../../assets/icons/minus.svg";
 import { ReactComponent as EditIcon } from "../../assets/icons/edit.svg";
 import { ReactComponent as TrashBinIcon } from "../../assets/icons/trashBin.svg";
+import { ReactComponent as MusicNoteIcon } from "../../assets/icons/music-note.svg"
+import { ReactComponent as UnknownFileIcon } from "../../assets/icons/unknown-file.svg"
 import { useUser } from "../../providers/UserProvider";
 import {useNavigate} from "react-router-dom";
+import { API_URL } from "../../config"
+import { downloadMidiOrMeiFile } from "../../api/download";
 
 interface Category {
     name: string;
@@ -14,7 +18,7 @@ interface Category {
 
 interface ArtworkDetailsProps {
     collectionName: string;
-    detailsToShow: { categories: Category[]; createdAt: string, updatedAt: string};
+    detailsToShow: { _id: any, categories: Category[]; createdAt: string, updatedAt: string, fileName: string, filePath: string};
     handleEditClick: () => void;
     setShowDeleteArtworkWarning: (value: boolean) => void;
 }
@@ -88,6 +92,34 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
             </div>
             {/* Drzewo kategorii */}
             <div data-testid="category-tree">{detailsToShow.categories && renderTree(detailsToShow.categories)}</div>
+            <div>
+                <label
+                    htmlFor="dropzone-file"
+                    className="block text-sm font-bold text-gray-700 dark:text-white my-2"
+                >
+                    Plik MIDI/MEI
+                </label>
+                <div
+                    role="button"
+                    aria-label="download-file"
+                    onClick={() => downloadMidiOrMeiFile(detailsToShow.fileName, detailsToShow._id)}
+                    className="flex flex-col items-start justify-start p-2 border-2 border-gray-200
+                            border-solid rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-600
+                            dark:bg-gray-800 hover:bg-gray-100 dark:border-gray-600
+                            dark:hover:border-gray-500 dark:hover:bg-gray-700"
+                >
+                <div className="flex flex-row items-center justify-between w-full">
+                    <div className="flex flex-row items-center justify-center gap-4">
+                        {/\.(mei|mid|midi)$/i.test(detailsToShow.fileName)
+                            ? <MusicNoteIcon className="w-12 h-12" />
+                            : <UnknownFileIcon className="w-12 h-12" />}
+                        <p className="text-sm font-bold text-gray-500 dark:text-gray-400">
+                            {detailsToShow.fileName}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            </div>
             <div className="mb-4 border-t pb-2 pt-2">
                 <p className="text-sm text-gray-500 dark:text-gray-300">
                     Data utworzenia rekordu: {createdAtDate.toString()}

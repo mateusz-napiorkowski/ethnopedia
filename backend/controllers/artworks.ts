@@ -127,7 +127,7 @@ export const createArtwork = authAsyncWrapper((async (req: Request, res: Respons
             const uploadsDir = path.join(__dirname, "..", "uploads");
             if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
 
-            const fileName = `${file.originalname}`;
+            const fileName = `${newArtwork._id}-${file.originalname}`;
             const filePath = `uploads/${fileName}`;
 
             fs.writeFileSync(filePath, file.buffer);
