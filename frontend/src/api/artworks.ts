@@ -41,6 +41,7 @@ export const editArtwork = async (artworkData: any, artworkId: string, jwtToken:
     formData.append("file", artworkData.file);
     formData.append("categories", JSON.stringify(artworkData.categories));
     formData.append("collectionName", artworkData.collectionName);
+    formData.append("fileName", artworkData.fileName)
     const config = {
         headers: {
             Authorization: `Bearer ${jwtToken}`,

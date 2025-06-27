@@ -42,13 +42,14 @@ const CreateArtworkPage: React.FC = () => {
     const [initialMetadataTree, setInitialMetadataTree] = useState<Metadata[] | undefined>(
         undefined
     );
-    const [uploadedFile, setUploadedFile] = useState("")
+    const [uploadedFile, setUploadedFile] = useState()
+    const [currentFileName, setCurrentFileName] = useState("")
 
     useEffect(() => {
         if (artworkId) {
             getArtwork(artworkId).then((res) => {
                 setInitialMetadataTree(res.artwork.categories);
-                setUploadedFile(res.artwork.file)
+                setCurrentFileName(res.artwork.fileName)
             });
         } else if (catData?.categories) {
             setInitialCategoryPaths(catData.categories);
@@ -116,6 +117,7 @@ const CreateArtworkPage: React.FC = () => {
                         <Form>
                             <MetadataForm
                                 initialMetadataTree={initialMetadataTree}
+                                currentFileName={currentFileName}
                                 setUploadedFile={setUploadedFile}
                                 categoryPaths={initialCategoryPaths}
                                 setFieldValue={setFieldValue}

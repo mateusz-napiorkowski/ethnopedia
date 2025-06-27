@@ -6,7 +6,7 @@ import CollectionCollection from "../models/collection"
 import { constructQuickSearchFilter, constructAdvSearchFilter, sortRecordsByCategory, constructTopmostCategorySearchTextFilter } from "../utils/artworks"
 import { artworkCategoriesHaveValidFormat } from "../utils/categories";
 import path from "path"
-import fs from "fs";
+import fs, { PathLike } from "fs";
 
 export const getArtwork = async (req: Request, res: Response) => {
     try {
@@ -110,7 +110,6 @@ export const getArtworksBySearchTextMatchedInTopmostCategory = async (req: Reque
 export const createArtwork = authAsyncWrapper((async (req: Request, res: Response) => {
     try {
         const file = req.file
-        console.log(file)
         const collectionName = req.body.collectionName
         const categories = JSON.parse(req.body.categories)
         if(!categories || !collectionName)
@@ -161,13 +160,17 @@ export const editArtwork = authAsyncWrapper((async (req: Request, res: Response)
         const collectionName = req.body.collectionName
         if(!categories || !collectionName)
             throw new Error('Incorrect request body provided')
+        const artwork = await Artwork.findOne({_id: artworkId}).exec()
+        if(artwork === null) 
+            throw new Error('Artwork not found')
+        const newArtworkFileName = file ? file.originalname : artwork.fileName
         const resultInfo = await Artwork.replaceOne(
             {_id: artworkId, collectionName: collectionName},
             {
                 categories: categories,
                 collectionName: collectionName,
-                fileName: file ? `${file.originalname}` : undefined,
-                filePath: file ? `uploads/${artworkId}-${file.originalname}` : undefined,
+                fileName: newArtworkFileName,
+                filePath: `uploads/${artworkId}-${newArtworkFileName}`
             }
         ).exec()
         if(resultInfo.modifiedCount === 0) {
@@ -180,6 +183,10 @@ export const editArtwork = authAsyncWrapper((async (req: Request, res: Response)
                 const fileName = `${artworkId}-${file.originalname}`;
                 const filePath = `uploads/${fileName}`;
 
+                const oldFilePath = artwork.filePath
+
+                if(oldFilePath)
+                    fs.unlinkSync(oldFilePath as PathLike)
                 fs.writeFileSync(filePath, file.buffer);
             }   
         }

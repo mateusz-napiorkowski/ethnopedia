@@ -8,6 +8,7 @@ import { ReactComponent as Close } from "../../assets/icons/close.svg"
 
 interface MetadataFormProps {
     initialMetadataTree?: Metadata[],
+    currentFileName: string,
     setUploadedFile: (file: any) => void,
     categoryPaths?: string[];
     setFieldValue: (
@@ -41,13 +42,14 @@ const buildHierarchy = (paths: string[]): Metadata[] => {
 
 const MetadataForm: React.FC<MetadataFormProps> = ({
                                                        initialMetadataTree,
+                                                       currentFileName,
                                                        setUploadedFile,
                                                        categoryPaths,
                                                        setFieldValue,
                                                    }) => {
     const [categories, setCategories] = useState<Metadata[]>([]);
     const [fileLoaded, setFileLoaded] = useState(false)
-    const [fileName, setFileName] = useState("")
+    const [fileName, setFileName] = useState(currentFileName)
 
     // Build tree from API or dot-paths
     useEffect(() => {
@@ -55,6 +57,9 @@ const MetadataForm: React.FC<MetadataFormProps> = ({
             setCategories(initialMetadataTree);
         } else if (categoryPaths) {
             setCategories(buildHierarchy(categoryPaths));
+        }
+        if (currentFileName) {
+            setFileName(currentFileName)
         }
     }, [initialMetadataTree, categoryPaths]);
 
@@ -210,7 +215,7 @@ const MetadataForm: React.FC<MetadataFormProps> = ({
                                 dark:bg-gray-800 hover:bg-gray-100 dark:border-gray-600
                                 dark:hover:border-gray-500 dark:hover:bg-gray-700"
                 >
-                    {fileLoaded ? <div className="flex flex-row items-center justify-between w-full">
+                    {fileLoaded || fileName ? <div className="flex flex-row items-center justify-between w-full">
                         <div className='flex flex-row items-center justify-center gap-4'>
                         {/\.(mei|mid|midi)$/i.test(fileName) ? <MusicNoteIcon className="w-12 h-12"/> : <UnknownFileIcon className="w-12 h-12"/>}
                         <p className="text-sm font-bold text-gray-500 dark:text-gray-400">
