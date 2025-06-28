@@ -3,11 +3,8 @@ import mongoose, { ClientSession, SortOrder } from "mongoose"
 import { authAsyncWrapper } from "../middleware/auth"
 import Artwork from "../models/artwork";
 import CollectionCollection from "../models/collection"
-import { constructQuickSearchFilter, constructAdvSearchFilter, sortRecordsByCategory, constructTopmostCategorySearchTextFilter } from "../utils/artworks"
+import { constructQuickSearchFilter, constructAdvSearchFilter, sortRecordsByCategory, constructTopmostCategorySearchTextFilter, handleFileUpload as handleFileUploads } from "../utils/artworks"
 import { artworkCategoriesHaveValidFormat } from "../utils/categories";
-import path from "path"
-import fs from "fs";
-import { v4 as uuidv4 } from 'uuid';
 
 export const getArtwork = async (req: Request, res: Response) => {
     try {
@@ -110,7 +107,7 @@ export const getArtworksBySearchTextMatchedInTopmostCategory = async (req: Reque
 
 export const createArtwork = authAsyncWrapper((async (req: Request, res: Response) => {
     try {
-        const files = req.files
+        const files = req.files as Express.Multer.File[] | undefined
         const collectionName = req.body.collectionName
         let categories;        
         try {
@@ -118,60 +115,37 @@ export const createArtwork = authAsyncWrapper((async (req: Request, res: Respons
         } catch {
             throw new Error(`Incorrect request body provided`);
         }
-        if(!categories || !collectionName || (files && Array.isArray(files) && files.length > 5))
+        const originalNames = files?.map((file: any) => file.originalname) || []
+        if(
+            !categories ||
+            !collectionName ||
+            (files && Array.isArray(files) && files.length > 5) || //more than 5 files
+            originalNames?.length > [...new Set(originalNames)].length // duplicate filenames
+        )
             throw new Error(`Incorrect request body provided`)
         const session = await mongoose.startSession()
         await session.withTransaction(async (session: ClientSession) => {
-            const foundCollections = await CollectionCollection.find({name: collectionName}, null, { session }).exec()
-            if (foundCollections.length !== 1)
-                throw new Error(`Collection not found`)
-            const collectionCategories = foundCollections[0].categories
-            if(!artworkCategoriesHaveValidFormat(categories, collectionCategories))
+            const collection = await CollectionCollection.findOne({name: collectionName}, null, {session}).exec()
+            if (collection == null)
+                throw new Error("Collection not found")
+            if(!artworkCategoriesHaveValidFormat(categories, collection.categories))
                 throw new Error(`Incorrect request body provided`)
 
             const newArtwork = new Artwork({ categories: categories, collectionName: collectionName });
             await newArtwork.save({ session });
 
-            const savedFiles = [];
-            const failed = []
-            if (files && Array.isArray(files)) {
-                const uploadsDir = path.join(__dirname, "..", `uploads/`);
-                const collectionUploadsDir = path.join(__dirname, "..", `uploads/${foundCollections[0]._id}`);
-                if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
-                if (!fs.existsSync(collectionUploadsDir)) fs.mkdirSync(collectionUploadsDir);
+            const {
+                artwork,
+                savedFilesCount,
+                failedUploadsCount,
+                failedUploadsFilenames
+            } = await handleFileUploads(newArtwork, files, collection._id, session)
 
-                for(const file of files) {
-                    const fileName = `${newArtwork._id}-${uuidv4()}${path.extname(file.originalname)}`;
-                    const filePath = `uploads/${foundCollections[0]._id}/${fileName}`;
-
-                    const maxFileSize = 25 * 1024 * 1024 // 25 MB
-
-                    try {
-                        if(!/\.(mei|mid|midi|txt|text|musicxml|mxl|xml)$/i.test(file.originalname))
-                            throw Error("Invalid file extension")
-                        if(file.size > maxFileSize)
-                            throw Error("File size exceeded")
-                        fs.writeFileSync(filePath, file.buffer);
-                        savedFiles.push({
-                            originalFilename: file.originalname,
-                            newFilename: fileName,
-                            filePath: filePath,
-                            size: file.size,
-                            uploadedAt: new Date(Date.now())
-                        });
-                    } catch {
-                        failed.push(fileName)
-                    }
-                }
-
-                newArtwork.files = savedFiles
-                await newArtwork.save({session});
-            }
             res.status(201).json({
-                newArtwork,
-                savedFilesCount: savedFiles.length,
-                failedUploadsCount: failed.length,
-                failedUploadsFilenames: failed
+                artwork,
+                savedFilesCount,
+                failedUploadsCount,
+                failedUploadsFilenames
             })
         })
     } catch (error) {

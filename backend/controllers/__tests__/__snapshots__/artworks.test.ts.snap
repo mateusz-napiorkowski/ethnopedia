@@ -122,9 +122,7 @@ exports[`artworks controller GET endpoints getArtworksForPage should respond wit
 
 exports[`artworks controller POST endpoints createArtwork should respond with status 201 and correct body 1`] = `
 {
-  "failedUploadsCount": 0,
-  "failedUploadsFilenames": [],
-  "newArtwork": {
+  "artwork": {
     "__v": 0,
     "_id": "66ce0bf156199c1b8df5db7d",
     "categories": [
@@ -138,6 +136,8 @@ exports[`artworks controller POST endpoints createArtwork should respond with st
     "createdAt": "2024-08-27T17:25:05.352Z",
     "updatedAt": "2024-08-27T17:25:05.352Z",
   },
+  "failedUploadsCount": 0,
+  "failedUploadsFilenames": [],
   "savedFilesCount": 0,
 }
 `;

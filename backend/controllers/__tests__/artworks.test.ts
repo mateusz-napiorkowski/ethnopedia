@@ -17,11 +17,13 @@ jest.mock('mongoose', () => ({
 }))
 
 const mockSortRecordsByCategory = jest.fn() 
+const mockHandleFileUpload = jest.fn()
 jest.mock('../../utils/artworks', () => ({
     constructQuickSearchFilter: jest.fn(),
     constructAdvSearchFilter: jest.fn(),
     constructTopmostCategorySearchTextFilter: jest.fn(),
     sortRecordsByCategory: () => mockSortRecordsByCategory(),
+    handleFileUpload: () => mockHandleFileUpload()
 }))
 
 const mockArtworkCategoriesHaveValidFormat = jest.fn() 
@@ -31,7 +33,6 @@ jest.mock('../../utils/categories', () => ({
 
 const mockFindById = jest.fn()
 const mockArtworkFind = jest.fn()
-const mockCreate = jest.fn()
 const mockReplaceOne = jest.fn()
 const mockCountDocuments = jest.fn()
 const mockDeleteMany = jest.fn()
@@ -41,7 +42,6 @@ jest.mock("../../models/artwork", () => {
     const mockConstructor: any = jest.fn();
     mockConstructor.findById = jest.fn(() => mockFindById());
     mockConstructor.find = jest.fn(() => mockArtworkFind());
-    mockConstructor.create = jest.fn(() => mockCreate());
     mockConstructor.replaceOne = jest.fn(() => mockReplaceOne());
     mockConstructor.countDocuments = jest.fn(() => mockCountDocuments());
     mockConstructor.deleteMany = jest.fn(() => mockDeleteMany());
@@ -480,16 +480,8 @@ describe('artworks controller', () => {
                 save: () => mockSaveArtwork()
             }));
             mockStartSession.mockImplementation(() => startSessionDefaultReturnValue)
-            mockCreate.mockReturnValue(Promise.resolve({
-                _id: `${artworkId}`,
-                categories: [{name: 'Title', value: 'Title', subcategories: []}],
-                collectionName: collectionName,
-                createdAt: '2024-08-27T17:25:05.352Z',
-                updatedAt: '2024-08-27T17:25:05.352Z',
-                __v: 0
-            }))
-            mockCollectionFind.mockReturnValue({
-                exec: () => Promise.resolve([{
+            mockCollectionFindOne.mockReturnValue({
+                exec: () => Promise.resolve({
                     _id: collectionId,
                     name: collectionName,
                     description: 'collection description',
@@ -497,13 +489,32 @@ describe('artworks controller', () => {
                         {name: 'Title', subcategories: []}
                     ],
                     __v: 0
-                }])
+                })
             })
             mockArtworkCategoriesHaveValidFormat.mockReturnValue(true)
             const payload = {
                 categories: '[{"name": "Title", "value": "Title", "subcategories": []}]',
                 collectionName: collectionName
             }
+            mockHandleFileUpload.mockReturnValue({
+                "artwork": {
+                    "__v": 0,
+                    "_id": "66ce0bf156199c1b8df5db7d",
+                    "categories": [
+                    {
+                        "name": "Title",
+                        "subcategories": [],
+                        "value": "Title",
+                    },
+                    ],
+                    "collectionName": "collection",
+                    "createdAt": "2024-08-27T17:25:05.352Z",
+                    "updatedAt": "2024-08-27T17:25:05.352Z",
+                },
+                "savedFilesCount": 0,
+                "failedUploadsCount": 0,
+                "failedUploadsFilenames": [],
+            })
 
             const res = await request(app)
                 .post('/create')
@@ -520,19 +531,19 @@ describe('artworks controller', () => {
             {
                 payload: {},
                 startSession: () => startSessionDefaultReturnValue,
-                create: undefined, find: undefined, artworkCategoriesHaveValidFormat: true,
+                findOne: undefined, artworkCategoriesHaveValidFormat: true,
                 statusCode: 400, error: 'Incorrect request body provided'
             },
             {
                 payload: {categories: '[{"name": "Title", "value": "Title", "subcategories": []}]'},
                 startSession: () => startSessionDefaultReturnValue,
-                create: undefined, find: undefined, artworkCategoriesHaveValidFormat: true,
+                findOne: undefined, artworkCategoriesHaveValidFormat: true,
                 statusCode: 400, error: 'Incorrect request body provided'
             },
             {
                 payload: {collectionName: collectionName},
                 startSession: () => startSessionDefaultReturnValue,
-                create: undefined, find: undefined, artworkCategoriesHaveValidFormat: true,
+                findOne: undefined, artworkCategoriesHaveValidFormat: true,
                 statusCode: 400, error: 'Incorrect request body provided'
             },
             {
@@ -541,7 +552,7 @@ describe('artworks controller', () => {
                     collectionName: collectionName
                 },
                 startSession: () => startSessionDefaultReturnValue,
-                create: undefined, find: undefined, artworkCategoriesHaveValidFormat: true,
+                findOne: undefined, artworkCategoriesHaveValidFormat: true,
                 statusCode: 400, error: 'Incorrect request body provided'
             },
             {
@@ -550,7 +561,7 @@ describe('artworks controller', () => {
                     collectionName: collectionName
                 },
                 startSession: () => {throw Error()},
-                create: undefined, find: undefined, artworkCategoriesHaveValidFormat: true,
+                findOne: undefined, artworkCategoriesHaveValidFormat: true,
                 statusCode: 503, error: 'Database unavailable'
             },  
             {
@@ -559,7 +570,7 @@ describe('artworks controller', () => {
                     collectionName: collectionName
                 },
                 startSession: () => startSessionDefaultReturnValue,
-                create: undefined, find: {exec: () => {throw Error()}}, artworkCategoriesHaveValidFormat: true,
+                findOne: {exec: () => {throw Error()}}, artworkCategoriesHaveValidFormat: true,
                 statusCode: 503, error: 'Database unavailable'
             },
             {
@@ -568,7 +579,7 @@ describe('artworks controller', () => {
                     collectionName: collectionName
                 },
                 startSession: () => startSessionDefaultReturnValue,
-                create: () => Promise.reject(), find: undefined, artworkCategoriesHaveValidFormat: true,
+                findOne: undefined, artworkCategoriesHaveValidFormat: true,
                 statusCode: 503, error: 'Database unavailable'
             },
             {
@@ -577,8 +588,7 @@ describe('artworks controller', () => {
                     collectionName: collectionName
                 },
                 startSession: () => startSessionDefaultReturnValue,
-                create: undefined,
-                find: {exec: () => Promise.resolve([{
+                findOne: {exec: () => Promise.resolve({
                     _id: `${collectionId}`,
                     name: collectionName,
                     description: 'collection description',
@@ -586,7 +596,7 @@ describe('artworks controller', () => {
                         {name: 'Title', subcategories: []}
                     ],
                     __v: 0
-                }])},
+                })},
                 artworkCategoriesHaveValidFormat: false,
                 statusCode: 400,
                 error: "Incorrect request body provided"
@@ -597,8 +607,7 @@ describe('artworks controller', () => {
                     collectionName: collectionName
                 },
                 startSession: () => startSessionDefaultReturnValue,
-                create: undefined,
-                find: {exec: () => Promise.resolve([])},
+                findOne: {exec: () => Promise.resolve(null)},
                 artworkCategoriesHaveValidFormat: true,
                 statusCode: 404,
                 error: "Collection not found"
@@ -607,15 +616,13 @@ describe('artworks controller', () => {
             async ({
                        payload,
                        startSession,
-                       create,
-                       find,
+                       findOne,
                        artworkCategoriesHaveValidFormat,
                        statusCode,
                        error
                    }) => {
                 mockStartSession.mockImplementation(startSession)
-                mockCreate.mockReturnValue(create)
-                mockCollectionFind.mockReturnValue(find)
+                mockCollectionFindOne.mockReturnValue(findOne)
                 mockArtworkCategoriesHaveValidFormat.mockReturnValue(artworkCategoriesHaveValidFormat)
 
                 const res = await request(app)
