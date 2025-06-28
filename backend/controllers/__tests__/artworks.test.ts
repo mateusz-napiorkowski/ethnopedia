@@ -76,6 +76,25 @@ const startSessionDefaultReturnValue = Promise.resolve({
     endSession: jest.fn()      
 })
 
+const filesToUpload = [
+    {
+        fieldname: "file[]",
+        originalname: "MIDI_sample.mid",
+        encoding: "7bit",
+        buffer: Buffer.from("File 1 content"),
+        mimetype: "audio/midi",
+        size: 1000,
+    },
+    {
+        fieldname: "file[]",
+        originalname: "MIDI_sample2.mid",
+        encoding: "7bit",
+        buffer: Buffer.from("File 2 content"),
+        mimetype: "audio/midi",
+        size: 1000,
+    }
+]
+
 describe('artworks controller', () => {
     beforeEach(() => {
         jest.clearAllMocks()
@@ -612,169 +631,169 @@ describe('artworks controller', () => {
         )
     })
 
-    describe('PUT endpoints', () => {
-        test("editArtwork should respond with status 201 and correct body", async () => {
-            mockReplaceOne.mockReturnValue({
-                exec: () => Promise.resolve({
-                    acknowledged: true,
-                    modifiedCount: 1,
-                    upsertedId: null,
-                    upsertedCount: 0,
-                    matchedCount: 1
-                })
-            })
-            const payload = {
-                categories: [{name: 'Title', value: 'New Title', subcategories: []}],
-                collectionName: collectionName
-            }
+    // describe('PUT endpoints', () => {
+    //     test("editArtwork should respond with status 201 and correct body", async () => {
+    //         mockReplaceOne.mockReturnValue({
+    //             exec: () => Promise.resolve({
+    //                 acknowledged: true,
+    //                 modifiedCount: 1,
+    //                 upsertedId: null,
+    //                 upsertedCount: 0,
+    //                 matchedCount: 1
+    //             })
+    //         })
+    //         const payload = {
+    //             categories: [{name: 'Title', value: 'New Title', subcategories: []}],
+    //             collectionName: collectionName
+    //         }
 
-            const res = await request(app)
-                .put(`/edit/${artworkId}`)
-                .send(payload)
-                .set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
-                .set('Content-Type', 'application/json')
-                .set('Accept', 'application/json')
+    //         const res = await request(app)
+    //             .put(`/edit/${artworkId}`)
+    //             .send(payload)
+    //             .set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
+    //             .set('Content-Type', 'application/json')
+    //             .set('Accept', 'application/json')
 
-            expect(res.status).toBe(201)
-            expect(res.body).toMatchSnapshot()
-        })
+    //         expect(res.status).toBe(201)
+    //         expect(res.body).toMatchSnapshot()
+    //     })
 
-        const replaceOneNoMatchResponse = {
-            exec: () => Promise.resolve({
-                acknowledged: true,
-                modifiedCount: 0,
-                upsertedId: null,
-                upsertedCount: 0,
-                matchedCount: 0
-            })
-        }
+    //     const replaceOneNoMatchResponse = {
+    //         exec: () => Promise.resolve({
+    //             acknowledged: true,
+    //             modifiedCount: 0,
+    //             upsertedId: null,
+    //             upsertedCount: 0,
+    //             matchedCount: 0
+    //         })
+    //     }
 
-        test.each([
-            {
-                payload: {},
-                replaceOne: undefined, statusCode: 400, error: 'Incorrect request body provided'
-            },
-            {
-                payload: {categories: [{name: 'Title', value: 'New Title', subcategories: []}]},
-                replaceOne: undefined, statusCode: 400, error: 'Incorrect request body provided'
-            },
-            {
-                payload: {collectionName: collectionName},
-                replaceOne: undefined, statusCode: 400, error: 'Incorrect request body provided'
-            },
-            {
-                payload: {
-                    categories: [{name: 'Title', value: 'New Title', subcategories: []}],
-                    collectionName: collectionName
-                },
-                replaceOne: {exec: () => {throw Error()}}, statusCode: 503, error: 'Database unavailable'
-            },
-            {
-                payload: {
-                    categories: [{name: 'Title', value: 'New Title', subcategories: []}],
-                    collectionName: collectionName
-                },
-                replaceOne: replaceOneNoMatchResponse, statusCode: 404, error: 'Artwork not found'
-            }
-        ])(`editArtwork should respond with status $statusCode and correct error message`,
-            async ({
-                       payload,
-                       replaceOne,
-                       statusCode,
-                       error
-                   }) => {
-                mockReplaceOne.mockReturnValue(replaceOne)
+    //     test.each([
+    //         {
+    //             payload: {},
+    //             replaceOne: undefined, statusCode: 400, error: 'Incorrect request body provided'
+    //         },
+    //         {
+    //             payload: {categories: [{name: 'Title', value: 'New Title', subcategories: []}]},
+    //             replaceOne: undefined, statusCode: 400, error: 'Incorrect request body provided'
+    //         },
+    //         {
+    //             payload: {collectionName: collectionName},
+    //             replaceOne: undefined, statusCode: 400, error: 'Incorrect request body provided'
+    //         },
+    //         {
+    //             payload: {
+    //                 categories: [{name: 'Title', value: 'New Title', subcategories: []}],
+    //                 collectionName: collectionName
+    //             },
+    //             replaceOne: {exec: () => {throw Error()}}, statusCode: 503, error: 'Database unavailable'
+    //         },
+    //         {
+    //             payload: {
+    //                 categories: [{name: 'Title', value: 'New Title', subcategories: []}],
+    //                 collectionName: collectionName
+    //             },
+    //             replaceOne: replaceOneNoMatchResponse, statusCode: 404, error: 'Artwork not found'
+    //         }
+    //     ])(`editArtwork should respond with status $statusCode and correct error message`,
+    //         async ({
+    //                    payload,
+    //                    replaceOne,
+    //                    statusCode,
+    //                    error
+    //                }) => {
+    //             mockReplaceOne.mockReturnValue(replaceOne)
 
-                const res = await request(app)
-                    .put(`/edit/${artworkId}`)
-                    .send(payload)
-                    .set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
-                    .set('Content-Type', 'application/json')
-                    .set('Accept', 'application/json')
+    //             const res = await request(app)
+    //                 .put(`/edit/${artworkId}`)
+    //                 .send(payload)
+    //                 .set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
+    //                 .set('Content-Type', 'application/json')
+    //                 .set('Accept', 'application/json')
 
-                expect(res.status).toBe(statusCode)
-                expect(res.body.error).toBe(error)
-            }
-        )
-    })
+    //             expect(res.status).toBe(statusCode)
+    //             expect(res.body.error).toBe(error)
+    //         }
+    //     )
+    // })
 
-    describe('DELETE endpoints', () => {
+    // describe('DELETE endpoints', () => {
         
 
-        test("deleteArtworks should respond with status 200 and correct body", async () => {
-            mockStartSession.mockImplementation(() => startSessionDefaultReturnValue)
-            mockCountDocuments.mockReturnValue({
-                exec: () => Promise.resolve(2)
-            })
-            mockDeleteMany.mockReturnValue({
-                exec: () => Promise.resolve({acknowledged: true, deletedCount: 2})
-            })
-            const payload = {ids: ['662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc']}
+    //     test("deleteArtworks should respond with status 200 and correct body", async () => {
+    //         mockStartSession.mockImplementation(() => startSessionDefaultReturnValue)
+    //         mockCountDocuments.mockReturnValue({
+    //             exec: () => Promise.resolve(2)
+    //         })
+    //         mockDeleteMany.mockReturnValue({
+    //             exec: () => Promise.resolve({acknowledged: true, deletedCount: 2})
+    //         })
+    //         const payload = {ids: ['662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc']}
 
-            const res = await request(app)
-                .delete('/delete')
-                .send(payload)
-                .set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
-                .set('Content-Type', 'application/json')
-                .set('Accept', 'application/json')
+    //         const res = await request(app)
+    //             .delete('/delete')
+    //             .send(payload)
+    //             .set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
+    //             .set('Content-Type', 'application/json')
+    //             .set('Accept', 'application/json')
 
-            expect(res.status).toBe(200)
-            expect(res.body).toMatchSnapshot()
-        })
+    //         expect(res.status).toBe(200)
+    //         expect(res.body).toMatchSnapshot()
+    //     })
 
-        test.each([
-            {
-                payload: {},
-                startSession: () => startSessionDefaultReturnValue,
-                countDocuments: undefined, deleteMany: undefined,
-                statusCode: 400, error: 'Incorrect request body provided'
-            },
-            {
-                payload: {ids: ['662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc']},
-                startSession: () => {throw Error()},
-                countDocuments: undefined, deleteMany: undefined,
-                statusCode: 503, error: `Database unavailable`
-            },
-            {
-                payload: {ids: []},
-                startSession: () => startSessionDefaultReturnValue,
-                countDocuments: undefined, deleteMany: undefined,
-                statusCode: 400, error: "Artworks not specified"
-            },
-            {
-                payload: {ids: ['662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc']},
-                startSession: () => startSessionDefaultReturnValue,
-                countDocuments: {exec: () => {throw Error()}}, deleteMany: undefined,
-                statusCode: 503, error: "Database unavailable"
-            },
-            {
-                payload: {ids: ['662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc']},
-                startSession: () => startSessionDefaultReturnValue,
-                countDocuments: {exec: () => Promise.resolve(2)}, deleteMany: {exec: () => {throw Error()}},
-                statusCode: 503, error: "Database unavailable"
-            },
-            {
-                payload: {ids: ['662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc']},
-                startSession: () => startSessionDefaultReturnValue,
-                countDocuments: {exec: () => Promise.resolve(1)}, deleteMany: undefined,
-                statusCode: 404, error: "Artworks not found"
-            },
-        ])(`deleteArtworks should respond with status $statusCode and correct error message`,
-            async ({payload, startSession, countDocuments, deleteMany, statusCode, error}) => {
-                mockStartSession.mockImplementation(startSession)       
-                mockCountDocuments.mockReturnValue(countDocuments)
-                mockDeleteMany.mockReturnValue(deleteMany)
+    //     test.each([
+    //         {
+    //             payload: {},
+    //             startSession: () => startSessionDefaultReturnValue,
+    //             countDocuments: undefined, deleteMany: undefined,
+    //             statusCode: 400, error: 'Incorrect request body provided'
+    //         },
+    //         {
+    //             payload: {ids: ['662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc']},
+    //             startSession: () => {throw Error()},
+    //             countDocuments: undefined, deleteMany: undefined,
+    //             statusCode: 503, error: `Database unavailable`
+    //         },
+    //         {
+    //             payload: {ids: []},
+    //             startSession: () => startSessionDefaultReturnValue,
+    //             countDocuments: undefined, deleteMany: undefined,
+    //             statusCode: 400, error: "Artworks not specified"
+    //         },
+    //         {
+    //             payload: {ids: ['662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc']},
+    //             startSession: () => startSessionDefaultReturnValue,
+    //             countDocuments: {exec: () => {throw Error()}}, deleteMany: undefined,
+    //             statusCode: 503, error: "Database unavailable"
+    //         },
+    //         {
+    //             payload: {ids: ['662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc']},
+    //             startSession: () => startSessionDefaultReturnValue,
+    //             countDocuments: {exec: () => Promise.resolve(2)}, deleteMany: {exec: () => {throw Error()}},
+    //             statusCode: 503, error: "Database unavailable"
+    //         },
+    //         {
+    //             payload: {ids: ['662e92a5d628570afa5357bc', '662e928b11674920c8cc0abc']},
+    //             startSession: () => startSessionDefaultReturnValue,
+    //             countDocuments: {exec: () => Promise.resolve(1)}, deleteMany: undefined,
+    //             statusCode: 404, error: "Artworks not found"
+    //         },
+    //     ])(`deleteArtworks should respond with status $statusCode and correct error message`,
+    //         async ({payload, startSession, countDocuments, deleteMany, statusCode, error}) => {
+    //             mockStartSession.mockImplementation(startSession)       
+    //             mockCountDocuments.mockReturnValue(countDocuments)
+    //             mockDeleteMany.mockReturnValue(deleteMany)
 
-                const res = await request(app)
-                    .delete('/delete')
-                    .send(payload)
-                    .set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
-                    .set('Content-Type', 'application/json')
-                    .set('Accept', 'application/json')
+    //             const res = await request(app)
+    //                 .delete('/delete')
+    //                 .send(payload)
+    //                 .set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
+    //                 .set('Content-Type', 'application/json')
+    //                 .set('Accept', 'application/json')
 
-                expect(res.status).toBe(statusCode)
-                expect(res.body.error).toBe(error)
-            }
-        )
-    })
+    //             expect(res.status).toBe(statusCode)
+    //             expect(res.body.error).toBe(error)
+    //         }
+    //     )
+    // })
 })

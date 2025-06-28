@@ -6,7 +6,8 @@ import CollectionCollection from "../models/collection"
 import { constructQuickSearchFilter, constructAdvSearchFilter, sortRecordsByCategory, constructTopmostCategorySearchTextFilter } from "../utils/artworks"
 import { artworkCategoriesHaveValidFormat } from "../utils/categories";
 import path from "path"
-import fs, { PathLike } from "fs";
+import fs from "fs";
+import { v4 as uuidv4 } from 'uuid';
 
 export const getArtwork = async (req: Request, res: Response) => {
     try {
@@ -109,7 +110,7 @@ export const getArtworksBySearchTextMatchedInTopmostCategory = async (req: Reque
 
 export const createArtwork = authAsyncWrapper((async (req: Request, res: Response) => {
     try {
-        const file = req.file
+        const files = req.files
         const collectionName = req.body.collectionName
         let categories;        
         try {
@@ -117,7 +118,7 @@ export const createArtwork = authAsyncWrapper((async (req: Request, res: Respons
         } catch {
             throw new Error(`Incorrect request body provided`);
         }
-        if(!categories || !collectionName)
+        if(!categories || !collectionName || (files && Array.isArray(files) && files.length > 5))
             throw new Error(`Incorrect request body provided`)
         const session = await mongoose.startSession()
         await session.withTransaction(async (session: ClientSession) => {
@@ -131,36 +132,55 @@ export const createArtwork = authAsyncWrapper((async (req: Request, res: Respons
             const newArtwork = new Artwork({ categories: categories, collectionName: collectionName });
             await newArtwork.save({ session });
 
-            if (file) {
-                const uploadsDir = path.join(__dirname, "..", "uploads");
+            const savedFiles = [];
+            const failed = []
+            if (files && Array.isArray(files)) {
+                const uploadsDir = path.join(__dirname, "..", `uploads/`);
+                const collectionUploadsDir = path.join(__dirname, "..", `uploads/${foundCollections[0]._id}`);
                 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
+                if (!fs.existsSync(collectionUploadsDir)) fs.mkdirSync(collectionUploadsDir);
 
-                const fileName = `${newArtwork._id}-${file.originalname}`;
-                const filePath = `uploads/${fileName}`;
+                for(const file of files) {
+                    const fileName = `${newArtwork._id}-${uuidv4()}${path.extname(file.originalname)}`;
+                    const filePath = `uploads/${foundCollections[0]._id}/${fileName}`;
 
-                try {
-                    fs.writeFileSync(filePath, file.buffer);
-                } catch {
-                    throw new Error(`Failed to save file`)
+                    const maxFileSize = 25 * 1024 * 1024 // 25 MB
+
+                    try {
+                        if(!/\.(mei|mid|midi|txt|text|musicxml|mxl|xml)$/i.test(file.originalname))
+                            throw Error("Invalid file extension")
+                        if(file.size > maxFileSize)
+                            throw Error("File size exceeded")
+                        fs.writeFileSync(filePath, file.buffer);
+                        savedFiles.push({
+                            originalFilename: file.originalname,
+                            newFilename: fileName,
+                            filePath: filePath,
+                            size: file.size,
+                            uploadedAt: new Date(Date.now())
+                        });
+                    } catch {
+                        failed.push(fileName)
+                    }
                 }
 
-                newArtwork.filePath = filePath;
-                newArtwork.fileName = file.originalname;
+                newArtwork.files = savedFiles
                 await newArtwork.save({session});
             }
-            res.status(201).json(newArtwork)
+            res.status(201).json({
+                newArtwork,
+                savedFilesCount: savedFiles.length,
+                failedUploadsCount: failed.length,
+                failedUploadsFilenames: failed
+            })
         })
     } catch (error) {
         const err = error as Error
         console.error(error)
         if (err.message === `Incorrect request body provided`)
-        {
             res.status(400).json({ error: err.message })
-        }
         else if(err.message === `Collection not found`)
             res.status(404).json({ error: err.message })
-        else if(err.message === 'Failed to save file')
-            res.status(500).json({error: err.message})
         else
             res.status(503).json({ error: `Database unavailable` })
     }
@@ -177,33 +197,33 @@ export const editArtwork = authAsyncWrapper((async (req: Request, res: Response)
         const artwork = await Artwork.findOne({_id: artworkId}).exec()
         if(artwork === null) 
             throw new Error('Artwork not found')
-        const newArtworkFileName = file ? file.originalname : artwork.fileName
+        // const newArtworkFileName = file ? file.originalname : artwork.fileName
         const resultInfo = await Artwork.replaceOne(
             {_id: artworkId, collectionName: collectionName},
             {
                 categories: categories,
                 collectionName: collectionName,
-                fileName: newArtworkFileName,
-                filePath: `uploads/${artworkId}-${newArtworkFileName}`
+                // fileName: newArtworkFileName,
+                // filePath: `uploads/${artworkId}-${newArtworkFileName}`
             }
         ).exec()
-        if(resultInfo.modifiedCount === 0) {
-            throw new Error('Artwork not found')
-        } else {
-            if (file) {
-                const uploadsDir = path.join(__dirname, "..", "uploads");
-                if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
+        // if(resultInfo.modifiedCount === 0) {
+        //     throw new Error('Artwork not found')
+        // } else {
+        //     if (file) {
+        //         const uploadsDir = path.join(__dirname, "..", "uploads");
+        //         if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
 
-                const fileName = `${artworkId}-${file.originalname}`;
-                const filePath = `uploads/${fileName}`;
+        //         const fileName = `${artworkId}-${file.originalname}`;
+        //         const filePath = `uploads/${fileName}`;
 
-                const oldFilePath = artwork.filePath
+        //         const oldFilePath = artwork.filePath
 
-                if(oldFilePath)
-                    fs.unlinkSync(oldFilePath as PathLike)
-                fs.writeFileSync(filePath, file.buffer);
-            }   
-        }
+        //         if(oldFilePath)
+        //             fs.unlinkSync(oldFilePath as PathLike)
+        //         fs.writeFileSync(filePath, file.buffer);
+        //     }   
+        // }
         return res.status(201).json(resultInfo)
     } catch (error) {
         const err = error as Error
