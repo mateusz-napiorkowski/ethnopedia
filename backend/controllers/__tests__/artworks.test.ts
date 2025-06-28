@@ -20,7 +20,7 @@ jest.mock('../../utils/artworks', () => ({
     constructQuickSearchFilter: jest.fn(),
     constructAdvSearchFilter: jest.fn(),
     constructTopmostCategorySearchTextFilter: jest.fn(),
-    sortRecordsByCategory: () => mockSortRecordsByCategory()
+    sortRecordsByCategory: () => mockSortRecordsByCategory(),
 }))
 
 const mockArtworkCategoriesHaveValidFormat = jest.fn() 
@@ -35,7 +35,20 @@ const mockReplaceOne = jest.fn()
 const mockCountDocuments = jest.fn()
 const mockDeleteMany = jest.fn()
 
+const mockArtworkConstructor = jest.fn()
+const mockSaveArtwork = jest.fn()
+
 jest.mock("../../models/artwork", () => ({
+    __esModule: true,
+    default: jest.fn().mockReturnValue(({
+        collectionName: 'collection',
+        categories: [ { name: 'Title', value: 'Title', subcategories: [] } ],
+        _id: "66ce0bf156199c1b8df5db7d",
+        __v: 0,
+        createdAt: "2024-08-27T17:25:05.352Z",
+        updatedAt: "2024-08-27T17:25:05.352Z",
+        save: () => mockSaveArtwork()
+    })),
     findById: () => mockFindById(),
     find: () => mockArtworkFind(),
     create: () => mockCreate(),
@@ -62,9 +75,16 @@ const collectionId = "66f2194a6123d7f50558cd8f"
 const collectionName = "collection"
 const artworkId = "66ce0bf156199c1b8df5db7d"
 
+const startSessionDefaultReturnValue = Promise.resolve({
+    withTransaction: (async (transactionFunc: Function) => {
+        await transactionFunc()
+    }),
+    endSession: jest.fn()      
+})
+
 describe('artworks controller', () => {
     beforeEach(() => {
-        jest.resetAllMocks()
+        jest.clearAllMocks()
         app.use(ArtworksRouter)
     })
 
@@ -431,6 +451,13 @@ describe('artworks controller', () => {
 
     describe('POST endpoints', () => {
         test("createArtwork should respond with status 201 and correct body", async () => {
+            // mockArtworkConstructor.mockReturnValue(({
+            //     collectionName: 'testowa',
+            //     categories: [ { name: 'Tytuł', value: 'g', subcategories: [] } ],
+            //     _id: "685fa6e9959bf2deabf95023",
+            //     save: () => mockSaveArtwork()
+            // }))
+            mockStartSession.mockImplementation(() => startSessionDefaultReturnValue)
             mockCreate.mockReturnValue(Promise.resolve({
                 _id: `${artworkId}`,
                 categories: [{name: 'Title', value: 'Title', subcategories: []}],
@@ -452,7 +479,7 @@ describe('artworks controller', () => {
             })
             mockArtworkCategoriesHaveValidFormat.mockReturnValue(true)
             const payload = {
-                categories: [{name: 'Title', value: 'Title', subcategories: []}],
+                categories: '[{"name": "Title", "value": "Title", "subcategories": []}]',
                 collectionName: collectionName
             }
 
@@ -470,40 +497,64 @@ describe('artworks controller', () => {
         test.each([
             {
                 payload: {},
+                startSession: () => startSessionDefaultReturnValue,
                 create: undefined, find: undefined, artworkCategoriesHaveValidFormat: true,
                 statusCode: 400, error: 'Incorrect request body provided'
             },
             {
-                payload: {categories: [{name: 'Title', value: 'Title', subcategories: []}]},
+                payload: {categories: '[{"name": "Title", "value": "Title", "subcategories": []}]'},
+                startSession: () => startSessionDefaultReturnValue,
                 create: undefined, find: undefined, artworkCategoriesHaveValidFormat: true,
                 statusCode: 400, error: 'Incorrect request body provided'
             },
             {
                 payload: {collectionName: collectionName},
+                startSession: () => startSessionDefaultReturnValue,
                 create: undefined, find: undefined, artworkCategoriesHaveValidFormat: true,
                 statusCode: 400, error: 'Incorrect request body provided'
+            },
+            {
+                payload: {
+                    categories: 'unparsable categories data',
+                    collectionName: collectionName
+                },
+                startSession: () => startSessionDefaultReturnValue,
+                create: undefined, find: undefined, artworkCategoriesHaveValidFormat: true,
+                statusCode: 400, error: 'Incorrect request body provided'
+            },
+            {
+                payload: {
+                    categories: '[{"name": "Title", "value": "Title", "subcategories": []}]',
+                    collectionName: collectionName
+                },
+                startSession: () => {throw Error()},
+                create: undefined, find: undefined, artworkCategoriesHaveValidFormat: true,
+                statusCode: 503, error: 'Database unavailable'
             },  
             {
                 payload: {
-                    categories: [{name: 'Title', value: 'Title', subcategories: []}],
+                    categories: '[{"name": "Title", "value": "Title", "subcategories": []}]',
                     collectionName: collectionName
                 },
+                startSession: () => startSessionDefaultReturnValue,
                 create: undefined, find: {exec: () => {throw Error()}}, artworkCategoriesHaveValidFormat: true,
                 statusCode: 503, error: 'Database unavailable'
             },
             {
                 payload: {
-                    categories: [{name: 'Title', value: 'Title', subcategories: []}],
+                    categories: '[{"name": "Title", "value": "Title", "subcategories": []}]',
                     collectionName: collectionName
                 },
+                startSession: () => startSessionDefaultReturnValue,
                 create: () => Promise.reject(), find: undefined, artworkCategoriesHaveValidFormat: true,
                 statusCode: 503, error: 'Database unavailable'
             },
             {
                 payload: {
-                    categories: [{name: 'Title', value: 'Title', subcategories: []}],
+                    categories: '[{"name": "Title", "value": "Title", "subcategories": []}]',
                     collectionName: collectionName
                 },
+                startSession: () => startSessionDefaultReturnValue,
                 create: undefined,
                 find: {exec: () => Promise.resolve([{
                     _id: `${collectionId}`,
@@ -520,9 +571,10 @@ describe('artworks controller', () => {
             },
             {
                 payload: {
-                    categories: [{name: 'Title', value: 'Title', subcategories: []}],
+                    categories: '[{"name": "Title", "value": "Title", "subcategories": []}]',
                     collectionName: collectionName
                 },
+                startSession: () => startSessionDefaultReturnValue,
                 create: undefined,
                 find: {exec: () => Promise.resolve([])},
                 artworkCategoriesHaveValidFormat: true,
@@ -532,12 +584,14 @@ describe('artworks controller', () => {
         ])(`createArtwork should respond with status $statusCode and correct error message`,
             async ({
                        payload,
+                       startSession,
                        create,
                        find,
                        artworkCategoriesHaveValidFormat,
                        statusCode,
                        error
                    }) => {
+                mockStartSession.mockImplementation(startSession)
                 mockCreate.mockReturnValue(create)
                 mockCollectionFind.mockReturnValue(find)
                 mockArtworkCategoriesHaveValidFormat.mockReturnValue(artworkCategoriesHaveValidFormat)
@@ -642,12 +696,7 @@ describe('artworks controller', () => {
     })
 
     describe('DELETE endpoints', () => {
-        const startSessionDefaultReturnValue = Promise.resolve({
-            withTransaction: (async (transactionFunc: Function) => {
-                await transactionFunc()
-            }),
-            endSession: jest.fn()      
-        })
+        
 
         test("deleteArtworks should respond with status 200 and correct body", async () => {
             mockStartSession.mockImplementation(() => startSessionDefaultReturnValue)

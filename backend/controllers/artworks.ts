@@ -111,42 +111,56 @@ export const createArtwork = authAsyncWrapper((async (req: Request, res: Respons
     try {
         const file = req.file
         const collectionName = req.body.collectionName
-        const categories = JSON.parse(req.body.categories)
+        let categories;        
+        try {
+            categories = JSON.parse(req.body.categories);
+        } catch {
+            throw new Error(`Incorrect request body provided`);
+        }
         if(!categories || !collectionName)
             throw new Error(`Incorrect request body provided`)
-        const foundCollections = await CollectionCollection.find({name: collectionName}).exec()
-        if (foundCollections.length !== 1)
-            throw new Error(`Collection not found`)
-        const collectionCategories = foundCollections[0].categories
-        if(!artworkCategoriesHaveValidFormat(categories, collectionCategories))
-            throw new Error(`Incorrect request body provided`)
-        const newArtwork = await Artwork.create({categories: categories, collectionName: collectionName})
+        const session = await mongoose.startSession()
+        await session.withTransaction(async (session: ClientSession) => {
+            const foundCollections = await CollectionCollection.find({name: collectionName}, null, { session }).exec()
+            if (foundCollections.length !== 1)
+                throw new Error(`Collection not found`)
+            const collectionCategories = foundCollections[0].categories
+            if(!artworkCategoriesHaveValidFormat(categories, collectionCategories))
+                throw new Error(`Incorrect request body provided`)
 
-        if (file) {
-            const uploadsDir = path.join(__dirname, "..", "uploads");
-            if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
+            const newArtwork = new Artwork({ categories: categories, collectionName: collectionName });
+            await newArtwork.save({ session });
 
-            const fileName = `${newArtwork._id}-${file.originalname}`;
-            const filePath = `uploads/${fileName}`;
+            if (file) {
+                const uploadsDir = path.join(__dirname, "..", "uploads");
+                if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
 
-            fs.writeFileSync(filePath, file.buffer);
+                const fileName = `${newArtwork._id}-${file.originalname}`;
+                const filePath = `uploads/${fileName}`;
 
-            newArtwork.filePath = filePath;
-            newArtwork.fileName = file.originalname;
-            await newArtwork.save();
-        }
+                try {
+                    fs.writeFileSync(filePath, file.buffer);
+                } catch {
+                    throw new Error(`Failed to save file`)
+                }
 
-        res.status(201).json(newArtwork)
+                newArtwork.filePath = filePath;
+                newArtwork.fileName = file.originalname;
+                await newArtwork.save({session});
+            }
+            res.status(201).json(newArtwork)
+        })
     } catch (error) {
         const err = error as Error
         console.error(error)
         if (err.message === `Incorrect request body provided`)
         {
-            console.log("error 404");
             res.status(400).json({ error: err.message })
         }
         else if(err.message === `Collection not found`)
             res.status(404).json({ error: err.message })
+        else if(err.message === 'Failed to save file')
+            res.status(500).json({error: err.message})
         else
             res.status(503).json({ error: `Database unavailable` })
     }
