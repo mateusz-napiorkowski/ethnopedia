@@ -4,6 +4,7 @@ import bodyParser from "body-parser";
 import request from "supertest";
 import ArtworksRouter from "../../routes/artwork";
 import { constructAdvSearchFilter, constructQuickSearchFilter } from "../../utils/artworks";
+import Artwork from "../../models/artwork";
 
 const app = express()
 app.use(bodyParser.json());
@@ -34,28 +35,21 @@ const mockCreate = jest.fn()
 const mockReplaceOne = jest.fn()
 const mockCountDocuments = jest.fn()
 const mockDeleteMany = jest.fn()
-
-const mockArtworkConstructor = jest.fn()
 const mockSaveArtwork = jest.fn()
 
-jest.mock("../../models/artwork", () => ({
-    __esModule: true,
-    default: jest.fn().mockReturnValue(({
-        collectionName: 'collection',
-        categories: [ { name: 'Title', value: 'Title', subcategories: [] } ],
-        _id: "66ce0bf156199c1b8df5db7d",
-        __v: 0,
-        createdAt: "2024-08-27T17:25:05.352Z",
-        updatedAt: "2024-08-27T17:25:05.352Z",
-        save: () => mockSaveArtwork()
-    })),
-    findById: () => mockFindById(),
-    find: () => mockArtworkFind(),
-    create: () => mockCreate(),
-    replaceOne: () => mockReplaceOne(),
-    countDocuments: () => mockCountDocuments(),
-    deleteMany: () => mockDeleteMany()
-}))
+jest.mock("../../models/artwork", () => {
+    const mockConstructor: any = jest.fn();
+    mockConstructor.findById = jest.fn(() => mockFindById());
+    mockConstructor.find = jest.fn(() => mockArtworkFind());
+    mockConstructor.create = jest.fn(() => mockCreate());
+    mockConstructor.replaceOne = jest.fn(() => mockReplaceOne());
+    mockConstructor.countDocuments = jest.fn(() => mockCountDocuments());
+    mockConstructor.deleteMany = jest.fn(() => mockDeleteMany());
+    return {
+        __esModule: true,
+        default: mockConstructor
+    };
+});
 
 const mockCollectionFind = jest.fn()
 const mockCollectionFindOne = jest.fn()
@@ -451,12 +445,21 @@ describe('artworks controller', () => {
 
     describe('POST endpoints', () => {
         test("createArtwork should respond with status 201 and correct body", async () => {
-            // mockArtworkConstructor.mockReturnValue(({
-            //     collectionName: 'testowa',
-            //     categories: [ { name: 'Tytuł', value: 'g', subcategories: [] } ],
-            //     _id: "685fa6e9959bf2deabf95023",
-            //     save: () => mockSaveArtwork()
-            // }))
+            (Artwork as unknown as jest.Mock).mockImplementation(() => ({
+                __v: 0,
+                _id: "66ce0bf156199c1b8df5db7d",
+                categories: [
+                    {
+                    "name": "Title",
+                    "subcategories": [],
+                    "value": "Title",
+                    },
+                ],
+                collectionName: "collection",
+                createdAt: "2024-08-27T17:25:05.352Z",
+                updatedAt: "2024-08-27T17:25:05.352Z",
+                save: () => mockSaveArtwork()
+            }));
             mockStartSession.mockImplementation(() => startSessionDefaultReturnValue)
             mockCreate.mockReturnValue(Promise.resolve({
                 _id: `${artworkId}`,
