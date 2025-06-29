@@ -5,6 +5,8 @@ import Artwork from "../models/artwork";
 import CollectionCollection from "../models/collection"
 import { constructQuickSearchFilter, constructAdvSearchFilter, sortRecordsByCategory, constructTopmostCategorySearchTextFilter, handleFileUpload as handleFileUploads } from "../utils/artworks"
 import { artworkCategoriesHaveValidFormat } from "../utils/categories";
+import fs from "fs";
+import path from "path";
 
 export const getArtwork = async (req: Request, res: Response) => {
     try {
@@ -148,6 +150,7 @@ export const createArtwork = authAsyncWrapper((async (req: Request, res: Respons
                 failedUploadsFilenames
             })
         })
+        session.endSession()
     } catch (error) {
         const err = error as Error
         console.error(error)
@@ -222,10 +225,16 @@ export const deleteArtworks = authAsyncWrapper(async (req: Request, res: Respons
             throw new Error("Artworks not specified")
         const session = await mongoose.startSession()
         await session.withTransaction(async (session: ClientSession) => {
-            const databaseArtworksToDeleteCounted = await Artwork.countDocuments({ _id: { $in: artworksToDeleteIds }}, { session }).exec()
-            if (databaseArtworksToDeleteCounted !== artworksToDeleteIds.length)
+            const foundArtworks = await Artwork.find({ _id: { $in: artworksToDeleteIds }}, null, { session }).exec()
+            if (foundArtworks.length !== artworksToDeleteIds.length)
                 throw new Error("Artworks not found")
             const result = await Artwork.deleteMany({ _id: { $in: artworksToDeleteIds } }, { session }).exec()
+            for(const artwork of foundArtworks) {
+                for(const file of artwork.files) {
+                   const absoluteFilePath = path.join(__dirname, "..", file.filePath as string);
+                   if (fs.existsSync(absoluteFilePath)) fs.unlinkSync(absoluteFilePath); 
+                }
+            }
             res.status(200).json(result)
         });
         session.endSession()

@@ -199,3 +199,36 @@ export const createArtworkHappyPathHandleFileUploadsReturnValue = {
     "failedUploadsCount": 0,
     "failedUploadsFilenames": [],
 }
+
+export const artworksForDeletion = [
+    {
+        _id: "662e92a5d628570afa5357bc",
+        createdAt: '2024-10-22T20:12:12.209Z',
+        updatedAt: '2024-10-22T20:12:12.209Z',
+        __v: 0,
+        categories: [
+        {
+            name: 'Tytuł',
+            value: 'testowy',
+            subcategories: []
+        },
+        ],
+        files: [],
+        collectionName: collectionName
+    },
+    {
+        _id: "662e928b11674920c8cc0abc",
+        createdAt: '2024-10-22T20:12:12.209Z',
+        updatedAt: '2024-10-22T20:12:12.209Z',
+        __v: 0,
+        categories: [
+        {
+            name: 'Tytuł',
+            value: 'testowy 2',
+            subcategories: []
+        },
+        ],
+        files: [],
+        collectionName: collectionName
+    },
+]
