@@ -22,11 +22,11 @@ export const getArtworksForPage = async (collectionIds: Array<string>, page: num
     .then(res => res.data)
 }
 
-export const createArtwork = async (artworkData: any, jwtToken: any) => {
+export const createArtwork = async (collectionId: any, categories: any, file: any, jwtToken: any) => {
     const formData = new FormData();
-    formData.append("files", artworkData.file);
-    formData.append("categories", JSON.stringify(artworkData.categories));
-    formData.append("collectionName", artworkData.collectionName);
+    formData.append("files", file);
+    formData.append("categories", JSON.stringify(categories));
+    formData.append("collectionId", collectionId);
     const config = {
         headers: { Authorization: `Bearer ${jwtToken}` }
     };

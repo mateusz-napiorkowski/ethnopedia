@@ -494,7 +494,7 @@ describe('artworks controller', () => {
             mockArtworkCategoriesHaveValidFormat.mockReturnValue(true)
             const payload = {
                 categories: '[{"name": "Title", "value": "Title", "subcategories": []}]',
-                collectionName: collectionName
+                collectionId: collectionId
             }
             mockHandleFileUpload.mockReturnValue({
                 "artwork": {
@@ -541,7 +541,7 @@ describe('artworks controller', () => {
                 statusCode: 400, error: 'Incorrect request body provided'
             },
             {
-                payload: {collectionName: collectionName},
+                payload: {collectionId: collectionId},
                 startSession: () => startSessionDefaultReturnValue,
                 findOne: undefined, artworkCategoriesHaveValidFormat: true,
                 statusCode: 400, error: 'Incorrect request body provided'
@@ -549,7 +549,7 @@ describe('artworks controller', () => {
             {
                 payload: {
                     categories: 'unparsable categories data',
-                    collectionName: collectionName
+                    collectionId: collectionId
                 },
                 startSession: () => startSessionDefaultReturnValue,
                 findOne: undefined, artworkCategoriesHaveValidFormat: true,
@@ -558,7 +558,7 @@ describe('artworks controller', () => {
             {
                 payload: {
                     categories: '[{"name": "Title", "value": "Title", "subcategories": []}]',
-                    collectionName: collectionName
+                    collectionId: collectionId
                 },
                 startSession: () => {throw Error()},
                 findOne: undefined, artworkCategoriesHaveValidFormat: true,
@@ -567,7 +567,7 @@ describe('artworks controller', () => {
             {
                 payload: {
                     categories: '[{"name": "Title", "value": "Title", "subcategories": []}]',
-                    collectionName: collectionName
+                    collectionId: collectionId
                 },
                 startSession: () => startSessionDefaultReturnValue,
                 findOne: {exec: () => {throw Error()}}, artworkCategoriesHaveValidFormat: true,
@@ -576,7 +576,7 @@ describe('artworks controller', () => {
             {
                 payload: {
                     categories: '[{"name": "Title", "value": "Title", "subcategories": []}]',
-                    collectionName: collectionName
+                    collectionId: collectionId
                 },
                 startSession: () => startSessionDefaultReturnValue,
                 findOne: undefined, artworkCategoriesHaveValidFormat: true,
@@ -585,7 +585,7 @@ describe('artworks controller', () => {
             {
                 payload: {
                     categories: '[{"name": "Title", "value": "Title", "subcategories": []}]',
-                    collectionName: collectionName
+                    collectionId: collectionId
                 },
                 startSession: () => startSessionDefaultReturnValue,
                 findOne: {exec: () => Promise.resolve({
@@ -604,7 +604,7 @@ describe('artworks controller', () => {
             {
                 payload: {
                     categories: '[{"name": "Title", "value": "Title", "subcategories": []}]',
-                    collectionName: collectionName
+                    collectionId: collectionId
                 },
                 startSession: () => startSessionDefaultReturnValue,
                 findOne: {exec: () => Promise.resolve(null)},

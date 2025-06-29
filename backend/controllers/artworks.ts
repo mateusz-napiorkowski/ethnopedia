@@ -108,7 +108,7 @@ export const getArtworksBySearchTextMatchedInTopmostCategory = async (req: Reque
 export const createArtwork = authAsyncWrapper((async (req: Request, res: Response) => {
     try {
         const files = req.files as Express.Multer.File[] | undefined
-        const collectionName = req.body.collectionName
+        const collectionId = req.body.collectionId
         let categories;        
         try {
             categories = JSON.parse(req.body.categories);
@@ -118,20 +118,20 @@ export const createArtwork = authAsyncWrapper((async (req: Request, res: Respons
         const originalNames = files?.map((file: any) => file.originalname) || []
         if(
             !categories ||
-            !collectionName ||
+            !collectionId ||
             (files && Array.isArray(files) && files.length > 5) || //more than 5 files
             originalNames?.length > [...new Set(originalNames)].length // duplicate filenames
         )
             throw new Error(`Incorrect request body provided`)
         const session = await mongoose.startSession()
         await session.withTransaction(async (session: ClientSession) => {
-            const collection = await CollectionCollection.findOne({name: collectionName}, null, {session}).exec()
+            const collection = await CollectionCollection.findOne({_id: collectionId}, null, {session}).exec()
             if (collection == null)
                 throw new Error("Collection not found")
             if(!artworkCategoriesHaveValidFormat(categories, collection.categories))
                 throw new Error(`Incorrect request body provided`)
 
-            const newArtwork = new Artwork({ categories: categories, collectionName: collectionName });
+            const newArtwork = new Artwork({ categories: categories, collectionName: collection.name });
             await newArtwork.save({ session });
 
             const {

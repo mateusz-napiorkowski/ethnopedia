@@ -102,7 +102,7 @@ const CreateArtworkPage: React.FC = () => {
                             if (artworkId) {
                                 await editArtwork(payload, artworkId, jwtToken!);
                             } else {
-                                await createArtwork(payload, jwtToken!);
+                                await createArtwork(collectionId, values.categories, uploadedFile, jwtToken!);
                             }
                             queryClient.invalidateQueries(['artworks', collectionId]);
                             navigate(-1);
