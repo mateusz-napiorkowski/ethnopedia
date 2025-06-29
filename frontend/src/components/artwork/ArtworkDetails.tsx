@@ -7,7 +7,6 @@ import { ReactComponent as MusicNoteIcon } from "../../assets/icons/music-note.s
 import { ReactComponent as UnknownFileIcon } from "../../assets/icons/unknown-file.svg"
 import { useUser } from "../../providers/UserProvider";
 import {useNavigate} from "react-router-dom";
-import { API_URL } from "../../config"
 import { downloadMidiOrMeiFile } from "../../api/download";
 
 interface Category {
@@ -18,7 +17,7 @@ interface Category {
 
 interface ArtworkDetailsProps {
     collectionName: string;
-    detailsToShow: { _id: any, categories: Category[]; createdAt: string, updatedAt: string, fileName: string, filePath: string};
+    detailsToShow: { _id: any, categories: Category[]; createdAt: string, updatedAt: string, files: Array<any>};
     handleEditClick: () => void;
     setShowDeleteArtworkWarning: (value: boolean) => void;
 }
@@ -97,31 +96,51 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
                     htmlFor="dropzone-file"
                     className="block text-sm font-bold text-gray-700 dark:text-white my-2"
                 >
-                    Plik MIDI/MEI
+                    Skojarzone pliki
                 </label>
-                <div
+                {
+                    detailsToShow.files.length === 0 &&
+                    <div
+                        className="flex flex-col items-start justify-start p-2 border-2 border-gray-200
+                            border-solid rounded-lg cursor-default bg-gray-50 
+                            dark:bg-gray-800 dark:border-gray-600"
+                    >   
+                        <div className="flex flex-row items-center justify-between w-full">
+                            <div className="flex flex-row items-center justify-center gap-4">
+                                <p className="text-sm font-bold text-gray-500 dark:text-gray-400">
+                                    Nie wgrano żadnego pliku. Aby dodać pliki do metadanych przejdź w tryb edycji.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                }
+                {detailsToShow.files.map((file: any) =>
+                    <div
                     role="button"
                     aria-label="download-file"
-                    onClick={() => {if(detailsToShow.fileName) downloadMidiOrMeiFile(detailsToShow.fileName, detailsToShow._id)}}
+                    onClick={() => {
+                        // if(detailsToShow.files) downloadMidiOrMeiFile(detailsToShow.files, detailsToShow._id)
+                    }}
                     className={`flex flex-col items-start justify-start p-2 border-2 border-gray-200
-                            border-solid rounded-lg ${detailsToShow.fileName ? "cursor-pointer" : "cursor-default"} bg-gray-50 
-                            dark:bg-gray-800 dark:border-gray-600
-                            ${detailsToShow.fileName ? "hover:bg-gray-100 dark:hover:border-gray-500 dark:hover:bg-gray-700" : ""}`}
-                >
-                <div className="flex flex-row items-center justify-between w-full">
-                    <div className="flex flex-row items-center justify-center gap-4">
-                        {detailsToShow.fileName &&
-                            <>{/\.(mei|mid|midi)$/i.test(detailsToShow.fileName)
-                            ? <MusicNoteIcon className="w-12 h-12" />
-                            : <UnknownFileIcon className="w-12 h-12" />}</>
-                            
-                        } 
-                        <p className="text-sm font-bold text-gray-500 dark:text-gray-400">
-                            {detailsToShow.fileName ? detailsToShow.fileName : "Brak wgranego pliku"}
-                        </p>
+                            border-solid rounded-lg cursor-pointer bg-gray-50 
+                            dark:bg-gray-800 dark:border-gray-600 hover:bg-gray-100 dark:hover:border-gray-500 dark:hover:bg-gray-700`}
+                    >
+                        <div className="flex flex-row items-center justify-between w-full">
+                            <div className="flex flex-row items-center justify-center gap-4">
+                                {detailsToShow.files &&
+                                    <>{/\.(mei|mid|midi|txt|text|musicxml|mxl|xml)$/i.test(file.originalFilename)
+                                    ? <MusicNoteIcon className="w-12 h-12" />
+                                    : <UnknownFileIcon className="w-12 h-12" />}</>
+                                    
+                                }
+                                <p className="text-sm font-bold text-gray-500 dark:text-gray-400">
+                                    {file.originalFilename}
+                                </p>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
+                )}
+                
             </div>
             <div className="mb-4 border-t pb-2 pt-2">
                 <p className="text-sm text-gray-500 dark:text-gray-300">
