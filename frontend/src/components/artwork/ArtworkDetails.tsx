@@ -7,7 +7,7 @@ import { ReactComponent as MusicNoteIcon } from "../../assets/icons/music-note.s
 import { ReactComponent as UnknownFileIcon } from "../../assets/icons/unknown-file.svg"
 import { useUser } from "../../providers/UserProvider";
 import {useNavigate} from "react-router-dom";
-import { downloadMidiOrMeiFile } from "../../api/download";
+import { downloadFile } from "../../api/download";
 
 interface Category {
     name: string;
@@ -118,8 +118,8 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
                     <div
                     role="button"
                     aria-label="download-file"
-                    onClick={() => {
-                        // if(detailsToShow.files) downloadMidiOrMeiFile(detailsToShow.files, detailsToShow._id)
+                    onClick={async () => {
+                        await downloadFile(file)
                     }}
                     className={`flex flex-col items-start justify-start p-2 border-2 border-gray-200
                             border-solid rounded-lg cursor-pointer bg-gray-50 
