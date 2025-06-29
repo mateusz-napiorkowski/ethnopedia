@@ -138,7 +138,7 @@ exports[`artworks controller POST endpoints createArtwork should respond with st
   },
   "failedUploadsCount": 0,
   "failedUploadsFilenames": [],
-  "savedFilesCount": 0,
+  "savedFilesCount": 2,
 }
 `;
 
