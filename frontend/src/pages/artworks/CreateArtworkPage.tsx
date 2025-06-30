@@ -14,7 +14,7 @@ import { Metadata } from '../../@types/Metadata';
 
 interface FormValues {
     categories: Metadata[],
-    file: any
+    files: any[]
 }
 
 const CreateArtworkPage: React.FC = () => {
@@ -45,11 +45,14 @@ const CreateArtworkPage: React.FC = () => {
     const [uploadedFile, setUploadedFile] = useState()
     const [currentFileName, setCurrentFileName] = useState("")
 
+    const [uploadedFiles, setUploadedFiles] = useState([])
+    const [currentFileNames, setCurrentFileNames] = useState([])
+
     useEffect(() => {
         if (artworkId) {
             getArtwork(artworkId).then((res) => {
                 setInitialMetadataTree(res.artwork.categories);
-                setCurrentFileName(res.artwork.fileName)
+                // setCurrentFileName(res.artwork.fileName)
             });
         } else if (catData?.categories) {
             setInitialCategoryPaths(catData.categories);
@@ -77,7 +80,7 @@ const CreateArtworkPage: React.FC = () => {
                 </h2>
 
                 <Formik<FormValues>
-                    initialValues={{categories: initialMetadataTree || [], file: uploadedFile}}
+                    initialValues={{categories: initialMetadataTree || [], files: uploadedFiles}}
                     enableReinitialize
                     validate={(values) => {
                         const errs: Partial<Record<keyof FormValues, string>> = {};
@@ -96,13 +99,13 @@ const CreateArtworkPage: React.FC = () => {
                         const payload = {
                             categories: values.categories,
                             collectionName: collData?.name,
-                            file: uploadedFile
+                            // file: uploadedFile
                         };
                         try {
                             if (artworkId) {
                                 await editArtwork(payload, artworkId, jwtToken!);
                             } else {
-                                await createArtwork(collectionId, values.categories, uploadedFile, jwtToken!);
+                                await createArtwork(collectionId, values.categories, uploadedFiles, jwtToken!);
                             }
                             queryClient.invalidateQueries(['artworks', collectionId]);
                             navigate(-1);
@@ -117,8 +120,8 @@ const CreateArtworkPage: React.FC = () => {
                         <Form>
                             <MetadataForm
                                 initialMetadataTree={initialMetadataTree}
-                                currentFileName={currentFileName}
-                                setUploadedFile={setUploadedFile}
+                                uploadedFiles={uploadedFiles}
+                                setUploadedFiles={setUploadedFiles}
                                 categoryPaths={initialCategoryPaths}
                                 setFieldValue={setFieldValue}
                             />

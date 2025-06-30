@@ -96,7 +96,7 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
                     htmlFor="dropzone-file"
                     className="block text-sm font-bold text-gray-700 dark:text-white my-2"
                 >
-                    Skojarzone pliki
+                    Skojarzone pliki (mei, midi, xml, musicxml, txt)
                 </label>
                 {
                     detailsToShow.files.length === 0 &&
@@ -121,7 +121,7 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
                     onClick={async () => {
                         await downloadFile(file)
                     }}
-                    className={`flex flex-col items-start justify-start p-2 border-2 border-gray-200
+                    className={`flex flex-col items-start justify-start p-2 border-2 mt-2 mb-2 border-gray-200
                             border-solid rounded-lg cursor-pointer bg-gray-50 
                             dark:bg-gray-800 dark:border-gray-600 hover:bg-gray-100 dark:hover:border-gray-500 dark:hover:bg-gray-700`}
                     >

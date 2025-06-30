@@ -22,9 +22,10 @@ export const getArtworksForPage = async (collectionIds: Array<string>, page: num
     .then(res => res.data)
 }
 
-export const createArtwork = async (collectionId: any, categories: any, file: any, jwtToken: any) => {
+export const createArtwork = async (collectionId: any, categories: any, files: any[], jwtToken: string) => {
     const formData = new FormData();
-    formData.append("files", file);
+    for(const file of files)
+        formData.append("files", file);
     formData.append("categories", JSON.stringify(categories));
     formData.append("collectionId", collectionId);
     const config = {
