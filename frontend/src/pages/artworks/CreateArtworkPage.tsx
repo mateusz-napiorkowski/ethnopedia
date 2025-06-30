@@ -81,7 +81,6 @@ const CreateArtworkPage: React.FC = () => {
 
                 <Formik<FormValues>
                     initialValues={{categories: initialMetadataTree || [], files: uploadedFiles}}
-                    enableReinitialize
                     validate={(values) => {
                         const errs: Partial<Record<keyof FormValues, string>> = {};
                         const anyFilled = values.categories.some(

@@ -59,9 +59,11 @@ const MetadataForm: React.FC<MetadataFormProps> = ({
     }, [initialMetadataTree, categoryPaths]);
 
     // Sync to Formik
-    useEffect(() => {
-        setFieldValue('categories', categories, false);
-    }, [categories, setFieldValue]);
+    // useEffect(() => {
+    //     // console.log(categories)
+    //     setFieldValue('categories', categories, true);
+    //     setFieldValue("files", uploadedFiles, true)
+    // }, [categories, uploadedFiles, setFieldValue]);
 
     // Flatten all field indices
     const allPaths = useMemo(() => {
@@ -115,6 +117,7 @@ const MetadataForm: React.FC<MetadataFormProps> = ({
             }
             nodeList[path[path.length - 1]].value = value;
             setCategories(newTree);
+            setFieldValue('categories', newTree, false);
         },
         [categories]
     );
@@ -177,6 +180,7 @@ const MetadataForm: React.FC<MetadataFormProps> = ({
         const reader = new FileReader();
         reader.onload = (evt: any) => {
             setUploadedFiles(((prevFiles: any) => [...prevFiles, file]));
+            setFieldValue("files", ((prevFiles: any) => [...prevFiles, file]), false)
         };
 
         reader.readAsArrayBuffer(file);
@@ -186,6 +190,8 @@ const MetadataForm: React.FC<MetadataFormProps> = ({
         setUploadedFiles((prevFiles: any) =>
             prevFiles.filter((file: any) => file.name !== fileToRemove)
         );
+        setFieldValue("files", (prevFiles: any) =>
+            prevFiles.filter((file: any) => file.name !== fileToRemove), false)
     }
 
     return (
