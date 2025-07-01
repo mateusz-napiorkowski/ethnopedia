@@ -13,6 +13,7 @@ services:
       - ./frontend:/app
     depends_on:
       - backend
+    restart: always
   backend:
     container_name: ethnopedia-backend
     build:
@@ -25,6 +26,7 @@ services:
       - /app/node_modules # anonymous volume for node_modules only
     depends_on:
       - mongodb
+    restart: always
   mongodb:
     container_name: ethnopedia-mongodb
     ports:
@@ -34,3 +36,6 @@ services:
     environment:
       MONGODB_REPLICA_SET_MODE: primary
       ALLOW_EMPTY_PASSWORD: 'yes'
+    volumes:
+      - mongodb_data:/bitnami/mongodb
+    restart: always
