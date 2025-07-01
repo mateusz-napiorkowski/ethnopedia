@@ -39,3 +39,6 @@ services:
     volumes:
       - mongodb_data:/bitnami/mongodb
     restart: always
+
+volumes:
+  mongodb_data:
