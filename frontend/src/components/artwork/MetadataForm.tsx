@@ -7,8 +7,12 @@ import { ReactComponent as Close } from "../../assets/icons/close.svg"
 
 interface MetadataFormProps {
     initialMetadataTree?: Metadata[],
-    uploadedFiles: any[],
-    setUploadedFiles: (files: any) => void,
+    filesToUpload: any[],
+    setFilesToUpload: (files: any) => void,
+    currentFiles: any[],
+    setCurrentFiles: (files: any) => void,
+    filesToDelete: any[],
+    setFilesToDelete: (files: any) => void,
     categoryPaths?: string[];
     setFieldValue: (
         field: string,
@@ -41,8 +45,12 @@ const buildHierarchy = (paths: string[]): Metadata[] => {
 
 const MetadataForm: React.FC<MetadataFormProps> = ({
                                                        initialMetadataTree,
-                                                       uploadedFiles,
-                                                       setUploadedFiles,
+                                                       filesToUpload,
+                                                       setFilesToUpload,
+                                                       currentFiles,
+                                                       setCurrentFiles,
+                                                       filesToDelete,
+                                                       setFilesToDelete,
                                                        categoryPaths,
                                                        setFieldValue,
                                                    }) => {
@@ -171,19 +179,28 @@ const MetadataForm: React.FC<MetadataFormProps> = ({
 
         const reader = new FileReader();
         reader.onload = (evt: any) => {
-            setUploadedFiles(((prevFiles: any) => [...prevFiles, file]));
-            setFieldValue("files", ((prevFiles: any) => [...prevFiles, file]), false)
+            setFilesToUpload(((prevFiles: any) => [...prevFiles, file]));
+            setFieldValue("filesToUpload", ((prevFiles: any) => [...prevFiles, file]), false)
         };
 
         reader.readAsArrayBuffer(file);
     }
 
-    const handleFileRemove = (fileToRemove: string) => {
-        setUploadedFiles((prevFiles: any) =>
+    const handleNotUploadedFileRemove = (fileToRemove: string) => {
+        setFilesToUpload((prevFiles: any) =>
             prevFiles.filter((file: any) => file.name !== fileToRemove)
         );
-        setFieldValue("files", (prevFiles: any) =>
-            prevFiles.filter((file: any) => file.name !== fileToRemove), false)
+        setFieldValue("filesToUpload", (prevFiles: any) =>
+            prevFiles.filter((file: any) => file.name !== fileToRemove))
+    }
+
+    const handleUploadedFileRemove = (fileToRemove: any) => {
+        setCurrentFiles((prevFiles: any) =>
+            prevFiles.filter((file: any) => file.originalFilename !== fileToRemove.originalFilename)
+        );
+        setFilesToDelete((prev: any) => [...prev, fileToRemove]);
+        setFieldValue("filesToDelete", (prevFiles: any[]) =>
+            prevFiles.filter((prev: any) => [...prev, fileToRemove]))
     }
 
     return (
@@ -200,7 +217,36 @@ const MetadataForm: React.FC<MetadataFormProps> = ({
                 </label>
                 <p className='block text-sm font-normal'>Obsługiwane formaty plików: mei, midi, musicxml, xml, txt.</p>
                 <p className='block text-sm font-normal mb-2'>Maksymalny rozmiar pliku: <span className=''>25 MB.</span></p>
-                {uploadedFiles.map((file) => {
+                {
+                    currentFiles.map((file) => {
+                        return <>
+                            <div
+                                className="flex flex-col items-start justify-start p-2 border-2 border-gray-200
+                                    border-solid rounded-lg bg-gray-50
+                                  dark:bg-gray-800 dark:border-gray-600 mt-2 mb-2"
+                            >
+                                <div className="flex flex-row items-center justify-between w-full">
+                                    <div className='flex flex-row items-center justify-center gap-4'>
+                                    <File className="w-12 h-12"/>
+                                    <p className="text-sm font-bold text-gray-500 dark:text-gray-400">
+                                        {file.originalFilename}
+                                    </p>
+                                    </div>
+                                    <button
+                                        aria-label="exit"
+                                        type="button"
+                                        className="text-gray-400 hover:bg-gray-200 hover:text-gray-900 text-sm
+                                                dark:hover:bg-gray-600 dark:hover:text-white p-2 rounded-lg cursor-pointer"
+                                        onClick={() => handleUploadedFileRemove(file)}
+                                    >
+                                        <Close />
+                                    </button>
+                                </div>
+                            </div>  
+                        </>
+                    })
+                }
+                {filesToUpload.map((file) => {
                     return <>
                         <div
                             className="flex flex-col items-start justify-start p-2 border-2 border-gray-200
@@ -219,7 +265,7 @@ const MetadataForm: React.FC<MetadataFormProps> = ({
                                     type="button"
                                     className="text-gray-400 hover:bg-gray-200 hover:text-gray-900 text-sm
                                             dark:hover:bg-gray-600 dark:hover:text-white p-2 rounded-lg cursor-pointer"
-                                    onClick={() => handleFileRemove(file.name)}
+                                    onClick={() => handleNotUploadedFileRemove(file.name)}
                                 >
                                     <Close />
                                 </button>
@@ -228,7 +274,7 @@ const MetadataForm: React.FC<MetadataFormProps> = ({
                     </>
                 })}
                 {
-                    uploadedFiles.length < 5 && 
+                    (currentFiles.length + filesToUpload.length) < 5 && 
                     <>
                         <label
                             aria-label="upload"
@@ -241,7 +287,7 @@ const MetadataForm: React.FC<MetadataFormProps> = ({
                             <div className="flex flex-row items-center justify-center gap-4">
                                 <DragAndDrop className="w-12 h-12 text-gray-500 dark:text-gray-400"/>
                                 <p className="text-sm font-normal text-gray-500 dark:text-gray-400">
-                                    {`Kliknij, aby przesłać ${uploadedFiles.length > 0 ? "kolejny" : "pierwszy"} plik`}
+                                    {`Kliknij, aby przesłać ${(currentFiles.length + filesToUpload.length) ? "kolejny" : "pierwszy"} plik`}
                                 </p>
                             </div>
                             <input

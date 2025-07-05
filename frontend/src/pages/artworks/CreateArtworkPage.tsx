@@ -14,7 +14,8 @@ import { Metadata } from '../../@types/Metadata';
 
 interface FormValues {
     categories: Metadata[],
-    files: any[]
+    filesToUpload: any[],
+    filesToDelete: any[]
 }
 
 const CreateArtworkPage: React.FC = () => {
@@ -42,17 +43,16 @@ const CreateArtworkPage: React.FC = () => {
     const [initialMetadataTree, setInitialMetadataTree] = useState<Metadata[] | undefined>(
         undefined
     );
-    const [uploadedFile, setUploadedFile] = useState()
-    const [currentFileName, setCurrentFileName] = useState("")
 
-    const [uploadedFiles, setUploadedFiles] = useState([])
-    const [currentFileNames, setCurrentFileNames] = useState([])
+    const [filesToUpload, setFilesToUpload] = useState([])
+    const [currentFiles, setCurrentFiles] = useState([])
+    const [filesToDelete, setFilesToDelete] = useState([])
 
     useEffect(() => {
         if (artworkId) {
             getArtwork(artworkId).then((res) => {
                 setInitialMetadataTree(res.artwork.categories);
-                // setCurrentFileName(res.artwork.fileName)
+                setCurrentFiles(res.artwork.files)
             });
         } else if (catData?.categories) {
             setInitialCategoryPaths(catData.categories);
@@ -80,7 +80,7 @@ const CreateArtworkPage: React.FC = () => {
                 </h2>
 
                 <Formik<FormValues>
-                    initialValues={{categories: initialMetadataTree || [], files: uploadedFiles}}
+                    initialValues={{categories: initialMetadataTree || [], filesToUpload: filesToUpload, filesToDelete: filesToDelete}}
                     validate={(values) => {
                         const errs: Partial<Record<keyof FormValues, string>> = {};
                         const anyFilled = values.categories.some(
@@ -95,16 +95,15 @@ const CreateArtworkPage: React.FC = () => {
                         values,
                         {setSubmitting}: FormikHelpers<FormValues>
                     ) => {
-                        const payload = {
-                            categories: values.categories,
-                            collectionName: collData?.name,
-                            // file: uploadedFile
-                        };
+                        // const payload = {
+                        //     categories: values.categories,
+                        //     collectionName: collData?.name
+                        // };
                         try {
                             if (artworkId) {
-                                await editArtwork(payload, artworkId, jwtToken!);
+                                await editArtwork(artworkId, collectionId as string, values.categories, filesToUpload, filesToDelete, jwtToken!);
                             } else {
-                                await createArtwork(collectionId, values.categories, uploadedFiles, jwtToken!);
+                                await createArtwork(collectionId, values.categories, filesToUpload, jwtToken!);
                             }
                             queryClient.invalidateQueries(['artworks', collectionId]);
                             navigate(-1);
@@ -119,8 +118,12 @@ const CreateArtworkPage: React.FC = () => {
                         <Form>
                             <MetadataForm
                                 initialMetadataTree={initialMetadataTree}
-                                uploadedFiles={uploadedFiles}
-                                setUploadedFiles={setUploadedFiles}
+                                filesToUpload={filesToUpload}
+                                setFilesToUpload={setFilesToUpload}
+                                currentFiles={currentFiles}
+                                setCurrentFiles={setCurrentFiles}
+                                filesToDelete={filesToDelete}
+                                setFilesToDelete={setFilesToDelete}
                                 categoryPaths={initialCategoryPaths}
                                 setFieldValue={setFieldValue}
                             />
