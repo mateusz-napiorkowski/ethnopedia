@@ -179,7 +179,7 @@ const ImportCollectionPage = () => {
                     </div> : <div className="flex flex-row items-center justify-center gap-4">
                         <DragAndDrop className="w-12 h-12 text-gray-500 dark:text-gray-400"/>
                         <p className="text-sm font-normal text-gray-500 dark:text-gray-400">
-                            Kliknij, aby przesłać plik lub przeciągnij go i upuść
+                            Kliknij, aby przesłać plik
                         </p>
                     </div>}
                     <input

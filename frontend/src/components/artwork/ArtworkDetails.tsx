@@ -3,8 +3,8 @@ import { ReactComponent as Expand } from "../../assets/icons/plus.svg";
 import { ReactComponent as Fold } from "../../assets/icons/minus.svg";
 import { ReactComponent as EditIcon } from "../../assets/icons/edit.svg";
 import { ReactComponent as TrashBinIcon } from "../../assets/icons/trashBin.svg";
-import { ReactComponent as MusicNoteIcon } from "../../assets/icons/music-note.svg"
-import { ReactComponent as UnknownFileIcon } from "../../assets/icons/unknown-file.svg"
+import { ReactComponent as Download } from "../../assets/icons/download.svg";
+import { ReactComponent as File } from "../../assets/icons/file.svg"
 import { useUser } from "../../providers/UserProvider";
 import {useNavigate} from "react-router-dom";
 import { downloadFile } from "../../api/download";
@@ -96,7 +96,7 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
                     htmlFor="dropzone-file"
                     className="block text-sm font-bold text-gray-700 dark:text-white my-2"
                 >
-                    Skojarzone pliki (mei, midi, xml, musicxml, txt)
+                    Skojarzone pliki
                 </label>
                 {
                     detailsToShow.files.length === 0 &&
@@ -107,7 +107,7 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
                     >   
                         <div className="flex flex-row items-center justify-between w-full">
                             <div className="flex flex-row items-center justify-center gap-4">
-                                <p className="text-sm font-bold text-gray-500 dark:text-gray-400">
+                                <p className="text-sm font-normal text-gray-500 dark:text-gray-400">
                                     Nie wgrano żadnego pliku. Aby dodać pliki do metadanych przejdź w tryb edycji.
                                 </p>
                             </div>
@@ -116,27 +116,29 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
                 }
                 {detailsToShow.files.map((file: any) =>
                     <div
-                    role="button"
-                    aria-label="download-file"
-                    onClick={async () => {
-                        await downloadFile(file)
-                    }}
-                    className={`flex flex-col items-start justify-start p-2 border-2 mt-2 mb-2 border-gray-200
-                            border-solid rounded-lg cursor-pointer bg-gray-50 
-                            dark:bg-gray-800 dark:border-gray-600 hover:bg-gray-100 dark:hover:border-gray-500 dark:hover:bg-gray-700`}
+                        className={`flex flex-col items-start justify-start p-2 border-2 border-gray-200
+                            border-solid rounded-lg bg-gray-50
+                            dark:bg-gray-800 dark:border-gray-600 mt-2 mb-2`}
                     >
                         <div className="flex flex-row items-center justify-between w-full">
-                            <div className="flex flex-row items-center justify-center gap-4">
+                            <div className='flex flex-row items-center justify-center gap-4'>
                                 {detailsToShow.files &&
-                                    <>{/\.(mei|mid|midi|txt|text|musicxml|mxl|xml)$/i.test(file.originalFilename)
-                                    ? <MusicNoteIcon className="w-12 h-12" />
-                                    : <UnknownFileIcon className="w-12 h-12" />}</>
+                                    <>{<File className="w-12 h-12" />}</>
                                     
                                 }
                                 <p className="text-sm font-bold text-gray-500 dark:text-gray-400">
                                     {file.originalFilename}
                                 </p>
                             </div>
+                            <button
+                                aria-label="exit"
+                                type="button"
+                                className="text-gray-400 hover:bg-gray-200 hover:text-gray-900 text-sm
+                                        dark:hover:bg-gray-600 dark:hover:text-white p-2 rounded-lg cursor-pointer"
+                                onClick={async () => await downloadFile(file)}
+                            >
+                                <Download className="w-5 h-5"/>
+                            </button>
                         </div>
                     </div>
                 )}

@@ -3,7 +3,6 @@ import { getAllCategories } from "./categories";
 import { artworkCategory, collectionCategory } from "./interfaces";
 import path from "path"
 import fs from "fs";
-import { v4 as uuidv4 } from 'uuid';
 
 export const updateArtworkCategories = (artworkSubcategories: Array<artworkCategory>, collectionSubcategories: Array<collectionCategory>) => {
     const newArtworkCategories: Array<artworkCategory> = []
@@ -195,8 +194,8 @@ export const handleFileUpload = async (artwork: any, files: Express.Multer.File[
         if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
         if (!fs.existsSync(collectionUploadsDir)) fs.mkdirSync(collectionUploadsDir);
 
-        for(const file of files) {
-            const fileName = `${artwork._id}-${uuidv4()}${path.extname(file.originalname)}`;
+        for(const [index, file] of Object.entries(files)) {
+            const fileName = `${artwork._id}_${index}${path.extname(file.originalname)}`;
             const filePath = `uploads/${collectionId}/${fileName}`;
 
             const maxFileSize = 25 * 1024 * 1024 // 25 MB
@@ -215,7 +214,7 @@ export const handleFileUpload = async (artwork: any, files: Express.Multer.File[
                     uploadedAt: new Date(Date.now())
                 });
             } catch {
-                failed.push(fileName)
+                failed.push(file.originalname)
             }
         }
 

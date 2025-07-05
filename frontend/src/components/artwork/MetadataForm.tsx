@@ -1,8 +1,7 @@
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { Metadata } from '../../@types/Metadata';
 import FormField from './FormField';
-import { ReactComponent as MusicNoteIcon } from "../../assets/icons/music-note.svg"
-import { ReactComponent as UnknownFileIcon } from "../../assets/icons/unknown-file.svg"
+import { ReactComponent as File } from "../../assets/icons/file.svg"
 import { ReactComponent as DragAndDrop } from "../../assets/icons/dragAndDrop.svg"
 import { ReactComponent as Close } from "../../assets/icons/close.svg"
 
@@ -57,13 +56,6 @@ const MetadataForm: React.FC<MetadataFormProps> = ({
             setCategories(buildHierarchy(categoryPaths));
         }
     }, [initialMetadataTree, categoryPaths]);
-
-    // Sync to Formik
-    // useEffect(() => {
-    //     // console.log(categories)
-    //     setFieldValue('categories', categories, true);
-    //     setFieldValue("files", uploadedFiles, true)
-    // }, [categories, uploadedFiles, setFieldValue]);
 
     // Flatten all field indices
     const allPaths = useMemo(() => {
@@ -204,19 +196,20 @@ const MetadataForm: React.FC<MetadataFormProps> = ({
                     htmlFor="dropzone-file"
                     className="block text-sm font-bold text-gray-700 dark:text-white my-2"
                 >
-                    Wgraj pliki (mei, midi, xml, musicxml, txt)
+                    Wgraj pliki
                 </label>
+                <p className='block text-sm font-normal'>Obsługiwane formaty plików: mei, midi, musicxml, xml, txt.</p>
+                <p className='block text-sm font-normal mb-2'>Maksymalny rozmiar pliku: <span className=''>25 MB.</span></p>
                 {uploadedFiles.map((file) => {
                     return <>
                         <div
                             className="flex flex-col items-start justify-start p-2 border-2 border-gray-200
-                                border-solid rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-600
-                                dark:bg-gray-800 hover:bg-gray-100 dark:border-gray-600
-                                dark:hover:border-gray-500 dark:hover:bg-gray-700 mt-2 mb-2"
+                                border-solid rounded-lg bg-gray-50
+                                dark:bg-gray-800 dark:border-gray-600 mt-2 mb-2"
                         >
                             <div className="flex flex-row items-center justify-between w-full">
                                 <div className='flex flex-row items-center justify-center gap-4'>
-                                {/\.(mei|mid|midi)$/i.test(file.name) ? <MusicNoteIcon className="w-12 h-12"/> : <UnknownFileIcon className="w-12 h-12"/>}
+                                <File className="w-12 h-12"/>
                                 <p className="text-sm font-bold text-gray-500 dark:text-gray-400">
                                     {file.name}
                                 </p>
@@ -225,7 +218,7 @@ const MetadataForm: React.FC<MetadataFormProps> = ({
                                     aria-label="exit"
                                     type="button"
                                     className="text-gray-400 hover:bg-gray-200 hover:text-gray-900 text-sm
-                                            dark:hover:bg-gray-600 dark:hover:text-white p-2 rounded-lg"
+                                            dark:hover:bg-gray-600 dark:hover:text-white p-2 rounded-lg cursor-pointer"
                                     onClick={() => handleFileRemove(file.name)}
                                 >
                                     <Close />
@@ -248,7 +241,7 @@ const MetadataForm: React.FC<MetadataFormProps> = ({
                             <div className="flex flex-row items-center justify-center gap-4">
                                 <DragAndDrop className="w-12 h-12 text-gray-500 dark:text-gray-400"/>
                                 <p className="text-sm font-normal text-gray-500 dark:text-gray-400">
-                                    Kliknij, aby przesłać plik lub przeciągnij go i upuść
+                                    {`Kliknij, aby przesłać ${uploadedFiles.length > 0 ? "kolejny" : "pierwszy"} plik`}
                                 </p>
                             </div>
                             <input
