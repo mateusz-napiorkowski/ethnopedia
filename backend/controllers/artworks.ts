@@ -167,6 +167,10 @@ export const createArtwork = authAsyncWrapper((async (req: Request, res: Respons
 
 export const editArtwork = authAsyncWrapper((async (req: Request, res: Response) => {
     try {
+        console.log(req.files)
+        console.log(req.params)
+        console.log(req.body)
+        console.log(JSON.parse(req.body.uploadedFiles))
         const file = req.file
         const artworkId = req.params.artworkId
         const categories = JSON.parse(req.body.categories)

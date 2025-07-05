@@ -36,13 +36,13 @@ export const createArtwork = async (collectionId: any, categories: any, files: a
         .then(res => res.data)
 }
 
-export const editArtwork = async (artworkId: string, collectionId: string, categories: any, uploadedFiles: any, deletedFiles: any, jwtToken: any) => {
+export const editArtwork = async (artworkId: string, collectionId: string, categories: any, filesToUpload: any, filesToDelete: any, jwtToken: any) => {
     const formData = new FormData();
-    formData.append("artworkId", artworkId)
     formData.append("collectionId", collectionId);
     formData.append("categories", JSON.stringify(categories));
-    formData.append("uploadedFiles", uploadedFiles);
-    formData.append("deletedFiles", deletedFiles)
+    for(const file of filesToUpload)
+        formData.append("files", file);
+    formData.append("filesToDelete", JSON.stringify(filesToDelete))
     const config = {
         headers: {
             Authorization: `Bearer ${jwtToken}`,

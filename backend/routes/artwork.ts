@@ -9,7 +9,7 @@ router.route("/:artworkId").get(getArtwork)
 router.route("/").get(getArtworksForPage)
 router.route("/omram/search").get(getArtworksBySearchTextMatchedInTopmostCategory)
 router.route("/create").post(upload.array("files"), createArtwork)
-router.route("/edit/:artworkId").put(upload.single("file"), editArtwork)
+router.route("/edit/:artworkId").put(upload.array("files"), editArtwork)
 router.route("/delete").delete(deleteArtworks)
 
 export default router;
