@@ -1,6 +1,8 @@
-import { SortOrder } from "mongoose";
+import mongoose, { ClientSession, SortOrder } from "mongoose";
 import { getAllCategories } from "./categories";
 import { artworkCategory, collectionCategory } from "./interfaces";
+import path from "path"
+import fs from "fs";
 
 export const updateArtworkCategories = (artworkSubcategories: Array<artworkCategory>, collectionSubcategories: Array<collectionCategory>) => {
     const newArtworkCategories: Array<artworkCategory> = []
@@ -181,4 +183,48 @@ export const sortRecordsByCategory = (records: any, categoryToSortBy: string, as
     if(ascOrDesc == "desc")
         return sortedRecords.reverse()
     return sortedRecords
+}
+
+export const handleFileUpload = async (artwork: any, files: Express.Multer.File[] | undefined, collectionId: mongoose.Types.ObjectId, session: ClientSession) => {
+    const savedFiles = [];
+    const failed = []
+    if (files && Array.isArray(files)) {
+        const uploadsDir = path.join(__dirname, "..", `uploads/`);
+        const collectionUploadsDir = path.join(__dirname, "..", `uploads/${collectionId}`);
+        if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
+        if (!fs.existsSync(collectionUploadsDir)) fs.mkdirSync(collectionUploadsDir);
+
+        for(const [index, file] of Object.entries(files)) {
+            const fileName = `${artwork._id}_${index}${path.extname(file.originalname)}`;
+            const filePath = `uploads/${collectionId}/${fileName}`;
+
+            const maxFileSize = 25 * 1024 * 1024 // 25 MB
+
+            try {
+                if(!/\.(mei|mid|midi|txt|text|musicxml|mxl|xml)$/i.test(file.originalname))
+                    throw Error("Invalid file extension")
+                if(file.size > maxFileSize)
+                    throw Error("File size exceeded")
+                fs.writeFileSync(filePath, file.buffer);
+                savedFiles.push({
+                    originalFilename: file.originalname,
+                    newFilename: fileName,
+                    filePath: filePath,
+                    size: file.size,
+                    uploadedAt: new Date(Date.now())
+                });
+            } catch {
+                failed.push(file.originalname)
+            }
+        }
+
+        artwork.files = savedFiles
+        await artwork.save({session});
+    }
+    return {
+        artwork: artwork,
+        savedFilesCount: savedFiles.length,
+        failedUploadsCount: failed.length,
+        failedUploadsFilenames: failed
+    }
 }

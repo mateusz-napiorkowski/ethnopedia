@@ -1,5 +1,6 @@
 node_modules/
 .node_modules/
+uploads/*
 built/*
 tests/cases/rwc/*
 tests/cases/perf/*

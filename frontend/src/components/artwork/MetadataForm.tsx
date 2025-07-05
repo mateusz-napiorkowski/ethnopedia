@@ -1,9 +1,18 @@
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { Metadata } from '../../@types/Metadata';
 import FormField from './FormField';
+import { ReactComponent as File } from "../../assets/icons/file.svg"
+import { ReactComponent as DragAndDrop } from "../../assets/icons/dragAndDrop.svg"
+import { ReactComponent as Close } from "../../assets/icons/close.svg"
 
 interface MetadataFormProps {
-    initialMetadataTree?: Metadata[];
+    initialMetadataTree?: Metadata[],
+    filesToUpload: any[],
+    setFilesToUpload: (files: any) => void,
+    currentFiles: any[],
+    setCurrentFiles: (files: any) => void,
+    filesToDelete: any[],
+    setFilesToDelete: (files: any) => void,
     categoryPaths?: string[];
     setFieldValue: (
         field: string,
@@ -36,6 +45,12 @@ const buildHierarchy = (paths: string[]): Metadata[] => {
 
 const MetadataForm: React.FC<MetadataFormProps> = ({
                                                        initialMetadataTree,
+                                                       filesToUpload,
+                                                       setFilesToUpload,
+                                                       currentFiles,
+                                                       setCurrentFiles,
+                                                       filesToDelete,
+                                                       setFilesToDelete,
                                                        categoryPaths,
                                                        setFieldValue,
                                                    }) => {
@@ -49,11 +64,6 @@ const MetadataForm: React.FC<MetadataFormProps> = ({
             setCategories(buildHierarchy(categoryPaths));
         }
     }, [initialMetadataTree, categoryPaths]);
-
-    // Sync to Formik
-    useEffect(() => {
-        setFieldValue('categories', categories, false);
-    }, [categories, setFieldValue]);
 
     // Flatten all field indices
     const allPaths = useMemo(() => {
@@ -107,6 +117,7 @@ const MetadataForm: React.FC<MetadataFormProps> = ({
             }
             nodeList[path[path.length - 1]].value = value;
             setCategories(newTree);
+            setFieldValue('categories', newTree, false);
         },
         [categories]
     );
@@ -162,11 +173,135 @@ const MetadataForm: React.FC<MetadataFormProps> = ({
             );
         });
 
+    const handleFileUpload = (event: any) => {
+        const file = event.target.files[0];
+        if(!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (evt: any) => {
+            setFilesToUpload(((prevFiles: any) => [...prevFiles, file]));
+            setFieldValue("filesToUpload", ((prevFiles: any) => [...prevFiles, file]), false)
+        };
+
+        reader.readAsArrayBuffer(file);
+    }
+
+    const handleNotUploadedFileRemove = (fileToRemove: string) => {
+        setFilesToUpload((prevFiles: any) =>
+            prevFiles.filter((file: any) => file.name !== fileToRemove)
+        );
+        setFieldValue("filesToUpload", (prevFiles: any) =>
+            prevFiles.filter((file: any) => file.name !== fileToRemove))
+    }
+
+    const handleUploadedFileRemove = (fileToRemove: any) => {
+        setCurrentFiles((prevFiles: any) =>
+            prevFiles.filter((file: any) => file.originalFilename !== fileToRemove.originalFilename)
+        );
+        setFilesToDelete((prev: any) => [...prev, fileToRemove]);
+        setFieldValue("filesToDelete", (prevFiles: any[]) =>
+            prevFiles.filter((prev: any) => [...prev, fileToRemove]))
+    }
 
     return (
-        <div data-testid='category-tree'>
-            {renderFields(categories)}
-        </div>
+        <>
+            <div data-testid='category-tree'>
+                {renderFields(categories)}
+            </div>
+            <div>
+                <label
+                    htmlFor="dropzone-file"
+                    className="block text-sm font-bold text-gray-700 dark:text-white my-2"
+                >
+                    Wgraj pliki
+                </label>
+                <p className='block text-sm font-normal'>Obsługiwane formaty plików: mei, midi, musicxml, xml, txt.</p>
+                <p className='block text-sm font-normal mb-2'>Maksymalny rozmiar pliku: <span className=''>25 MB.</span></p>
+                {
+                    currentFiles.map((file) => {
+                        return <>
+                            <div
+                                className="flex flex-col items-start justify-start p-2 border-2 border-gray-200
+                                    border-solid rounded-lg bg-gray-50
+                                  dark:bg-gray-800 dark:border-gray-600 mt-2 mb-2"
+                            >
+                                <div className="flex flex-row items-center justify-between w-full">
+                                    <div className='flex flex-row items-center justify-center gap-4'>
+                                    <File className="w-12 h-12"/>
+                                    <p className="text-sm font-bold text-gray-500 dark:text-gray-400">
+                                        {file.originalFilename}
+                                    </p>
+                                    </div>
+                                    <button
+                                        aria-label="exit"
+                                        type="button"
+                                        className="text-gray-400 hover:bg-gray-200 hover:text-gray-900 text-sm
+                                                dark:hover:bg-gray-600 dark:hover:text-white p-2 rounded-lg cursor-pointer"
+                                        onClick={() => handleUploadedFileRemove(file)}
+                                    >
+                                        <Close />
+                                    </button>
+                                </div>
+                            </div>  
+                        </>
+                    })
+                }
+                {filesToUpload.map((file) => {
+                    return <>
+                        <div
+                            className="flex flex-col items-start justify-start p-2 border-2 border-gray-200
+                                border-solid rounded-lg bg-gray-50
+                                dark:bg-gray-800 dark:border-gray-600 mt-2 mb-2"
+                        >
+                            <div className="flex flex-row items-center justify-between w-full">
+                                <div className='flex flex-row items-center justify-center gap-4'>
+                                <File className="w-12 h-12"/>
+                                <p className="text-sm font-bold text-gray-500 dark:text-gray-400">
+                                    {file.name}
+                                </p>
+                                </div>
+                                <button
+                                    aria-label="exit"
+                                    type="button"
+                                    className="text-gray-400 hover:bg-gray-200 hover:text-gray-900 text-sm
+                                            dark:hover:bg-gray-600 dark:hover:text-white p-2 rounded-lg cursor-pointer"
+                                    onClick={() => handleNotUploadedFileRemove(file.name)}
+                                >
+                                    <Close />
+                                </button>
+                            </div>
+                        </div>
+                    </>
+                })}
+                {
+                    (currentFiles.length + filesToUpload.length) < 5 && 
+                    <>
+                        <label
+                            aria-label="upload"
+                            htmlFor="dropzone-file"
+                            className="flex flex-col items-start justify-start p-2 border-2 border-gray-200
+                                        border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-600
+                                        dark:bg-gray-800 hover:bg-gray-100 dark:border-gray-600
+                                        dark:hover:border-gray-500 dark:hover:bg-gray-700"
+                        >
+                            <div className="flex flex-row items-center justify-center gap-4">
+                                <DragAndDrop className="w-12 h-12 text-gray-500 dark:text-gray-400"/>
+                                <p className="text-sm font-normal text-gray-500 dark:text-gray-400">
+                                    {`Kliknij, aby przesłać ${(currentFiles.length + filesToUpload.length) ? "kolejny" : "pierwszy"} plik`}
+                                </p>
+                            </div>
+                            <input
+                                id="dropzone-file"
+                                type="file"
+                                className="hidden"
+                                onChange={handleFileUpload}
+                            />
+                        </label>    
+                    </>
+                }
+                
+            </div>
+        </>
     );
 };
 

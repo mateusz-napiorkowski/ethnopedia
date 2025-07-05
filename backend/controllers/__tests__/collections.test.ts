@@ -6,7 +6,7 @@ import CollectionsRouter from "../../routes/collection";
 import {jwtToken, collectionId, collectionName, collectionDescription, startSessionDefaultReturnValue,
     collectionFindByIdNotFound, collectionFindByIdHappyPath, collectionFindByIdSaveFailed,
     artworkFindSaveFailed, artworkFindHappyPath, artworkWithUpdatedcategories
-} from "./utils/collectionsUtils"
+} from "./utils/consts"
 
 const app = express()
 app.use(bodyParser.json());

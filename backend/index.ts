@@ -1,5 +1,5 @@
 import express from "express"
-
+import path from "path"
 require("dotenv").config()
 
 const app = express()
@@ -17,7 +17,7 @@ import health from "./routes/health";
 app.use(cors())
 app.use(express.urlencoded({ extended: true })); 
 app.use(express.json()); 
-
+app.use('/api/v1/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use((req, res, next) => {
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
     next()
