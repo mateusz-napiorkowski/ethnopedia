@@ -217,8 +217,9 @@ export const handleFileUpload = async (artwork: any, files: Express.Multer.File[
                     size: file.size,
                     uploadedAt: new Date(Date.now())
                 });
-            } catch {
-                failed.push(file.originalname)
+            } catch (error) {
+                const err = error as Error
+                failed.push({filename: file.originalname, cause: err.message})
             }
         }
         await artwork.save({session});
@@ -226,30 +227,30 @@ export const handleFileUpload = async (artwork: any, files: Express.Multer.File[
     return {
         savedFilesCount: artwork.files.length,
         failedUploadsCount: failed.length,
-        failedUploadsFilenames: failed
+        failedUploadsCauses: failed
     }
 }
 
 export const handleFileDelete = async (artwork: any, filesToDelete: fileToDelete[], collectionId: mongoose.Types.ObjectId, session: ClientSession) => {
     const deletedFiles = [];
-    const failedDeletesFilenames = [];
+    const failedDeletesCauses = [];
     if (filesToDelete && Array.isArray(filesToDelete)) {
         for(const fileToDelete of filesToDelete) {
             if(artwork.files.some(((file: any) => file._id?.toString() === fileToDelete._id))) {
                 const absoluteFilePath = path.join(__dirname, "..", fileToDelete.filePath as string);
                 if (fs.existsSync(absoluteFilePath)) fs.unlinkSync(absoluteFilePath)
-                else failedDeletesFilenames.push(fileToDelete.originalFilename)
+                else failedDeletesCauses.push({filename: fileToDelete.originalFilename, cause: "Internal server error"})
                 artwork.files = artwork.files.filter(((file: any) => file._id?.toString() !== fileToDelete._id))
                 await artwork.save({session})
                 deletedFiles.push(fileToDelete.originalFilename)
             } else {
-                failedDeletesFilenames.push(fileToDelete.originalFilename)
+                failedDeletesCauses.push({filename: fileToDelete.originalFilename, cause: "File not found"})
             }
         }
     }
     return {
         deletedFilesCount: deletedFiles.length,
-        failedDeletesCount: failedDeletesFilenames.length,
-        failedDeletesFilenames
+        failedDeletesCount: failedDeletesCauses.length,
+        failedDeletesCauses
     }
 }

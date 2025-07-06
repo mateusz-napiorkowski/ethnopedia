@@ -140,14 +140,14 @@ export const createArtwork = authAsyncWrapper((async (req: Request, res: Respons
             const {
                 savedFilesCount,
                 failedUploadsCount,
-                failedUploadsFilenames
+                failedUploadsCauses
             } = await handleFileUploads(artwork, files, collection._id, session)
 
             res.status(201).json({
                 artwork,
                 savedFilesCount,
                 failedUploadsCount,
-                failedUploadsFilenames
+                failedUploadsCauses
             })
         })
         session.endSession()
@@ -205,22 +205,22 @@ export const editArtwork = authAsyncWrapper((async (req: Request, res: Response)
             const {
                 deletedFilesCount,
                 failedDeletesCount,
-                failedDeletesFilenames
+                failedDeletesCauses
             } = await handleFileDelete(artwork, filesToDelete, collection._id, session)
             const {
                 savedFilesCount,
                 failedUploadsCount,
-                failedUploadsFilenames
+                failedUploadsCauses
             } = await handleFileUploads(artwork, filesToUpload, collection._id, session)
 
             res.status(201).json({
                 updatedArtwork: artwork,
                 savedFilesCount,
                 failedUploadsCount,
-                failedUploadsFilenames,
+                failedUploadsCauses,
                 deletedFilesCount,
                 failedDeletesCount,
-                failedDeletesFilenames
+                failedDeletesCauses
             })
         })
         session.endSession()

@@ -11,6 +11,7 @@ import { getCollection } from '../../api/collections';
 import { getArtwork, createArtwork, editArtwork } from '../../api/artworks';
 import MetadataForm from '../../components/artwork/MetadataForm';
 import { Metadata } from '../../@types/Metadata';
+import FileErrorsPopup from './FileErrorsPopup';
 
 interface FormValues {
     categories: Metadata[],
@@ -47,6 +48,9 @@ const CreateArtworkPage: React.FC = () => {
     const [filesToUpload, setFilesToUpload] = useState([])
     const [currentFiles, setCurrentFiles] = useState([])
     const [filesToDelete, setFilesToDelete] = useState([])
+    const [showFileErrorsPopup, setShowFileErrorsPopup] = useState(false)
+    const [failedUploadsCauses, setFailedUploadsCauses] = useState([])
+    const [failedDeletesCauses, setFailedDeletesCauses] = useState([])
 
     useEffect(() => {
         if (artworkId) {
@@ -69,6 +73,13 @@ const CreateArtworkPage: React.FC = () => {
 
     return (
         <div className="min-h-screen flex flex-col overflow-y-auto" data-testid="create-artwork-page-container">
+            {showFileErrorsPopup && (
+                <FileErrorsPopup
+                    onClose={() => {setShowFileErrorsPopup(false); navigate(-1)}}
+                    failedUploadsCauses={failedUploadsCauses}
+                    failedDeletesCauses={failedDeletesCauses}
+                />
+            )}
             <Navbar />
             <div className="container px-8 mt-6 max-w-3xl mx-auto">
                 <Navigation />
@@ -97,13 +108,18 @@ const CreateArtworkPage: React.FC = () => {
                         {setSubmitting}: FormikHelpers<FormValues>
                     ) => {
                         try {
-                            if (artworkId) {
-                                await editArtwork(artworkId, collectionId as string, values.categories, filesToUpload, filesToDelete, jwtToken!);
-                            } else {
+                            const resData = artworkId ? 
+                                await editArtwork(artworkId, collectionId as string, values.categories,
+                                    filesToUpload, filesToDelete, jwtToken!) :
                                 await createArtwork(collectionId, values.categories, filesToUpload, jwtToken!);
-                            }
                             queryClient.invalidateQueries(['artworks', collectionId]);
-                            navigate(-1);
+                            if(resData.failedUploadsCount > 0 || resData.failedDeletesCount > 0) {
+                                setShowFileErrorsPopup(true)
+                                setFailedUploadsCauses(resData.failedUploadsCauses)
+                                setFailedDeletesCauses(resData.failedDeletesCauses)
+                            } else {
+                                navigate(-1);
+                            }
                         } catch (e) {
                             console.error(e);
                         } finally {
