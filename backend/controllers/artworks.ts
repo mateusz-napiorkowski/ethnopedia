@@ -134,15 +134,14 @@ export const createArtwork = authAsyncWrapper((async (req: Request, res: Respons
             if(!artworkCategoriesHaveValidFormat(categories, collection.categories))
                 throw new Error(`Incorrect request body provided`)
 
-            const newArtwork = new Artwork({ categories: categories, collectionName: collection.name });
-            await newArtwork.save({ session });
+            const artwork = new Artwork({ categories: categories, collectionName: collection.name });
+            await artwork.save({ session });
 
             const {
-                artwork,
                 savedFilesCount,
                 failedUploadsCount,
                 failedUploadsFilenames
-            } = await handleFileUploads(newArtwork, files, collection._id, session)
+            } = await handleFileUploads(artwork, files, collection._id, session)
 
             res.status(201).json({
                 artwork,
@@ -168,7 +167,7 @@ export const createArtwork = authAsyncWrapper((async (req: Request, res: Respons
 
 export const editArtwork = authAsyncWrapper((async (req: Request, res: Response) => {
     try {
-        const filesToUpload = req.files
+        const filesToUpload = req.files as Express.Multer.File[]
         const artworkId = req.params.artworkId
         const collectionId = req.body.collectionId
         let categories, filesToDelete: fileToDelete[];        
@@ -196,53 +195,25 @@ export const editArtwork = authAsyncWrapper((async (req: Request, res: Response)
             artwork.categories = categories
             await artwork.save({session})
 
-            const {newArtwork, deletedFilesCount, failedDeletesCount, failedDeletes} = await handleFileDelete(artwork, filesToDelete, collection._id, session)
-            const savedFiles = [];
-            const failedSaves = [];
-            if (filesToUpload && Array.isArray(filesToUpload)) {
-                const uploadsDir = path.join(__dirname, "..", `uploads/`);
-                const collectionUploadsDir = path.join(__dirname, "..", `uploads/${collectionId}`);
-                if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
-                if (!fs.existsSync(collectionUploadsDir)) fs.mkdirSync(collectionUploadsDir);
-                for(const file of filesToUpload) {
-                    const availableIndex = [...Array(5).keys()].find(index => 
-                        !newArtwork.files.some((file: any) => file.newFilename?.startsWith(`${artworkId}_${index}`))
-                    )
-                    const fileName = availableIndex !== undefined
-                        ? `${artworkId}_${availableIndex}${path.extname(file.originalname)}`
-                        : undefined;
-                    const filePath = `uploads/${collectionId}/${fileName}`;
-        
-                    const maxFileSize = 25 * 1024 * 1024 // 25 MB
-        
-                    try {
-                        if(!/\.(mei|mid|midi|txt|text|musicxml|mxl|xml)$/i.test(file.originalname))
-                            throw Error("Invalid file extension")
-                        if(file.size > maxFileSize)
-                            throw Error("File size exceeded")
-                        fs.writeFileSync(filePath, file.buffer);
-                        savedFiles.push({
-                            originalFilename: file.originalname,
-                            newFilename: fileName,
-                            filePath: filePath,
-                            size: file.size,
-                            uploadedAt: new Date(Date.now())
-                        });
-                    } catch {
-                        failedSaves.push(file.originalname)
-                    }
-                }
-                newArtwork.files.push(...savedFiles)
-                await newArtwork.save({session});
-            }
+            const {
+                deletedFilesCount,
+                failedDeletesCount,
+                failedDeletesFilenames
+            } = await handleFileDelete(artwork, filesToDelete, collection._id, session)
+            const {
+                savedFilesCount,
+                failedUploadsCount,
+                failedUploadsFilenames
+            } = await handleFileUploads(artwork, filesToUpload, collection._id, session)
+
             res.status(201).json({
-                updatedArtwork: newArtwork,
-                savedFilesCount: savedFiles.length,
-                failedUploadsCount: failedSaves.length,
-                failedUploadsFilenames: failedSaves,
-                deletedFilesCount: deletedFilesCount,
-                failedDeletesCount: failedDeletesCount,
-                failedDeletesFilenames: failedDeletes
+                updatedArtwork: artwork,
+                savedFilesCount,
+                failedUploadsCount,
+                failedUploadsFilenames,
+                deletedFilesCount,
+                failedDeletesCount,
+                failedDeletesFilenames
             })
         })
         session.endSession()

@@ -186,7 +186,6 @@ export const sortRecordsByCategory = (records: any, categoryToSortBy: string, as
 }
 
 export const handleFileUpload = async (artwork: any, files: Express.Multer.File[] | undefined, collectionId: mongoose.Types.ObjectId, session: ClientSession) => {
-    const savedFiles = [];
     const failed = []
     if (files && Array.isArray(files)) {
         const uploadsDir = path.join(__dirname, "..", `uploads/`);
@@ -194,8 +193,13 @@ export const handleFileUpload = async (artwork: any, files: Express.Multer.File[
         if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
         if (!fs.existsSync(collectionUploadsDir)) fs.mkdirSync(collectionUploadsDir);
 
-        for(const [index, file] of Object.entries(files)) {
-            const fileName = `${artwork._id}_${index}${path.extname(file.originalname)}`;
+        for(const file of files) {
+            const availableIndex = [...Array(5).keys()].find(index => 
+                !artwork.files.some((file: any) => file.newFilename?.startsWith(`${artwork.Id}_${index}`))
+            )
+            const fileName = availableIndex !== undefined
+                ? `${artwork.id}_${availableIndex}${path.extname(file.originalname)}`
+                : undefined;
             const filePath = `uploads/${collectionId}/${fileName}`;
 
             const maxFileSize = 25 * 1024 * 1024 // 25 MB
@@ -206,7 +210,7 @@ export const handleFileUpload = async (artwork: any, files: Express.Multer.File[
                 if(file.size > maxFileSize)
                     throw Error("File size exceeded")
                 fs.writeFileSync(filePath, file.buffer);
-                savedFiles.push({
+                artwork.files.push({
                     originalFilename: file.originalname,
                     newFilename: fileName,
                     filePath: filePath,
@@ -217,13 +221,10 @@ export const handleFileUpload = async (artwork: any, files: Express.Multer.File[
                 failed.push(file.originalname)
             }
         }
-
-        artwork.files = savedFiles
         await artwork.save({session});
     }
     return {
-        artwork: artwork,
-        savedFilesCount: savedFiles.length,
+        savedFilesCount: artwork.files.length,
         failedUploadsCount: failed.length,
         failedUploadsFilenames: failed
     }
@@ -231,25 +232,24 @@ export const handleFileUpload = async (artwork: any, files: Express.Multer.File[
 
 export const handleFileDelete = async (artwork: any, filesToDelete: fileToDelete[], collectionId: mongoose.Types.ObjectId, session: ClientSession) => {
     const deletedFiles = [];
-    const failedDeletes = [];
+    const failedDeletesFilenames = [];
     if (filesToDelete && Array.isArray(filesToDelete)) {
         for(const fileToDelete of filesToDelete) {
             if(artwork.files.some(((file: any) => file._id?.toString() === fileToDelete._id))) {
                 const absoluteFilePath = path.join(__dirname, "..", fileToDelete.filePath as string);
                 if (fs.existsSync(absoluteFilePath)) fs.unlinkSync(absoluteFilePath)
-                else failedDeletes.push(fileToDelete.originalFilename)
+                else failedDeletesFilenames.push(fileToDelete.originalFilename)
                 artwork.files = artwork.files.filter(((file: any) => file._id?.toString() !== fileToDelete._id))
                 await artwork.save({session})
                 deletedFiles.push(fileToDelete.originalFilename)
             } else {
-                failedDeletes.push(fileToDelete.originalFilename)
+                failedDeletesFilenames.push(fileToDelete.originalFilename)
             }
         }
     }
     return {
-        newArtwork: artwork,
         deletedFilesCount: deletedFiles.length,
-        failedDeletesCount: failedDeletes.length,
-        failedDeletes
+        failedDeletesCount: failedDeletesFilenames.length,
+        failedDeletesFilenames
     }
 }
