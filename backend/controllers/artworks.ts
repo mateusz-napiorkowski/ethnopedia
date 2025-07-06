@@ -7,6 +7,7 @@ import { constructQuickSearchFilter, constructAdvSearchFilter, sortRecordsByCate
 import { artworkCategoriesHaveValidFormat } from "../utils/categories";
 import fs from "fs";
 import path from "path";
+import { fileToDelete } from "../utils/interfaces";
 
 export const getArtwork = async (req: Request, res: Response) => {
     try {
@@ -167,53 +168,107 @@ export const createArtwork = authAsyncWrapper((async (req: Request, res: Respons
 
 export const editArtwork = authAsyncWrapper((async (req: Request, res: Response) => {
     try {
-        console.log(req.files)
-        console.log(req.params)
-        console.log(req.body)
-        console.log(JSON.parse(req.body.uploadedFiles))
-        const file = req.file
+        const filesToUpload = req.files
         const artworkId = req.params.artworkId
-        const categories = JSON.parse(req.body.categories)
-        const collectionName = req.body.collectionName
-        if(!categories || !collectionName)
+        const collectionId = req.body.collectionId
+        let categories, filesToDelete: fileToDelete[];        
+        try {
+            categories = JSON.parse(req.body.categories);
+            if(req.body.filesToDelete)
+                filesToDelete = JSON.parse(req.body.filesToDelete)
+        } catch {
+            throw new Error(`Incorrect request body provided`);
+        }
+        if(!categories || !collectionId)
             throw new Error('Incorrect request body provided')
-        const artwork = await Artwork.findOne({_id: artworkId}).exec()
-        if(artwork === null) 
-            throw new Error('Artwork not found')
-        // const newArtworkFileName = file ? file.originalname : artwork.fileName
-        const resultInfo = await Artwork.replaceOne(
-            {_id: artworkId, collectionName: collectionName},
-            {
-                categories: categories,
-                collectionName: collectionName,
-                // fileName: newArtworkFileName,
-                // filePath: `uploads/${artworkId}-${newArtworkFileName}`
+        const session = await mongoose.startSession()
+        await session.withTransaction(async (session: ClientSession) => {
+            const collection = await CollectionCollection.findOne({_id: collectionId}, null, {session}).exec()
+            if (collection == null)
+                throw new Error("Collection not found")
+            if(!artworkCategoriesHaveValidFormat(categories, collection.categories))
+                throw new Error(`Incorrect request body provided`)
+            const artwork = await Artwork.findOne({_id: artworkId}, null, {session}).exec()
+            if (artwork == null)
+                throw new Error("Artwork not found")
+            if(artwork?.collectionName != collection.name)
+                throw new Error(`Incorrect request body provided`)
+            artwork.categories = categories
+            await artwork.save({session})
+
+            const deletedFiles = [];
+            const failedDeletes = [];
+            const savedFiles = [];
+            const failedSaves = [];
+            if (filesToDelete && Array.isArray(filesToDelete)) {
+                for(const fileToDelete of filesToDelete) {
+                    console.log(fileToDelete)
+                    if(artwork.files.some(((file) => file._id?.toString() === fileToDelete._id))) {
+                        const absoluteFilePath = path.join(__dirname, "..", fileToDelete.filePath as string);
+                        if (fs.existsSync(absoluteFilePath)) fs.unlinkSync(absoluteFilePath)
+                        else failedDeletes.push(fileToDelete.originalFilename)
+                        artwork.files = artwork.files.filter(((file) => file._id?.toString() !== fileToDelete._id))
+                        await artwork.save({session})
+                        deletedFiles.push(fileToDelete.originalFilename)
+                    } else {
+                        failedDeletes.push(fileToDelete.originalFilename)
+                    }
+                }
             }
-        ).exec()
-        // if(resultInfo.modifiedCount === 0) {
-        //     throw new Error('Artwork not found')
-        // } else {
-        //     if (file) {
-        //         const uploadsDir = path.join(__dirname, "..", "uploads");
-        //         if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
-
-        //         const fileName = `${artworkId}-${file.originalname}`;
-        //         const filePath = `uploads/${fileName}`;
-
-        //         const oldFilePath = artwork.filePath
-
-        //         if(oldFilePath)
-        //             fs.unlinkSync(oldFilePath as PathLike)
-        //         fs.writeFileSync(filePath, file.buffer);
-        //     }   
-        // }
-        return res.status(201).json(resultInfo)
+            if (filesToUpload && Array.isArray(filesToUpload)) {
+                const uploadsDir = path.join(__dirname, "..", `uploads/`);
+                const collectionUploadsDir = path.join(__dirname, "..", `uploads/${collectionId}`);
+                if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
+                if (!fs.existsSync(collectionUploadsDir)) fs.mkdirSync(collectionUploadsDir);
+                for(const file of filesToUpload) {
+                    const availableIndex = [...Array(5).keys()].find(index => 
+                        !artwork.files.some(file => file.newFilename?.startsWith(`${artworkId}_${index}`))
+                    )
+                    const fileName = availableIndex !== undefined
+                        ? `${artworkId}_${availableIndex}${path.extname(file.originalname)}`
+                        : undefined;
+                    const filePath = `uploads/${collectionId}/${fileName}`;
+        
+                    const maxFileSize = 25 * 1024 * 1024 // 25 MB
+        
+                    try {
+                        if(!/\.(mei|mid|midi|txt|text|musicxml|mxl|xml)$/i.test(file.originalname))
+                            throw Error("Invalid file extension")
+                        if(file.size > maxFileSize)
+                            throw Error("File size exceeded")
+                        fs.writeFileSync(filePath, file.buffer);
+                        savedFiles.push({
+                            originalFilename: file.originalname,
+                            newFilename: fileName,
+                            filePath: filePath,
+                            size: file.size,
+                            uploadedAt: new Date(Date.now())
+                        });
+                    } catch {
+                        failedSaves.push(file.originalname)
+                    }
+                }
+                artwork.files.push(...savedFiles)
+                await artwork.save({session});
+            }
+            res.status(201).json({
+                updatedArtwork: artwork,
+                savedFilesCount: savedFiles.length,
+                failedUploadsCount: failedSaves.length,
+                failedUploadsFilenames: failedSaves,
+                deletedFilesCount: deletedFiles.length,
+                failedDeletesCount: failedDeletes.length,
+                failedDeletesFilenames: failedDeletes
+            })
+        })
+        session.endSession()
+        
     } catch (error) {
         const err = error as Error
         console.error(error)
         if (err.message === `Incorrect request body provided`)
             res.status(400).json({ error: err.message })
-        else if(err.message === `Artwork not found`)
+        else if(err.message === `Artwork not found` || err.message === "Collection not found")
             res.status(404).json({ error: err.message })
         else
             res.status(503).json({ error: `Database unavailable` })

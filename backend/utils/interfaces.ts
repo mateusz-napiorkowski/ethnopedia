@@ -13,3 +13,11 @@ export interface collectionCategory {
     name: string,
     subcategories: Array<collectionCategory>
 }
+
+export interface fileToDelete {
+    originalFilename: string,
+    filePath: string,
+    size: number,
+    uploadedAt: Date,
+    _id: string
+}
