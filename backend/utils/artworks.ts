@@ -1,6 +1,6 @@
 import mongoose, { ClientSession, SortOrder } from "mongoose";
 import { getAllCategories } from "./categories";
-import { artworkCategory, collectionCategory } from "./interfaces";
+import { artworkCategory, collectionCategory, fileToDelete } from "./interfaces";
 import path from "path"
 import fs from "fs";
 
@@ -226,5 +226,30 @@ export const handleFileUpload = async (artwork: any, files: Express.Multer.File[
         savedFilesCount: savedFiles.length,
         failedUploadsCount: failed.length,
         failedUploadsFilenames: failed
+    }
+}
+
+export const handleFileDelete = async (artwork: any, filesToDelete: fileToDelete[], collectionId: mongoose.Types.ObjectId, session: ClientSession) => {
+    const deletedFiles = [];
+    const failedDeletes = [];
+    if (filesToDelete && Array.isArray(filesToDelete)) {
+        for(const fileToDelete of filesToDelete) {
+            if(artwork.files.some(((file: any) => file._id?.toString() === fileToDelete._id))) {
+                const absoluteFilePath = path.join(__dirname, "..", fileToDelete.filePath as string);
+                if (fs.existsSync(absoluteFilePath)) fs.unlinkSync(absoluteFilePath)
+                else failedDeletes.push(fileToDelete.originalFilename)
+                artwork.files = artwork.files.filter(((file: any) => file._id?.toString() !== fileToDelete._id))
+                await artwork.save({session})
+                deletedFiles.push(fileToDelete.originalFilename)
+            } else {
+                failedDeletes.push(fileToDelete.originalFilename)
+            }
+        }
+    }
+    return {
+        newArtwork: artwork,
+        deletedFilesCount: deletedFiles.length,
+        failedDeletesCount: failedDeletes.length,
+        failedDeletes
     }
 }

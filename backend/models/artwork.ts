@@ -10,8 +10,7 @@ const artworkSchema = new mongoose.Schema({
         newFilename: { type: String, required: false },
         filePath: { type: String, required: false },
         size: { type: Number, required: false},
-        uploadedAt: { type: Date, default: Date.now },
-        _id: {type: ObjectId}
+        uploadedAt: { type: Date, default: Date.now }
     }
 ]
 },{

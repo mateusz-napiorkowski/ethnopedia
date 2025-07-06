@@ -3,7 +3,7 @@ import mongoose, { ClientSession, SortOrder } from "mongoose"
 import { authAsyncWrapper } from "../middleware/auth"
 import Artwork from "../models/artwork";
 import CollectionCollection from "../models/collection"
-import { constructQuickSearchFilter, constructAdvSearchFilter, sortRecordsByCategory, constructTopmostCategorySearchTextFilter, handleFileUpload as handleFileUploads } from "../utils/artworks"
+import { constructQuickSearchFilter, constructAdvSearchFilter, sortRecordsByCategory, constructTopmostCategorySearchTextFilter, handleFileUpload as handleFileUploads, handleFileDelete } from "../utils/artworks"
 import { artworkCategoriesHaveValidFormat } from "../utils/categories";
 import fs from "fs";
 import path from "path";
@@ -196,25 +196,9 @@ export const editArtwork = authAsyncWrapper((async (req: Request, res: Response)
             artwork.categories = categories
             await artwork.save({session})
 
-            const deletedFiles = [];
-            const failedDeletes = [];
+            const {newArtwork, deletedFilesCount, failedDeletesCount, failedDeletes} = await handleFileDelete(artwork, filesToDelete, collection._id, session)
             const savedFiles = [];
             const failedSaves = [];
-            if (filesToDelete && Array.isArray(filesToDelete)) {
-                for(const fileToDelete of filesToDelete) {
-                    console.log(fileToDelete)
-                    if(artwork.files.some(((file) => file._id?.toString() === fileToDelete._id))) {
-                        const absoluteFilePath = path.join(__dirname, "..", fileToDelete.filePath as string);
-                        if (fs.existsSync(absoluteFilePath)) fs.unlinkSync(absoluteFilePath)
-                        else failedDeletes.push(fileToDelete.originalFilename)
-                        artwork.files = artwork.files.filter(((file) => file._id?.toString() !== fileToDelete._id))
-                        await artwork.save({session})
-                        deletedFiles.push(fileToDelete.originalFilename)
-                    } else {
-                        failedDeletes.push(fileToDelete.originalFilename)
-                    }
-                }
-            }
             if (filesToUpload && Array.isArray(filesToUpload)) {
                 const uploadsDir = path.join(__dirname, "..", `uploads/`);
                 const collectionUploadsDir = path.join(__dirname, "..", `uploads/${collectionId}`);
@@ -222,7 +206,7 @@ export const editArtwork = authAsyncWrapper((async (req: Request, res: Response)
                 if (!fs.existsSync(collectionUploadsDir)) fs.mkdirSync(collectionUploadsDir);
                 for(const file of filesToUpload) {
                     const availableIndex = [...Array(5).keys()].find(index => 
-                        !artwork.files.some(file => file.newFilename?.startsWith(`${artworkId}_${index}`))
+                        !newArtwork.files.some((file: any) => file.newFilename?.startsWith(`${artworkId}_${index}`))
                     )
                     const fileName = availableIndex !== undefined
                         ? `${artworkId}_${availableIndex}${path.extname(file.originalname)}`
@@ -248,16 +232,16 @@ export const editArtwork = authAsyncWrapper((async (req: Request, res: Response)
                         failedSaves.push(file.originalname)
                     }
                 }
-                artwork.files.push(...savedFiles)
-                await artwork.save({session});
+                newArtwork.files.push(...savedFiles)
+                await newArtwork.save({session});
             }
             res.status(201).json({
-                updatedArtwork: artwork,
+                updatedArtwork: newArtwork,
                 savedFilesCount: savedFiles.length,
                 failedUploadsCount: failedSaves.length,
                 failedUploadsFilenames: failedSaves,
-                deletedFilesCount: deletedFiles.length,
-                failedDeletesCount: failedDeletes.length,
+                deletedFilesCount: deletedFilesCount,
+                failedDeletesCount: failedDeletesCount,
                 failedDeletesFilenames: failedDeletes
             })
         })
