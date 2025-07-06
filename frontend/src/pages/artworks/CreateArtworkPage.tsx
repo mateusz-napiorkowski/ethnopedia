@@ -81,6 +81,7 @@ const CreateArtworkPage: React.FC = () => {
 
                 <Formik<FormValues>
                     initialValues={{categories: initialMetadataTree || [], filesToUpload: filesToUpload, filesToDelete: filesToDelete}}
+                    enableReinitialize={initialMetadataTree ? true : false}
                     validate={(values) => {
                         const errs: Partial<Record<keyof FormValues, string>> = {};
                         const anyFilled = values.categories.some(
@@ -95,10 +96,6 @@ const CreateArtworkPage: React.FC = () => {
                         values,
                         {setSubmitting}: FormikHelpers<FormValues>
                     ) => {
-                        // const payload = {
-                        //     categories: values.categories,
-                        //     collectionName: collData?.name
-                        // };
                         try {
                             if (artworkId) {
                                 await editArtwork(artworkId, collectionId as string, values.categories, filesToUpload, filesToDelete, jwtToken!);
