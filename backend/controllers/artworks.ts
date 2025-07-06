@@ -122,8 +122,8 @@ export const createArtwork = authAsyncWrapper((async (req: Request, res: Respons
         if(
             !categories ||
             !collectionId ||
-            (files && Array.isArray(files) && files.length > 5) || //more than 5 files
-            originalNames?.length > [...new Set(originalNames)].length // duplicate filenames
+            (files && Array.isArray(files) && files.length > 5) || // more than 5 files
+            originalNames?.length > new Set(originalNames).size // duplicate filenames
         )
             throw new Error(`Incorrect request body provided`)
         const session = await mongoose.startSession()
@@ -190,7 +190,14 @@ export const editArtwork = authAsyncWrapper((async (req: Request, res: Response)
             const artwork = await Artwork.findOne({_id: artworkId}, null, {session}).exec()
             if (artwork == null)
                 throw new Error("Artwork not found")
-            if(artwork?.collectionName != collection.name)
+            const currentFilenames = filesToUpload?.map((file: any) => file.originalname) || []
+            const newFilenames = artwork.files.map((file: any) => file.originalFilename) || []
+            const allFilenames = [...currentFilenames, ...newFilenames]
+            if(
+                artwork?.collectionName != collection.name ||
+                artwork.files.length + filesToUpload.length > 5 || // more than 5 files
+                allFilenames?.length > new Set(allFilenames).size // duplicate filenames
+            )
                 throw new Error(`Incorrect request body provided`)
             artwork.categories = categories
             await artwork.save({session})
