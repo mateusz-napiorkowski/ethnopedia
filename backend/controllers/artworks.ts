@@ -180,6 +180,7 @@ export const editArtwork = authAsyncWrapper((async (req: Request, res: Response)
         }
         if(!categories || !collectionId)
             throw new Error('Incorrect request body provided')
+
         const session = await mongoose.startSession()
         await session.withTransaction(async (session: ClientSession) => {
             const collection = await CollectionCollection.findOne({_id: collectionId}, null, {session}).exec()
@@ -187,11 +188,13 @@ export const editArtwork = authAsyncWrapper((async (req: Request, res: Response)
                 throw new Error("Collection not found")
             if(!artworkCategoriesHaveValidFormat(categories, collection.categories))
                 throw new Error(`Incorrect request body provided`)
+
             const artwork = await Artwork.findOne({_id: artworkId}, null, {session}).exec()
             if (artwork == null)
                 throw new Error("Artwork not found")
-            const currentFilenames = filesToUpload?.map((file: any) => file.originalname) || []
-            const newFilenames = artwork.files.map((file: any) => file.originalFilename) || []
+
+            const currentFilenames = artwork.files.map((file: any) => file.originalFilename) || []
+            const newFilenames = filesToUpload?.map((file: any) => file.originalname) || []
             const allFilenames = [...currentFilenames, ...newFilenames]
             if(
                 artwork?.collectionName != collection.name ||
@@ -199,6 +202,7 @@ export const editArtwork = authAsyncWrapper((async (req: Request, res: Response)
                 allFilenames?.length > new Set(allFilenames).size // duplicate filenames
             )
                 throw new Error(`Incorrect request body provided`)
+                
             artwork.categories = categories
             await artwork.save({session})
 
@@ -232,6 +236,8 @@ export const editArtwork = authAsyncWrapper((async (req: Request, res: Response)
             res.status(400).json({ error: err.message })
         else if(err.message === `Artwork not found` || err.message === "Collection not found")
             res.status(404).json({ error: err.message })
+        else if(err.message === "Internal server error")
+            res.status(500).json({ error: err.message })
         else
             res.status(503).json({ error: `Database unavailable` })
     }

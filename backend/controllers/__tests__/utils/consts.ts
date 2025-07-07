@@ -139,6 +139,24 @@ export const artworkFindHappyPath = () => {return {exec: () => Promise.resolve([
     },
 ])}}
 
+export const artworkFindOneHappyPath = () => {return {exec: () => Promise.resolve(
+    {
+        _id: 'aaaaaaaad628570afa5357c3',
+        createdAt: '2024-10-22T20:12:12.209Z',
+        updatedAt: '2024-10-22T20:12:12.209Z',
+        __v: 0,
+        categories: [
+        {
+            name: 'Tytuł',
+            value: 'testowy',
+            subcategories: []
+        },
+        ],
+        collectionName: collectionName,
+        save: () => {}
+    },
+)}}
+
 export const artworkFindSaveFailed = () => {return {exec: () => Promise.resolve([
     {
         _id: 'aaaaaaaad628570afa5357c3',
@@ -219,3 +237,93 @@ export const artworksForDeletion = [
         collectionName: collectionName
     },
 ]
+
+export const foundArtwork = {
+    "_id": artworkId,
+    "collectionName": collectionName,
+    "categories": [
+        {
+            "name": "Title",
+            "value": "Title",
+            "subcategories": []
+        }
+    ],
+    "files": [
+        {
+            "originalFilename": "FileForUpload.mid",
+            "newFilename": `${artworkId}_0.mid`,
+            "filePath": `uploads/${collectionId}/${artworkId}_0.mid`,
+            "size": 8444,
+            "uploadedAt": "2025-07-07T19:10:54.980Z",
+            "_id": "686c1bbe3db614c9584d275b"
+        }
+    ],
+    "createdAt": "2025-07-07T19:10:54.938Z",
+    "updatedAt": "2025-07-07T19:10:54.982Z",
+    "__v": 1,
+    save: () => {}
+}
+
+export const foundArtworkWithSaveError = {
+    "_id": artworkId,
+    "collectionName": collectionName,
+    "categories": [
+        {
+            "name": "Title",
+            "value": "Title",
+            "subcategories": []
+        }
+    ],
+    "files": [
+        {
+            "originalFilename": "FileForUpload.mid",
+            "newFilename": `${artworkId}_0.mid`,
+            "filePath": `uploads/${collectionId}/${artworkId}_0.mid`,
+            "size": 8444,
+            "uploadedAt": "2025-07-07T19:10:54.980Z",
+            "_id": "686c1bbe3db614c9584d275b"
+        }
+    ],
+    "createdAt": "2025-07-07T19:10:54.938Z",
+    "updatedAt": "2025-07-07T19:10:54.982Z",
+    "__v": 1,
+    save: () => {throw Error()}
+}
+
+export const foundArtworkWithDifferentCollectionName = {
+    "_id": artworkId,
+    "collectionName": "different collection name",
+    "categories": [
+        {
+            "name": "Title",
+            "value": "Title",
+            "subcategories": []
+        }
+    ],
+    "files": [
+        {
+            "originalFilename": "FileForUpload.mid",
+            "newFilename": `${artworkId}_0.mid`,
+            "filePath": `uploads/${collectionId}/${artworkId}_0.mid`,
+            "size": 8444,
+            "uploadedAt": "2025-07-07T19:10:54.980Z",
+            "_id": "686c1bbe3db614c9584d275b"
+        }
+    ],
+    "createdAt": "2025-07-07T19:10:54.938Z",
+    "updatedAt": "2025-07-07T19:10:54.982Z",
+    "__v": 1,
+    save: () => {}
+}
+
+export const handleFileUploadsReturnValue = {
+    uploadedFilesCount: 0,
+    failedUploadsCount: 0,
+    failedUploadsCauses: []
+}
+
+export const handleFileDeleteReturnValue = {
+    deletedFilesCount: 0,
+    failedDeletesCount: 0,
+    failedDeletesCauses: []
+}
