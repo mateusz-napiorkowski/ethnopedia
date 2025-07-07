@@ -162,42 +162,29 @@ export const artworkWithUpdatedcategories = [
     { name: 'Wykonawca', value: '', subcategories: []},
 ]
 
-export const createArtworkHappyPathHandleFileUploadsReturnValue = {
-    "artwork": {
-        "__v": 0,
-        "_id": "66ce0bf156199c1b8df5db7d",
-        "categories": [
-        {
-            "name": "Title",
-            "subcategories": [],
-            "value": "Title",
-        },
-        ],
-        "collectionName": "collection",
-        "files": [
-            {
-                "originalFilename": "FileForUpload.mid",
-                "newFilename": "66ce0bf156199c1b8df5db7d-5c61e079-490a-4f94-8f71-ee451f95d454.mid",
-                "filePath": "uploads/685f7329d533636e3b130f86/66ce0bf156199c1b8df5db7d-5c61e079-490a-4f94-8f71-ee451f95d454.mid",
-                "size": 8444,
-                "uploadedAt": "2025-06-29T09:54:43.477Z",
-                "_id": "68610d6315370d23b553524e"
-            },
-            {
-                "originalFilename": "FileForUpload2.mid",
-                "newFilename": "68610d6315370d23b553524c-d78c005d-8a13-4219-b997-d160679c1142.mid",
-                "filePath": "uploads/685f7329d533636e3b130f86/66ce0bf156199c1b8df5db7d-d78c005d-8a13-4219-b997-d160679c1142.mid",
-                "size": 8444,
-                "uploadedAt": "2025-06-29T09:54:43.479Z",
-                "_id": "68610d6315370d23b553524f"
-            }
-        ],
-        "createdAt": "2024-08-27T17:25:05.352Z",
-        "updatedAt": "2024-08-27T17:25:05.352Z",
+export const createArtworkHappyPathArtworkFiles = [
+    {
+        "originalFilename": "FileForUpload.mid",
+        "newFilename": "66ce0bf156199c1b8df5db7d-5c61e079-490a-4f94-8f71-ee451f95d454.mid",
+        "filePath": "uploads/685f7329d533636e3b130f86/66ce0bf156199c1b8df5db7d-5c61e079-490a-4f94-8f71-ee451f95d454.mid",
+        "size": 8444,
+        "uploadedAt": "2025-06-29T09:54:43.477Z",
+        "_id": "68610d6315370d23b553524e"
     },
+    {
+        "originalFilename": "FileForUpload2.mid",
+        "newFilename": "68610d6315370d23b553524c-d78c005d-8a13-4219-b997-d160679c1142.mid",
+        "filePath": "uploads/685f7329d533636e3b130f86/66ce0bf156199c1b8df5db7d-d78c005d-8a13-4219-b997-d160679c1142.mid",
+        "size": 8444,
+        "uploadedAt": "2025-06-29T09:54:43.479Z",
+        "_id": "68610d6315370d23b553524f"
+    }
+]
+
+export const createArtworkHappyPathHandleFileUploadsReturnValue = {
     "savedFilesCount": 2,
     "failedUploadsCount": 0,
-    "failedUploadsFilenames": [],
+    "failedUploadsCauses": [],
 }
 
 export const artworksForDeletion = [

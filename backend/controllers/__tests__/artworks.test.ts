@@ -5,7 +5,7 @@ import request from "supertest";
 import ArtworksRouter from "../../routes/artwork";
 import { constructAdvSearchFilter, constructQuickSearchFilter } from "../../utils/artworks";
 import Artwork from "../../models/artwork";
-import { jwtToken, collectionId, artworkId, startSessionDefaultReturnValue, getArtworkFindByIdReturnValue, getArtworksForPageFindReturnValue, getArtworksForPageRecords, oneCollectionData, getArtworksBySearchTextMatchedInTopmostCategoryArtworkFindReturnValue, createArtworkConstructorReturnValue, createArtworkHappyPathHandleFileUploadsReturnValue, createArtworkConstructorReturnValueWithSaveError, artworksForDeletion } from "./utils/consts";
+import { jwtToken, collectionId, artworkId, startSessionDefaultReturnValue, getArtworkFindByIdReturnValue, getArtworksForPageFindReturnValue, getArtworksForPageRecords, oneCollectionData, getArtworksBySearchTextMatchedInTopmostCategoryArtworkFindReturnValue, createArtworkConstructorReturnValue, createArtworkHappyPathHandleFileUploadsReturnValue, createArtworkConstructorReturnValueWithSaveError, artworksForDeletion, createArtworkHappyPathArtworkFiles } from "./utils/consts";
 import path from "path";
 
 const app = express()
@@ -26,7 +26,7 @@ jest.mock('../../utils/artworks', () => ({
     constructAdvSearchFilter: jest.fn(),
     constructTopmostCategorySearchTextFilter: jest.fn(),
     sortRecordsByCategory: () => mockSortRecordsByCategory(),
-    handleFileUpload: () => mockHandleFileUpload()
+    handleFileUpload: (artwork: any, files: any, collectionId: string, session: any) => mockHandleFileUpload(artwork, files, collectionId, session)
 }))
 
 const mockArtworkCategoriesHaveValidFormat = jest.fn() 
@@ -317,7 +317,10 @@ describe('artworks controller', () => {
                 categories: '[{"name": "Title", "value": "Title", "subcategories": []}]',
                 collectionId: collectionId
             }
-            mockHandleFileUpload.mockReturnValue(createArtworkHappyPathHandleFileUploadsReturnValue)
+            mockHandleFileUpload.mockImplementation((artwork: any) => {
+                artwork.files = createArtworkHappyPathArtworkFiles
+                return createArtworkHappyPathHandleFileUploadsReturnValue
+            })
 
             const res = await request(app)
                 .post('/create')

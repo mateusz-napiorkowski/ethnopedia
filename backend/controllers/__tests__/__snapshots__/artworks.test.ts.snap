@@ -154,8 +154,8 @@ exports[`artworks controller POST endpoints createArtwork should respond with st
     ],
     "updatedAt": "2024-08-27T17:25:05.352Z",
   },
+  "failedUploadsCauses": [],
   "failedUploadsCount": 0,
-  "failedUploadsFilenames": [],
   "savedFilesCount": 2,
 }
 `;
