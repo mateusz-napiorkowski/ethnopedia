@@ -1,9 +1,20 @@
-import { ReactComponent as CloseIcon } from "../assets/icons/close.svg"
+type Cause = 
+    "File not found" |
+    "Internal server error" |
+    "Invalid file extension" |
+    "File size exceeded";
+
+const translations = {
+    "File not found": "Nie znaleziono pliku do usunięcia",
+    "Internal server error": "Błąd serwera",
+    "Invalid file extension": "Nieprawidłowe rozszerzenie pliku",
+    "File size exceeded": "Przekroczono maksymalny rozmiar pliku"
+}
 
 type Props = {
     onClose: () => void
-    failedUploadsCauses: Array<{filename: string, cause: string}>,
-    failedDeletesCauses: Array<{filename: string, cause: string}>
+    failedUploadsCauses: Array<{filename: string, cause: Cause}>,
+    failedDeletesCauses: Array<{filename: string, cause: Cause}>
 }
 
 const FileErrorsPopup = ({ onClose, failedUploadsCauses, failedDeletesCauses }: Props) => {
@@ -25,10 +36,10 @@ const FileErrorsPopup = ({ onClose, failedUploadsCauses, failedDeletesCauses }: 
                             <h4 className="m-2 text-base font-normal text-gray-700 font-semibold dark:text-gray-400">
                                 Części plików nie udało się wgrać
                             </h4>
-                            {failedUploadsCauses.map((cause) => (                      
+                            {failedUploadsCauses.map((pairs: {filename: string, cause: Cause}) => (                      
                                 <span className="flex flex-row justify-between text-sm">
-                                    <span>{cause.filename}</span>
-                                    <span>{cause.cause}</span>
+                                    <span>{pairs.filename}</span>
+                                    <span>{translations[pairs.cause]}</span>
                                 </span>     
                             ))}
                         </div>
@@ -38,10 +49,10 @@ const FileErrorsPopup = ({ onClose, failedUploadsCauses, failedDeletesCauses }: 
                             <h4 className="m-2 text-base font-normal text-gray-700 font-semibold dark:text-gray-400">
                                 Części plików nie udało się usunąć
                             </h4>
-                            {failedDeletesCauses.map((cause) => (                      
+                            {failedDeletesCauses.map((pairs: {filename: string, cause: Cause}) => (                      
                                 <span className="flex flex-row justify-between text-sm">
-                                    <span>{cause.filename}</span>
-                                    <span>{cause.cause}</span>
+                                    <span>{pairs.filename}</span>
+                                    <span>{translations[pairs.cause]}</span>
                                 </span>     
                             ))}
                         </div>
