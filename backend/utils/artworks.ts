@@ -4,7 +4,6 @@ import { artworkCategory, collectionCategory, fileToDelete } from "./interfaces"
 import path from "path"
 import fs from "fs";
 import { Express } from 'express';
-import 'multer';
 
 export const updateArtworkCategories = (artworkSubcategories: Array<artworkCategory>, collectionSubcategories: Array<collectionCategory>) => {
     const newArtworkCategories: Array<artworkCategory> = []

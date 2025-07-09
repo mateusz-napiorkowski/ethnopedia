@@ -8,7 +8,6 @@ import { artworkCategoriesHaveValidFormat } from "../utils/categories";
 import fs from "fs";
 import path from "path";
 import { fileToDelete } from "../utils/interfaces";
-import 'multer';
 
 interface MulterRequest extends Request {
     files: any;
