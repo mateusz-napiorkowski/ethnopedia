@@ -3,8 +3,11 @@ import { ReactComponent as Expand } from "../../assets/icons/plus.svg";
 import { ReactComponent as Fold } from "../../assets/icons/minus.svg";
 import { ReactComponent as EditIcon } from "../../assets/icons/edit.svg";
 import { ReactComponent as TrashBinIcon } from "../../assets/icons/trashBin.svg";
+import { ReactComponent as Download } from "../../assets/icons/download.svg";
+import { ReactComponent as File } from "../../assets/icons/file.svg"
 import { useUser } from "../../providers/UserProvider";
 import {useNavigate} from "react-router-dom";
+import { downloadFile } from "../../api/download";
 
 interface Category {
     name: string;
@@ -14,7 +17,7 @@ interface Category {
 
 interface ArtworkDetailsProps {
     collectionName: string;
-    detailsToShow: { categories: Category[]; createdAt: string, updatedAt: string};
+    detailsToShow: { _id: any, categories: Category[]; createdAt: string, updatedAt: string, files: Array<any>};
     handleEditClick: () => void;
     setShowDeleteArtworkWarning: (value: boolean) => void;
 }
@@ -88,6 +91,59 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
             </div>
             {/* Drzewo kategorii */}
             <div data-testid="category-tree">{detailsToShow.categories && renderTree(detailsToShow.categories)}</div>
+            <div className="mb-4 mt-4">
+                <label
+                    htmlFor="dropzone-file"
+                    className="block text-sm font-bold text-gray-700 dark:text-white my-2"
+                >
+                    Skojarzone pliki
+                </label>
+                {
+                    detailsToShow.files.length === 0 &&
+                    <div
+                        className="flex flex-col items-start justify-start p-2 border-2 border-gray-200
+                            border-solid rounded-lg cursor-default bg-gray-50 
+                            dark:bg-gray-800 dark:border-gray-600"
+                    >   
+                        <div className="flex flex-row items-center justify-between w-full">
+                            <div className="flex flex-row items-center justify-center gap-4">
+                                <p className="text-sm font-normal text-gray-500 dark:text-gray-400">
+                                    Nie wgrano żadnego pliku. Aby dodać pliki do metadanych przejdź w tryb edycji.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                }
+                {detailsToShow.files.map((file: any) =>
+                    <div
+                        className={`flex flex-col items-start justify-start p-2 border-2 border-gray-200
+                            border-solid rounded-lg bg-gray-50
+                            dark:bg-gray-800 dark:border-gray-600 mt-2 mb-2`}
+                    >
+                        <div className="flex flex-row items-center justify-between w-full">
+                            <div className='flex flex-row items-center justify-center gap-4'>
+                                {detailsToShow.files &&
+                                    <>{<File className="w-12 h-12" />}</>
+                                    
+                                }
+                                <p className="text-sm font-bold text-gray-500 dark:text-gray-400">
+                                    {file.originalFilename}
+                                </p>
+                            </div>
+                            <button
+                                aria-label="exit"
+                                type="button"
+                                className="text-gray-400 hover:bg-gray-200 hover:text-gray-900 text-sm
+                                        dark:hover:bg-gray-600 dark:hover:text-white p-2 rounded-lg cursor-pointer"
+                                onClick={async () => await downloadFile(file)}
+                            >
+                                <Download className="w-5 h-5"/>
+                            </button>
+                        </div>
+                    </div>
+                )}
+                
+            </div>
             <div className="mb-4 border-t pb-2 pt-2">
                 <p className="text-sm text-gray-500 dark:text-gray-300">
                     Data utworzenia rekordu: {createdAtDate.toString()}

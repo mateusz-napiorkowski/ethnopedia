@@ -11,9 +11,12 @@ import { getCollection } from '../../api/collections';
 import { getArtwork, createArtwork, editArtwork } from '../../api/artworks';
 import MetadataForm from '../../components/artwork/MetadataForm';
 import { Metadata } from '../../@types/Metadata';
+import FileErrorsPopup from './FileErrorsPopup';
 
 interface FormValues {
-    categories: Metadata[];
+    categories: Metadata[],
+    filesToUpload: any[],
+    filesToDelete: any[]
 }
 
 const CreateArtworkPage: React.FC = () => {
@@ -42,10 +45,18 @@ const CreateArtworkPage: React.FC = () => {
         undefined
     );
 
+    const [filesToUpload, setFilesToUpload] = useState([])
+    const [currentFiles, setCurrentFiles] = useState([])
+    const [filesToDelete, setFilesToDelete] = useState([])
+    const [showFileErrorsPopup, setShowFileErrorsPopup] = useState(false)
+    const [failedUploadsCauses, setFailedUploadsCauses] = useState([])
+    const [failedDeletesCauses, setFailedDeletesCauses] = useState([])
+
     useEffect(() => {
         if (artworkId) {
             getArtwork(artworkId).then((res) => {
                 setInitialMetadataTree(res.artwork.categories);
+                setCurrentFiles(res.artwork.files)
             });
         } else if (catData?.categories) {
             setInitialCategoryPaths(catData.categories);
@@ -62,6 +73,13 @@ const CreateArtworkPage: React.FC = () => {
 
     return (
         <div className="min-h-screen flex flex-col overflow-y-auto" data-testid="create-artwork-page-container">
+            {showFileErrorsPopup && (
+                <FileErrorsPopup
+                    onClose={() => {setShowFileErrorsPopup(false); navigate(-1)}}
+                    failedUploadsCauses={failedUploadsCauses}
+                    failedDeletesCauses={failedDeletesCauses}
+                />
+            )}
             <Navbar />
             <div className="container px-8 mt-6 max-w-3xl mx-auto">
                 <Navigation />
@@ -73,8 +91,8 @@ const CreateArtworkPage: React.FC = () => {
                 </h2>
 
                 <Formik<FormValues>
-                    initialValues={{categories: initialMetadataTree || []}}
-                    enableReinitialize
+                    initialValues={{categories: initialMetadataTree || [], filesToUpload: filesToUpload, filesToDelete: filesToDelete}}
+                    enableReinitialize={initialMetadataTree ? true : false}
                     validate={(values) => {
                         const errs: Partial<Record<keyof FormValues, string>> = {};
                         const anyFilled = values.categories.some(
@@ -89,18 +107,19 @@ const CreateArtworkPage: React.FC = () => {
                         values,
                         {setSubmitting}: FormikHelpers<FormValues>
                     ) => {
-                        const payload = {
-                            categories: values.categories,
-                            collectionName: collData?.name,
-                        };
                         try {
-                            if (artworkId) {
-                                await editArtwork(payload, artworkId, jwtToken!);
-                            } else {
-                                await createArtwork(payload, jwtToken!);
-                            }
+                            const resData = artworkId ? 
+                                await editArtwork(artworkId, collectionId as string, values.categories,
+                                    filesToUpload, filesToDelete, jwtToken!) :
+                                await createArtwork(collectionId, values.categories, filesToUpload, jwtToken!);
                             queryClient.invalidateQueries(['artworks', collectionId]);
-                            navigate(-1);
+                            if(resData.failedUploadsCount > 0 || resData.failedDeletesCount > 0) {
+                                setShowFileErrorsPopup(true)
+                                setFailedUploadsCauses(resData.failedUploadsCauses)
+                                setFailedDeletesCauses(resData.failedDeletesCauses)
+                            } else {
+                                navigate(-1);
+                            }
                         } catch (e) {
                             console.error(e);
                         } finally {
@@ -112,6 +131,12 @@ const CreateArtworkPage: React.FC = () => {
                         <Form>
                             <MetadataForm
                                 initialMetadataTree={initialMetadataTree}
+                                filesToUpload={filesToUpload}
+                                setFilesToUpload={setFilesToUpload}
+                                currentFiles={currentFiles}
+                                setCurrentFiles={setCurrentFiles}
+                                filesToDelete={filesToDelete}
+                                setFilesToDelete={setFilesToDelete}
                                 categoryPaths={initialCategoryPaths}
                                 setFieldValue={setFieldValue}
                             />

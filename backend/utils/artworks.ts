@@ -1,6 +1,8 @@
-import { SortOrder } from "mongoose";
+import mongoose, { ClientSession, SortOrder } from "mongoose";
 import { getAllCategories } from "./categories";
-import { artworkCategory, collectionCategory } from "./interfaces";
+import { artworkCategory, collectionCategory, fileToDelete } from "./interfaces";
+import path from "path"
+import fs from "fs";
 
 export const updateArtworkCategories = (artworkSubcategories: Array<artworkCategory>, collectionSubcategories: Array<collectionCategory>) => {
     const newArtworkCategories: Array<artworkCategory> = []
@@ -181,4 +183,74 @@ export const sortRecordsByCategory = (records: any, categoryToSortBy: string, as
     if(ascOrDesc == "desc")
         return sortedRecords.reverse()
     return sortedRecords
+}
+
+export const handleFileUploads = async (artwork: any, files: Express.Multer.File[] | undefined, collectionId: mongoose.Types.ObjectId, session: ClientSession) => {
+    const failed = []
+    if (files && Array.isArray(files)) {
+        const uploadsDir = path.join(__dirname, "..", `uploads/`);
+        const collectionUploadsDir = path.join(__dirname, "..", `uploads/${collectionId}`);
+        if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
+        if (!fs.existsSync(collectionUploadsDir)) fs.mkdirSync(collectionUploadsDir);
+
+        for(const file of files) {
+            const availableIndex = [...Array(5).keys()].find(index => 
+                !artwork.files.some((file: any) => file.newFilename?.startsWith(`${artwork.Id}_${index}`))
+            )
+            const fileName = availableIndex !== undefined
+                ? `${artwork.id}_${availableIndex}${path.extname(file.originalname)}`
+                : undefined;
+            const filePath = `uploads/${collectionId}/${fileName}`;
+
+            const maxFileSize = 25 * 1024 * 1024 // 25 MB
+
+            try {
+                if(!/\.(mei|mid|midi|txt|text|musicxml|mxl|xml)$/i.test(file.originalname))
+                    throw Error("Invalid file extension")
+                if(file.size > maxFileSize)
+                    throw Error("File size exceeded")
+                fs.writeFileSync(filePath, file.buffer);
+                artwork.files.push({
+                    originalFilename: file.originalname,
+                    newFilename: fileName,
+                    filePath: filePath,
+                    size: file.size,
+                    uploadedAt: new Date(Date.now())
+                });
+            } catch (error) {
+                const err = error as Error
+                failed.push({filename: file.originalname, cause: err.message})
+            }
+        }
+        await artwork.save({session});
+    }
+    return {
+        uploadedFilesCount: artwork.files.length,
+        failedUploadsCount: failed.length,
+        failedUploadsCauses: failed
+    }
+}
+
+export const handleFileDeletions = async (artwork: any, filesToDelete: fileToDelete[], collectionId: mongoose.Types.ObjectId, session: ClientSession) => {
+    const deletedFiles = [];
+    const failedDeletesCauses = [];
+    if (filesToDelete && Array.isArray(filesToDelete)) {
+        for(const fileToDelete of filesToDelete) {
+            if(artwork.files.some(((file: any) => file._id?.toString() === fileToDelete._id))) {
+                const absoluteFilePath = path.join(__dirname, "..", fileToDelete.filePath as string);
+                if (fs.existsSync(absoluteFilePath)) fs.unlinkSync(absoluteFilePath)
+                else failedDeletesCauses.push({filename: fileToDelete.originalFilename, cause: "Internal server error"})
+                artwork.files = artwork.files.filter(((file: any) => file._id?.toString() !== fileToDelete._id))
+                await artwork.save({session})
+                deletedFiles.push(fileToDelete.originalFilename)
+            } else {
+                failedDeletesCauses.push({filename: fileToDelete.originalFilename, cause: "File not found"})
+            }
+        }
+    }
+    return {
+        deletedFilesCount: deletedFiles.length,
+        failedDeletesCount: failedDeletesCauses.length,
+        failedDeletesCauses
+    }
 }

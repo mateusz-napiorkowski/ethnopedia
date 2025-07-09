@@ -28,7 +28,7 @@ const ArtworkPage = () => {
             navigate(`/collections/${collectionId}/artworks/`)
         }
     })
-
+    
     if (!fetchedData)
         return (
             <div data-testid="loading-page-container">
@@ -54,7 +54,7 @@ const ArtworkPage = () => {
                     <ArtworkDetails
                         collectionName={artworkData.collectionName}
                         detailsToShow={artworkData}
-                        handleEditClick={() => navigate(`edit-artwork`, {state:{categories: artworkData.categories}})}
+                        handleEditClick={() => navigate(`edit-artwork`)}
                         setShowDeleteArtworkWarning={setShowDeleteArtworkWarning}
                     />
                 </div>

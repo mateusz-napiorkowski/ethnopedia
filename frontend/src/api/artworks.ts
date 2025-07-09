@@ -22,23 +22,36 @@ export const getArtworksForPage = async (collectionIds: Array<string>, page: num
     .then(res => res.data)
 }
 
-export const createArtwork = async (artworkData: any, jwtToken: any) => {
+export const createArtwork = async (collectionId: any, categories: any, files: any[], jwtToken: string) => {
+    const formData = new FormData();
+    for(const file of files)
+        formData.append("files", file);
+    formData.append("categories", JSON.stringify(categories));
+    formData.append("collectionId", collectionId);
     const config = {
         headers: { Authorization: `Bearer ${jwtToken}` }
     };
     return await axios
-        .post(`${API_URL}v1/artworks/create`, artworkData, config)
+        .post(`${API_URL}v1/artworks/create`, formData, config)
         .then(res => res.data)
 }
 
-export const editArtwork = async (artworkData: any, artworkId: string, jwtToken: any) => {
+export const editArtwork = async (artworkId: string, collectionId: string, categories: any, filesToUpload: any, filesToDelete: any, jwtToken: any) => {
+    const formData = new FormData();
+    formData.append("collectionId", collectionId);
+    formData.append("categories", JSON.stringify(categories));
+    for(const file of filesToUpload)
+        formData.append("files", file);
+    formData.append("filesToDelete", JSON.stringify(filesToDelete))
     const config = {
-        headers: { Authorization: `Bearer ${jwtToken}` }
+        headers: {
+            Authorization: `Bearer ${jwtToken}`,
+        },
     };
     return await axios
-        .put(`${API_URL}v1/artworks/edit/${artworkId}`, artworkData, config)
-        .then(res => res.data)
-}
+        .put(`${API_URL}v1/artworks/edit/${artworkId}`, formData, config)
+        .then(res => res.data);
+};
 
 export const deleteArtworks = async (artworkIds: Array<string>, jwtToken: string) => {
     const config = {
