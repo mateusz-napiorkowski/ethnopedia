@@ -137,16 +137,16 @@ exports[`artworks controller POST endpoints createArtwork should respond with st
     "files": [
       {
         "_id": "68610d6315370d23b553524e",
-        "filePath": "uploads/685f7329d533636e3b130f86/66ce0bf156199c1b8df5db7d-5c61e079-490a-4f94-8f71-ee451f95d454.mid",
-        "newFilename": "66ce0bf156199c1b8df5db7d-5c61e079-490a-4f94-8f71-ee451f95d454.mid",
+        "filePath": "uploads/685f7329d533636e3b130f86/66ce0bf156199c1b8df5db7d_0.mid",
+        "newFilename": "66ce0bf156199c1b8df5db7d_0.mid",
         "originalFilename": "FileForUpload.mid",
         "size": 8444,
         "uploadedAt": "2025-06-29T09:54:43.477Z",
       },
       {
         "_id": "68610d6315370d23b553524f",
-        "filePath": "uploads/685f7329d533636e3b130f86/66ce0bf156199c1b8df5db7d-d78c005d-8a13-4219-b997-d160679c1142.mid",
-        "newFilename": "68610d6315370d23b553524c-d78c005d-8a13-4219-b997-d160679c1142.mid",
+        "filePath": "uploads/685f7329d533636e3b130f86/66ce0bf156199c1b8df5db7d_1.mid",
+        "newFilename": "66ce0bf156199c1b8df5db7d_1.mid",
         "originalFilename": "FileForUpload2.mid",
         "size": 8444,
         "uploadedAt": "2025-06-29T09:54:43.479Z",
@@ -156,16 +156,49 @@ exports[`artworks controller POST endpoints createArtwork should respond with st
   },
   "failedUploadsCauses": [],
   "failedUploadsCount": 0,
-  "savedFilesCount": 2,
+  "uploadedFilesCount": 2,
 }
 `;
 
 exports[`artworks controller PUT endpoints editArtwork should respond with status 201 and correct body 1`] = `
 {
-  "acknowledged": true,
-  "matchedCount": 1,
-  "modifiedCount": 1,
-  "upsertedCount": 0,
-  "upsertedId": null,
+  "deletedFilesCount": 1,
+  "failedDeletesCauses": [],
+  "failedDeletesCount": 0,
+  "failedUploadsCauses": [],
+  "failedUploadsCount": 0,
+  "updatedArtwork": {
+    "__v": 1,
+    "_id": "66ce0bf156199c1b8df5db7d",
+    "categories": [
+      {
+        "name": "Title",
+        "subcategories": [],
+        "value": "Title",
+      },
+    ],
+    "collectionName": "collection",
+    "createdAt": "2025-07-07T19:10:54.938Z",
+    "files": [
+      {
+        "_id": "68610d6315370d23b553524e",
+        "filePath": "uploads/685f7329d533636e3b130f86/66ce0bf156199c1b8df5db7d_1.mid",
+        "newFilename": "66ce0bf156199c1b8df5db7d_1.mid",
+        "originalFilename": "FileForUpload2.mid",
+        "size": 8444,
+        "uploadedAt": "2025-06-29T09:54:43.477Z",
+      },
+      {
+        "_id": "68610d6315370d23b553524f",
+        "filePath": "uploads/685f7329d533636e3b130f86/66ce0bf156199c1b8df5db7d_2.mid",
+        "newFilename": "66ce0bf156199c1b8df5db7d_2.mid",
+        "originalFilename": "FileForUpload3.mid",
+        "size": 8444,
+        "uploadedAt": "2025-06-29T09:54:43.479Z",
+      },
+    ],
+    "updatedAt": "2025-07-07T19:10:54.982Z",
+  },
+  "uploadedFilesCount": 2,
 }
 `;

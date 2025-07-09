@@ -185,7 +185,7 @@ export const sortRecordsByCategory = (records: any, categoryToSortBy: string, as
     return sortedRecords
 }
 
-export const handleFileUpload = async (artwork: any, files: Express.Multer.File[] | undefined, collectionId: mongoose.Types.ObjectId, session: ClientSession) => {
+export const handleFileUploads = async (artwork: any, files: Express.Multer.File[] | undefined, collectionId: mongoose.Types.ObjectId, session: ClientSession) => {
     const failed = []
     if (files && Array.isArray(files)) {
         const uploadsDir = path.join(__dirname, "..", `uploads/`);
@@ -225,13 +225,13 @@ export const handleFileUpload = async (artwork: any, files: Express.Multer.File[
         await artwork.save({session});
     }
     return {
-        savedFilesCount: artwork.files.length,
+        uploadedFilesCount: artwork.files.length,
         failedUploadsCount: failed.length,
         failedUploadsCauses: failed
     }
 }
 
-export const handleFileDelete = async (artwork: any, filesToDelete: fileToDelete[], collectionId: mongoose.Types.ObjectId, session: ClientSession) => {
+export const handleFileDeletions = async (artwork: any, filesToDelete: fileToDelete[], collectionId: mongoose.Types.ObjectId, session: ClientSession) => {
     const deletedFiles = [];
     const failedDeletesCauses = [];
     if (filesToDelete && Array.isArray(filesToDelete)) {

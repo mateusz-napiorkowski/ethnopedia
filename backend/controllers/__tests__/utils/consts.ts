@@ -69,7 +69,7 @@ export const getArtworksBySearchTextMatchedInTopmostCategoryArtworkFindReturnVal
     ])
 })}
 
-export const createArtworkConstructorReturnValue = {
+export const artworkConstructorMockImplementation = () => ({
     __v: 0,
     _id: "66ce0bf156199c1b8df5db7d",
     categories: [
@@ -83,9 +83,9 @@ export const createArtworkConstructorReturnValue = {
     createdAt: "2024-08-27T17:25:05.352Z",
     updatedAt: "2024-08-27T17:25:05.352Z",
     save: () => {}
-}
+})
 
-export const createArtworkConstructorReturnValueWithSaveError = {
+export const artworkConstructorMockImplementationWithSaveError = () => ({
     __v: 0,
     _id: "66ce0bf156199c1b8df5db7d",
     categories: [
@@ -99,7 +99,7 @@ export const createArtworkConstructorReturnValueWithSaveError = {
     createdAt: "2024-08-27T17:25:05.352Z",
     updatedAt: "2024-08-27T17:25:05.352Z",
     save: () => {throw Error()}
-}
+})
 
 export const collectionFindByIdNotFound = () => {return {exec: () => Promise.resolve(null)}}
 
@@ -180,19 +180,47 @@ export const artworkWithUpdatedcategories = [
     { name: 'Wykonawca', value: '', subcategories: []},
 ]
 
+export const fileToDelete = {
+    "_id": "686c1bbe3db614c9584d275b",
+    "filePath": "uploads/66c4e516d6303ed5ac5a8e55/66ce0bf156199c1b8df5db7d_0.mid",
+    "newFilename": "66ce0bf156199c1b8df5db7d_0.mid",
+    "originalFilename": "FileForUpload.mid",
+    "size": 8444,
+    "uploadedAt": "2025-07-07T19:10:54.980Z",
+}
+
 export const createArtworkHappyPathArtworkFiles = [
     {
         "originalFilename": "FileForUpload.mid",
-        "newFilename": "66ce0bf156199c1b8df5db7d-5c61e079-490a-4f94-8f71-ee451f95d454.mid",
-        "filePath": "uploads/685f7329d533636e3b130f86/66ce0bf156199c1b8df5db7d-5c61e079-490a-4f94-8f71-ee451f95d454.mid",
+        "newFilename": "66ce0bf156199c1b8df5db7d_0.mid",
+        "filePath": "uploads/685f7329d533636e3b130f86/66ce0bf156199c1b8df5db7d_0.mid",
         "size": 8444,
         "uploadedAt": "2025-06-29T09:54:43.477Z",
         "_id": "68610d6315370d23b553524e"
     },
     {
         "originalFilename": "FileForUpload2.mid",
-        "newFilename": "68610d6315370d23b553524c-d78c005d-8a13-4219-b997-d160679c1142.mid",
-        "filePath": "uploads/685f7329d533636e3b130f86/66ce0bf156199c1b8df5db7d-d78c005d-8a13-4219-b997-d160679c1142.mid",
+        "newFilename": "66ce0bf156199c1b8df5db7d_1.mid",
+        "filePath": "uploads/685f7329d533636e3b130f86/66ce0bf156199c1b8df5db7d_1.mid",
+        "size": 8444,
+        "uploadedAt": "2025-06-29T09:54:43.479Z",
+        "_id": "68610d6315370d23b553524f"
+    }
+]
+
+export const editArtworkHappyPathArtworkFiles = [
+    {
+        "originalFilename": "FileForUpload2.mid",
+        "newFilename": "66ce0bf156199c1b8df5db7d_1.mid",
+        "filePath": "uploads/685f7329d533636e3b130f86/66ce0bf156199c1b8df5db7d_1.mid",
+        "size": 8444,
+        "uploadedAt": "2025-06-29T09:54:43.477Z",
+        "_id": "68610d6315370d23b553524e"
+    },
+    {
+        "originalFilename": "FileForUpload3.mid",
+        "newFilename": "66ce0bf156199c1b8df5db7d_2.mid",
+        "filePath": "uploads/685f7329d533636e3b130f86/66ce0bf156199c1b8df5db7d_2.mid",
         "size": 8444,
         "uploadedAt": "2025-06-29T09:54:43.479Z",
         "_id": "68610d6315370d23b553524f"
@@ -200,7 +228,7 @@ export const createArtworkHappyPathArtworkFiles = [
 ]
 
 export const createArtworkHappyPathHandleFileUploadsReturnValue = {
-    "savedFilesCount": 2,
+    "uploadedFilesCount": 2,
     "failedUploadsCount": 0,
     "failedUploadsCauses": [],
 }
@@ -237,6 +265,33 @@ export const artworksForDeletion = [
         collectionName: collectionName
     },
 ]
+
+export const makeFoundArtwork = () => 
+    ({
+    "_id": artworkId,
+    "collectionName": collectionName,
+    "categories": [
+        {
+            "name": "Title",
+            "value": "Title",
+            "subcategories": []
+        }
+    ],
+    "files": [
+        {
+            "originalFilename": "FileForUpload.mid",
+            "newFilename": `${artworkId}_0.mid`,
+            "filePath": `uploads/${collectionId}/${artworkId}_0.mid`,
+            "size": 8444,
+            "uploadedAt": "2025-07-07T19:10:54.980Z",
+            "_id": "686c1bbe3db614c9584d275b"
+        }
+    ],
+    "createdAt": "2025-07-07T19:10:54.938Z",
+    "updatedAt": "2025-07-07T19:10:54.982Z",
+    "__v": 1,
+    save: () => {}
+})
 
 export const foundArtwork = {
     "_id": artworkId,
@@ -316,14 +371,26 @@ export const foundArtworkWithDifferentCollectionName = {
     save: () => {}
 }
 
-export const handleFileUploadsReturnValue = {
+export const handleFileUploadsNoFilesReturnValue = {
     uploadedFilesCount: 0,
     failedUploadsCount: 0,
     failedUploadsCauses: []
 }
 
-export const handleFileDeleteReturnValue = {
+export const handleFileUploadsReturnValue = {
+    uploadedFilesCount: 2,
+    failedUploadsCount: 0,
+    failedUploadsCauses: []
+}
+
+export const handleFileDeleteNoFilesReturnValue = {
     deletedFilesCount: 0,
+    failedDeletesCount: 0,
+    failedDeletesCauses: []
+}
+
+export const handleFileDeleteReturnValue = {
+    deletedFilesCount: 1,
     failedDeletesCount: 0,
     failedDeletesCauses: []
 }

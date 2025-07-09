@@ -3,7 +3,7 @@ import mongoose, { ClientSession, SortOrder } from "mongoose"
 import { authAsyncWrapper } from "../middleware/auth"
 import Artwork from "../models/artwork";
 import CollectionCollection from "../models/collection"
-import { constructQuickSearchFilter, constructAdvSearchFilter, sortRecordsByCategory, constructTopmostCategorySearchTextFilter, handleFileUpload as handleFileUploads, handleFileDelete } from "../utils/artworks"
+import { constructQuickSearchFilter, constructAdvSearchFilter, sortRecordsByCategory, constructTopmostCategorySearchTextFilter, handleFileUploads, handleFileDeletions } from "../utils/artworks"
 import { artworkCategoriesHaveValidFormat } from "../utils/categories";
 import fs from "fs";
 import path from "path";
@@ -138,14 +138,14 @@ export const createArtwork = authAsyncWrapper((async (req: Request, res: Respons
             await artwork.save({ session });
 
             const {
-                savedFilesCount,
+                uploadedFilesCount,
                 failedUploadsCount,
                 failedUploadsCauses
             } = await handleFileUploads(artwork, files, collection._id, session)
 
             res.status(201).json({
                 artwork,
-                savedFilesCount,
+                uploadedFilesCount,
                 failedUploadsCount,
                 failedUploadsCauses
             })
@@ -170,7 +170,7 @@ export const editArtwork = authAsyncWrapper((async (req: Request, res: Response)
         const filesToUpload = req.files as Express.Multer.File[]
         const artworkId = req.params.artworkId
         const collectionId = req.body.collectionId
-        let categories, filesToDelete: fileToDelete[];        
+        let categories, filesToDelete: fileToDelete[];       
         try {
             categories = JSON.parse(req.body.categories);
             if(req.body.filesToDelete)
@@ -202,7 +202,7 @@ export const editArtwork = authAsyncWrapper((async (req: Request, res: Response)
                 allFilenames?.length > new Set(allFilenames).size // duplicate filenames
             )
                 throw new Error(`Incorrect request body provided`)
-                
+
             artwork.categories = categories
             await artwork.save({session})
 
@@ -210,16 +210,16 @@ export const editArtwork = authAsyncWrapper((async (req: Request, res: Response)
                 deletedFilesCount,
                 failedDeletesCount,
                 failedDeletesCauses
-            } = await handleFileDelete(artwork, filesToDelete, collection._id, session)
+            } = await handleFileDeletions(artwork, filesToDelete, collection._id, session)
             const {
-                savedFilesCount,
+                uploadedFilesCount,
                 failedUploadsCount,
                 failedUploadsCauses
             } = await handleFileUploads(artwork, filesToUpload, collection._id, session)
 
             res.status(201).json({
                 updatedArtwork: artwork,
-                savedFilesCount,
+                uploadedFilesCount,
                 failedUploadsCount,
                 failedUploadsCauses,
                 deletedFilesCount,

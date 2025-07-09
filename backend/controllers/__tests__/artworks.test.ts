@@ -5,7 +5,7 @@ import request from "supertest";
 import ArtworksRouter from "../../routes/artwork";
 import { constructAdvSearchFilter, constructQuickSearchFilter } from "../../utils/artworks";
 import Artwork from "../../models/artwork";
-import { jwtToken, collectionId, artworkId, startSessionDefaultReturnValue, getArtworkFindByIdReturnValue, getArtworksForPageFindReturnValue, getArtworksForPageRecords, oneCollectionData, getArtworksBySearchTextMatchedInTopmostCategoryArtworkFindReturnValue, createArtworkConstructorReturnValue, createArtworkHappyPathHandleFileUploadsReturnValue, createArtworkConstructorReturnValueWithSaveError, artworksForDeletion, createArtworkHappyPathArtworkFiles, artworkFindHappyPath, artworkFindOneHappyPath, foundArtwork, foundArtworkWithDifferentCollectionName, foundArtworkWithSaveError, handleFileDeleteReturnValue, handleFileUploadsReturnValue } from "./utils/consts";
+import { jwtToken, collectionId, artworkId, startSessionDefaultReturnValue, getArtworkFindByIdReturnValue, getArtworksForPageFindReturnValue, getArtworksForPageRecords, oneCollectionData, getArtworksBySearchTextMatchedInTopmostCategoryArtworkFindReturnValue, createArtworkHappyPathHandleFileUploadsReturnValue, artworksForDeletion, createArtworkHappyPathArtworkFiles, artworkFindHappyPath, artworkFindOneHappyPath, foundArtwork, foundArtworkWithDifferentCollectionName, foundArtworkWithSaveError, handleFileDeleteNoFilesReturnValue, handleFileUploadsNoFilesReturnValue, fileToDelete, handleFileDeleteReturnValue, handleFileUploadsReturnValue, editArtworkHappyPathArtworkFiles, makeFoundArtwork, artworkConstructorMockImplementation, artworkConstructorMockImplementationWithSaveError } from "./utils/consts";
 import path from "path";
 
 const app = express()
@@ -21,15 +21,14 @@ jest.mock('mongoose', () => ({
 
 const mockSortRecordsByCategory = jest.fn() 
 const mockHandleFileUploads = jest.fn()
-const mockHandleFileDelete = jest.fn()
+const mockHandleFileDeletions = jest.fn()
 jest.mock('../../utils/artworks', () => ({
     constructQuickSearchFilter: jest.fn(),
     constructAdvSearchFilter: jest.fn(),
     constructTopmostCategorySearchTextFilter: jest.fn(),
     sortRecordsByCategory: () => mockSortRecordsByCategory(),
-    //TODO changing to handleFileUploads fails createArtworkTests
-    handleFileUpload: (artwork: any, filesToUpload: any, collectionId: string, session: any) => mockHandleFileUploads(artwork, filesToUpload, collectionId, session),
-    handleFileDelete: (artwork: any, filesToDelete: any, collectionId: string, session: any) => mockHandleFileDelete(artwork, filesToDelete, collectionId, session)
+    handleFileUploads: (artwork: any, filesToUpload: any, collectionId: string, session: any) => mockHandleFileUploads(artwork, filesToUpload, collectionId, session),
+    handleFileDeletions: (artwork: any, filesToDelete: any, collectionId: string, session: any) => mockHandleFileDeletions(artwork, filesToDelete, collectionId, session)
 }))
 
 const mockArtworkCategoriesHaveValidFormat = jest.fn() 
@@ -73,7 +72,7 @@ describe('artworks controller', () => {
     beforeEach(() => {
         jest.clearAllMocks()
         app.use(ArtworksRouter)
-        // jest.spyOn(console, 'error').mockImplementation(jest.fn());
+
     })
 
     describe('GET endpoints', () => {
@@ -313,7 +312,7 @@ describe('artworks controller', () => {
 
     describe('POST endpoints', () => {
         test("createArtwork should respond with status 201 and correct body", async () => {
-            (Artwork as unknown as jest.Mock).mockImplementation(() => createArtworkConstructorReturnValue);
+            (Artwork as unknown as jest.Mock).mockImplementation(artworkConstructorMockImplementation);
             mockStartSession.mockImplementation(() => startSessionDefaultReturnValue)
             mockCollectionFindOne.mockReturnValue({
                 exec: () => Promise.resolve(oneCollectionData)
@@ -347,7 +346,7 @@ describe('artworks controller', () => {
                 filesForUpload: [],
                 startSession: () => startSessionDefaultReturnValue,
                 findOne: undefined, artworkCategoriesHaveValidFormat: true,
-                artworkContructorImplementation: () => createArtworkConstructorReturnValue,
+                artworkContructorImplementation: artworkConstructorMockImplementation,
                 handleFileUpload: () => createArtworkHappyPathHandleFileUploadsReturnValue,
                 statusCode: 400, error: 'Incorrect request body provided'
             },
@@ -356,7 +355,7 @@ describe('artworks controller', () => {
                 filesForUpload: [],
                 startSession: () => startSessionDefaultReturnValue,
                 findOne: undefined, artworkCategoriesHaveValidFormat: true,
-                artworkContructorImplementation: () => createArtworkConstructorReturnValue,
+                artworkContructorImplementation: artworkConstructorMockImplementation,
                 handleFileUpload: () => createArtworkHappyPathHandleFileUploadsReturnValue,
                 statusCode: 400, error: 'Incorrect request body provided'
             },
@@ -365,7 +364,7 @@ describe('artworks controller', () => {
                 filesForUpload: [],
                 startSession: () => startSessionDefaultReturnValue,
                 findOne: undefined, artworkCategoriesHaveValidFormat: true,
-                artworkContructorImplementation: () => createArtworkConstructorReturnValue,
+                artworkContructorImplementation: artworkConstructorMockImplementation,
                 handleFileUpload: () => createArtworkHappyPathHandleFileUploadsReturnValue,
                 statusCode: 400, error: 'Incorrect request body provided'
             },
@@ -377,7 +376,7 @@ describe('artworks controller', () => {
                 filesForUpload: [],
                 startSession: () => startSessionDefaultReturnValue,
                 findOne: undefined, artworkCategoriesHaveValidFormat: true,
-                artworkContructorImplementation: () => createArtworkConstructorReturnValue,
+                artworkContructorImplementation: artworkConstructorMockImplementation,
                 handleFileUpload: () => createArtworkHappyPathHandleFileUploadsReturnValue,
                 statusCode: 400, error: 'Incorrect request body provided'
             },
@@ -389,7 +388,7 @@ describe('artworks controller', () => {
                 filesForUpload: ["FileForUpload.mid", "FileForUpload.mid"],
                 startSession: () => startSessionDefaultReturnValue,
                 findOne: undefined, artworkCategoriesHaveValidFormat: true,
-                artworkContructorImplementation: () => createArtworkConstructorReturnValue,
+                artworkContructorImplementation: artworkConstructorMockImplementation,
                 handleFileUpload: () => createArtworkHappyPathHandleFileUploadsReturnValue,
                 statusCode: 400, error: 'Incorrect request body provided'
             },
@@ -404,7 +403,7 @@ describe('artworks controller', () => {
                 ],
                 startSession: () => startSessionDefaultReturnValue,
                 findOne: undefined, artworkCategoriesHaveValidFormat: true,
-                artworkContructorImplementation: () => createArtworkConstructorReturnValue,
+                artworkContructorImplementation: artworkConstructorMockImplementation,
                 handleFileUpload: () => createArtworkHappyPathHandleFileUploadsReturnValue,
                 statusCode: 400, error: 'Incorrect request body provided'
             },
@@ -416,7 +415,7 @@ describe('artworks controller', () => {
                 filesForUpload: [],
                 startSession: () => {throw Error()},
                 findOne: undefined, artworkCategoriesHaveValidFormat: true,
-                artworkContructorImplementation: () => createArtworkConstructorReturnValue,
+                artworkContructorImplementation: artworkConstructorMockImplementation,
                 handleFileUpload: () => createArtworkHappyPathHandleFileUploadsReturnValue,
                 statusCode: 503, error: 'Database unavailable'
             },  
@@ -428,7 +427,7 @@ describe('artworks controller', () => {
                 filesForUpload: [],
                 startSession: () => startSessionDefaultReturnValue,
                 findOne: {exec: () => {throw Error()}}, artworkCategoriesHaveValidFormat: true,
-                artworkContructorImplementation: () => createArtworkConstructorReturnValue,
+                artworkContructorImplementation: artworkConstructorMockImplementation,
                 handleFileUpload: () => createArtworkHappyPathHandleFileUploadsReturnValue,
                 statusCode: 503, error: 'Database unavailable'
             },
@@ -452,7 +451,7 @@ describe('artworks controller', () => {
                 filesForUpload: [],
                 startSession: () => startSessionDefaultReturnValue,
                 findOne: {exec: () => Promise.resolve(oneCollectionData)}, artworkCategoriesHaveValidFormat: true,
-                artworkContructorImplementation: () => createArtworkConstructorReturnValueWithSaveError,
+                artworkContructorImplementation: artworkConstructorMockImplementationWithSaveError,
                 handleFileUpload: () => createArtworkHappyPathHandleFileUploadsReturnValue,
                 statusCode: 503, error: 'Database unavailable'
             },
@@ -464,7 +463,7 @@ describe('artworks controller', () => {
                 filesForUpload: [],
                 startSession: () => startSessionDefaultReturnValue,
                 findOne: {exec: () => Promise.resolve(oneCollectionData)},
-                artworkContructorImplementation: () => createArtworkConstructorReturnValue,
+                artworkContructorImplementation: artworkConstructorMockImplementation,
                 artworkCategoriesHaveValidFormat: false,
                 handleFileUpload: () => createArtworkHappyPathHandleFileUploadsReturnValue,
                 statusCode: 400,
@@ -478,7 +477,7 @@ describe('artworks controller', () => {
                 filesForUpload: [],
                 startSession: () => startSessionDefaultReturnValue,
                 findOne: {exec: () => Promise.resolve(null)},
-                artworkContructorImplementation: () => createArtworkConstructorReturnValue,
+                artworkContructorImplementation: artworkConstructorMockImplementation,
                 artworkCategoriesHaveValidFormat: true,
                 handleFileUpload: () => createArtworkHappyPathHandleFileUploadsReturnValue,
                 statusCode: 404,
@@ -492,7 +491,7 @@ describe('artworks controller', () => {
                 filesForUpload: [],
                 startSession: () => startSessionDefaultReturnValue,
                 findOne: {exec: () => Promise.resolve(oneCollectionData)}, artworkCategoriesHaveValidFormat: true,
-                artworkContructorImplementation: () => createArtworkConstructorReturnValue,
+                artworkContructorImplementation: artworkConstructorMockImplementation,
                 handleFileUpload: () => {throw Error('Internal server error')},
                 statusCode: 500, error: 'Internal server error'
             },
@@ -534,31 +533,32 @@ describe('artworks controller', () => {
     })
 
     describe('PUT endpoints', () => {
-        // test("editArtwork should respond with status 201 and correct body", async () => {
-        //     mockReplaceOne.mockReturnValue({
-        //         exec: () => Promise.resolve({
-        //             acknowledged: true,
-        //             modifiedCount: 1,
-        //             upsertedId: null,
-        //             upsertedCount: 0,
-        //             matchedCount: 1
-        //         })
-        //     })
-        //     const payload = {
-        //         categories: [{name: 'Title', value: 'New Title', subcategories: []}],
-        //         collectionName: collectionName
-        //     }
+        test("editArtwork should respond with status 201 and correct body", async () => {
+            mockStartSession.mockReturnValue(startSessionDefaultReturnValue)
+            mockCollectionFindOne.mockReturnValue({exec: () => Promise.resolve(oneCollectionData)})
+            mockArtworkCategoriesHaveValidFormat.mockReturnValue(true)
+            mockArtworkFindOne.mockReturnValue({exec: () => Promise.resolve(makeFoundArtwork())})
+            mockHandleFileDeletions.mockImplementation((artwork: any) => {
+                artwork.files = []
+                return handleFileDeleteReturnValue
+            })
+            mockHandleFileUploads.mockImplementation((artwork: any) => {
+                artwork.files = editArtworkHappyPathArtworkFiles
+                return handleFileUploadsReturnValue
+            })
 
-        //     const res = await request(app)
-        //         .put(`/edit/${artworkId}`)
-        //         .send(payload)
-        //         .set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXNlcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaeccN-rDSjRS3kApqlA')
-        //         .set('Content-Type', 'application/json')
-        //         .set('Accept', 'application/json')
-
-        //     expect(res.status).toBe(201)
-        //     expect(res.body).toMatchSnapshot()
-        // })
+            let res = await request(app)
+                .put(`/edit/${artworkId}`)
+                .set('Authorization', `Bearer ${jwtToken}`)
+                .set('Accept', 'application/json')
+                .field('collectionId', collectionId)
+                .field('FilesToDelete', JSON.stringify([fileToDelete]))
+                .field('categories', '[{"name": "Title", "value": "Title", "subcategories": []}]')
+                .attach("files", path.resolve(__dirname, 'utils/files-for-upload/FileForUpload2.mid'))
+                .attach("files", path.resolve(__dirname, 'utils/files-for-upload/FileForUpload3.mid'))
+            expect(res.status).toBe(201)
+            expect(res.body).toMatchSnapshot()
+        })
 
         test.each([
             {
@@ -572,8 +572,8 @@ describe('artworks controller', () => {
                 collectionFindOne: () => {return {exec: () => Promise.resolve(oneCollectionData)}},
                 artworkCategoriesHaveValidFormat: true,
                 artworkFindOne: () => {return {exec: () => Promise.resolve(foundArtwork)}},
-                handleFileDelete: () => handleFileDeleteReturnValue,
-                handleFileUploads: () => handleFileUploadsReturnValue,
+                handleFileDelete: () => handleFileDeleteNoFilesReturnValue,
+                handleFileUploads: () => handleFileUploadsNoFilesReturnValue,
                 statusCode: 400, error: 'Incorrect request body provided'
             },
             {
@@ -587,8 +587,8 @@ describe('artworks controller', () => {
                 collectionFindOne: () => {return {exec: () => Promise.resolve(oneCollectionData)}},
                 artworkCategoriesHaveValidFormat: true,
                 artworkFindOne: () => {return {exec: () => Promise.resolve(foundArtwork)}},
-                handleFileDelete: () => handleFileDeleteReturnValue,
-                handleFileUploads: () => handleFileUploadsReturnValue,
+                handleFileDelete: () => handleFileDeleteNoFilesReturnValue,
+                handleFileUploads: () => handleFileUploadsNoFilesReturnValue,
                 statusCode: 400, error: 'Incorrect request body provided'
             },
             {
@@ -602,8 +602,8 @@ describe('artworks controller', () => {
                 collectionFindOne: () => {return {exec: () => Promise.resolve(oneCollectionData)}},
                 artworkCategoriesHaveValidFormat: true,
                 artworkFindOne: () => {return {exec: () => Promise.resolve(foundArtwork)}},
-                handleFileDelete: () => handleFileDeleteReturnValue,
-                handleFileUploads: () => handleFileUploadsReturnValue,
+                handleFileDelete: () => handleFileDeleteNoFilesReturnValue,
+                handleFileUploads: () => handleFileUploadsNoFilesReturnValue,
                 statusCode: 400, error: 'Incorrect request body provided'
             },
             {
@@ -617,8 +617,8 @@ describe('artworks controller', () => {
                 collectionFindOne: () => {return {exec: () => Promise.resolve(oneCollectionData)}},
                 artworkCategoriesHaveValidFormat: true,
                 artworkFindOne: () => {return {exec: () => Promise.resolve(foundArtwork)}},
-                handleFileDelete: () => handleFileDeleteReturnValue,
-                handleFileUploads: () => handleFileUploadsReturnValue,
+                handleFileDelete: () => handleFileDeleteNoFilesReturnValue,
+                handleFileUploads: () => handleFileUploadsNoFilesReturnValue,
                 statusCode: 503, error: 'Database unavailable'
             },
             {
@@ -632,8 +632,8 @@ describe('artworks controller', () => {
                 collectionFindOne: () => {return {exec: () => Promise.resolve(null)}},
                 artworkCategoriesHaveValidFormat: true,
                 artworkFindOne: () => {return {exec: () => Promise.resolve(foundArtwork)}},
-                handleFileDelete: () => handleFileDeleteReturnValue,
-                handleFileUploads: () => handleFileUploadsReturnValue,
+                handleFileDelete: () => handleFileDeleteNoFilesReturnValue,
+                handleFileUploads: () => handleFileUploadsNoFilesReturnValue,
                 statusCode: 404, error: 'Collection not found'
             },
             {
@@ -647,8 +647,8 @@ describe('artworks controller', () => {
                 collectionFindOne: () => {return {exec: () => Promise.resolve(oneCollectionData)}},
                 artworkCategoriesHaveValidFormat: false,
                 artworkFindOne: () => {return {exec: () => Promise.resolve(foundArtwork)}},
-                handleFileDelete: () => handleFileDeleteReturnValue,
-                handleFileUploads: () => handleFileUploadsReturnValue,
+                handleFileDelete: () => handleFileDeleteNoFilesReturnValue,
+                handleFileUploads: () => handleFileUploadsNoFilesReturnValue,
                 statusCode: 400, error: 'Incorrect request body provided'
             },
             {
@@ -662,8 +662,8 @@ describe('artworks controller', () => {
                 collectionFindOne: () => {return {exec: () => Promise.resolve(oneCollectionData)}},
                 artworkCategoriesHaveValidFormat: true,
                 artworkFindOne: () => {return {exec: () => Promise.resolve(null)}},
-                handleFileDelete: () => handleFileDeleteReturnValue,
-                handleFileUploads: () => handleFileUploadsReturnValue,
+                handleFileDelete: () => handleFileDeleteNoFilesReturnValue,
+                handleFileUploads: () => handleFileUploadsNoFilesReturnValue,
                 statusCode: 404, error: 'Artwork not found'
             },
             {
@@ -677,8 +677,8 @@ describe('artworks controller', () => {
                 collectionFindOne: () => {return {exec: () => Promise.resolve(oneCollectionData)}},
                 artworkCategoriesHaveValidFormat: true,
                 artworkFindOne: () => {return {exec: () => Promise.resolve(foundArtwork)}},
-                handleFileDelete: () => handleFileDeleteReturnValue,
-                handleFileUploads: () => handleFileUploadsReturnValue,
+                handleFileDelete: () => handleFileDeleteNoFilesReturnValue,
+                handleFileUploads: () => handleFileUploadsNoFilesReturnValue,
                 statusCode: 400, error: 'Incorrect request body provided'
             },
             {
@@ -692,8 +692,8 @@ describe('artworks controller', () => {
                 collectionFindOne: () => {return {exec: () => Promise.resolve(oneCollectionData)}},
                 artworkCategoriesHaveValidFormat: true,
                 artworkFindOne: () => {return {exec: () => Promise.resolve(foundArtwork)}},
-                handleFileDelete: () => handleFileDeleteReturnValue,
-                handleFileUploads: () => handleFileUploadsReturnValue,
+                handleFileDelete: () => handleFileDeleteNoFilesReturnValue,
+                handleFileUploads: () => handleFileUploadsNoFilesReturnValue,
                 statusCode: 400, error: 'Incorrect request body provided'
             },
             {
@@ -710,8 +710,8 @@ describe('artworks controller', () => {
                 collectionFindOne: () => {return {exec: () => Promise.resolve(oneCollectionData)}},
                 artworkCategoriesHaveValidFormat: true,
                 artworkFindOne: () => {return {exec: () => Promise.resolve(foundArtwork)}},
-                handleFileDelete: () => handleFileDeleteReturnValue,
-                handleFileUploads: () => handleFileUploadsReturnValue,
+                handleFileDelete: () => handleFileDeleteNoFilesReturnValue,
+                handleFileUploads: () => handleFileUploadsNoFilesReturnValue,
                 statusCode: 400, error: 'Incorrect request body provided'
             },
             {
@@ -725,8 +725,8 @@ describe('artworks controller', () => {
                 collectionFindOne: () => {return {exec: () => Promise.resolve(oneCollectionData)}},
                 artworkCategoriesHaveValidFormat: true,
                 artworkFindOne: () => {return {exec: () => Promise.resolve(foundArtworkWithDifferentCollectionName)}},
-                handleFileDelete: () => handleFileDeleteReturnValue,
-                handleFileUploads: () => handleFileUploadsReturnValue,
+                handleFileDelete: () => handleFileDeleteNoFilesReturnValue,
+                handleFileUploads: () => handleFileUploadsNoFilesReturnValue,
                 statusCode: 400, error: 'Incorrect request body provided'
             },
             {
@@ -740,8 +740,8 @@ describe('artworks controller', () => {
                 collectionFindOne: () => {return {exec: () => Promise.resolve(oneCollectionData)}},
                 artworkCategoriesHaveValidFormat: true,
                 artworkFindOne: () => {return {exec: () => Promise.resolve(foundArtworkWithSaveError)}},
-                handleFileDelete: () => handleFileDeleteReturnValue,
-                handleFileUploads: () => handleFileUploadsReturnValue,
+                handleFileDelete: () => handleFileDeleteNoFilesReturnValue,
+                handleFileUploads: () => handleFileUploadsNoFilesReturnValue,
                 statusCode: 503, error: 'Database unavailable'
             },
             {
@@ -755,8 +755,8 @@ describe('artworks controller', () => {
                 collectionFindOne: () => {return {exec: () => Promise.resolve(oneCollectionData)}},
                 artworkCategoriesHaveValidFormat: true,
                 artworkFindOne: () => {return {exec: () => Promise.resolve(foundArtworkWithSaveError)}},
-                handleFileDelete: () => handleFileDeleteReturnValue,
-                handleFileUploads: () => handleFileUploadsReturnValue,
+                handleFileDelete: () => handleFileDeleteNoFilesReturnValue,
+                handleFileUploads: () => handleFileUploadsNoFilesReturnValue,
                 statusCode: 503, error: 'Database unavailable'
             },
             {
@@ -771,7 +771,7 @@ describe('artworks controller', () => {
                 artworkCategoriesHaveValidFormat: true,
                 artworkFindOne: () => {return {exec: () => Promise.resolve(foundArtwork)}},
                 handleFileDelete: () => {throw Error('Internal server error')},
-                handleFileUploads: () => handleFileUploadsReturnValue, 
+                handleFileUploads: () => handleFileUploadsNoFilesReturnValue, 
                 statusCode: 500, error: 'Internal server error'
             },
             {
@@ -785,7 +785,7 @@ describe('artworks controller', () => {
                 collectionFindOne: () => {return {exec: () => Promise.resolve(oneCollectionData)}},
                 artworkCategoriesHaveValidFormat: true,
                 artworkFindOne: () => {return {exec: () => Promise.resolve(foundArtwork)}},
-                handleFileDelete: () => handleFileDeleteReturnValue,
+                handleFileDelete: () => handleFileDeleteNoFilesReturnValue,
                 handleFileUploads: () => {throw Error('Internal server error')},
                 statusCode: 500, error: 'Internal server error'
             },
@@ -806,7 +806,7 @@ describe('artworks controller', () => {
                 mockCollectionFindOne.mockImplementation(collectionFindOne)
                 mockArtworkCategoriesHaveValidFormat.mockReturnValue(artworkCategoriesHaveValidFormat)
                 mockArtworkFindOne.mockImplementation(artworkFindOne)
-                mockHandleFileDelete.mockImplementation(handleFileDelete)
+                mockHandleFileDeletions.mockImplementation(handleFileDelete)
                 mockHandleFileUploads.mockImplementation(handleFileUploads)
 
                 let req = request(app)
