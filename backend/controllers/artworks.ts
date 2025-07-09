@@ -10,6 +10,10 @@ import path from "path";
 import { fileToDelete } from "../utils/interfaces";
 import 'multer';
 
+interface MulterRequest extends Request {
+    files: any;
+}
+
 export const getArtwork = async (req: Request, res: Response) => {
     try {
         const artworkId = req.params.artworkId
@@ -111,7 +115,7 @@ export const getArtworksBySearchTextMatchedInTopmostCategory = async (req: Reque
 
 export const createArtwork = authAsyncWrapper((async (req: Request, res: Response) => {
     try {
-        const files = req.files as Express.Multer.File[]
+        const files = (req as MulterRequest).files as Express.Multer.File[]
         const collectionId = req.body.collectionId
         let categories;        
         try {
@@ -168,7 +172,7 @@ export const createArtwork = authAsyncWrapper((async (req: Request, res: Respons
 
 export const editArtwork = authAsyncWrapper((async (req: Request, res: Response) => {
     try {
-        const filesToUpload = req.files as Express.Multer.File[]
+        const filesToUpload = (req as MulterRequest).files as Express.Multer.File[]
         const artworkId = req.params.artworkId
         const collectionId = req.body.collectionId
         let categories, filesToDelete: fileToDelete[];       
