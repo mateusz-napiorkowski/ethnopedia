@@ -17,6 +17,7 @@ import { getAllCategories } from "../../api/categories";
 import MultiselectDropdown from "../../components/MultiselectDropdown";
 import ArtworksList from '../../components/artwork/ArtworksList';
 import { getAllCollections } from "../../api/collections";
+import {Collection} from "../../@types/Collection";
 
 
 
@@ -33,9 +34,12 @@ const GlobalSearchPage = ({ pageSize = 10 }) => {
     const queryClient = useQueryClient();
     const navigate = useNavigate();
     const [allCollectionIds, setAllCollectionIds] = useState<string[]>([]);
-    const [selectedCollectionIds, setSelectedCollectionIds] = useState<string[]>([]);
 
     const hasSearchParams = new URLSearchParams(location.search).toString().length > 0;
+
+    const [collections, setCollections] = useState<Collection[]>([]);
+    const [selectedCollectionIds, setSelectedCollectionIds] = useState<string[]>([]);
+
 
     // Funkcja wyszukująca wartość dla danej kategorii
     const findValue = (artwork: any, categoryPath: any): string => {
@@ -65,7 +69,7 @@ const GlobalSearchPage = ({ pageSize = 10 }) => {
     } = useQuery({
         queryKey: [
             "artwork",
-            allCollectionIds,
+            selectedCollectionIds,
             currentPage,
             location.search,
             sortCategory,
@@ -73,22 +77,22 @@ const GlobalSearchPage = ({ pageSize = 10 }) => {
         ],
         queryFn: () =>
             getArtworksForPage(
-                allCollectionIds, // tablica wszystkich kolekcji
+                selectedCollectionIds, // tablica wszystkich kolekcji
                 currentPage,
                 pageSize,
                 `${sortCategory}-${sortDirection}`,
                 new URLSearchParams(location.search).get("searchText"),
                 Object.fromEntries(new URLSearchParams(location.search).entries())
             ),
-        enabled: allCollectionIds.length > 0,
+        enabled: selectedCollectionIds.length > 0,
         keepPreviousData: false,
     });
 
 
     const { data: categoriesData } = useQuery({
-        queryKey: ["allCategories", allCollectionIds],
-        queryFn: () => getAllCategories(allCollectionIds),
-        enabled: allCollectionIds.length > 0,
+        queryKey: ["selectedCategories", selectedCollectionIds],
+        queryFn: () => getAllCategories(selectedCollectionIds),
+        enabled: selectedCollectionIds.length > 0,
     });
 
     useEffect(() => {
@@ -114,6 +118,11 @@ const GlobalSearchPage = ({ pageSize = 10 }) => {
                 console.log("Pobrane kolekcje:", data);
                 const ids = data.collections.map((col: any) => col.id);
                 setAllCollectionIds(ids);
+                const valid = data.collections.filter(
+                    (c): c is Collection & { id: string } => typeof c.id === 'string'
+                );
+                setCollections(valid);
+                setSelectedCollectionIds(valid.map(c => c.id));
                 console.log("allCollectionIds:", ids);
             } catch (error) {
                 console.error("Błąd pobierania kolekcji", error);
@@ -185,27 +194,10 @@ const GlobalSearchPage = ({ pageSize = 10 }) => {
         label: string;
     };
 
-    // Dodanie opcji specjalnych na początku listy
-    const customOptions = [
-        { value: "select_all", label: "Zaznacz wszystkie" },
-        { value: "deselect_all", label: "Odznacz wszystkie" },
-        ...categoryOptions,
-    ];
-
-    const formatOptionLabel = (option: Option, { context }: { context: string }) => {
-        if (context === "menu") {
-            if (option.value === "select_all" || option.value === "deselect_all") {
-                return (
-                    <div
-                        className="text-gray-500 dark:text-gray-300 underline"
-                    >
-                        {option.label}
-                    </div>
-                );
-            }
-        }
-        return option.label;
-    };
+    const collectionOptions: Option[] = collections.map(col => ({
+        value: col.id!,
+        label: col.name
+    }));
 
 
 
@@ -221,7 +213,7 @@ const GlobalSearchPage = ({ pageSize = 10 }) => {
             )}
             <div className="flex flex-col w-full items-center bg-gray-50 dark:bg-gray-900 p-2 sm:p-4">
                 <div className="flex flex-col max-w-screen-xl w-full lg:px-6">
-                    <Navigation />
+                    <Navigation/>
                     <div
                         data-testid="collection-name-and-description-container"
                         className="flex flex-row mb-4 mt-2"
@@ -233,7 +225,22 @@ const GlobalSearchPage = ({ pageSize = 10 }) => {
                         </div>
 
                     </div>
-                    {allCollectionIds && <SearchComponent collectionIds={allCollectionIds} mode="global" />}
+
+                    <div className="mb-4 flex items-center space-x-2">
+                        <p className="font-medium">Wybierz kolekcje:</p>
+                        <MultiselectDropdown
+                            selectedValues={selectedCollectionIds}
+                            setSelectedValues={setSelectedCollectionIds}
+                            options={collectionOptions}
+                            specialOptions={[
+                                {value: "select_all", label: "Zaznacz wszystkie"},
+                                {value: "deselect_all", label: "Odznacz wszystkie"}
+                            ]}
+                            placeholder="Wybierz kolekcje"
+                        />
+                    </div>
+
+                    {selectedCollectionIds && <SearchComponent collectionIds={selectedCollectionIds} mode="global"/>}
                     <div className="flex w-full md:w-auto">
                         <div className="flex flex-1 space-x-2">
 
@@ -245,7 +252,7 @@ const GlobalSearchPage = ({ pageSize = 10 }) => {
                                 }}
                             >
                                 <span className="text-white dark:text-gray-400">
-                                    <FileExportIcon />
+                                    <FileExportIcon/>
                                 </span>
                                 Eksportuj plik
                             </button>
@@ -282,7 +289,9 @@ const GlobalSearchPage = ({ pageSize = 10 }) => {
                             </button>
                         </div>
                     </div>
-                    {showExportOptions && <ExportOptions onClose={() => setShowExportOptions(false)} selectedArtworks={selectedArtworks} initialFilename={`eksport.xlsx`} />}
+                    {showExportOptions &&
+                        <ExportOptions onClose={() => setShowExportOptions(false)} selectedArtworks={selectedArtworks}
+                                       initialFilename={`eksport.xlsx`}/>}
                     <div className="flex w-full md:w-auto pt-4 flex-row items-center text-sm">
                         <p className="pr-2">Wyświetlane kategorie:</p>
                         <MultiselectDropdown
@@ -290,8 +299,8 @@ const GlobalSearchPage = ({ pageSize = 10 }) => {
                             setSelectedValues={setSelectedDisplayCategories}
                             options={categoryOptions}
                             specialOptions={[
-                                { value: "select_all", label: "Zaznacz wszystko" },
-                                { value: "deselect_all", label: "Odznacz wszystko" }
+                                {value: "select_all", label: "Zaznacz wszystko"},
+                                {value: "deselect_all", label: "Odznacz wszystko"}
                             ]}
                             formatOptionLabel={(option, context) =>
                                 context.context === "menu" ? (

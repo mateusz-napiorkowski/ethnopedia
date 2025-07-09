@@ -13,12 +13,15 @@ interface Props {
     handleRemove: (idx: string) => void;
     handleAddSubcategory: (idx: string) => void;
     isEditMode: boolean;
+    hasError?: string;
+    errorMessage?: string;
+    hasSubmitted: boolean;
 }
 
 const StructureFormField: React.FC<Props> = ({
                                                  id, index, level, formData,
                                                  handleInputChange, handleRemove, handleAddSubcategory,
-                                                 isEditMode
+                                                 isEditMode, hasError, errorMessage, hasSubmitted
                                              }) => {
     const {
         attributes,
@@ -35,6 +38,22 @@ const StructureFormField: React.FC<Props> = ({
         ? 'Dodaj podkategorię'
         : 'Osiągnięto maksymalny poziom zagnieżdżenia';
 
+    // Enhanced input change handler with real-time validation
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        handleInputChange(index, e);
+    };
+
+    // Na początku komponentu
+    const isNameEmpty = !formData.name.trim();
+    const forbiddenChars = /[.]/;
+    const hasRequiredError = isNameEmpty && hasSubmitted;
+    const hasForbiddenChars = forbiddenChars.test(formData.name);
+
+// Pokaż błąd jeśli jest wymagany i submit był już kliknięty
+    const showRequiredError = hasRequiredError;
+// Pokaż błąd zakazanych znaków lub duplikatu niezależnie od submitu
+    const showOtherErrors = hasForbiddenChars || Boolean(hasError);
+
     return (
         <div
             ref={setNodeRef}
@@ -44,7 +63,7 @@ const StructureFormField: React.FC<Props> = ({
                 opacity: isDragging ? 0.4 : 1,
                 marginLeft: `${level * 20}px`,
             }}
-            className="mb-1"
+            className="mb-3"
             onMouseEnter={() => setHover(true)}
             onMouseLeave={() => setHover(false)}
         >
@@ -53,40 +72,62 @@ const StructureFormField: React.FC<Props> = ({
                     <DotsIcon
                         {...attributes}
                         {...listeners}
-                        className="w-4 h-4 cursor-grab text-gray-400 hover:text-gray-600"
+                        className="w-4 h-4 cursor-grab text-gray-400 hover:text-gray-600 flex-shrink-0"
                     />
-                )}
-                <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={e => handleInputChange(index, e)}
-                    placeholder={level === 0 ? "Nazwa kategorii" : "Nazwa podkategorii"}
-                    className="border-b border-gray-300 focus:outline-none p-1 w-full"
-                />
-                {!isEditMode && (
+                    )}
+                <div className="flex-1">
+                    <input
+                        type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        placeholder={level === 0 ? "Nazwa kategorii" : "Nazwa podkategorii"}
+                        className={`w-full border-b focus:outline-none p-1 ${
+                            showRequiredError || showOtherErrors
+                                ? "border-red-500 text-red-600"
+                                : "border-gray-300 text-gray-700 dark:text-white dark:border-gray-600"
+                        }`}
+                    />
+                    {(showRequiredError || showOtherErrors) && (
+                        <div className="text-red-500 text-xs mt-1">
+                            {showRequiredError
+                                ? "Nazwa kategorii jest wymagana"
+                                : hasForbiddenChars
+                                    ? "Nazwa zawiera zakazane znaki"
+                                    : errorMessage /* np. "Nazwa kategorii już istnieje" */}
+                        </div>
+                    )}
+                </div>
+                {(isEditMode || !isEditMode) && (
                     <div
-                        className="inline-flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+                        className="inline-flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150 flex-shrink-0">
                         <button
                             onClick={() => canAdd && handleAddSubcategory(index)}
                             disabled={!canAdd}
                             title={addTitle}
                             className={`p-2 text-sm rounded-md transition-colors
-                                        ${hover ? 'opacity-100' : 'opacity-0'}
-                                        ${canAdd
-                                            ? 'text-blue-600 hover:text-blue-800 cursor-pointer'
-                                            : 'text-gray-400 cursor-not-allowed'}
-                                        `}
+                        ${hover ? 'opacity-100' : 'opacity-0'}
+                        ${canAdd
+                                ? 'text-blue-600 hover:text-blue-800 cursor-pointer'
+                                : 'text-gray-400 cursor-not-allowed'}
+                        `}
                         >
                             <PlusIcon className="w-4 h-4"/>
                         </button>
                         <button
                             onClick={() => handleRemove(index)}
-                            className="p-2 text-sm text-red-600 hover:text-red-800 rounded-md transition-colors"
-                            title="Usuń"
+                            disabled={isEditMode && !formData.isNew}
+                            title={isEditMode && !formData.isNew ? "Usuwanie tylko nowych kategorii w trybie edycji" : "Usuń"}
+                            className={`
+    p-2 text-sm rounded-md transition-colors
+    ${hover ? 'opacity-100' : 'opacity-0'}
+    text-red-600 hover:text-red-800
+    ${isEditMode && !formData.isNew ? 'opacity-50 cursor-not-allowed hover:text-red-600' : ''}
+  `}
                         >
                             <DeleteIcon className="w-4 h-4"/>
                         </button>
+
                     </div>
                 )}
             </div>

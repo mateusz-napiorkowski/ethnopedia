@@ -8,6 +8,7 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/collections/StructureForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/collections/StructureForm.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/collections/StructureFormField.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/collections/StructureFormField.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/artworks/GlobalSearchPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/artworks/GlobalSearchPage.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/pages/collections/CreateCollectionPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/collections/CreateCollectionPage.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -94,7 +95,11 @@
       <workItem from="1749470128193" duration="3801000" />
       <workItem from="1749543408764" duration="3655000" />
       <workItem from="1749568466958" duration="4779000" />
-      <workItem from="1749646481165" duration="3993000" />
+      <workItem from="1749646481165" duration="8121000" />
+      <workItem from="1750253212579" duration="5359000" />
+      <workItem from="1750853115347" duration="5746000" />
+      <workItem from="1751229748992" duration="8000" />
+      <workItem from="1752049102281" duration="15225000" />
     </task>
     <servers />
   </component>

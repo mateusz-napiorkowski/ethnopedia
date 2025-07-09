@@ -1,14 +1,11 @@
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import { createCollection, updateCollection } from "../../api/collections";
-import { useUser } from "../../providers/UserProvider";
 import React, { useState } from "react";
 import Navbar from "../../components/navbar/Navbar";
 import Navigation from "../../components/Navigation";
 import StructureForm from "../../components/collections/StructureForm";
-import { Category } from "../../@types/Category";
+import { createCollection, updateCollection } from "../../api/collections";
+import { useUser } from "../../providers/UserProvider";
 import { useLocation, useNavigate } from "react-router-dom";
-
-let initial_structure: Category[] = [{ name: "", subcategories: [] }];
+import { Category } from "../../@types/Category";
 
 interface FormValues {
     name: string;
@@ -19,41 +16,199 @@ interface FormValues {
 interface FormErrors {
     name?: string;
     description?: string;
-    categories?: string;
+    categories?: { [key: string]: string }; // Changed to object for individual category errors
 }
 
 const CreateCollectionPage = () => {
     const { jwtToken } = useUser();
-    const [showErrorMessage, setShowErrorMessage] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Sprawdzenie, czy mamy tryb edycji
-    const isEditMode = location.state && location.state.mode === "edit";
+    const isEditMode = location.state?.mode === "edit";
+    const collectionId = location.state?.collectionId;
 
-    const collectionId = location.state && location.state.collectionId;
+    const [formValues, setFormValues] = useState<FormValues>({
+        name: location.state?.name || "",
+        description: location.state?.description || "",
+        categories: location.state?.categories || [{ name: "", subcategories: [] }],
+    });
 
-    // Pobranie wartości początkowych dla nazwy i opisu, jeśli edycja
-    const initialName = isEditMode && location.state.name ? location.state.name : "";
-    const initialDescription = isEditMode && location.state.description ? location.state.description : "";
+    const [formErrors, setFormErrors] = useState<FormErrors>({});
+    const [submitError, setSubmitError] = useState<string | null>(null);
+    const [hasSubmitted, setHasSubmitted] = useState(false);
 
-    // Ustawiamy inicjalne dane formularza – w trybie edycji pobieramy też strukturę kategorii
-    let initialFormData: Category[] = initial_structure;
-    if (isEditMode && location.state.categories) {
-        initialFormData = location.state.categories;
-    } else if (location.state && location.state.categories) {
-        initialFormData = location.state.categories;
-    }
+    const resetSubmit = () => {
+        if (hasSubmitted) {
+            setHasSubmitted(false);
+            setFormErrors({});
+        }
+    };
 
-    // Funkcja do usunięcia flagi isNew z kategorii (rekurencyjnie)
     const removeIsNewFlag = (categories: Category[]): Category[] => {
-        return categories.map((category) => {
-            const { isNew, subcategories, ...rest } = category;
-            return {
-                ...rest,
-                subcategories: subcategories ? removeIsNewFlag(subcategories) : [],
-            };
-        });
+        return categories.map(({ isNew, subcategories, ...rest }) => ({
+            ...rest,
+            subcategories: subcategories ? removeIsNewFlag(subcategories) : [],
+        }));
+    };
+
+    // Helper function to get all category names in a flat array
+    const getAllCategoryNames = (categories: Category[]): string[] => {
+        const names: string[] = [];
+        const traverse = (cats: Category[]) => {
+            cats.forEach(cat => {
+                if (cat.name.trim()) {
+                    names.push(cat.name.trim().toLowerCase());
+                }
+                if (cat.subcategories) {
+                    traverse(cat.subcategories);
+                }
+            });
+        };
+        traverse(categories);
+        return names;
+    };
+
+    // Helper function to check for duplicate category names
+    const findDuplicateCategories = (categories: Category[]): { [key: string]: string } => {
+        const errors: { [key: string]: string } = {};
+        const allNames = getAllCategoryNames(categories);
+
+        const checkDuplicates = (cats: Category[], path: string = "") => {
+            cats.forEach((cat, index) => {
+                const currentPath = path ? `${path}-${index}` : `${index}`;
+                const trimmedName = cat.name.trim().toLowerCase();
+
+                if (trimmedName && allNames.filter(name => name === trimmedName).length > 1) {
+                    errors[currentPath] = "Nazwa kategorii już istnieje";
+                }
+
+                if (cat.subcategories) {
+                    checkDuplicates(cat.subcategories, currentPath);
+                }
+            });
+        };
+
+        checkDuplicates(categories);
+        return errors;
+    };
+
+    const validate = (values: FormValues, isSubmitValidation: boolean = false): FormErrors => {
+        const errors: FormErrors = { categories: {} };
+        const forbiddenChars = /[.]/;
+
+        // Name validation
+        if (!values.name.trim()) {
+            if (isSubmitValidation) {
+                errors.name = "Nazwa jest wymagana";
+            }
+        } else if (forbiddenChars.test(values.name)) {
+            errors.name = "Nazwa zawiera zakazane znaki";
+        }
+
+        // Description validation
+        if (!values.description.trim() && isSubmitValidation) {
+            errors.description = "Opis jest wymagany";
+        }
+
+        // Category validation
+        const checkCategory = (cat: Category, path: string): string | null => {
+            if (!cat.name.trim()) {
+                if (isSubmitValidation) {
+                    return "Nazwa kategorii jest wymagana";
+                }
+                return null;
+            }
+            if (forbiddenChars.test(cat.name)) {
+                return "Nazwa zawiera zakazane znaki";
+            }
+            return null;
+        };
+
+        const validateCategories = (cats: Category[], pathPrefix: string = "") => {
+            cats.forEach((cat, index) => {
+                const currentPath = pathPrefix ? `${pathPrefix}-${index}` : `${index}`;
+                const error = checkCategory(cat, currentPath);
+                if (error) {
+                    errors.categories![currentPath] = error;
+                }
+                if (cat.subcategories) {
+                    validateCategories(cat.subcategories, currentPath);
+                }
+            });
+        };
+
+        validateCategories(values.categories);
+
+        // Check for duplicate category names
+        const duplicateErrors = findDuplicateCategories(values.categories);
+        errors.categories = { ...errors.categories, ...duplicateErrors };
+
+        return errors;
+    };
+
+    // Real-time validation for name field
+    const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newValue = e.target.value;
+        setFormValues({ ...formValues, name: newValue });
+
+        // Clear existing name error if field is now valid
+        if (formErrors.name && newValue.trim() && !/[.]/.test(newValue)) {
+            setFormErrors({ ...formErrors, name: undefined });
+        }
+
+        // Show error for forbidden characters immediately
+        if (/[.]/.test(newValue)) {
+            setFormErrors({ ...formErrors, name: "Nazwa zawiera zakazane znaki" });
+        }
+    };
+
+    // Real-time validation for description field
+    const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        const newValue = e.target.value;
+        setFormValues({ ...formValues, description: newValue });
+
+        // Clear description error if field is now valid
+        if (formErrors.description && newValue.trim()) {
+            setFormErrors({ ...formErrors, description: undefined });
+        }
+    };
+
+    // Function to update category errors
+    const updateCategoryErrors = (categories: Category[]) => {
+        const newErrors = validate({ ...formValues, categories }, false);
+        setFormErrors(prev => ({ ...prev, categories: newErrors.categories }));
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setHasSubmitted(true);
+        const errors = validate(formValues, true);
+        setFormErrors(errors);
+
+        if (Object.keys(errors).some(key =>
+            key === 'name' && errors.name ||
+            key === 'description' && errors.description ||
+            key === 'categories' && errors.categories && Object.keys(errors.categories).length > 0
+        )) {
+            return;
+        }
+
+        try {
+            if (isEditMode) {
+                const cleaned = removeIsNewFlag(formValues.categories);
+                console.log("Kategorie do zapisania:", JSON.stringify(cleaned, null, 2));
+                await updateCollection(collectionId, formValues.name, formValues.description, cleaned, jwtToken);
+            } else {
+                await createCollection(formValues.name, formValues.description, formValues.categories, jwtToken);
+            }
+            navigate("/");
+        } catch (error: any) {
+            if (error.response?.data?.error === "Collection with provided name already exists") {
+                setFormErrors({ name: "Kolekcja o tej nazwie już istnieje" });
+            } else {
+                setSubmitError("Wystąpił błąd. Spróbuj ponownie.");
+            }
+        }
     };
 
     return (
@@ -61,171 +216,80 @@ const CreateCollectionPage = () => {
             <Navbar />
             <div className="container mx-auto px-24 sm:px-32 md:px-40 lg:px-48 mt-4 max-w-screen-lg">
                 <Navigation />
-                <div className="mt-4">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border dark:border-gray-600 p-8">
-                        <div className="flex items-start rounded-t border-b pb-2">
-                            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-                                {isEditMode ? "Edytuj kolekcję" : "Dodaj nową kolekcję"}
-                            </h3>
+                <div className="mt-4 bg-white dark:bg-gray-800 rounded-lg shadow-md border dark:border-gray-600 p-8">
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                        {isEditMode ? "Edytuj kolekcję" : "Dodaj nową kolekcję"}
+                    </h3>
+                    <form onSubmit={handleSubmit}>
+                        <label className="block text-sm text-gray-700 dark:text-white my-2">Nazwa</label>
+                        <input
+                            type="text"
+                            value={formValues.name}
+                            onChange={handleNameChange}
+                            className={`w-full px-4 py-2 border rounded-lg text-gray-700 dark:text-white dark:bg-gray-700 focus:outline-none ${
+                                formErrors.name ? "border-red-500" : "border-gray-300 dark:border-gray-600"
+                            }`}
+                        />
+                        {formErrors.name && hasSubmitted && (
+                            <div className="text-red-500 text-sm mt-1">{formErrors.name}</div>
+                        )}
+
+                        <label className="block text-sm text-gray-700 dark:text-white my-2 mt-4">Opis</label>
+                        <textarea
+                            value={formValues.description}
+                            onChange={handleDescriptionChange}
+                            className={`w-full px-4 py-2 border rounded-lg resize-y focus:outline-none dark:bg-gray-700 dark:text-white ${
+                                formErrors.description ? "border-red-500" : "border-gray-300 dark:border-gray-600"
+                            }`}
+                            rows={4}
+                        />
+                        {formErrors.description && hasSubmitted && (
+                            <div className="text-red-500 text-sm mt-1">{formErrors.description}</div>
+                        )}
+
+
+                        <hr className="mt-6" />
+                        <label className="block text-sm font-bold text-gray-700 dark:text-white my-2 mt-4">
+                            Struktura metadanych w kolekcji
+                        </label>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                            Podaj strukturę metadanych, które chcesz przechowywać w tej kolekcji...
+                        </p>
+
+                        <StructureForm
+                            initialFormData={formValues.categories}
+                            setFieldValue={(field, value) => {
+                                setFormValues((prev) => ({ ...prev, [field]: value }));
+                                if (field === 'categories') {
+                                    updateCategoryErrors(value);
+                                }
+                            }}
+                            resetSubmit={resetSubmit}
+                            isEditMode={isEditMode}
+                            categoryErrors={formErrors.categories || {}}
+                            hasSubmitted={hasSubmitted}
+                        />
+
+                        {submitError && (
+                            <div className="text-red-500 text-sm my-2">{submitError}</div>
+                        )}
+
+                        <div className="flex justify-end mt-6">
+                            <button
+                                type="button"
+                                onClick={() => navigate(-1)}
+                                className="px-4 py-2 mr-2"
+                            >
+                                Anuluj
+                            </button>
+                            <button
+                                type="submit"
+                                className="px-4 py-2 color-button"
+                            >
+                                {isEditMode ? "Zapisz zmiany" : "Utwórz"}
+                            </button>
                         </div>
-                        <Formik
-                            initialValues={{
-                                name: initialName,
-                                description: initialDescription,
-                                categories: initialFormData,
-                            }}
-                            validate={(values: FormValues): FormErrors => {
-                                const errors: FormErrors = {};
-
-                                // Walidacja nazwy
-                                if (!values.name) {
-                                    errors.name = "Nazwa jest wymagana";
-                                }
-
-                                // Walidacja opisu
-                                if (!values.description) {
-                                    errors.description = "Opis jest wymagany";
-                                }
-
-                                // Walidacja kategorii
-                                if (!values.categories || values.categories.length === 0) {
-                                    errors.categories = "Struktura metadanych jest wymagana";
-                                } else {
-                                    // Przechodzimy przez kategorie i sprawdzamy, czy nazwa zawiera kropkę
-                                    values.categories.forEach((category, index) => {
-                                        if (category.name.includes(".")) {
-                                            errors.categories = "Nazwa kategorii nie może zawierać kropki";
-                                        }
-                                    });
-                                }
-
-                                return errors;
-                            }}
-                            onSubmit={async (values, { setSubmitting, setErrors, setStatus, setFieldTouched }) => {
-                                const { name, description, categories } = values;
-
-                                // TODO ustawienie kursora po nieudanym submit'cie tam gdzie błąd
-                                // // Sprawdzamy błędy i ustawiamy flagi dotyku na błędnych polach
-                                // if (Object.keys(errors).length > 0) {
-                                //     // Sprawdzamy, czy są błędy w nazwie, opisie lub strukturze i przesuwamy kursor na pierwsze pole z błędem
-                                //     if (errors.name) setFieldTouched("name");
-                                //     if (errors.description) setFieldTouched("description");
-                                //     if (errors.categories) setFieldTouched("categories");
-                                //     return;
-                                // }
-
-                                // Logika zapisu danych (bez zmian)
-                                try {
-                                    if (isEditMode) {
-                                        const updatedCategories = removeIsNewFlag(categories);
-                                        await updateCollection(collectionId, name, description, updatedCategories, jwtToken);
-                                    } else {
-                                        await createCollection(name, description, categories, jwtToken);
-                                    }
-                                    setShowErrorMessage(false);
-                                    navigate("/"); // Po udanym zapisie przekieruj użytkownika
-                                } catch (error: any) {
-                                    setShowErrorMessage(true);
-                                    if (error.response && error.response.data && error.response.data.error) {
-                                        const serverError = error.response.data.error;
-                                        if (serverError === "Collection with provided name already exists") {
-                                            setErrors({ name: serverError });
-                                        } else if (serverError === "Incorrect request body provided") {
-                                            setStatus({ generalError: "Niepoprawne dane formularza" });
-                                        } else {
-                                            setStatus({ generalError: "Błąd serwera" });
-                                        }
-                                    } else {
-                                        setStatus({ generalError: "Nieoczekiwany błąd" });
-                                    }
-                                } finally {
-                                    setSubmitting(false);
-                                }
-                            }}
-                        >
-                            {({ isSubmitting, setFieldValue, status, errors, touched }) => (
-                                <Form>
-                                    <label
-                                        htmlFor="name"
-                                        className="block text-sm text-gray-700 dark:text-white my-2"
-                                    >
-                                        Nazwa
-                                    </label>
-                                    <Field
-                                        id="name"
-                                        name="name"
-                                        type="text"
-                                        className={`w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none ${
-                                            touched.name && errors.name ? 'border-red-500' : 'border-gray-300'
-                                        }`}
-                                    />
-                                    <ErrorMessage
-                                        name="name"
-                                        component="div"
-                                        className="text-red-500 text-sm"
-                                    />
-
-                                    <label
-                                        htmlFor="description"
-                                        className="block text-sm text-gray-700 dark:text-white my-2"
-                                    >
-                                        Opis
-                                    </label>
-                                    <Field
-                                        as="textarea"
-                                        id="description"
-                                        name="description"
-                                        rows={4}
-                                        className={`w-full resize-y px-4 py-2 border rounded-lg focus:outline-none dark:border-gray-600 dark:bg-gray-800 ${
-                                            touched.description && errors.description ? 'border-red-500' : 'border-gray-300'
-                                        }`}
-                                    />
-                                    <ErrorMessage
-                                        name="description"
-                                        component="div"
-                                        className="text-red-500 text-sm"
-                                    />
-
-                                    <hr className="mt-6"/>
-                                    <label className="block text-sm mt-4 font-bold text-gray-700 dark:text-white my-2">
-                                        Struktura metadanych w kolekcji
-                                    </label>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                                        Podaj strukturę metadanych, które chcesz przechowywać w tej kolekcji...
-                                    </p>
-                                    <div className="flex-grow">
-                                        <StructureForm
-                                            initialFormData={initialFormData}
-                                            setFieldValue={setFieldValue}
-                                            isEditMode={isEditMode}
-                                        />
-                                    </div>
-
-                                    {showErrorMessage && status && status.generalError && (
-                                        <p className="text-red-500 text-sm my-2">{status.generalError}</p>
-                                    )}
-
-                                    <div className="flex justify-end mt-6">
-                                        <button
-                                            type="button"
-                                            onClick={() => navigate(-1)}
-                                            className="px-4 py-2 mr-2"
-                                        >
-                                            Anuluj
-                                        </button>
-                                        <button
-                                            type="submit"
-                                            disabled={isSubmitting}
-                                            className="px-4 py-2 color-button"
-                                        >
-                                            {isEditMode ? "Zapisz zmiany" : "Utwórz"}
-                                        </button>
-                                    </div>
-                                </Form>
-                            )}
-                        </Formik>
-
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>

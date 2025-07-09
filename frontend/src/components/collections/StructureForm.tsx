@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   DndContext,
   closestCenter,
@@ -16,104 +16,144 @@ import { HiPlus as PlusIcon } from "react-icons/hi";
 interface StructureFormProps {
   initialFormData: Category[];
   setFieldValue: (field: string, value: any) => void;
+  resetSubmit: () => void;
   isEditMode: boolean;
+  categoryErrors: { [key: string]: string };
+  hasSubmitted: boolean;
 }
 
 const StructureForm: React.FC<StructureFormProps> = ({
                                                        initialFormData,
                                                        setFieldValue,
-                                                       isEditMode
+                                                       resetSubmit,
+                                                       isEditMode,
+                                                       categoryErrors,
+                                                       hasSubmitted
                                                      }) => {
-  const [data, setData] = useState<Category[]>(initialFormData);
+  // Inicjalizacja stanu tylko raz przy mountowaniu
+  const [data, setData] = useState<Category[]>(() => initialFormData);
 
-  useEffect(() => {
-    setFieldValue('categories', data);
-  }, [data, setFieldValue]);
+  // Helper do przesuwania elementów w drzewie kategorii (w obrębie jednej listy)
+  const moveAt = (
+      list: Category[],
+      path: number[],
+      from: number,
+      to: number
+  ): Category[] => {
+    if (path.length === 0) {
+      return arrayMove(list, from, to);
+    }
+    const [head, ...rest] = path;
+    return list.map((item, i) =>
+        i !== head
+            ? item
+            : {
+              ...item,
+              subcategories: moveAt(item.subcategories || [], rest, from, to)
+            }
+    );
+  };
 
+  // Handler drag & drop
   const handleDragEnd = (e: DragEndEvent) => {
     const { active, over } = e;
     if (!over || active.id === over.id) return;
 
-    // zamiana id "0-1-2" na [0,1,2]
+    // Zamiana id "0-1-2" na [0,1,2]
     const fromPath = (active.id as string).split('-').map(Number);
-    const toPath   = (over.id   as string).split('-').map(Number);
+    const toPath = (over.id as string).split('-').map(Number);
 
-    // poruszamy tylko w tej samej liście
+    // Poruszamy tylko w obrębie tej samej listy (tego samego rodzica)
     const parentFrom = fromPath.slice(0, -1).join();
-    const parentTo   = toPath.slice(0, -1).join();
+    const parentTo = toPath.slice(0, -1).join();
     if (parentFrom !== parentTo) return;
 
     const oldIndex = fromPath.pop()!;
     const newIndex = toPath.pop()!;
 
-    // helper: przesuwa w odpowiednim poddrzewie
-    const moveAt = (
-        list: Category[],
-        path: number[],
-        from: number,
-        to: number
-    ): Category[] => {
-      if (path.length === 0) {
-        return arrayMove(list, from, to);
-      }
-      const [head, ...rest] = path;
-      return list.map((item, i) =>
-          i !== head
-              ? item
-              : {
-                ...item,
-                subcategories: moveAt(item.subcategories || [], rest, from, to)
-              }
-      );
-    };
-
-    setData(d => moveAt(d, fromPath, oldIndex, newIndex));
-  };
-
-  // reszta crud: add, remove, edit
-  const handleInputChange = (idx: string, e: React.ChangeEvent<HTMLInputElement>) => {
-    const parts = idx.split('-').map(Number);
     setData(d => {
-      const clone = JSON.parse(JSON.stringify(d)) as Category[];
-      let cur: any = clone;
-      parts.slice(0, -1).forEach(i => cur = cur[i].subcategories);
-      cur[parts[parts.length-1]][e.target.name] = e.target.value;
-      return clone;
+      const newData = moveAt(d, fromPath, oldIndex, newIndex);
+      setFieldValue('categories', newData);
+      return newData;
     });
   };
 
+  // Dodawanie podkategorii w zadanym miejscu
   const addSub = (list: Category[], path: number[]): Category[] => {
     if (path.length === 0) return [...list, { name: '', subcategories: [], isNew: true }];
-    const [h, ...r] = path;
-    return list.map((it,i) =>
-        i !== h
-            ? it
-            : { ...it, subcategories: addSub(it.subcategories || [], r) }
+    const [head, ...rest] = path;
+    return list.map((item, i) =>
+        i !== head
+            ? item
+            : { ...item, subcategories: addSub(item.subcategories || [], rest) }
     );
   };
 
   const handleAddSub = (idx: string) => {
+    resetSubmit();
     const path = idx.split('-').map(Number);
-    setData(d => addSub(d, path));
+    setData(d => {
+      const newData = addSub(d, path);
+      setFieldValue('categories', newData);
+      return newData;
+    });
   };
 
-  const handleAddCat = () => setData(d => [...d, {name:'', subcategories:[], isNew:true} ]);
+  // Dodawanie nowej kategorii na najwyższym poziomie
+  const handleAddCat = () => {
+    resetSubmit();
+    setData(d => {
+      const newData = [...d, { name: '', subcategories: [], isNew: true }];
+      setFieldValue('categories', newData);
+      return newData;
+    });
+  };
+
+  // Usuwanie kategorii/podkategorii wg ścieżki
   const removeAt = (list: Category[], path: number[]): Category[] => {
-    if (path.length===1) return list.filter((_,i) => i!==path[0]);
-    const [h,...r] = path;
-    return list.map((it,i) =>
-        i!==h ? it : {...it, subcategories: removeAt(it.subcategories||[],r)}
+    if (path.length === 1) return list.filter((_, i) => i !== path[0]);
+    const [head, ...rest] = path;
+    return list.map((item, i) =>
+        i !== head ? item : { ...item, subcategories: removeAt(item.subcategories || [], rest) }
     );
   };
-  const handleRemove = (idx: string) =>
-      setData(d => removeAt(d, idx.split('-').map(Number)));
 
+  const handleRemove = (idx: string) => {
+    setData(d => {
+      const newData = removeAt(d, idx.split('-').map(Number));
+      setFieldValue('categories', newData);
+      return newData;
+    });
+    resetSubmit();
+  };
+
+  // Obsługa zmiany pola tekstowego nazwy kategorii/podkategorii
+  const handleInputChange = (idx: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    const parts = idx.split('-').map(Number);
+    const newValue = e.target.value;
+
+    setData(d => {
+      // Głęboka kopia (możesz zoptymalizować jeśli chcesz)
+      const clone = JSON.parse(JSON.stringify(d)) as Category[];
+      let cur: any = clone;
+      parts.slice(0, -1).forEach(i => {
+        cur = cur[i].subcategories;
+      });
+      cur[parts[parts.length - 1]][e.target.name] = newValue;
+      setFieldValue('categories', clone);
+      return clone;
+    });
+  };
+
+  // Renderowanie listy kategorii i podkategorii rekurencyjnie
   const renderList = (list: Category[], path: number[], lvl: number) => {
-    const ids = list.map((_,i) => [...path,i].join('-'));
+    const ids = list.map((_, i) => [...path, i].join('-'));
     return (
         <SortableContext items={ids} strategy={verticalListSortingStrategy}>
-          {list.map((item,i) => {
-            const id = [...path,i].join('-');
+          {list.map((item, i) => {
+            const id = [...path, i].join('-');
+            const hasError = hasSubmitted ? categoryErrors[id] : undefined;
+
             return (
                 <React.Fragment key={id}>
                   <FormField
@@ -125,8 +165,11 @@ const StructureForm: React.FC<StructureFormProps> = ({
                       handleRemove={handleRemove}
                       handleAddSubcategory={handleAddSub}
                       isEditMode={isEditMode}
+                      hasError={hasError}
+                      errorMessage={hasError}
+                      hasSubmitted={hasSubmitted}
                   />
-                  {item.subcategories && renderList(item.subcategories, [...path,i], lvl+1)}
+                  {item.subcategories && renderList(item.subcategories, [...path, i], lvl + 1)}
                 </React.Fragment>
             );
           })}
@@ -137,15 +180,17 @@ const StructureForm: React.FC<StructureFormProps> = ({
   return (
       <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         {renderList(data, [], 0)}
-        {!isEditMode && (
+        {(isEditMode || !isEditMode) && (
             <button
                 onClick={handleAddCat}
-                className="mt-4 ml-[20px] inline-flex items-center gap-1 p-3 text-sm text-blue-600 hover:text-blue-800 rounded-md transition-colors"
+                className={`mt-4 inline-flex items-center gap-1 p-3 text-sm text-blue-600 hover:text-blue-800 rounded-md transition-colors ${
+                    !isEditMode ? "ml-[20px]" : ""
+                }`}
+                type="button"
             >
               <PlusIcon className="w-4 h-4"/>
               <span className="px-1">Dodaj kategorię</span>
             </button>
-
 
         )}
       </DndContext>
