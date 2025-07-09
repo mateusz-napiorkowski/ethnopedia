@@ -43,7 +43,7 @@ export const importDataAsCollection = authAsyncWrapper(async (req: Request, res:
         const session = await mongoose.startSession()
         await session.withTransaction(async (session: ClientSession) => {
             const collectionName = req.body.collectionName
-            const categoriesArray = req.body.importData[0]
+            const categoriesArray = req.body.importData[0].map((category: string) => category.trim())
             const missingCategories = findMissingParentCategories(categoriesArray)
             if(missingCategories.length !== 0)
                 throw new Error(

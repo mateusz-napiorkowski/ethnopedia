@@ -4,7 +4,7 @@ import { authAsyncWrapper } from "../middleware/auth"
 import Artwork from "../models/artwork";
 import CollectionCollection from "../models/collection";
 import { updateArtworkCategories } from "../utils/artworks";
-import { hasValidCategoryFormat, isValidCollectionCategoryStructureForCollectionUpdate } from "../utils/categories";
+import { hasValidCategoryFormat, isValidCollectionCategoryStructureForCollectionUpdate, trimCategoryNames } from "../utils/categories";
 
 export const getAllCollections = async (req: Request, res: Response) => {
     try {
@@ -81,10 +81,10 @@ export const getCollection = async (req: Request, res: Response) => {
 export const createCollection = authAsyncWrapper(async (req: Request, res: Response) => {
     const collectionName = req.body.name
     const collectionDescription = req.body.description
-    const categories = req.body.categories
     try {
-        if(!collectionName || !collectionDescription || !categories || !hasValidCategoryFormat(categories))
+        if(!collectionName || !collectionDescription || !req.body.categories || !hasValidCategoryFormat(req.body.categories))
             throw new Error("Incorrect request body provided")
+        const categories = trimCategoryNames(req.body.categories)
         const session = await mongoose.startSession()
         await session.withTransaction(async (session: ClientSession) => {
             const duplicateCollection = await CollectionCollection.findOne({ name: collectionName }, null, { session }).exec();
@@ -92,9 +92,9 @@ export const createCollection = authAsyncWrapper(async (req: Request, res: Respo
                 throw new Error("Collection with provided name already exists");
             const newCollection = await CollectionCollection.create(
                 [{
-                    name: req.body.name,
-                    description: req.body.description,
-                    categories: req.body.categories
+                    name: req.body.name.trim(),
+                    description: req.body.description.trim(),
+                    categories: categories
                 }],
                 { session }
             );
@@ -151,11 +151,12 @@ export const deleteCollections = authAsyncWrapper(async (req: Request, res: Resp
 
 export const updateCollection = authAsyncWrapper(async (req: Request, res: Response) => {
     const collectionId = req.params.id;
-    const { name, description, categories } = req.body;
+    const name = req.body.name
+    const description = req.body.description
     try {
-        if (!name || !description || !categories || !hasValidCategoryFormat(categories))
+        if (!name || !description || !req.body.categories || !hasValidCategoryFormat(req.body.categories))
             throw new Error("Incorrect request body provided");
-
+        const categories = trimCategoryNames(req.body.categories)
         const session = await mongoose.startSession();
         await session.withTransaction(async (session: ClientSession) => {
             const collection = await CollectionCollection.findById(collectionId, null, { session }).exec();

@@ -49,6 +49,13 @@ const getNestedCategories = ((prefix: string, subcategories: Array<artworkCatego
     return nestedCategories
 })
 
+export const trimCategoryNames = (categories: collectionCategory[]): collectionCategory[] => {
+    return categories.map((categoryObject: collectionCategory) => ({
+        name: categoryObject.name.trim(),
+        subcategories: trimCategoryNames(categoryObject.subcategories)
+    }))
+}
+
 export const getAllCategories = async (collectionIds: Array<string>) => {
     try {
         const collections = await CollectionCollection.find({_id: { $in: collectionIds }}).exec()
