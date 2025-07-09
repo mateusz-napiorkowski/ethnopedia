@@ -110,7 +110,7 @@ export const getArtworksBySearchTextMatchedInTopmostCategory = async (req: Reque
 
 export const createArtwork = authAsyncWrapper((async (req: Request, res: Response) => {
     try {
-        const files = req.files as Express.Multer.File[] | undefined
+        const files = req.files as Express.Multer.File[]
         const collectionId = req.body.collectionId
         let categories;        
         try {
