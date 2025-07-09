@@ -1,4 +1,4 @@
-import { Request, Response } from "express"
+import { Request, Response, Express } from "express"
 import mongoose, { ClientSession, SortOrder } from "mongoose"
 import { authAsyncWrapper } from "../middleware/auth"
 import Artwork from "../models/artwork";
@@ -8,6 +8,7 @@ import { artworkCategoriesHaveValidFormat } from "../utils/categories";
 import fs from "fs";
 import path from "path";
 import { fileToDelete } from "../utils/interfaces";
+import 'multer';
 
 export const getArtwork = async (req: Request, res: Response) => {
     try {
