@@ -3,7 +3,6 @@ import { getAllCategories } from "./categories";
 import { artworkCategory, collectionCategory, fileToDelete } from "./interfaces";
 import path from "path"
 import fs from "fs";
-import { Express } from 'express';
 
 export const updateArtworkCategories = (artworkSubcategories: Array<artworkCategory>, collectionSubcategories: Array<collectionCategory>) => {
     const newArtworkCategories: Array<artworkCategory> = []
@@ -186,7 +185,7 @@ export const sortRecordsByCategory = (records: any, categoryToSortBy: string, as
     return sortedRecords
 }
 
-export const handleFileUploads = async (artwork: any, files: Express.Multer.File[] | undefined, collectionId: mongoose.Types.ObjectId, session: ClientSession) => {
+export const handleFileUploads = async (artwork: any, files: any, collectionId: mongoose.Types.ObjectId, session: ClientSession) => {
     const failed = []
     if (files && Array.isArray(files)) {
         const uploadsDir = path.join(__dirname, "..", `uploads/`);

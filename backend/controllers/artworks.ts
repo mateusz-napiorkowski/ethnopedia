@@ -114,7 +114,7 @@ export const getArtworksBySearchTextMatchedInTopmostCategory = async (req: Reque
 
 export const createArtwork = authAsyncWrapper((async (req: Request, res: Response) => {
     try {
-        const files = (req as MulterRequest).files //as Express.Multer.File[]
+        const files = (req as MulterRequest).files
         const collectionId = req.body.collectionId
         let categories;        
         try {
@@ -171,7 +171,7 @@ export const createArtwork = authAsyncWrapper((async (req: Request, res: Respons
 
 export const editArtwork = authAsyncWrapper((async (req: Request, res: Response) => {
     try {
-        const filesToUpload = (req as MulterRequest).files //as Express.Multer.File[]
+        const filesToUpload = (req as MulterRequest).files
         const artworkId = req.params.artworkId
         const collectionId = req.body.collectionId
         let categories, filesToDelete: fileToDelete[];       
