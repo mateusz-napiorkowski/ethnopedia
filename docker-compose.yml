@@ -37,7 +37,7 @@ services:
       MONGODB_REPLICA_SET_MODE: primary
       ALLOW_EMPTY_PASSWORD: 'yes'
     volumes:
-      - mongodb_data:/bitnami/mongodb
+      - ./mongodb_data:/bitnami/mongodb
       # - mongodb_data:/data/db # for image mongodb/mongodb-community-server:latest
     restart: always
 
