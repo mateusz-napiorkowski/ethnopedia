@@ -1,7 +1,7 @@
 import React from "react";
 import PPLogo from '../assets/images/PP_znak_konturowy_CMYK.svg';
 import KPO from '../assets/images/Znak_KPO_Poziom_RGB.png.png';
-import RP from '../assets/images/Znak barw RP_linia zamykajaca_Poziom_RGB.png.png';
+import RP from '../assets/images/Znak_barw_RP_linia_zamykajaca_Poziom_RGB.png';
 import NGEU from '../assets/images/Znak_NextGenerationEU_Poziom_RGB.png.png';
 import Dariah_PL from '../assets/images/logo-dariah.png';
 import ISPAN from '../assets/images/Logotyp_ISPAN.png';
