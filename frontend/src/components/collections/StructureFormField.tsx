@@ -43,16 +43,19 @@ const StructureFormField: React.FC<Props> = ({
         handleInputChange(index, e);
     };
 
-    // Na początku komponentu
+    // Validation logic
     const isNameEmpty = !formData.name.trim();
     const forbiddenChars = /[.]/;
-    const hasRequiredError = isNameEmpty && hasSubmitted;
     const hasForbiddenChars = forbiddenChars.test(formData.name);
 
-// Pokaż błąd jeśli jest wymagany i submit był już kliknięty
-    const showRequiredError = hasRequiredError;
-// Pokaż błąd zakazanych znaków lub duplikatu niezależnie od submitu
-    const showOtherErrors = hasForbiddenChars || Boolean(hasError);
+    // Show required field error only after submit
+    const showRequiredError = isNameEmpty && hasSubmitted;
+
+    // Show other errors (forbidden chars, duplicates) immediately
+    const showOtherErrors = (hasForbiddenChars || (hasError && hasError !== "Nazwa kategorii jest wymagana"));
+
+    // Determine if there's any error to show
+    const hasAnyError = showRequiredError || showOtherErrors;
 
     return (
         <div
@@ -74,7 +77,7 @@ const StructureFormField: React.FC<Props> = ({
                         {...listeners}
                         className="w-4 h-4 cursor-grab text-gray-400 hover:text-gray-600 flex-shrink-0"
                     />
-                    )}
+                )}
                 <div className="flex-1">
                     <input
                         type="text"
@@ -83,34 +86,34 @@ const StructureFormField: React.FC<Props> = ({
                         onChange={handleChange}
                         placeholder={level === 0 ? "Nazwa kategorii" : "Nazwa podkategorii"}
                         className={`w-full border-b focus:outline-none p-1 ${
-                            showRequiredError || showOtherErrors
+                            hasAnyError
                                 ? "border-red-500 text-red-600"
                                 : "border-gray-300 text-gray-700 dark:text-white dark:border-gray-600"
                         }`}
                     />
-                    {(showRequiredError || showOtherErrors) && (
+                    {hasAnyError && (
                         <div className="text-red-500 text-xs mt-1">
                             {showRequiredError
                                 ? "Nazwa kategorii jest wymagana"
                                 : hasForbiddenChars
                                     ? "Nazwa zawiera zakazane znaki"
-                                    : errorMessage /* np. "Nazwa kategorii już istnieje" */}
+                                    : errorMessage}
                         </div>
                     )}
                 </div>
                 {(isEditMode || !isEditMode) && (
-                    <div
-                        className="inline-flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150 flex-shrink-0">
+                    <div className="inline-flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150 flex-shrink-0">
                         <button
                             onClick={() => canAdd && handleAddSubcategory(index)}
                             disabled={!canAdd}
                             title={addTitle}
                             className={`p-2 text-sm rounded-md transition-colors
-                        ${hover ? 'opacity-100' : 'opacity-0'}
-                        ${canAdd
+                                ${hover ? 'opacity-100' : 'opacity-0'}
+                                ${canAdd
                                 ? 'text-blue-600 hover:text-blue-800 cursor-pointer'
                                 : 'text-gray-400 cursor-not-allowed'}
-                        `}
+                            `}
+                            type="button"
                         >
                             <PlusIcon className="w-4 h-4"/>
                         </button>
@@ -118,16 +121,15 @@ const StructureFormField: React.FC<Props> = ({
                             onClick={() => handleRemove(index)}
                             disabled={isEditMode && !formData.isNew}
                             title={isEditMode && !formData.isNew ? "Usuwanie tylko nowych kategorii w trybie edycji" : "Usuń"}
-                            className={`
-    p-2 text-sm rounded-md transition-colors
-    ${hover ? 'opacity-100' : 'opacity-0'}
-    text-red-600 hover:text-red-800
-    ${isEditMode && !formData.isNew ? 'opacity-50 cursor-not-allowed hover:text-red-600' : ''}
-  `}
+                            className={`p-2 text-sm rounded-md transition-colors
+                                ${hover ? 'opacity-100' : 'opacity-0'}
+                                text-red-600 hover:text-red-800
+                                ${isEditMode && !formData.isNew ? 'opacity-50 cursor-not-allowed hover:text-red-600' : ''}
+                            `}
+                            type="button"
                         >
                             <DeleteIcon className="w-4 h-4"/>
                         </button>
-
                     </div>
                 )}
             </div>

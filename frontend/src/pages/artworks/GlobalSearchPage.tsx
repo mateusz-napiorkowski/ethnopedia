@@ -236,6 +236,13 @@ const GlobalSearchPage = ({ pageSize = 10 }) => {
                                 {value: "select_all", label: "Zaznacz wszystkie"},
                                 {value: "deselect_all", label: "Odznacz wszystkie"}
                             ]}
+                            formatOptionLabel={(option, context) =>
+                                context.context === "menu" ? (
+                                    <span className="text-gray-500 font-semibold">{option.label}</span>
+                                ) : (
+                                    option.label
+                                )
+                            }
                             placeholder="Wybierz kolekcje"
                         />
                     </div>

@@ -16,7 +16,6 @@ import { HiPlus as PlusIcon } from "react-icons/hi";
 interface StructureFormProps {
   initialFormData: Category[];
   setFieldValue: (field: string, value: any) => void;
-  resetSubmit: () => void;
   isEditMode: boolean;
   categoryErrors: { [key: string]: string };
   hasSubmitted: boolean;
@@ -25,7 +24,6 @@ interface StructureFormProps {
 const StructureForm: React.FC<StructureFormProps> = ({
                                                        initialFormData,
                                                        setFieldValue,
-                                                       resetSubmit,
                                                        isEditMode,
                                                        categoryErrors,
                                                        hasSubmitted
@@ -90,7 +88,6 @@ const StructureForm: React.FC<StructureFormProps> = ({
   };
 
   const handleAddSub = (idx: string) => {
-    resetSubmit();
     const path = idx.split('-').map(Number);
     setData(d => {
       const newData = addSub(d, path);
@@ -101,7 +98,6 @@ const StructureForm: React.FC<StructureFormProps> = ({
 
   // Dodawanie nowej kategorii na najwyższym poziomie
   const handleAddCat = () => {
-    resetSubmit();
     setData(d => {
       const newData = [...d, { name: '', subcategories: [], isNew: true }];
       setFieldValue('categories', newData);
@@ -124,7 +120,6 @@ const StructureForm: React.FC<StructureFormProps> = ({
       setFieldValue('categories', newData);
       return newData;
     });
-    resetSubmit();
   };
 
   // Obsługa zmiany pola tekstowego nazwy kategorii/podkategorii
@@ -152,7 +147,7 @@ const StructureForm: React.FC<StructureFormProps> = ({
         <SortableContext items={ids} strategy={verticalListSortingStrategy}>
           {list.map((item, i) => {
             const id = [...path, i].join('-');
-            const hasError = hasSubmitted ? categoryErrors[id] : undefined;
+            const hasError = categoryErrors[id];
 
             return (
                 <React.Fragment key={id}>

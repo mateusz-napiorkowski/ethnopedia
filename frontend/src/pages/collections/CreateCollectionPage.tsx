@@ -16,7 +16,7 @@ interface FormValues {
 interface FormErrors {
     name?: string;
     description?: string;
-    categories?: { [key: string]: string }; // Changed to object for individual category errors
+    categories?: { [key: string]: string };
 }
 
 const CreateCollectionPage = () => {
@@ -37,13 +37,6 @@ const CreateCollectionPage = () => {
     const [submitError, setSubmitError] = useState<string | null>(null);
     const [hasSubmitted, setHasSubmitted] = useState(false);
 
-    const resetSubmit = () => {
-        if (hasSubmitted) {
-            setHasSubmitted(false);
-            setFormErrors({});
-        }
-    };
-
     const removeIsNewFlag = (categories: Category[]): Category[] => {
         return categories.map(({ isNew, subcategories, ...rest }) => ({
             ...rest,
@@ -51,7 +44,6 @@ const CreateCollectionPage = () => {
         }));
     };
 
-    // Helper function to get all category names in a flat array
     const getAllCategoryNames = (categories: Category[]): string[] => {
         const names: string[] = [];
         const traverse = (cats: Category[]) => {
@@ -68,7 +60,6 @@ const CreateCollectionPage = () => {
         return names;
     };
 
-    // Helper function to check for duplicate category names
     const findDuplicateCategories = (categories: Category[]): { [key: string]: string } => {
         const errors: { [key: string]: string } = {};
         const allNames = getAllCategoryNames(categories);
@@ -111,26 +102,19 @@ const CreateCollectionPage = () => {
         }
 
         // Category validation
-        const checkCategory = (cat: Category, path: string): string | null => {
-            if (!cat.name.trim()) {
-                if (isSubmitValidation) {
-                    return "Nazwa kategorii jest wymagana";
-                }
-                return null;
-            }
-            if (forbiddenChars.test(cat.name)) {
-                return "Nazwa zawiera zakazane znaki";
-            }
-            return null;
-        };
-
         const validateCategories = (cats: Category[], pathPrefix: string = "") => {
             cats.forEach((cat, index) => {
                 const currentPath = pathPrefix ? `${pathPrefix}-${index}` : `${index}`;
-                const error = checkCategory(cat, currentPath);
-                if (error) {
-                    errors.categories![currentPath] = error;
+
+                // Empty name validation - only on submit
+                if (!cat.name.trim() && isSubmitValidation) {
+                    errors.categories![currentPath] = "Nazwa kategorii jest wymagana";
                 }
+                // Forbidden characters - always validate
+                else if (forbiddenChars.test(cat.name)) {
+                    errors.categories![currentPath] = "Nazwa zawiera zakazane znaki";
+                }
+
                 if (cat.subcategories) {
                     validateCategories(cat.subcategories, currentPath);
                 }
@@ -139,7 +123,7 @@ const CreateCollectionPage = () => {
 
         validateCategories(values.categories);
 
-        // Check for duplicate category names
+        // Check for duplicate category names - always validate
         const duplicateErrors = findDuplicateCategories(values.categories);
         errors.categories = { ...errors.categories, ...duplicateErrors };
 
@@ -173,10 +157,55 @@ const CreateCollectionPage = () => {
         }
     };
 
-    // Function to update category errors
+    // Function to update category errors with real-time validation
     const updateCategoryErrors = (categories: Category[]) => {
+        const currentErrors = formErrors.categories || {};
         const newErrors = validate({ ...formValues, categories }, false);
-        setFormErrors(prev => ({ ...prev, categories: newErrors.categories }));
+
+        // Only update errors, don't clear required field errors unless hasSubmitted is true
+        const updatedErrors: { [key: string]: string } = {};
+
+        // Keep existing required field errors if we haven't submitted yet
+        Object.keys(currentErrors).forEach(key => {
+            if (currentErrors[key] === "Nazwa kategorii jest wymagana" && !hasSubmitted) {
+                updatedErrors[key] = currentErrors[key];
+            }
+        });
+
+        // Add new validation errors (forbidden chars, duplicates)
+        Object.keys(newErrors.categories || {}).forEach(key => {
+            if (newErrors.categories![key] !== "Nazwa kategorii jest wymagana" || hasSubmitted) {
+                updatedErrors[key] = newErrors.categories![key];
+            }
+        });
+
+        // Clear errors for fields that are now valid
+        if (hasSubmitted) {
+            Object.keys(currentErrors).forEach(key => {
+                const path = key.split('-').map(Number);
+                let current: any = categories;
+
+                // Navigate to the specific category
+                for (let i = 0; i < path.length - 1; i++) {
+                    current = current[path[i]].subcategories;
+                }
+                const category = current[path[path.length - 1]];
+
+                // If field is now valid, remove the error
+                if (category && category.name.trim() && !(/[.]/.test(category.name))) {
+                    // Check if it's not a duplicate
+                    const allNames = getAllCategoryNames(categories);
+                    const trimmedName = category.name.trim().toLowerCase();
+                    const isDuplicate = allNames.filter(name => name === trimmedName).length > 1;
+
+                    if (!isDuplicate) {
+                        delete updatedErrors[key];
+                    }
+                }
+            });
+        }
+
+        setFormErrors(prev => ({ ...prev, categories: updatedErrors }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -230,7 +259,7 @@ const CreateCollectionPage = () => {
                                 formErrors.name ? "border-red-500" : "border-gray-300 dark:border-gray-600"
                             }`}
                         />
-                        {formErrors.name && hasSubmitted && (
+                        {formErrors.name && (
                             <div className="text-red-500 text-sm mt-1">{formErrors.name}</div>
                         )}
 
@@ -243,10 +272,9 @@ const CreateCollectionPage = () => {
                             }`}
                             rows={4}
                         />
-                        {formErrors.description && hasSubmitted && (
+                        {formErrors.description && (
                             <div className="text-red-500 text-sm mt-1">{formErrors.description}</div>
                         )}
-
 
                         <hr className="mt-6" />
                         <label className="block text-sm font-bold text-gray-700 dark:text-white my-2 mt-4">
@@ -264,7 +292,6 @@ const CreateCollectionPage = () => {
                                     updateCategoryErrors(value);
                                 }
                             }}
-                            resetSubmit={resetSubmit}
                             isEditMode={isEditMode}
                             categoryErrors={formErrors.categories || {}}
                             hasSubmitted={hasSubmitted}
