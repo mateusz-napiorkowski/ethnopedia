@@ -26,6 +26,8 @@ services:
       - /app/node_modules # anonymous volume for node_modules only
     depends_on:
       - mongodb
+    environment:
+      - MONGO_URI=mongodb://ethnopedia-mongodb:27017
     restart: always
   mongodb:
     container_name: ethnopedia-mongodb
