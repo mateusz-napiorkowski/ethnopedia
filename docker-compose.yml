@@ -36,7 +36,7 @@ services:
     # image: mongodb/mongodb-community-server:latest # use this one instead on proper processor architecture
     image: bitnami/mongodb:4.4.5  # fix for Xeon processor missing AVX instruction set https://www.mongodb.com/docs/manual/tutorial/install-mongodb-community-with-docker/
     environment:
-      MONGODB_REPLICA_SET_MODE: primary
+      # MONGODB_REPLICA_SET_MODE: primary
       MONGO_NETWORK_MESSAGE_TIMEOUT_MS: 10000
       ALLOW_EMPTY_PASSWORD: 'yes'
     volumes:
