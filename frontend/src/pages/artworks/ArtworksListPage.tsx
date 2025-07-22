@@ -84,7 +84,7 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                 new URLSearchParams(location.search).get("searchText"),
                 Object.fromEntries(new URLSearchParams(location.search).entries())
             ),
-        enabled: !!collectionId,
+        enabled: !!collectionId && !!currentPage && !!pageSize && !!sortCategory && !!sortDirection,
         keepPreviousData: true,
     });
 
