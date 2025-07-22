@@ -119,3 +119,7 @@ export const getXlsxWithArtworksData = async (req: Request, res: Response) => {
             res.status(503).json({ error: `Database unavailable` })
     }
 }
+
+export const getArtworksFilesArchive = async (req: Request, res: Response) => {
+    console.log(req.query)
+}

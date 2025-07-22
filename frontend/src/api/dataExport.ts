@@ -49,3 +49,29 @@ export const getXlsxWithCollectionData = async (collectionId: string | undefined
         URL.revokeObjectURL(href);
     });
 }
+
+export const getArtworksFilesArchive = async (collectionIds: Array<string>, exportExtent: ExportExtent, selectedArtworksIds: { [key: string]: boolean }, searchParams: URLSearchParams, archiveFilename: string) => {
+    return await axios.get(`${API_URL}v1/dataExport/files`, {
+        responseType: 'blob',
+        params: {
+            selectedArtworks: Object.keys(selectedArtworksIds),
+            exportExtent: exportExtent.toString(),
+            collectionIds: collectionIds,
+            ...Object.fromEntries(searchParams.entries())
+        }
+    }).then((response) => {
+        // create file link in browser's memory
+        const href = URL.createObjectURL(response.data);
+    
+        // create "a" HTML element with href to file & click
+        const link = document.createElement('a');
+        link.href = href;
+        link.setAttribute('download', archiveFilename);
+        document.body.appendChild(link);
+        link.click();
+    
+        // clean up "a" element & remove ObjectURL
+        document.body.removeChild(link);
+        URL.revokeObjectURL(href);
+    });
+}
