@@ -26,7 +26,6 @@ import ArtworksList from '../../components/artwork/ArtworksList';
 const ArtworksListPage = ({ pageSize = 10 }) => {
     const [selectedArtworks, setSelectedArtworks] = useState<{ [key: string]: boolean }>({});
     const [showImportOptions, setShowImportOptions] = useState<boolean>(false);
-    const [showExportOptions, setShowExportOptions] = useState<boolean>(false);
     const [showDeleteRecordsWarning, setShowDeleteRecordsWarning] = useState(false);
     const [sortCategory, setSortCategory] = useState<string>("");
     const [sortDirection, setSortDirection] = useState<string>("asc");
@@ -273,7 +272,7 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                                 className="flex items-center justify-center dark:text-white hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium px-4 py-2 dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
                                 type="button"
                                 onClick={async () => {
-                                    setShowExportOptions((prev) => !prev);
+                                    navigate(`/collections/${collectionId}/export-data`)
                                 }}
                             >
                                 <span className="text-white dark:text-gray-400">
@@ -329,7 +328,7 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                         </div>
                     </div>
                     {showImportOptions && <ImportOptions onClose={() => setShowImportOptions(false)} collectionData={collectionData}/>}
-                    {showExportOptions && <ExportOptions onClose={() => setShowExportOptions(false)} selectedArtworks={selectedArtworks} initialFilename={`${collectionData?.name}.xlsx`} collectionIds={[`${collectionData?._id}`]} />}
+                    {/* {showExportOptions && <ExportOptions onClose={() => setShowExportOptions(false)} selectedArtworks={selectedArtworks} initialFilename={`${collectionData?.name}.xlsx`} collectionIds={[`${collectionData?._id}`]} />} */}
                     <div className="flex w-full md:w-auto pt-4 flex-row items-center text-sm">
                         <p className="pr-2">Wyświetlane kategorie:</p>
                         <DisplayCategoriesSelect

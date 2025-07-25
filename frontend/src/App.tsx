@@ -11,6 +11,7 @@ import CreateArtworkPage from "./pages/artworks/CreateArtworkPage"
 import CreateCollectionPage from "./pages/collections/CreateCollectionPage";
 import Home from "./pages/Home"
 import ImportCollectionPage from "./pages/collections/ImportCollectionPage"
+import ExportDataPage from "./pages/artworks/ExportDataPage"
 
 const queryClient = new QueryClient()
 
@@ -26,6 +27,7 @@ const App = () => {
                         <Route path="/create-collection" element={<CreateCollectionPage />} />
                         <Route path="/collections/:collection/edit" element={<CreateCollectionPage />} />
                         <Route path="/import-collection" element={<ImportCollectionPage />} />
+                        <Route path="/collections/:collection/export-data" element={<ExportDataPage />} />
 
                         <Route path="/" element={<Home />} />
                         <Route path="/collections/:collectionId/artworks" element={<Artworks />} />
