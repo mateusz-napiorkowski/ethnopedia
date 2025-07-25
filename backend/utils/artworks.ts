@@ -205,7 +205,7 @@ export const handleFileUploads = async (artwork: any, files: any, collectionId: 
             const maxFileSize = 25 * 1024 * 1024 // 25 MB
 
             try {
-                if(!/\.(mei|mid|midi|txt|text|musicxml|mxl|xml)$/i.test(file.originalname))
+                if(!/\.(mei|mid|midi|txt|text|musicxml|mxl|xml|wav|mp3)$/i.test(file.originalname))
                     throw Error("Invalid file extension")
                 if(file.size > maxFileSize)
                     throw Error("File size exceeded")

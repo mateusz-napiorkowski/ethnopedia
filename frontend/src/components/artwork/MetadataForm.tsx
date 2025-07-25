@@ -215,7 +215,7 @@ const MetadataForm: React.FC<MetadataFormProps> = ({
                 >
                     Wgraj pliki
                 </label>
-                <p className='block text-sm font-normal'>Obsługiwane formaty plików: mei, midi, musicxml, xml, txt.</p>
+                <p className='block text-sm font-normal'>Obsługiwane formaty plików: mei, midi, musicxml, xml, wav, mp3, txt.</p>
                 <p className='block text-sm font-normal mb-2'>Maksymalny rozmiar pliku: <span className=''>25 MB.</span></p>
                 {
                     currentFiles.map((file) => {
