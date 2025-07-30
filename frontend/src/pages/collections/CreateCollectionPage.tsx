@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import Navbar from "../../components/navbar/Navbar";
 import Navigation from "../../components/Navigation";
 import StructureForm from "../../components/collections/StructureForm";
@@ -6,6 +6,8 @@ import { createCollection, updateCollection } from "../../api/collections";
 import { useUser } from "../../providers/UserProvider";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Category } from "../../@types/Category";
+import { MdUndo as UndoArrow, MdRedo as RedoArrow } from "react-icons/md";
+
 
 interface FormValues {
     name: string;
@@ -26,6 +28,12 @@ const CreateCollectionPage = () => {
 
     const isEditMode = location.state?.mode === "edit";
     const collectionId = location.state?.collectionId;
+
+    const [history, setHistory] = useState<FormValues[]>([]);
+    const [historyIndex, setHistoryIndex] = useState(-1);
+    const [isRestoringFromHistory, setIsRestoringFromHistory] = useState(false);
+
+
 
     const [formValues, setFormValues] = useState<FormValues>({
         name: location.state?.name || "",
@@ -242,6 +250,71 @@ const CreateCollectionPage = () => {
         }
     };
 
+    const saveToHistory = (newValues: FormValues) => {
+        const trimmedHistory = history.slice(0, historyIndex + 1);
+        const last = trimmedHistory[trimmedHistory.length - 1];
+
+        // Porównaj, by nie zapisywać duplikatów
+        if (JSON.stringify(last) === JSON.stringify(newValues)) return;
+
+        const newHistory = [...trimmedHistory, newValues];
+        if (newHistory.length > 30) newHistory.shift(); // limit do 30 kroków
+
+        setHistory(newHistory);
+        setHistoryIndex(newHistory.length - 1);
+    };
+
+    useEffect(() => {
+        if (isRestoringFromHistory) {
+            setIsRestoringFromHistory(false);
+            return;
+        }
+
+        const handler = setTimeout(() => {
+            saveToHistory(formValues);
+        }, 500); // 500ms przerwy
+
+        return () => clearTimeout(handler);
+    }, [formValues]);
+
+
+
+    const handleUndo = () => {
+        if (historyIndex > 0) {
+            const newIndex = historyIndex - 1;
+            setIsRestoringFromHistory(true);
+            setHistoryIndex(newIndex);
+            setFormValues(history[newIndex]);
+        }
+    };
+
+    const handleRedo = () => {
+        if (historyIndex < history.length - 1) {
+            const newIndex = historyIndex + 1;
+            setIsRestoringFromHistory(true);
+            setHistoryIndex(newIndex);
+            setFormValues(history[newIndex]);
+        }
+    };
+
+
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.ctrlKey && e.key === 'z') {
+                e.preventDefault();
+                handleUndo();
+            } else if (e.ctrlKey && e.key === 'y') {
+                e.preventDefault();
+                handleRedo();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [handleUndo, handleRedo]);
+
+
+
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
             <Navbar />
@@ -278,7 +351,7 @@ const CreateCollectionPage = () => {
                             <div className="text-red-500 text-sm mt-1">{formErrors.description}</div>
                         )}
 
-                        <hr className="mt-6" />
+                        <hr className="mt-6"/>
                         <label className="block text-sm font-bold text-gray-700 dark:text-white my-2 mt-4">
                             Struktura metadanych w kolekcji
                         </label>
@@ -290,7 +363,7 @@ const CreateCollectionPage = () => {
                         <StructureForm
                             initialFormData={formValues.categories}
                             setFieldValue={(field, value) => {
-                                setFormValues((prev) => ({ ...prev, [field]: value }));
+                                setFormValues((prev) => ({...prev, [field]: value}));
                                 if (field === 'categories') {
                                     updateCategoryErrors(value);
                                 }
@@ -304,11 +377,39 @@ const CreateCollectionPage = () => {
                             <div className="text-red-500 text-sm my-2">{submitError}</div>
                         )}
 
-                        <div className="flex justify-end mt-6">
+                        <div className="flex justify-end mt-6 gap-4">
+                            <button
+                                type="button"
+                                onClick={handleUndo}
+                                disabled={historyIndex <= 0}
+                                className={`px-2 py-2 border rounded ${
+                                    historyIndex <= 0
+                                        ? "text-gray-400 border-gray-300 cursor-not-allowed"
+                                        : "text-blue-600 border-blue-600"
+                                }`}
+                                title="Cofnij (Ctrl+Z)"
+                            >
+                                <UndoArrow className="w-5 h-5"/>
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={handleRedo}
+                                disabled={historyIndex >= history.length - 1}
+                                className={`px-2 py-2 border rounded ${
+                                    historyIndex >= history.length - 1
+                                        ? "text-gray-400 border-gray-300 cursor-not-allowed"
+                                        : "text-blue-600 border-blue-600"
+                                }`}
+                                title="Przywróć (Ctrl+Y)"
+                            >
+                                <RedoArrow className="w-5 h-5"/>
+                            </button>
+
                             <button
                                 type="button"
                                 onClick={() => navigate(-1)}
-                                className="px-4 py-2 mr-2"
+                                className="px-4 py-2"
                             >
                                 Anuluj
                             </button>
@@ -319,6 +420,7 @@ const CreateCollectionPage = () => {
                                 {isEditMode ? "Zapisz zmiany" : "Utwórz"}
                             </button>
                         </div>
+
                     </form>
                 </div>
             </div>

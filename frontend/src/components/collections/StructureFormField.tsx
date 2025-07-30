@@ -72,7 +72,7 @@ const StructureFormField: React.FC<Props> = ({
         >
             <div className="inline-flex items-center gap-2 group w-full">
                 {!isEditMode && (
-                    <DotsIcon
+                    <DotsIcon title="Przeciągnij, aby zmienić kolejność"
                         {...attributes}
                         {...listeners}
                         className="w-4 h-4 cursor-grab text-gray-400 hover:text-gray-600 flex-shrink-0"

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   DndContext,
   closestCenter,
@@ -28,9 +28,6 @@ const StructureForm: React.FC<StructureFormProps> = ({
                                                        categoryErrors,
                                                        hasSubmitted
                                                      }) => {
-  // Inicjalizacja stanu tylko raz przy mountowaniu
-  const [data, setData] = useState<Category[]>(() => initialFormData);
-
   // Helper do przesuwania elementów w drzewie kategorii (w obrębie jednej listy)
   const moveAt = (
       list: Category[],
@@ -52,16 +49,13 @@ const StructureForm: React.FC<StructureFormProps> = ({
     );
   };
 
-  // Handler drag & drop
   const handleDragEnd = (e: DragEndEvent) => {
     const { active, over } = e;
     if (!over || active.id === over.id) return;
 
-    // Zamiana id "0-1-2" na [0,1,2]
     const fromPath = (active.id as string).split('-').map(Number);
     const toPath = (over.id as string).split('-').map(Number);
 
-    // Poruszamy tylko w obrębie tej samej listy (tego samego rodzica)
     const parentFrom = fromPath.slice(0, -1).join();
     const parentTo = toPath.slice(0, -1).join();
     if (parentFrom !== parentTo) return;
@@ -69,16 +63,13 @@ const StructureForm: React.FC<StructureFormProps> = ({
     const oldIndex = fromPath.pop()!;
     const newIndex = toPath.pop()!;
 
-    setData(d => {
-      const newData = moveAt(d, fromPath, oldIndex, newIndex);
-      setFieldValue('categories', newData);
-      return newData;
-    });
+    const newData = moveAt(initialFormData, fromPath, oldIndex, newIndex);
+    setFieldValue('categories', newData);
   };
 
-  // Dodawanie podkategorii w zadanym miejscu
   const addSub = (list: Category[], path: number[]): Category[] => {
-    if (path.length === 0) return [...list, { name: '', subcategories: [], isNew: true }];
+    if (path.length === 0)
+      return [...list, { name: '', subcategories: [], isNew: true }];
     const [head, ...rest] = path;
     return list.map((item, i) =>
         i !== head
@@ -89,58 +80,50 @@ const StructureForm: React.FC<StructureFormProps> = ({
 
   const handleAddSub = (idx: string) => {
     const path = idx.split('-').map(Number);
-    setData(d => {
-      const newData = addSub(d, path);
-      setFieldValue('categories', newData);
-      return newData;
-    });
+    const newData = addSub(initialFormData, path);
+    setFieldValue('categories', newData);
   };
 
-  // Dodawanie nowej kategorii na najwyższym poziomie
   const handleAddCat = () => {
-    setData(d => {
-      const newData = [...d, { name: '', subcategories: [], isNew: true }];
-      setFieldValue('categories', newData);
-      return newData;
-    });
+    const newData = [
+      ...initialFormData,
+      { name: '', subcategories: [], isNew: true }
+    ];
+    setFieldValue('categories', newData);
   };
 
-  // Usuwanie kategorii/podkategorii wg ścieżki
   const removeAt = (list: Category[], path: number[]): Category[] => {
     if (path.length === 1) return list.filter((_, i) => i !== path[0]);
     const [head, ...rest] = path;
     return list.map((item, i) =>
-        i !== head ? item : { ...item, subcategories: removeAt(item.subcategories || [], rest) }
+        i !== head
+            ? item
+            : { ...item, subcategories: removeAt(item.subcategories || [], rest) }
     );
   };
 
   const handleRemove = (idx: string) => {
-    setData(d => {
-      const newData = removeAt(d, idx.split('-').map(Number));
-      setFieldValue('categories', newData);
-      return newData;
-    });
+    const newData = removeAt(initialFormData, idx.split('-').map(Number));
+    setFieldValue('categories', newData);
   };
 
-  // Obsługa zmiany pola tekstowego nazwy kategorii/podkategorii
-  const handleInputChange = (idx: string, e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (
+      idx: string,
+      e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const parts = idx.split('-').map(Number);
     const newValue = e.target.value;
 
-    setData(d => {
-      // Głęboka kopia (możesz zoptymalizować jeśli chcesz)
-      const clone = JSON.parse(JSON.stringify(d)) as Category[];
-      let cur: any = clone;
-      parts.slice(0, -1).forEach(i => {
-        cur = cur[i].subcategories;
-      });
-      cur[parts[parts.length - 1]][e.target.name] = newValue;
-      setFieldValue('categories', clone);
-      return clone;
+    // Tworzymy głęboką kopię
+    const clone = JSON.parse(JSON.stringify(initialFormData)) as Category[];
+    let cur: any = clone;
+    parts.slice(0, -1).forEach((i) => {
+      cur = cur[i].subcategories;
     });
+    cur[parts[parts.length - 1]][e.target.name] = newValue;
+    setFieldValue('categories', clone);
   };
 
-  // Renderowanie listy kategorii i podkategorii rekurencyjnie
   const renderList = (list: Category[], path: number[], lvl: number) => {
     const ids = list.map((_, i) => [...path, i].join('-'));
     return (
@@ -174,20 +157,18 @@ const StructureForm: React.FC<StructureFormProps> = ({
 
   return (
       <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        {renderList(data, [], 0)}
-        {(isEditMode || !isEditMode) && (
-            <button
-                onClick={handleAddCat}
-                className={`mt-4 inline-flex items-center gap-1 p-3 text-sm text-blue-600 hover:text-blue-800 rounded-md transition-colors ${
-                    !isEditMode ? "ml-[20px]" : ""
-                }`}
-                type="button"
-            >
-              <PlusIcon className="w-4 h-4"/>
-              <span className="px-1">Dodaj kategorię</span>
-            </button>
-
-        )}
+        {renderList(initialFormData, [], 0)}
+        <button
+            onClick={handleAddCat}
+            className={`mt-4 inline-flex items-center gap-1 p-3 text-sm text-blue-600 hover:text-blue-800 rounded-md transition-colors ${
+                !isEditMode ? "ml-[20px]" : ""
+            }`}
+            type="button"
+            title="Dodaj nową kategorię"
+        >
+          <PlusIcon className="w-4 h-4" />
+          <span className="px-1">Dodaj kategorię</span>
+        </button>
       </DndContext>
   );
 };
