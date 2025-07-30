@@ -259,11 +259,7 @@ const GlobalSearchPage = ({ pageSize = 10 }) => {
                                 <p className="font-medium text-gray-700 dark:text-gray-300">
                                     Wybierz kolekcje do przeszukania:
                                 </p>
-                                <span className="text-sm text-gray-500 dark:text-gray-400">
-                                    ({selectedCollectionIds.length} z {collections.length} wybranych)
-                                </span>
                             </div>
-                            <div className="flex-1 max-w-md">
                                 <MultiselectDropdown
                                     selectedValues={selectedCollectionIds}
                                     setSelectedValues={setSelectedCollectionIds}
@@ -281,7 +277,6 @@ const GlobalSearchPage = ({ pageSize = 10 }) => {
                                     }
                                     placeholder="Wybierz kolekcje do przeszukania"
                                 />
-                            </div>
                         </div>
 
                         {showNoCollectionsMessage && (
@@ -344,9 +339,10 @@ const GlobalSearchPage = ({ pageSize = 10 }) => {
                                     </div>
                                 </div>
 
-                                {showExportOptions &&
-                                    <ExportOptions onClose={() => setShowExportOptions(false)} selectedArtworks={selectedArtworks}
-                                                   initialFilename={`eksport.xlsx`}/>}
+                                {/*{showExportOptions &&*/}
+                                {/*    <ExportOptions onClose={() => setShowExportOptions(false)} selectedArtworks={selectedArtworks}*/}
+                                {/*                   initialFilename={`eksport.xlsx`}/>}*/}
+                                {showExportOptions && <ExportOptions onClose={() => setShowExportOptions(false)} selectedArtworks={selectedArtworks} initialFilename={`Export.xlsx`} />}
 
                                 {categoryOptions.length > 0 && (
                                     <div className="flex w-full md:w-auto pt-4 flex-row items-center text-sm">

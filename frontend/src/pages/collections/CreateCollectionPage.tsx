@@ -227,10 +227,12 @@ const CreateCollectionPage = () => {
                 const cleaned = removeIsNewFlag(formValues.categories);
                 console.log("Kategorie do zapisania:", JSON.stringify(cleaned, null, 2));
                 await updateCollection(collectionId, formValues.name, formValues.description, cleaned, jwtToken);
+                navigate(`/collections/${collectionId}/artworks`);
             } else {
                 await createCollection(formValues.name, formValues.description, formValues.categories, jwtToken);
+                navigate("/");
             }
-            navigate("/");
+
         } catch (error: any) {
             if (error.response?.data?.error === "Collection with provided name already exists") {
                 setFormErrors({ name: "Kolekcja o tej nazwie już istnieje" });

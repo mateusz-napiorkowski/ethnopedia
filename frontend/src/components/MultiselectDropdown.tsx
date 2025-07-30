@@ -116,10 +116,13 @@ const MultiselectDropdown: React.FC<MultiselectDropdownProps> = ({
         <div className="relative" ref={dropdownRef}>
             <div
                 onClick={() => setOpen(!open)}
-                className="cursor-pointer py-2 px-4 border bg-white dark:bg-gray-800 border-gray-300 rounded-lg text-sm flex items-center justify-between w-full"
+                className="cursor-pointer py-2 px-4 border gap-3 bg-white dark:bg-gray-800 border-gray-300 rounded-lg text-sm flex items-center justify-between w-full"
             >
-                <span className="pr-4">
-                    {selectedValues.length > 0 ? `${selectedValues.length}` : placeholder}
+                {/*<span className="pr-4">*/}
+                {/*    {selectedValues.length > 0 ? `${selectedValues.length}` : placeholder}*/}
+                {/*</span>*/}
+                <span className="text-sm text-gray-500 dark:text-gray-400">
+                    Zaznaczono {selectedValues.length} z {filteredOptions.length}
                 </span>
                 <svg
                     className={`h-4 w-4 transition-transform duration-200 ${open ? "rotate-180" : ""}`}

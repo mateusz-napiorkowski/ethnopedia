@@ -163,33 +163,11 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
         );
     }
 
-
     type Option = {
         value: string;
         label: string;
     };
 
-    // Dodanie opcji specjalnych na początku listy
-    const customOptions = [
-        { value: "select_all", label: "Zaznacz wszystkie" },
-        { value: "deselect_all", label: "Odznacz wszystkie" },
-        ...categoryOptions,
-    ];
-
-    const formatOptionLabel = (option: Option, { context }: { context: string }) => {
-        if (context === "menu") {
-            if (option.value === "select_all" || option.value === "deselect_all") {
-                return (
-                    <div
-                        className="text-gray-500 dark:text-gray-300 underline"
-                    >
-                        {option.label}
-                    </div>
-                );
-            }
-        }
-        return option.label;
-    };
 
     return (
         <><div data-testid="loaded-artwork-page-container">
