@@ -11,10 +11,6 @@ const SearchComponent: React.FC<SearchComponentProps> = ({ collectionIds, mode }
     const [activeTab, setActiveTab] = useState<string>("quickSearch");
 
     useEffect(() => {
-        console.log("Search collectionIds:", collectionIds);
-    }, [collectionIds]);
-
-    useEffect(() => {
         const savedTab = localStorage.getItem("activeSearchTab");
         if (savedTab) {
             setActiveTab(savedTab);

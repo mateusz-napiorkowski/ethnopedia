@@ -283,7 +283,8 @@ const CreateCollectionPage = () => {
                             Struktura metadanych w kolekcji
                         </label>
                         <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                            Podaj strukturę metadanych, które chcesz przechowywać w tej kolekcji...
+                            Zbuduj hierarchię kategorii i podkategorii dla tej kolekcji.
+                            Dodawaj i usuwaj elementy za pomocą przycisków po prawej stronie pola.
                         </p>
 
                         <StructureForm
