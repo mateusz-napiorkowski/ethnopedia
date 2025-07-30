@@ -163,11 +163,11 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
         );
     }
 
+
     type Option = {
         value: string;
         label: string;
     };
-
 
     return (
         <><div data-testid="loaded-artwork-page-container">

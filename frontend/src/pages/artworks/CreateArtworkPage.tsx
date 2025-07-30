@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
 import { Formik, Form, FormikHelpers } from 'formik';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -9,6 +9,7 @@ import { useUser } from '../../providers/UserProvider';
 import { getAllCategories } from '../../api/categories';
 import { getCollection } from '../../api/collections';
 import { getArtwork, createArtwork, editArtwork } from '../../api/artworks';
+import { getArtworksForPage } from '../../api/artworks'; // Import for getting all artworks
 import MetadataForm from '../../components/artwork/MetadataForm';
 import { Metadata } from '../../@types/Metadata';
 
@@ -31,9 +32,26 @@ const CreateArtworkPage: React.FC = () => {
         () => getAllCategories([collectionId as string]),
         { enabled: !!collectionId }
     );
+
     const { data: collData } = useQuery(
         ['collection', collectionId],
         () => getCollection(collectionId!),
+        { enabled: !!collectionId }
+    );
+
+
+
+    // Fetch all artworks for suggestions
+    const { data: artworksData } = useQuery(
+        ['allArtworks', collectionId],
+        () => getArtworksForPage(
+            [collectionId as string],
+            1,
+            1000,
+            'createdAt-desc',
+            '',
+            {}
+        ),
         { enabled: !!collectionId }
     );
 
@@ -41,6 +59,44 @@ const CreateArtworkPage: React.FC = () => {
     const [initialMetadataTree, setInitialMetadataTree] = useState<Metadata[] | undefined>(
         undefined
     );
+
+    // Extract suggestions from existing artworks
+    const suggestionsByCategory = useMemo(() => {
+        const suggestions: Record<string, Set<string>> = {};
+
+        // Function to extract values from artwork categories
+        const extractValues = (categories: Metadata[], prefix: string = '') => {
+            categories.forEach((category) => {
+                const categoryPath = prefix ? `${prefix}.${category.name}` : category.name;
+
+                if (category.value && category.value.trim()) {
+                    if (!suggestions[categoryPath]) {
+                        suggestions[categoryPath] = new Set();
+                    }
+                    suggestions[categoryPath].add(category.value.trim());
+                }
+
+                if (category.subcategories && category.subcategories.length > 0) {
+                    extractValues(category.subcategories, categoryPath);
+                }
+            });
+        };
+
+        // Extract from all artworks
+        artworksData.artworks.forEach((artwork: any, index: number) => {
+            if (artwork.categories) {
+                extractValues(artwork.categories);
+            }
+        });
+
+        // Convert Sets to Arrays and sort
+        const result: Record<string, string[]> = {};
+        Object.keys(suggestions).forEach(key => {
+            result[key] = Array.from(suggestions[key]).sort();
+        });
+
+        return result;
+    }, [artworksData]);
 
     useEffect(() => {
         if (artworkId) {
@@ -96,6 +152,7 @@ const CreateArtworkPage: React.FC = () => {
                                 await createArtwork(payload, jwtToken!);
                             }
                             queryClient.invalidateQueries(['artworks', collectionId]);
+                            queryClient.invalidateQueries(['allArtworks', collectionId]); // Invalidate suggestions cache
                             navigate(-1);
                         } catch (e) {
                             console.error(e);
@@ -110,6 +167,7 @@ const CreateArtworkPage: React.FC = () => {
                                 initialMetadataTree={initialMetadataTree}
                                 categoryPaths={initialCategoryPaths}
                                 setFieldValue={setFieldValue}
+                                suggestionsByCategory={suggestionsByCategory}
                             />
                             {/* globalny komunikat jeśli walidacja nie przeszła */}
                             {typeof errors.categories === 'string' && touched.categories && (

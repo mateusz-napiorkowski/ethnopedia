@@ -28,7 +28,7 @@ const CollectionsPage = () => {
     const [showWarningPopup, setShowWarningPopup] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [exportErrorMessage, setExportErrorMessage] = useState("");
-    const pageSize = 10;
+    const pageSize = 12;
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const { mutate: batchDeleteMutation } = useBatchDeleteCollectionMutation();

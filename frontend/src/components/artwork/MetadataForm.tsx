@@ -10,6 +10,7 @@ interface MetadataFormProps {
         value: any,
         shouldValidate?: boolean
     ) => void;
+    suggestionsByCategory?: Record<string, string[]>;
 }
 
 const buildHierarchy = (paths: string[]): Metadata[] => {
@@ -38,6 +39,7 @@ const MetadataForm: React.FC<MetadataFormProps> = ({
                                                        initialMetadataTree,
                                                        categoryPaths,
                                                        setFieldValue,
+                                                       suggestionsByCategory = {},
                                                    }) => {
     const [categories, setCategories] = useState<Metadata[]>([]);
 
@@ -69,6 +71,21 @@ const MetadataForm: React.FC<MetadataFormProps> = ({
         return paths;
     }, [categories]);
 
+    // Get category path for suggestions
+    const getCategoryPath = useCallback((path: number[]): string => {
+        let currentList = categories;
+        const pathParts: string[] = [];
+
+        for (const index of path) {
+            if (currentList[index]) {
+                pathParts.push(currentList[index].name);
+                currentList = currentList[index].subcategories || [];
+            }
+        }
+
+        return pathParts.join('.');
+    }, [categories]);
+
     // Handle Enter → next field
     const handleKeyDown = useCallback((path: number[], e: React.KeyboardEvent<HTMLInputElement>) => {
         // nie pozwalamy Enterowi na submit
@@ -96,7 +113,6 @@ const MetadataForm: React.FC<MetadataFormProps> = ({
         }
     }, [allPaths]);
 
-
     // Update a single node value
     const updateValue = useCallback(
         (path: number[], value: string) => {
@@ -123,6 +139,8 @@ const MetadataForm: React.FC<MetadataFormProps> = ({
             const level = basePath.length;
             const isLastInThisList = idx === list.length - 1;
             const updatedParentLast = [...parentLast, isLastInThisList];
+            const categoryPath = getCategoryPath(path);
+            const suggestions = suggestionsByCategory[categoryPath] || [];
 
             return (
                 <div key={key} className={`relative ${level > 0 ? 'pl-6' : ''}`}>
@@ -151,6 +169,7 @@ const MetadataForm: React.FC<MetadataFormProps> = ({
                         onChange={(val) => updateValue(path, val)}
                         onKeyDown={(e) => handleKeyDown(path, e)}
                         level={level}
+                        suggestions={suggestions}
                     />
 
                     {meta.subcategories && (
@@ -161,7 +180,6 @@ const MetadataForm: React.FC<MetadataFormProps> = ({
                 </div>
             );
         });
-
 
     return (
         <div>
