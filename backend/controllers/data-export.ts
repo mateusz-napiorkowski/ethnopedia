@@ -1,4 +1,4 @@
-import { query, Request, Response } from "express"
+import { Request, Response } from "express"
 import excelJS from "exceljs"
 import Artwork from "../models/artwork";
 import { fillRow } from "../utils/data-export"

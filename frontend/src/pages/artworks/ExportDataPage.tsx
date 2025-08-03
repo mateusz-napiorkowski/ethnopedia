@@ -16,9 +16,9 @@ const ExportDataPage: React.FC = () => {
     const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
     const [exportExtent, setExportExtent] = useState<ExportExtent>(ExportExtent.all)
     const [exportToExcel, setExportToExcel] = useState(true)
-    const [filename, setFilename] = useState(location.state && location.state.initialFilename ? location.state.initialFilename : "metadata");
+    const [filename, setFilename] = useState(location.state && location.state.initialFilename ? location.state.initialFilename : "metadane");
     const [exportAsCSV, setExportAsCSV] = useState(false)
-    const [archiveFilename, setArchiveFilename] = useState(location.state && location.state.initialArchiveFilename ? location.state.initialArchiveFilename : "archive")
+    const [archiveFilename, setArchiveFilename] = useState(location.state && location.state.initialArchiveFilename ? location.state.initialArchiveFilename : "archiwum")
     const collectionIds = location.state && location.state.collectionIds ? location.state.collectionIds : [params.collection]
     const selectedArtworks = location.state && location.state.selectedArtworks ? location.state.selectedArtworks : []
     const searchParams = location.state && location.state.searchParams ? location.state.searchParams : {}
