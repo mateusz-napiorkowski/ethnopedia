@@ -4,10 +4,9 @@ import { getCollection } from "../../api/collections";
 import LoadingPage from "../LoadingPage";
 import { useEffect, useState } from "react";
 import Navbar from "../../components/navbar/Navbar";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import SearchComponent from "../../components/search/SearchComponent";
 import ImportOptions from "../../components/ImportOptions";
-import ExportOptions from "../../components/ExportOptions";
 import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg";
 import { ReactComponent as FileImportIcon } from "../../assets/icons/fileImport.svg";
 import { ReactComponent as FileExportIcon } from "../../assets/icons/fileExport.svg";
@@ -26,7 +25,6 @@ import ArtworksList from '../../components/artwork/ArtworksList';
 const ArtworksListPage = ({ pageSize = 10 }) => {
     const [selectedArtworks, setSelectedArtworks] = useState<{ [key: string]: boolean }>({});
     const [showImportOptions, setShowImportOptions] = useState<boolean>(false);
-    const [showExportOptions, setShowExportOptions] = useState<boolean>(false);
     const [showDeleteRecordsWarning, setShowDeleteRecordsWarning] = useState(false);
     const [sortCategory, setSortCategory] = useState<string>("");
     const [sortDirection, setSortDirection] = useState<string>("asc");
@@ -35,6 +33,7 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
     const location = useLocation();
     const [currentPage, setCurrentPage] = useState(1);
     const { collectionId } = useParams();
+    const [searchParams, setSearchParams] = useSearchParams();
     const queryClient = useQueryClient();
     const navigate = useNavigate();
 
@@ -273,7 +272,15 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                                 className="flex items-center justify-center dark:text-white hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium px-4 py-2 dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
                                 type="button"
                                 onClick={async () => {
-                                    setShowExportOptions((prev) => !prev);
+                                    navigate(`/collections/${collectionId}/export-data`, {
+                                        state: {
+                                            selectedArtworks: selectedArtworks,
+                                            searchParams: Object.fromEntries( searchParams.entries() ),
+                                            initialFilename: `${collectionData?.name}`,
+                                            collectionIds: [`${collectionData?._id}`],
+                                            initialArchiveFilename: `${collectionData?.name}`
+                                        }
+                                    })
                                 }}
                             >
                                 <span className="text-white dark:text-gray-400">
@@ -329,7 +336,6 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                         </div>
                     </div>
                     {showImportOptions && <ImportOptions onClose={() => setShowImportOptions(false)} collectionData={collectionData}/>}
-                    {showExportOptions && <ExportOptions onClose={() => setShowExportOptions(false)} selectedArtworks={selectedArtworks} initialFilename={`${collectionData?.name}.xlsx`} collectionIds={[`${collectionData?._id}`]} />}
                     <div className="flex w-full md:w-auto pt-4 flex-row items-center text-sm">
                         <p className="pr-2">Wyświetlane kategorie:</p>
                         <DisplayCategoriesSelect

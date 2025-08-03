@@ -54,4 +54,11 @@ describe("Navigation tests", () => {
         
         expect(container).toMatchSnapshot()
     })
+
+    test("component renders correctly on export data page", async () => {        
+        const url = `/collections/${exampleCollectionId}/export-data`
+        const { container } = renderComponent(url)
+        
+        expect(container).toMatchSnapshot()
+    })
 })

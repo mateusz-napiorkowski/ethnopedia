@@ -1,4 +1,3 @@
-import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ReactComponent as AngleRightIcon } from "../assets/icons/angleRight.svg";
 
@@ -36,6 +35,9 @@ const Navigation = () => {
             }
             {pathSegments[2] === "artworks" && pathSegments[3] && 
                 renderNavItem("Rekord", `/collections/${collectionName}/artworks/${urlArtworkTitle}`)}
+            {pathSegments[2] === "export-data" && 
+                renderNavItem("Eksportuj dane", `/collections/${collectionName}/export-data`)
+            }
             {pathSegments[4] === "edit-artwork" && 
                 renderNavItem("Edycja", `/collections/${collectionName}/artworks/${urlArtworkTitle}/edit-artwork`)
             }

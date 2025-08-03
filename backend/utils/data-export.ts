@@ -11,10 +11,13 @@ const findValue: any = (subcategories: Array<artworkCategory>, categoryNameSplit
     return matchingCategory ? matchingCategory.value : ""
 }
 
-export const fillRow = (keys: Array<string>, categories: Array<artworkCategory>) => {
+export const fillRow = (keys: string[], categories: artworkCategory[], _id?: string) => {
     const rowdata: any = {}
     keys.forEach(key => {
-        rowdata[key] = findValue(categories, key.split("."))
+        if(key !== "_id")
+            rowdata[key] = findValue(categories, key.split("."))
+        else
+            rowdata[key] = _id
     });
     return rowdata
 }

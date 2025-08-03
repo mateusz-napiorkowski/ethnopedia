@@ -227,3 +227,60 @@ exports[`Navigation tests component renders correctly on edit artwork page 1`] =
   </nav>
 </div>
 `;
+
+exports[`Navigation tests component renders correctly on export data page 1`] = `
+<div>
+  <nav
+    class="flex"
+  >
+    <ol
+      class="inline-flex items-center space-x-1 md:space-x-2"
+    >
+      <li
+        class="inline-flex items-center text-lg"
+      >
+        <a
+          class="inline-flex items-center font-medium text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-600"
+          href="/"
+        >
+          Strona główna
+        </a>
+      </li>
+      <span
+        class="self-center"
+      >
+        <svg
+          class="w-3 h-3 text-gray-600 dark:text-gray-400"
+        />
+      </span>
+      <li
+        class="inline-flex items-center text-lg"
+      >
+        <a
+          class="inline-flex items-center font-medium text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-600"
+          href="/collections/67f84d80d2ac8e9a1e67cca4/artworks"
+        >
+          Kolekcja
+        </a>
+      </li>
+      <span
+        class="self-center"
+      >
+        <svg
+          class="w-3 h-3 text-gray-600 dark:text-gray-400"
+        />
+      </span>
+      <li
+        class="inline-flex items-center text-lg"
+      >
+        <a
+          class="inline-flex items-center font-medium text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-600"
+          href="/collections/67f84d80d2ac8e9a1e67cca4/export-data"
+        >
+          Eksportuj dane
+        </a>
+      </li>
+    </ol>
+  </nav>
+</div>
+`;
