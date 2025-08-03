@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import Navbar from '../../components/navbar/Navbar';
@@ -23,12 +23,17 @@ const ExportDataPage: React.FC = () => {
     const selectedArtworks = location.state && location.state.selectedArtworks ? location.state.selectedArtworks : []
     const searchParams = location.state && location.state.searchParams ? location.state.searchParams : {}
     const [includeIds, setIncludeIds] = useState(false)
+    const [excelMenuScrollPosition, setExcelMenuScrollPosition] = useState(0)
     
     const { data: categoriesData } = useQuery({
         queryKey: ["allCategories"],
         queryFn: () => getAllCategories(collectionIds),
         enabled: !!collectionIds,
     })
+
+    useEffect(() => {
+        window.scroll(0, excelMenuScrollPosition)
+    }, [exportToExcel])
 
     const handleExportExtentRadioInputChange = (event: ChangeEvent<HTMLInputElement>) => {
         if((event.target.value) === "onlyChecked") {
@@ -143,14 +148,14 @@ const ExportDataPage: React.FC = () => {
                         <div className='my-4'>
                             <button
                                 type="button"
-                                onClick={() => setExportToExcel(true)}
+                                onClick={() => {setExportToExcel(true)}}
                                 className={`px-4 py-2 ${exportToExcel ? "color-button" : ""} rounded-r-none text-xs`}
                             >
                                 Eksportuj dane do arkusza kalkulacyjnego/pliku CSV
                             </button>
                             <button
                                 type="button"
-                                onClick={() => setExportToExcel(false)}
+                                onClick={() => {setExcelMenuScrollPosition(window.scrollY); setExportToExcel(false);}}
                                 className={`px-4 py-2 ${!exportToExcel ? "color-button" : ""} rounded-l-none text-xs`}
                             >
                                 Eksportuj skojarzone pliki do archiwum
@@ -243,9 +248,7 @@ const ExportDataPage: React.FC = () => {
                                         onChange={handleArchiveFilenameChange}/>
                                 </div>                                
                             </>
-                        }
-                             
-                        
+                        }      
                         <form onSubmit={handleSubmit}>
                             <div className="flex justify-end mt-6">
                                 <button
