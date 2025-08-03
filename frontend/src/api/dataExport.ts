@@ -10,7 +10,7 @@ export const getXlsxWithArtworksData = async (collectionIds: Array<string>, keys
             selectedArtworks: Object.keys(selectedArtworksIds),
             exportExtent: exportExtent.toString(),
             collectionIds: collectionIds,
-            ...Object.fromEntries(searchParams.entries())
+            searchParams
         }
     }).then((response) => {
         // create file link in browser's memory
