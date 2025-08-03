@@ -276,9 +276,9 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                                         state: {
                                             selectedArtworks: selectedArtworks,
                                             searchParams: Object.fromEntries( searchParams.entries() ),
-                                            initialExcelFilename: `${collectionData?.name}.xlsx`,
+                                            initialFilename: `${collectionData?.name}`,
                                             collectionIds: [`${collectionData?._id}`],
-                                            initialArchiveFilename: `${collectionData?.name}.zip`
+                                            initialArchiveFilename: `${collectionData?.name}`
                                         }
                                     })
                                 }}

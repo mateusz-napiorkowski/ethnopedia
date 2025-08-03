@@ -16,8 +16,9 @@ const ExportDataPage: React.FC = () => {
     const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
     const [exportExtent, setExportExtent] = useState<ExportExtent>(ExportExtent.all)
     const [exportToExcel, setExportToExcel] = useState(true)
-    const [excelFilename, setExcelFilename] = useState(location.state && location.state.initialExcelFilename ? location.state.initialExcelFilename : "metadata.xlsx");
-    const [archiveFilename, setArchiveFilename] = useState(location.state && location.state.initialArchiveFilename ? location.state.initialArchiveFilename : "archive.zip")
+    const [filename, setFilename] = useState(location.state && location.state.initialFilename ? location.state.initialFilename : "metadata");
+    const [exportAsCSV, setExportAsCSV] = useState(false)
+    const [archiveFilename, setArchiveFilename] = useState(location.state && location.state.initialArchiveFilename ? location.state.initialArchiveFilename : "archive")
     const collectionIds = location.state && location.state.collectionIds ? location.state.collectionIds : [params.collection]
     const selectedArtworks = location.state && location.state.selectedArtworks ? location.state.selectedArtworks : []
     const searchParams = location.state && location.state.searchParams ? location.state.searchParams : {}
@@ -53,7 +54,7 @@ const ExportDataPage: React.FC = () => {
     const handleSelectAll = () => setSelectedKeys(categoriesData.categories);
     const handleDeselectAll = () => setSelectedKeys([]);
 
-    const handleExcelFilenameChange = (event: ChangeEvent<HTMLInputElement>) => setExcelFilename(event.target.value);
+    const handleFilenameChange = (event: ChangeEvent<HTMLInputElement>) => setFilename(event.target.value);
     const handleArchiveFilenameChange = (event: ChangeEvent<HTMLInputElement>) => setArchiveFilename(event.target.value);
 
     const handleSubmit = (event: React.FormEvent) => {
@@ -65,8 +66,9 @@ const ExportDataPage: React.FC = () => {
                 exportExtent,
                 selectedArtworks,
                 searchParams,      
-                excelFilename,
-                includeIds
+                filename,
+                includeIds,
+                exportAsCSV
             );
         } else {
             getArtworksFilesArchive(
@@ -142,21 +144,21 @@ const ExportDataPage: React.FC = () => {
                             <button
                                 type="button"
                                 onClick={() => setExportToExcel(true)}
-                                className={`px-4 py-2 ${exportToExcel ? "color-button" : ""} rounded-r-none`}
+                                className={`px-4 py-2 ${exportToExcel ? "color-button" : ""} rounded-r-none text-xs`}
                             >
-                                Eksportuj dane do arkusza kalkulacyjnego
+                                Eksportuj dane do arkusza kalkulacyjnego/pliku CSV
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setExportToExcel(false)}
-                                className={`px-4 py-2 ${!exportToExcel ? "color-button" : ""} rounded-l-none`}
+                                className={`px-4 py-2 ${!exportToExcel ? "color-button" : ""} rounded-l-none text-xs`}
                             >
                                 Eksportuj skojarzone pliki do archiwum
                             </button>  
                         </div>
                         {
                             exportToExcel ? <>
-                                <p className='text-base my-2'>Wybierz kategorie, dla których kolumny mają pojawić się w arkuszu kalkulacyjnym:</p>
+                                <p className='text-base my-2'>Wybierz kategorie, dla których kolumny mają pojawić się w wyeksportowanym pliku:</p>
                                 <ul className="flex flex-col items-start">   
                                     {categoriesData.categories.map((key: string) =>
                                         <li key={key} className='flex flex-row justify-center my-1'>
@@ -191,12 +193,33 @@ const ExportDataPage: React.FC = () => {
                                 </div>
                                 <div className="flex flex-row items-center space-x-2 text-sm py-2">
                                     <label className="text-base">
-                                        Nazwa arkusza kalkulacyjnego:
+                                        Nazwa pliku (bez rozszerzenia):
                                     </label>
                                     <input
                                         className="p-1 text-base"
-                                        value={excelFilename}
-                                        onChange={handleExcelFilenameChange}/>
+                                        value={filename}
+                                        onChange={handleFilenameChange}/>
+                                </div>
+                                <div className="flex flex-row items-center space-x-2 text-sm py-2">
+                                    <label className="text-base">
+                                        Typ pliku:
+                                    </label>
+                                    <div>
+                                        <button
+                                            type="button"
+                                            onClick={() => setExportAsCSV(false)}
+                                            className={`px-4 py-2 ${!exportAsCSV ? "color-button" : ""} rounded-r-none text-xs`}
+                                        >
+                                            Arkusz kalkulacyjny
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setExportAsCSV(true)}
+                                            className={`px-4 py-2 ${exportAsCSV ? "color-button" : ""} rounded-l-none text-xs`}
+                                        >
+                                            Plik CSV
+                                        </button>  
+                                    </div>
                                 </div>
                                 <div>
                                     <input className='m-2 hover:cursor-pointer'
@@ -204,7 +227,7 @@ const ExportDataPage: React.FC = () => {
                                         onClick={() => setIncludeIds(!includeIds)}
                                         checked={includeIds}
                                     />
-                                    <label className='text-sm'>Zawrzyj w arkuszu kolumnę z id rekordów</label>
+                                    <label className='text-sm'>Zawrzyj w pliku kolumnę z id rekordów</label>
                                 </div>
                                 
                                 <p className='text-sm my-1'>Zaznacz tę opcję, jeśli chcesz mieć możliwość późniejszego zaimportowania wyeksportowanych danych wraz ze skojarzonymi plikami z wyeksportowanego archiwum.</p>
@@ -212,13 +235,13 @@ const ExportDataPage: React.FC = () => {
                                 <p className='text-sm my-2'>Wyeksportowanie plików skojarzonych z wybranymi rekordami umożliwia ich późniejsze ponowne zaimportowanie wraz z arkuszem kalkulacyjnym (jako nową kolekcję lub do istniejącej kolekcji).</p>
                                 <div className="flex flex-row items-center space-x-2 text-sm my-3">
                                     <label className="text-base">
-                                        Nazwa archiwum:
+                                        Nazwa archiwum (bez rozszerzenia):
                                     </label>
                                     <input
                                         className="p-1 text-base"
                                         value={archiveFilename}
                                         onChange={handleArchiveFilenameChange}/>
-                                </div>
+                                </div>                                
                             </>
                         }
                              

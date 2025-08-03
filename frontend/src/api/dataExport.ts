@@ -2,7 +2,16 @@ import axios from "axios"
 import { API_URL } from "../config"
 import {ExportExtent} from "../@types/DataExport"
 
-export const getXlsxWithArtworksData = async (collectionIds: Array<string>, keysToInclude: Array<string>, exportExtent: ExportExtent, selectedArtworksIds: { [key: string]: boolean }, searchParams: URLSearchParams, filename: string, includeIds: boolean) => {
+export const getXlsxWithArtworksData = async (
+    collectionIds: Array<string>,
+    keysToInclude: Array<string>,
+    exportExtent: ExportExtent,
+    selectedArtworksIds: { [key: string]: boolean },
+    searchParams: URLSearchParams,
+    filename: string,
+    includeIds: boolean,
+    exportAsCSV: boolean
+) => {
     return await axios.get(`${API_URL}v1/dataExport`, {
         responseType: 'blob',
         params: {
@@ -11,7 +20,8 @@ export const getXlsxWithArtworksData = async (collectionIds: Array<string>, keys
             exportExtent: exportExtent.toString(),
             collectionIds: collectionIds,
             searchParams,
-            includeIds
+            includeIds,
+            exportAsCSV
         }
     }).then((response) => {
         // create file link in browser's memory
@@ -20,7 +30,7 @@ export const getXlsxWithArtworksData = async (collectionIds: Array<string>, keys
         // create "a" HTML element with href to file & click
         const link = document.createElement('a');
         link.href = href;
-        link.setAttribute('download', filename);
+        link.setAttribute('download', exportAsCSV ? `${filename}.csv` : `${filename}.xlsx`);
         document.body.appendChild(link);
         link.click();
     
@@ -67,7 +77,7 @@ export const getArtworksFilesArchive = async (collectionIds: Array<string>, expo
         // create "a" HTML element with href to file & click
         const link = document.createElement('a');
         link.href = href;
-        link.setAttribute('download', archiveFilename);
+        link.setAttribute('download', `${archiveFilename}.zip`);
         document.body.appendChild(link);
         link.click();
     

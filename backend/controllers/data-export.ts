@@ -57,6 +57,7 @@ export const getXlsxWithCollectionData = async (req: Request, res: Response) => 
 export const getXlsxWithArtworksData = async (req: Request, res: Response) => {
     try {
         const includeIds = req.query.includeIds === "true"
+        const exportAsCSV = req.query.exportAsCSV === "true"
         const collectionIds = req.query.collectionIds
 
         const columnNames = typeof req.query.columnNames === "string"
@@ -119,7 +120,10 @@ export const getXlsxWithArtworksData = async (req: Request, res: Response) => {
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.setHeader("Content-Disposition", "attachment");
 
-        await workbook.xlsx.write(res)
+        if(exportAsCSV)
+            await workbook.csv.write(res)
+        else
+            await workbook.xlsx.write(res)
 
         res.status(200).end()
     } catch (error) {
