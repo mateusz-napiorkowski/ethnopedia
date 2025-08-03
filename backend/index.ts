@@ -23,7 +23,7 @@ app.use((req, res, next) => {
     next()
 })
 
-app.use("/health_check", health)
+app.use("/api/v1/health_check", health)
 app.use("/api/v1/auth", auth)
 app.use("/api/v1/artworks", artworks)
 app.use("/api/v1/collection", collections)
