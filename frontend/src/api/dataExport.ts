@@ -2,7 +2,7 @@ import axios from "axios"
 import { API_URL } from "../config"
 import {ExportExtent} from "../@types/DataExport"
 
-export const getXlsxWithArtworksData = async (collectionIds: Array<string>, keysToInclude: Array<string>, exportExtent: ExportExtent, selectedArtworksIds: { [key: string]: boolean }, searchParams: URLSearchParams, filename: string) => {
+export const getXlsxWithArtworksData = async (collectionIds: Array<string>, keysToInclude: Array<string>, exportExtent: ExportExtent, selectedArtworksIds: { [key: string]: boolean }, searchParams: URLSearchParams, filename: string, includeIds: boolean) => {
     return await axios.get(`${API_URL}v1/dataExport`, {
         responseType: 'blob',
         params: {
@@ -10,7 +10,8 @@ export const getXlsxWithArtworksData = async (collectionIds: Array<string>, keys
             selectedArtworks: Object.keys(selectedArtworksIds),
             exportExtent: exportExtent.toString(),
             collectionIds: collectionIds,
-            searchParams
+            searchParams,
+            includeIds
         }
     }).then((response) => {
         // create file link in browser's memory

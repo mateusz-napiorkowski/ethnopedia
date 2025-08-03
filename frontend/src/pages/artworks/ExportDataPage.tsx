@@ -21,6 +21,7 @@ const ExportDataPage: React.FC = () => {
     const collectionIds = location.state && location.state.collectionIds ? location.state.collectionIds : [params.collection]
     const selectedArtworks = location.state && location.state.selectedArtworks ? location.state.selectedArtworks : []
     const searchParams = location.state && location.state.searchParams ? location.state.searchParams : {}
+    const [includeIds, setIncludeIds] = useState(false)
     
     const { data: categoriesData } = useQuery({
         queryKey: ["allCategories"],
@@ -64,7 +65,8 @@ const ExportDataPage: React.FC = () => {
                 exportExtent,
                 selectedArtworks,
                 searchParams,      
-                excelFilename
+                excelFilename,
+                includeIds
             );
         } else {
             getArtworksFilesArchive(
@@ -133,7 +135,7 @@ const ExportDataPage: React.FC = () => {
                                 <label> Eksportuj dane dotyczące wyników wyszukiwania</label>
                             </span>
                             <p className='text-sm'>Aby wyeksportować dane zaznaczonych utworów lub wyników wyszukiwania wykonaj odpowiednie operacje na stronie
-                                utworów kolekcji, a następnie wcisnij na niej przycisk "Eksportuj dane" aby wrócić do obecnego formularza.
+                                utworów kolekcji, a następnie wcisnij na niej przycisk "Eksportuj dane" aby wrócić do obecnego formularza i wybierz właściwą opcję.
                             </p>
                         </div>
                         <div className='my-4'>
@@ -199,6 +201,8 @@ const ExportDataPage: React.FC = () => {
                                 <div>
                                     <input className='m-2 hover:cursor-pointer'
                                         type="checkbox"
+                                        onClick={() => setIncludeIds(!includeIds)}
+                                        checked={includeIds}
                                     />
                                     <label className='text-sm'>Zawrzyj w arkuszu kolumnę z id rekordów</label>
                                 </div>

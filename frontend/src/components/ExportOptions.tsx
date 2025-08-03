@@ -181,7 +181,9 @@ const ExportOptions = ({onClose, selectedArtworks, initialFilename, collectionId
                                             exportExtent,
                                             selectedArtworks,
                                             searchParams,      
-                                            filename)}
+                                            filename,
+                                            false
+                                        )}
                                     >
                                         Eksportuj metadane do arkusza kalkulacyjnego
                                     </button>

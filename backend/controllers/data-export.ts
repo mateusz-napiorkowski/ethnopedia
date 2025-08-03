@@ -1,4 +1,4 @@
-import { Request, Response } from "express"
+import { query, Request, Response } from "express"
 import excelJS from "exceljs"
 import Artwork from "../models/artwork";
 import { fillRow } from "../utils/data-export"
@@ -56,10 +56,22 @@ export const getXlsxWithCollectionData = async (req: Request, res: Response) => 
 
 export const getXlsxWithArtworksData = async (req: Request, res: Response) => {
     try {
+        const includeIds = req.query.includeIds === "true"
         const collectionIds = req.query.collectionIds
 
-        const columnNames = typeof req.query.columnNames === "string" ? Array(req.query.columnNames) : req.query.columnNames as Array<string>
-        
+        const columnNames = typeof req.query.columnNames === "string"
+            ? [
+                ...(includeIds ? ["_id"] : []),
+                ...Array(req.query.columnNames)
+              ]
+            : [
+                ...(includeIds ? ["_id"] : []),
+                ...(req.query.columnNames
+                    ? (req.query.columnNames as string[])
+                    : []
+                )
+              ]
+
         const exportExtent = req.query.exportExtent
         if(!columnNames || !exportExtent || !collectionIds)
             throw new Error("Request is missing query params")
@@ -80,16 +92,16 @@ export const getXlsxWithArtworksData = async (req: Request, res: Response) => {
             throw new Error("Request is missing query params")
         } else if(exportExtent === "selected" && selectedArtworks) {
             const records = await Artwork.find({collectionName: {$in: collectionNames}, _id: { $in: selectedArtworks}}).exec()
-            records.forEach((record: any) => sheet.addRow(fillRow(columnNames, record.categories)))
+            records.forEach((record: any) => sheet.addRow(fillRow(columnNames, record.categories, includeIds ? record._id.toString() : undefined)))
         } else if(exportExtent === "searchResult") {
             const searchText = req.query.searchText
             const queryFilter = searchText ? await constructQuickSearchFilter(searchText, collectionIds as Array<string>, collectionNames) :
                 await constructAdvSearchFilter(req.query, collectionNames, false)
             const records = await Artwork.find(queryFilter).exec()
-            records.forEach((record: any) => sheet.addRow(fillRow(columnNames, record.categories)))
+            records.forEach((record: any) => sheet.addRow(fillRow(columnNames, record.categories, includeIds ? record._id.toString() : undefined)))
         } else {
             const records = await Artwork.find({collectionName: {$in: collectionNames}}).exec()
-            records.forEach((record: any) => sheet.addRow(fillRow(columnNames, record.categories)))
+            records.forEach((record: any) => sheet.addRow(fillRow(columnNames, record.categories, includeIds ? record._id.toString() : undefined)))
         }
         
         //cell formatting
