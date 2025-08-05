@@ -59,10 +59,14 @@ const ImportToExistingCollectionPage = () => {
             setFileLoaded(true)
             setFileName(file.name)
             setFileData(parsedData)
-            setExcelCollectionCategoryPairs(parsedData[0].map((headerCategory: string) => {
-                const matchedCollectionCategory = categoriesData.categories.find((collectionCategory: string) => collectionCategory.toLowerCase() === headerCategory.toLowerCase())
-                return [headerCategory, matchedCollectionCategory]
-            }))
+            setExcelCollectionCategoryPairs(parsedData[0]
+                .map((headerCategory: string) => {
+                    if(headerCategory === "_id")
+                        return [headerCategory, "_id"]
+                    const matchedCollectionCategory = categoriesData.categories.find((collectionCategory: string) => collectionCategory.toLowerCase() === headerCategory.toLowerCase())
+                    return [headerCategory, matchedCollectionCategory]
+                })
+            )
             setFileNotLoadedError(nbsp)
         };
         reader.readAsArrayBuffer(file)
@@ -231,35 +235,38 @@ const ImportToExistingCollectionPage = () => {
                                         <span className="block w-1/2 text-sm font-semibold text-gray-700 dark:text-white my-2">Kategorie wgranego pliku:</span>
                                         <span className="block w-1/2 text-sm font-semibold text-gray-700 dark:text-white my-2">Kategorie w kolekcji:</span>
                                     </div>
-                                    {excelCollectionCategoryPairs.map((pair: any) => {
-                                        const headerCategoryName = pair[0]
-                                        const collectionCategoryName = pair[1]
-                                        return (
-                                            <div className="flex flex-row w-full items-start justify-start">
-                                                <label
-                                                    htmlFor={`${headerCategoryName}-collection-equivalent`}
-                                                    className="block w-1/2 text-sm font-semibold text-gray-700 dark:text-white my-2"
-                                                >
-                                                    {headerCategoryName}
-                                                </label>
-                                                <select 
-                                                    className="block w-1/2 text-sm font-semibold text-gray-700 dark:text-white my-2"
-                                                    id={`${headerCategoryName}-collection-equivalent`}
-                                                    aria-label={`${headerCategoryName}-collection-equivalent-select`}
-                                                    onChange={handleOptionChange}   
-                                                >
-                                                    {categoriesData.categories.map((optionValue: any) => {
-                                                        return (<option
-                                                            selected={optionValue == collectionCategoryName ? true : false}
-                                                            value={optionValue}
-                                                            >
-                                                                {optionValue}
-                                                            </option>)
-                                                    })}                                                            
-                                                </select>
-                                            </div>
-                                        )
-                                    })}
+                                    {excelCollectionCategoryPairs
+                                        .filter((pair: string) => pair[0] !== "_id")
+                                        .map((pair: any) => {
+                                            const headerCategoryName = pair[0]
+                                            const collectionCategoryName = pair[1]
+                                            return (
+                                                <div className="flex flex-row w-full items-start justify-start">
+                                                    <label
+                                                        htmlFor={`${headerCategoryName}-collection-equivalent`}
+                                                        className="block w-1/2 text-sm font-semibold text-gray-700 dark:text-white my-2"
+                                                    >
+                                                        {headerCategoryName}
+                                                    </label>
+                                                    <select 
+                                                        className="block w-1/2 text-sm font-semibold text-gray-700 dark:text-white my-2"
+                                                        id={`${headerCategoryName}-collection-equivalent`}
+                                                        aria-label={`${headerCategoryName}-collection-equivalent-select`}
+                                                        onChange={handleOptionChange}   
+                                                    >
+                                                        {categoriesData.categories.map((optionValue: any) => {
+                                                            return (<option
+                                                                selected={optionValue == collectionCategoryName ? true : false}
+                                                                value={optionValue}
+                                                                >
+                                                                    {optionValue}
+                                                                </option>)
+                                                        })}                                                            
+                                                    </select>
+                                                </div>
+                                            )
+                                        })
+                                    }
                                 </div>
                             </>)}
                             <div className="flex justify-end mt-6">
