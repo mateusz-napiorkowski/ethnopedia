@@ -1,16 +1,20 @@
+import mongoose, { isValidObjectId } from "mongoose"
 import { getAllCategories } from "./categories"
 import { artworkCategory, record } from "./interfaces"
 
 export const prepRecords = async (data: Array<Array<string>>, collectionName: string, asCollection: boolean, collectionId: string | undefined = undefined) => {
     try {
         const header = data[0]
-            .filter((categoryName: string) => categoryName !== "_id")
             .map(categoryName => categoryName.trim().replace(/\s*\.\s*/g, '.'))
         const categories = (asCollection) 
             ? data[0].map(categoryName => categoryName.trim().replace(/\s*\.\s*/g, '.'))
             : await getAllCategories([collectionId!])
         const missingCategories = categories.filter((category: string) => !header.includes(category))
-        const unnecessaryCategories = header.filter((category: string) => !categories.includes(category))
+        const unnecessaryCategories = header.filter((category: string) => {
+            if(category === "_id")
+                return false
+            return !categories.includes(category)
+        })
         if(missingCategories.length != 0 || unnecessaryCategories.length != 0) {
             throw new Error(`Brakujące kategorie: ${missingCategories}, Nadmiarowe kategorie: ${unnecessaryCategories}`)
         }
@@ -33,7 +37,14 @@ export const prepRecords = async (data: Array<Array<string>>, collectionName: st
         const records: Array<record> = []
         for(const rowValues of recordsData) {
             const newRecord: record = {categories: [], collectionName: collectionName}
-            rowValues.forEach((rowValue, columnIndex) => {
+            rowValues.forEach((rowValueUntrimmed, columnIndex) => {
+                const rowValue = rowValueUntrimmed.trim()
+                if(header[columnIndex] === "_id") {
+                    newRecord._id = isValidObjectId(rowValue)
+                        ? new mongoose.Types.ObjectId(rowValue)
+                        : new mongoose.Types.ObjectId();
+                    return
+                } 
                 const isNotSubcategoryColumn = header[columnIndex].split(".").length === 1
                 if(isNotSubcategoryColumn) {
                     const directSubcategoriesNames = header.filter(columnName => 
@@ -41,10 +52,10 @@ export const prepRecords = async (data: Array<Array<string>>, collectionName: st
                     )
                     newRecord.categories.push({
                         name: header[columnIndex],
-                        value: rowValue.trim(),
+                        value: rowValue,
                         subcategories: fillSubcategories(directSubcategoriesNames, 2, header, rowValues)
                     })      
-                }
+                } 
             });
             records.push(newRecord)
         }

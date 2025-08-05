@@ -18,7 +18,14 @@ export const importData = authAsyncWrapper(async (req: Request, res: Response) =
                 throw new Error(`Collection not found`)
             const collectionName = foundCollections[0].name!
             const records = await prepRecords(req.body.importData, collectionName, false, collectionId)
-            const result = await Artwork.insertMany(records, {session})
+            const bulkWriteOps = records.map(record => ({
+                updateOne: {
+                    filter: { _id: record._id, },
+                    update: { $set: record },
+                    upsert: true
+                }
+            }));
+            const result = await Artwork.bulkWrite(bulkWriteOps, {session});
             return res.status(201).json(result)
         });
         session.endSession()
