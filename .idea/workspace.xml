@@ -5,15 +5,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0139a19c-6c98-4121-b72c-d8ab5bbc47c1" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/frontend/src/hooks/useUndoRedoFormState.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/collections/StructureForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/collections/StructureForm.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/collections/StructureFormField.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/collections/StructureFormField.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/artworks/CreateArtworkPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/artworks/CreateArtworkPage.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/pages/collections/CreateCollectionPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/collections/CreateCollectionPage.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="TypeScript File" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -100,7 +107,8 @@
       <workItem from="1751229748992" duration="8000" />
       <workItem from="1752049102281" duration="16972000" />
       <workItem from="1752672145876" duration="4006000" />
-      <workItem from="1753875284440" duration="11639000" />
+      <workItem from="1753875284440" duration="13473000" />
+      <workItem from="1754426638182" duration="3640000" />
     </task>
     <servers />
   </component>

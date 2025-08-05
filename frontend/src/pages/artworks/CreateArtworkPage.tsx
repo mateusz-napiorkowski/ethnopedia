@@ -9,9 +9,11 @@ import { useUser } from '../../providers/UserProvider';
 import { getAllCategories } from '../../api/categories';
 import { getCollection } from '../../api/collections';
 import { getArtwork, createArtwork, editArtwork } from '../../api/artworks';
-import { getArtworksForPage } from '../../api/artworks'; // Import for getting all artworks
+import { getArtworksForPage } from '../../api/artworks';
 import MetadataForm from '../../components/artwork/MetadataForm';
 import { Metadata } from '../../@types/Metadata';
+import { MdUndo as UndoArrow, MdRedo as RedoArrow } from "react-icons/md";
+
 
 interface FormValues {
     categories: Metadata[];
@@ -83,7 +85,8 @@ const CreateArtworkPage: React.FC = () => {
         };
 
         // Extract from all artworks
-        artworksData.artworks.forEach((artwork: any, index: number) => {
+        if (!artworksData?.artworks) return {};
+        artworksData.artworks.forEach((artwork: any) => {
             if (artwork.categories) {
                 extractValues(artwork.categories);
             }
@@ -108,9 +111,14 @@ const CreateArtworkPage: React.FC = () => {
         }
     }, [artworkId, catData]);
 
-    if (catsLoading || (!initialCategoryPaths.length && !artworkId)) {
+    if (
+        catsLoading ||
+        (!initialCategoryPaths.length && !artworkId) ||
+        !artworksData?.artworks
+    ) {
         return <LoadingPage />;
     }
+
 
     return (
         <div className="min-h-screen flex flex-col overflow-y-auto">

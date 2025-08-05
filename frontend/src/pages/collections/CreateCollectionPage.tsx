@@ -7,6 +7,7 @@ import { useUser } from "../../providers/UserProvider";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Category } from "../../@types/Category";
 import { MdUndo as UndoArrow, MdRedo as RedoArrow } from "react-icons/md";
+import { useUndoRedoFormState } from "../../hooks/useUndoRedoFormState";
 
 
 interface FormValues {
@@ -29,17 +30,19 @@ const CreateCollectionPage = () => {
     const isEditMode = location.state?.mode === "edit";
     const collectionId = location.state?.collectionId;
 
-    const [history, setHistory] = useState<FormValues[]>([]);
-    const [historyIndex, setHistoryIndex] = useState(-1);
-    const [isRestoringFromHistory, setIsRestoringFromHistory] = useState(false);
-
-
-
-    const [formValues, setFormValues] = useState<FormValues>({
+    const {
+        state: formValues,
+        setState: setFormValues,
+        undo: handleUndo,
+        redo: handleRedo,
+        canUndo,
+        canRedo
+    } = useUndoRedoFormState<FormValues>({
         name: location.state?.name || "",
         description: location.state?.description || "",
         categories: location.state?.categories || [{ name: "", subcategories: [] }],
     });
+
 
     const [formErrors, setFormErrors] = useState<FormErrors>({});
     const [submitError, setSubmitError] = useState<string | null>(null);
@@ -250,54 +253,6 @@ const CreateCollectionPage = () => {
         }
     };
 
-    const saveToHistory = (newValues: FormValues) => {
-        const trimmedHistory = history.slice(0, historyIndex + 1);
-        const last = trimmedHistory[trimmedHistory.length - 1];
-
-        // Porównaj, by nie zapisywać duplikatów
-        if (JSON.stringify(last) === JSON.stringify(newValues)) return;
-
-        const newHistory = [...trimmedHistory, newValues];
-        if (newHistory.length > 30) newHistory.shift(); // limit do 30 kroków
-
-        setHistory(newHistory);
-        setHistoryIndex(newHistory.length - 1);
-    };
-
-    useEffect(() => {
-        if (isRestoringFromHistory) {
-            setIsRestoringFromHistory(false);
-            return;
-        }
-
-        const handler = setTimeout(() => {
-            saveToHistory(formValues);
-        }, 500); // 500ms przerwy
-
-        return () => clearTimeout(handler);
-    }, [formValues]);
-
-
-
-    const handleUndo = () => {
-        if (historyIndex > 0) {
-            const newIndex = historyIndex - 1;
-            setIsRestoringFromHistory(true);
-            setHistoryIndex(newIndex);
-            setFormValues(history[newIndex]);
-        }
-    };
-
-    const handleRedo = () => {
-        if (historyIndex < history.length - 1) {
-            const newIndex = historyIndex + 1;
-            setIsRestoringFromHistory(true);
-            setHistoryIndex(newIndex);
-            setFormValues(history[newIndex]);
-        }
-    };
-
-
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.ctrlKey && e.key === 'z') {
@@ -312,7 +267,6 @@ const CreateCollectionPage = () => {
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [handleUndo, handleRedo]);
-
 
 
     return (
@@ -363,7 +317,10 @@ const CreateCollectionPage = () => {
                         <StructureForm
                             initialFormData={formValues.categories}
                             setFieldValue={(field, value) => {
-                                setFormValues((prev) => ({...prev, [field]: value}));
+                                setFormValues({
+                                    ...formValues,
+                                    [field]: value,
+                                });
                                 if (field === 'categories') {
                                     updateCategoryErrors(value);
                                 }
@@ -381,9 +338,9 @@ const CreateCollectionPage = () => {
                             <button
                                 type="button"
                                 onClick={handleUndo}
-                                disabled={historyIndex <= 0}
+                                disabled={!canUndo}
                                 className={`px-2 py-2 border rounded ${
-                                    historyIndex <= 0
+                                    !canUndo
                                         ? "text-gray-400 border-gray-300 cursor-not-allowed"
                                         : "text-blue-600 border-blue-600"
                                 }`}
@@ -395,9 +352,9 @@ const CreateCollectionPage = () => {
                             <button
                                 type="button"
                                 onClick={handleRedo}
-                                disabled={historyIndex >= history.length - 1}
+                                disabled={!canRedo}
                                 className={`px-2 py-2 border rounded ${
-                                    historyIndex >= history.length - 1
+                                    !canRedo
                                         ? "text-gray-400 border-gray-300 cursor-not-allowed"
                                         : "text-blue-600 border-blue-600"
                                 }`}
