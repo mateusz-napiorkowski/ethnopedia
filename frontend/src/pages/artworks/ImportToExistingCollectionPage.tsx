@@ -122,7 +122,7 @@ const ImportToExistingCollectionPage = () => {
     const importDataMutation = useMutation(() => importData(fileData, jwtToken, collectionId), {
             onSuccess: () => {
                 queryClient.invalidateQueries("collection")
-                navigate("/")
+                navigate(`/collections/${collectionId}/artworks`)
             },
             onError: (error: any) => {
                 showServerError(error.response.data)
