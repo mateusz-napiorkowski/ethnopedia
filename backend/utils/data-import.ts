@@ -2,12 +2,14 @@ import mongoose, { isValidObjectId } from "mongoose"
 import { getAllCategories } from "./categories"
 import { artworkCategory, record } from "./interfaces"
 
-export const prepRecords = async (data: Array<Array<string>>, collectionName: string, asCollection: boolean, collectionId: string | undefined = undefined) => {
+export const prepRecords = async (data: Array<Array<string>>, collectionName: string, asCollection: boolean, collectionId: string | undefined = undefined, idMap: any) => {
     try {
         const header = data[0]
             .map(categoryName => categoryName.trim().replace(/\s*\.\s*/g, '.'))
         const categories = (asCollection) 
-            ? data[0].map(categoryName => categoryName.trim().replace(/\s*\.\s*/g, '.'))
+            ? data[0]
+                .filter(categoryName => categoryName.trim() !== "_id")
+                .map(categoryName => categoryName.trim().replace(/\s*\.\s*/g, '.'))
             : await getAllCategories([collectionId!])
         const missingCategories = categories.filter((category: string) => !header.includes(category))
         const unnecessaryCategories = header.filter((category: string) => {
@@ -41,7 +43,7 @@ export const prepRecords = async (data: Array<Array<string>>, collectionName: st
                 const rowValue = rowValueUntrimmed.trim()
                 if(header[columnIndex] === "_id") {
                     newRecord._id = isValidObjectId(rowValue)
-                        ? new mongoose.Types.ObjectId(rowValue)
+                        ? (asCollection) ? idMap[rowValue] : new mongoose.Types.ObjectId(rowValue)
                         : new mongoose.Types.ObjectId();
                     return
                 } 
@@ -78,4 +80,14 @@ const fillSubcategories = (fields: Array<string>, depth: number, header: Array<s
         })        
     });
     return subcategories
+}
+
+export const getNewRecordIdsMap = (importData: Array<Array<string>>) => {
+    const _idColumnIndex = importData[0].indexOf("_id")
+    const mapping: any = {}
+    for(const row of importData.slice(1)) {
+        if(isValidObjectId(row[_idColumnIndex]))
+            mapping[row[_idColumnIndex]] = new mongoose.Types.ObjectId()    
+    }
+    return mapping
 }

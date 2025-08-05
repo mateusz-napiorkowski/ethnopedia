@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
 import Artwork from "../models/artwork";
 import { authAsyncWrapper } from "../middleware/auth"
-import { prepRecords } from "../utils/data-import";
+import { getNewRecordIdsMap, prepRecords } from "../utils/data-import";
 import CollectionCollection from "../models/collection";
 import mongoose, { ClientSession } from "mongoose";
 import { findMissingParentCategories, transformCategoriesArrayToCategoriesObject } from "../utils/categories";
@@ -17,7 +17,7 @@ export const importData = authAsyncWrapper(async (req: Request, res: Response) =
             if (foundCollections.length !== 1 )
                 throw new Error(`Collection not found`)
             const collectionName = foundCollections[0].name!
-            const records = await prepRecords(req.body.importData, collectionName, false, collectionId)
+            const records = await prepRecords(req.body.importData, collectionName, false, collectionId, undefined)
             const bulkWriteOps = records.map(record => ({
                 updateOne: {
                     filter: { _id: record._id, },
@@ -45,12 +45,20 @@ export const importData = authAsyncWrapper(async (req: Request, res: Response) =
  
 export const importDataAsCollection = authAsyncWrapper(async (req: Request, res: Response) => {
     try {
-        if(!req.body.importData || req.body.importData.length < 2 || !req.body.collectionName || !req.body.description )
+        let importData;        
+        try {
+            importData = JSON.parse(req.body.importData);
+        } catch {
+            throw new Error(`Incorrect request body provided`);
+        }
+        const collectionName = req.body.collectionName
+        const description = req.body.description
+        const zipFile = req.file
+        if(!importData || importData.length < 2 || !collectionName || !description )
             throw new Error("Incorrect request body provided")
         const session = await mongoose.startSession()
         await session.withTransaction(async (session: ClientSession) => {
-            const collectionName = req.body.collectionName
-            const categoriesArray = req.body.importData[0].map((category: string) => category.trim())
+            const categoriesArray = importData[0].filter((cat: string) => cat !== "_id").map((category: string) => category.trim())
             const missingCategories = findMissingParentCategories(categoriesArray)
             if(missingCategories.length !== 0)
                 throw new Error(
@@ -59,9 +67,10 @@ export const importDataAsCollection = authAsyncWrapper(async (req: Request, res:
                 )
             const categories = transformCategoriesArrayToCategoriesObject(categoriesArray)
             const newCollection = await CollectionCollection.create([
-                {name: req.body.collectionName, description: req.body.description, categories: categories}
+                {name: collectionName, description: description, categories: categories}
             ], {session})
-            const records = await prepRecords(req.body.importData, collectionName, true)
+            const newRecordIdsMap = getNewRecordIdsMap(importData)
+            const records = await prepRecords(importData, collectionName, true, undefined, newRecordIdsMap)
             const result = await Artwork.insertMany(records, {session})
             return res.status(201).json({newCollection, result})
         });

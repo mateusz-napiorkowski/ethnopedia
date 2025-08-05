@@ -5,6 +5,7 @@ import Navbar from "../../components/navbar/Navbar"
 import Navigation from "../../components/Navigation";
 import { ReactComponent as DragAndDrop } from "../../assets/icons/dragAndDrop.svg"
 import { ReactComponent as ExcelIcon } from "../../assets/icons/excel.svg"
+import { ReactComponent as ArchiveIcon } from "../../assets/icons/archive_icon.svg"
 import { useMutation, useQueryClient } from "react-query";
 import { importDataAsCollection } from "../../api/dataImport";
 import { useUser } from "../../providers/UserProvider";
@@ -14,6 +15,9 @@ const ImportCollectionPage = () => {
     const [fileLoaded, setFileLoaded] = useState(false)
     const [fileName, setFileName]: any = useState(false)
     const [fileData, setFileData]: any = useState(false)
+    const [archiveLoaded, setArchiveLoaded] = useState(false)
+    const [archiveFilename, setArchiveFilename]: any = useState(false)
+    const [archiveFile, setArchiveFile]: any = useState(false)
     const [collectionName, setCollectionName] = useState("")
     const [collectionDescription, setCollectionDescription] = useState("")
     const [childParentPairs, setChildParentPairs]: any = useState([])
@@ -57,6 +61,14 @@ const ImportCollectionPage = () => {
             setFileNotLoadedError(nbsp)
         };
         reader.readAsArrayBuffer(file)
+    }
+
+    const handleArchiveFileUpload = (event: any) => {
+        const file = event.target.files[0]
+        if(!file) return
+        setArchiveLoaded(true)
+        setArchiveFilename(file.name)
+        setArchiveFile(file)
     }
 
     const handleOptionChange = ((event: ChangeEvent<HTMLSelectElement>) => {
@@ -135,7 +147,7 @@ const ImportCollectionPage = () => {
         importCollectionMutation.mutate()
     }
 
-    const importCollectionMutation = useMutation(() => importDataAsCollection(fileData, collectionName, collectionDescription, jwtToken), {
+    const importCollectionMutation = useMutation(() => importDataAsCollection(fileData, collectionName, collectionDescription, jwtToken, archiveFile), {
             onSuccess: () => {
                 queryClient.invalidateQueries("collection")
                 navigate("/")
@@ -248,7 +260,7 @@ const ImportCollectionPage = () => {
                                         <span className="block w-1/2 text-sm font-semibold text-gray-700 dark:text-white my-2">Kategoria:</span>
                                         <span className="block w-1/2 text-sm font-semibold text-gray-700 dark:text-white my-2">Kategoria nadrzędna:</span>
                                     </div>
-                                    {childParentPairs.map((pair: any) => {
+                                    {childParentPairs.filter((pair: any) => pair[0] !== "_id").map((pair: any) => {
                                         const categoryShortName = pair[0]
                                         const categoryParentShortName = pair[1]
                                         return (
@@ -296,6 +308,41 @@ const ImportCollectionPage = () => {
                                     return <p>{reference}</p>
                                 })}
                             </div>
+                            <label
+                                htmlFor="dropzone-zip-file"
+                                className="block text-sm font-bold text-gray-700 dark:text-white my-2"
+                            >
+                                Archiwum zip z plikami do skojarzenia z rekorami kolekcji
+                            </label>
+                            <label
+                                aria-label="upload-zip"
+                                htmlFor="dropzone-zip-file"
+                                className="flex flex-col items-start justify-start p-2 border-2 border-gray-200
+                                            border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-600
+                                            dark:bg-gray-800 hover:bg-gray-100 dark:border-gray-600
+                                            dark:hover:border-gray-500 dark:hover:bg-gray-700"
+                            >
+                                {archiveLoaded 
+                                    ? <div className="flex flex-row items-center justify-center gap-4">
+                                        <ArchiveIcon className="w-12 h-12"/>
+                                        <p className="text-sm font-bold text-gray-500 dark:text-gray-400">
+                                            {archiveFilename}
+                                        </p>
+                                    </div> 
+                                    : <div className="flex flex-row items-center justify-center gap-4">
+                                        <DragAndDrop className="w-12 h-12 text-gray-500 dark:text-gray-400"/>
+                                        <p className="text-sm font-normal text-gray-500 dark:text-gray-400">
+                                            Kliknij, aby przesłać plik
+                                        </p>
+                                    </div>
+                                }
+                                <input
+                                    id="dropzone-zip-file"
+                                    type="file"
+                                    className="hidden"
+                                    onChange={handleArchiveFileUpload}
+                                />
+                            </label>
                             <div className="text-red-500 text-sm">
                                 {serverError}
                             </div>
