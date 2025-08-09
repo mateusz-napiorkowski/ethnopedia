@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
 import Artwork from "../models/artwork";
 import { authAsyncWrapper } from "../middleware/auth"
-import { getNewRecordIdsMap, prepRecords } from "../utils/data-import";
+import { getNewRecordIdsMap, handleFilesUnzipAndUpload, prepRecords } from "../utils/data-import";
 import CollectionCollection from "../models/collection";
 import mongoose, { ClientSession } from "mongoose";
 import { findMissingParentCategories, transformCategoriesArrayToCategoriesObject } from "../utils/categories";
@@ -56,6 +56,8 @@ export const importDataAsCollection = authAsyncWrapper(async (req: Request, res:
         const zipFile = req.file
         if(!importData || importData.length < 2 || !collectionName || !description )
             throw new Error("Incorrect request body provided")
+        if(zipFile && !/\.(zip)$/i.test(zipFile.originalname))
+            throw Error("Invalid file extension")
         const session = await mongoose.startSession()
         await session.withTransaction(async (session: ClientSession) => {
             const categoriesArray = importData[0].filter((cat: string) => cat !== "_id").map((category: string) => category.trim())
@@ -72,13 +74,18 @@ export const importDataAsCollection = authAsyncWrapper(async (req: Request, res:
             const newRecordIdsMap = getNewRecordIdsMap(importData)
             const records = await prepRecords(importData, collectionName, true, undefined, newRecordIdsMap)
             const result = await Artwork.insertMany(records, {session})
+            // for(const record of records) {
+            //     const artwork = new Artwork(record);
+            //     await artwork.save({ session });
+            // }
+            const unzipResult = await handleFilesUnzipAndUpload(zipFile, newCollection[0]._id.toString(), newRecordIdsMap)
             return res.status(201).json({newCollection, result})
         });
         session.endSession()
     } catch (error) {
         const err = error as Error
         console.error(error)
-        if (err.message === `Incorrect request body provided`)
+        if (err.message === `Incorrect request body provided` || err.message === `Invalid file extension`)
             res.status(400).json({ error: err.message })
         else if (err.message === "Invalid data in the spreadsheet file" || err.message === "Invalid categories data"){
             res.status(400).json({ error: err.message, cause: err.cause })}

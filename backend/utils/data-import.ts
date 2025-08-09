@@ -1,6 +1,10 @@
 import mongoose, { isValidObjectId } from "mongoose"
 import { getAllCategories } from "./categories"
 import { artworkCategory, record } from "./interfaces"
+import path from "path"
+import fs from "fs";
+import unzipper from "unzipper"
+import { Readable } from "stream";
 
 export const prepRecords = async (data: Array<Array<string>>, collectionName: string, asCollection: boolean, collectionId: string | undefined = undefined, idMap: any) => {
     try {
@@ -90,4 +94,28 @@ export const getNewRecordIdsMap = (importData: Array<Array<string>>) => {
             mapping[row[_idColumnIndex]] = new mongoose.Types.ObjectId()    
     }
     return mapping
+}
+
+export const handleFilesUnzipAndUpload = async (zipFile: any, collectionId: string, idMap: any) => {
+    const uploadsDir = path.join(__dirname, "..", `uploads/`);
+    if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
+    const collectionUploadsDir = path.join(__dirname, "..", `uploads/${collectionId}`);
+    if (!fs.existsSync(collectionUploadsDir)) fs.mkdirSync(collectionUploadsDir);
+    const bufferStream = Readable.from(zipFile.buffer);
+    const stream = bufferStream.pipe(unzipper.Parse({ forceStream: true }));
+    for await (const entry of stream) {
+        const fileName = entry.path;
+        const type = entry.type;
+        if (type === "File") {
+            const [_, inputFileId, suffix] = fileName.match(/^([a-f0-9]+)(_.*)$/);
+            if(idMap[inputFileId]) {
+                const targetPath = path.join(collectionUploadsDir, path.basename(`${idMap[inputFileId].toString()}${suffix}`));
+                entry.pipe(fs.createWriteStream(targetPath));
+                console.log(`Extracted: ${fileName} -> ${targetPath}`);
+            }      
+        } else {
+        entry.autodrain();
+        }
+    }
+    return
 }
