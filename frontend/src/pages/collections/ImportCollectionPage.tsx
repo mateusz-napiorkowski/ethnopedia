@@ -9,6 +9,7 @@ import { ReactComponent as ArchiveIcon } from "../../assets/icons/archive_icon.s
 import { useMutation, useQueryClient } from "react-query";
 import { importDataAsCollection } from "../../api/dataImport";
 import { useUser } from "../../providers/UserProvider";
+import CategoryStructureExcelExample from '../../assets/images/Struktura_excel.png';
 
 const ImportCollectionPage = () => {
     const nbsp = "\u00A0"
@@ -174,7 +175,7 @@ const ImportCollectionPage = () => {
                                 htmlFor="dropzone-file"
                                 className="block text-sm font-bold text-gray-700 dark:text-white my-2"
                             >
-                                Plik
+                                Wgraj plik arkusza kalkulacyjnego/CSV
                             </label>
                             <label
                         aria-label="upload"
@@ -200,9 +201,10 @@ const ImportCollectionPage = () => {
                         className="hidden"
                         onChange={handleFileUpload}
                     />
+                    
                 </label>
                             <p
-                                className={`block text-sm ${fileNotLoadedError != nbsp ? "text-red-500 font-normal": "font-semibold text-gray-700 dark:text-white"} my-2`}
+                                className={`block text-sm ${fileNotLoadedError != nbsp ? "text-red-500 font-normal": "font-semibold text-gray-700 dark:text-white"}`}
                             >
                                 {fileLoaded ? (
                                     <span>
@@ -212,11 +214,16 @@ const ImportCollectionPage = () => {
                                     fileNotLoadedError
                                 )}
                             </p>
+                            <p className="text-sm pt-2">Aby zdefiniować strukturę kategorii w tworzonej kolekcji zmodyfikuj odpowiednio nagłówek pliku arkusza kalkulacyjnego/CSV używając takiej notacji, jak w przedstawionym poniżej przykładzie:</p>
+                            <img src={CategoryStructureExcelExample} alt="Przykładowa definicja struktury kategorii w pliku arkusza kalkulacyjnego." className="py-2"/>
+                            <p className="text-sm">Na powyższym przykładzie kategoria "Incypit gwarowy" ma podkategorię "Incypit literacki". Tak samo "Podregion" jest podkategorią kategorii "Region", "Powiat" jest podkategorią podkategorii "Podregion", a "Miejscowość" jest podkategorią podkategorii "Powiat".</p>
+                            <p className="text-sm">Jako separatora definiującego zależności między kategoriami i podkategoriami używaj znaku ".". Nie używaj tego znaku w nazwach kategorii/podkategorii, aby dane mogły zostać poprawnie wgrane.</p>
+                            
                             <label
                                 htmlFor="name"
                                 className="block text-sm font-bold text-gray-700 dark:text-white my-2"
                             >
-                                Nazwa
+                                Nazwa kolekcji
                             </label>
                             <textarea
                                 aria-label="name"
@@ -234,7 +241,7 @@ const ImportCollectionPage = () => {
                                 htmlFor="description"
                                 className="block text-sm font-bold text-gray-700 dark:text-white my-2"
                             >
-                                Opis
+                                Opis kolekcji
                             </label>
                             <textarea
                                 aria-label="description"
@@ -250,15 +257,21 @@ const ImportCollectionPage = () => {
 
                             <hr />
                             {fileLoaded && ( <>
-                                <p className="text-sm font-bold text-gray-700 dark:text-white my-2">Wczytane kategorie</p>
-                                <p className="text-sm font-normal text-gray-700 dark:text-white my-2">Sprawdz, czy kategorie zostały poprawnie wczytane. Zaznacz, które kategorie są główne, a które są podkategoriami.</p>
+                                <p className="text-sm font-bold text-gray-700 dark:text-white my-2">Struktura wczytanych kategorii</p>
+                                <p className="text-sm font-normal text-gray-700 dark:text-white my-2">Sprawdź, czy kategorie z pliku zostały poprawnie wczytane. 
+                                    Jeśli nie, to wprowadź odpowiednie zmiany w formularzu poniżej. Jeśli nie zdefiniowałeś struktury kategorii we wgranym pliku, to możesz to również zrobić za pomocą poniższego formularza.
+                                </p>
+                                <p className="text-sm font-normal text-gray-700 dark:text-white my-2">Po lewej znajdują się nazwy wykrytych kategorii/podkategorii.
+                                    Po prawej możesz wybrać, która kategoria ma być kategorią nadrzędną danej kategorii.
+                                    Znak "-" oznacza, że dana po lewej kategoria będzie kategorią główną, czyli nie będzie ona podkategorią żadnej innej kategorii. 
+                                </p>
                                 <div className="flex flex-col items-center justify-center mt-4 mb-4 p-4 border-2 border-gray-200
                                     border-solid rounded-lg bg-gray-50 dark:hover:bg-gray-600
                                     dark:bg-gray-800 dark:border-gray-600
                                     dark:hover:border-gray-500">
                                     <div className="flex flex-row w-full items-start justify-start">
-                                        <span className="block w-1/2 text-sm font-semibold text-gray-700 dark:text-white my-2">Kategoria:</span>
-                                        <span className="block w-1/2 text-sm font-semibold text-gray-700 dark:text-white my-2">Kategoria nadrzędna:</span>
+                                        <span className="block w-1/2 text-sm font-semibold text-gray-700 dark:text-white my-2">Kategoria/podkategoria:</span>
+                                        <span className="block w-1/2 text-sm font-semibold text-gray-700 dark:text-white my-2">Kategoria/podkategoria nadrzędna:</span>
                                     </div>
                                     {childParentPairs.filter((pair: any) => pair[0] !== "_id").map((pair: any) => {
                                         const categoryShortName = pair[0]
@@ -343,6 +356,12 @@ const ImportCollectionPage = () => {
                                     onChange={handleArchiveFileUpload}
                                 />
                             </label>
+                            <p className="text-sm py-2">
+                                Jeśli eksportowałeś wcześniej dane z innej kolekcji do pliku arkusza/CSV wraz z archiwum .zip
+                                ze skojarzonymi z tymi danymi plikami i masz intencje zaimportowania tych danych do nowej kolekcji,
+                                to tutaj możesz wgrać wyeksportowany plik archiwum. Jeśli w archiwum znajdują się dodatkowe, nieprawidłowe pliki,
+                                to zostaną one pominięte.
+                            </p>
                             <div className="text-red-500 text-sm">
                                 {serverError}
                             </div>
