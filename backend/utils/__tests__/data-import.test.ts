@@ -1,5 +1,6 @@
 import {describe, expect, test, jest, beforeEach} from "@jest/globals"
 import {prepRecords} from "../data-import"
+import { collectionId } from "../../controllers/__tests__/utils/consts"
 
 const mockGetAllCategories = jest.fn()
 jest.mock("../categories", () => ({
@@ -69,7 +70,7 @@ describe('data-import controller util functions tests', () => {
         async ({data, getAllCategories}) => {
             mockGetAllCategories.mockReturnValue(getAllCategories)
             expect(await prepRecords(data,
-                "collection", false
+                "collection", false, undefined, {}
             )).toMatchSnapshot()
         }
     )
@@ -151,7 +152,7 @@ describe('data-import controller util functions tests', () => {
         ({data, getAllCategories, asCollection}) => {
             mockGetAllCategories.mockReturnValue(getAllCategories)
             expect(async () => await prepRecords(data,
-                "collection", asCollection
+                "collection", asCollection, collectionId, {}
             )).rejects.toThrow("Invalid data in the spreadsheet file")
         }
     )
