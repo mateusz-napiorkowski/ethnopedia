@@ -22,7 +22,7 @@ const ExportDataPage: React.FC = () => {
     const collectionIds = location.state && location.state.collectionIds ? location.state.collectionIds : [params.collection]
     const selectedArtworks = location.state && location.state.selectedArtworks ? location.state.selectedArtworks : []
     const searchParams = location.state && location.state.searchParams ? location.state.searchParams : {}
-    const [includeIds, setIncludeIds] = useState(false)
+    const [includeIds, setIncludeIds] = useState(true)
     const [excelMenuScrollPosition, setExcelMenuScrollPosition] = useState(0)
     
     const { data: categoriesData } = useQuery({
