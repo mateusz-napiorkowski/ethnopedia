@@ -1,7 +1,8 @@
 import {describe, expect, test, jest, beforeEach} from "@jest/globals"
-import { constructQuickSearchFilter, constructAdvSearchFilter, sortRecordsByCategory, updateArtworkCategories, constructTopmostCategorySearchTextFilter, handleFileUploads } from "../artworks"
+import { constructQuickSearchFilter, constructAdvSearchFilter, sortRecordsByCategory, updateArtworkCategories, constructTopmostCategorySearchTextFilter, handleFileUploads, handleFileDeletions } from "../artworks"
 import mongoose, { SortOrder } from "mongoose"
 import { collectionIds, collectionNames, session, recordsSortByTytulAsc, recordsSortByTytulDesc, recordsSortByArtysciAsc, recordsNonexistentSortByCategory, recordsNonexistentSortByCategoryOnSomeRecords, recordsSortByCreatedAtOrUpdatedAtCase, artworkId, twoArtworkFiles, fiveFilesToUpload, fiveAddedFiles, twoArtworkFilesWithIndices0and2, twoFilesToUpload, addedArtworkFilesWithIndices1and3, filesToUploadWithErrors, artworkSubcategoriesStructureNotChanged, collectionSubcategoriesStructureNotChanged, artworkSubcategoriesCategoryNamesChanged, collectionSubcategoriesCategoryNamesChanged, artworkSubcategoriesNewCategoriesAndSubcategories, collectionSubcategoriesNewCategoriesAndSubcategories } from "./utils/consts"
+import fs from "fs"
 
 const mockGetAllCategories = jest.fn()
 jest.mock("../../utils/categories", () => ({
@@ -199,6 +200,100 @@ describe('artworks util functions tests', () => {
 			if(addedArtworkFiles)
 				for(const [n, value] of addedArtworkFiles.entries())
 					expect(pushSpy).toHaveBeenNthCalledWith(n+1, addedArtworkFiles[n])		
+		}
+	)
+
+	it.each([
+		{
+			case: "no files to delete",
+			artwork: {
+				_id: new mongoose.Types.ObjectId(artworkId),
+				files: [],
+				save: () => {}
+			},
+			filesToDelete: [],
+			collectionId: new mongoose.Types.ObjectId(collectionIds[0]),
+			fsExistsSync: true
+		},
+		{
+			case: "file to delete not found",
+			artwork: {
+				_id: new mongoose.Types.ObjectId(artworkId),
+				files: [],
+				save: () => {}
+			},
+			filesToDelete: [
+				{	
+					originalFilename: "lyrics.mei",
+					filePath: `/uploads/${collectionIds[0]}/${artworkId}_0.mei`,
+					size: expect.any(Number) as unknown as number,
+					uploadedAt: expect.any(Date) as unknown as Date,
+					_id: expect.any(String) as unknown as string}
+				],
+			collectionId: new mongoose.Types.ObjectId(collectionIds[0]),
+			fsExistsSync: true
+		},
+		{
+			case: "one file to delete",
+			artwork: {
+				_id: new mongoose.Types.ObjectId(artworkId),
+				files: [
+					{
+						originalFilename: 'lyrics.mei',
+						newFilename: `${artworkId}_0.mei`,
+						filePath: `/uploads/${collectionIds[0]}/${artworkId}_0.mei`,
+						size: 8444,
+						uploadedAt: new Date('2024-10-23T12:57:35.366Z'),
+						_id: "6897a16dce55abb5265e658e"
+					},
+				],
+				save: () => {}
+			},
+			filesToDelete: [
+				{	
+					originalFilename: "lyrics.mei",
+					filePath: `/uploads/${collectionIds[0]}/${artworkId}_0.mei`,
+					size: 8444,
+					uploadedAt: new Date('2024-10-23T12:57:35.366Z'),
+					_id: "6897a16dce55abb5265e658e"
+				}
+			],
+			collectionId: new mongoose.Types.ObjectId(collectionIds[0]),
+			fsExistsSync: true
+		},
+		{
+			case: "file to delete with given filepath doesn't exist",
+			artwork: {
+				_id: new mongoose.Types.ObjectId(artworkId),
+				files: [
+					{
+						originalFilename: 'lyrics.mei',
+						newFilename: `${artworkId}_0.mei`,
+						filePath: `/uploads/${collectionIds[0]}/${artworkId}_0.mei`,
+						size: 8444,
+						uploadedAt: new Date('2024-10-23T12:57:35.366Z'),
+						_id: "6897a16dce55abb5265e658e"
+					},
+				],
+				save: () => {}
+			},
+			filesToDelete: [
+				{	
+					originalFilename: "lyrics.mei",
+					filePath: `/uploads/${collectionIds[0]}/${artworkId}_0.mei`,
+					size: 8444,
+					uploadedAt: new Date('2024-10-23T12:57:35.366Z'),
+					_id: "6897a16dce55abb5265e658e"
+				}
+			],
+			collectionId: new mongoose.Types.ObjectId(collectionIds[0]),
+			fsExistsSync: false
+		},			
+	])("handleFileDeletions test - $case",
+		async ({artwork, filesToDelete, fsExistsSync}) => {
+			const existsSpy = jest.spyOn(fs, 'existsSync').mockReturnValue(fsExistsSync);
+			expect(await handleFileDeletions(artwork, filesToDelete, session)).toMatchSnapshot()
+			existsSpy.mockRestore();
 		}
 	)
 })

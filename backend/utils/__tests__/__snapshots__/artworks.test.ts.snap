@@ -261,6 +261,48 @@ exports[`artworks util functions tests constructTopmostCategorySearchTextFilter 
 }
 `;
 
+exports[`artworks util functions tests handleFileDeletions test - file to delete not found 1`] = `
+{
+  "deletedFilesCount": 0,
+  "failedDeletesCauses": [
+    {
+      "cause": "File not found",
+      "filename": "lyrics.mei",
+    },
+  ],
+  "failedDeletesCount": 1,
+}
+`;
+
+exports[`artworks util functions tests handleFileDeletions test - file to delete with given filepath doesn't exist 1`] = `
+{
+  "deletedFilesCount": 0,
+  "failedDeletesCauses": [
+    {
+      "cause": "Internal server error",
+      "filename": "lyrics.mei",
+    },
+  ],
+  "failedDeletesCount": 1,
+}
+`;
+
+exports[`artworks util functions tests handleFileDeletions test - no files to delete 1`] = `
+{
+  "deletedFilesCount": 0,
+  "failedDeletesCauses": [],
+  "failedDeletesCount": 0,
+}
+`;
+
+exports[`artworks util functions tests handleFileDeletions test - one file to delete 1`] = `
+{
+  "deletedFilesCount": 1,
+  "failedDeletesCauses": [],
+  "failedDeletesCount": 0,
+}
+`;
+
 exports[`artworks util functions tests handleFileUploads test - no files to upload 1`] = `
 {
   "failedUploadsCauses": [],

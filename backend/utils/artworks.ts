@@ -234,18 +234,22 @@ export const handleFileUploads = async (artwork: any, files: any, collectionId: 
     }
 }
 
-export const handleFileDeletions = async (artwork: any, filesToDelete: fileToDelete[], collectionId: mongoose.Types.ObjectId, session: ClientSession) => {
+export const handleFileDeletions = async (artwork: any, filesToDelete: fileToDelete[], session: ClientSession) => {
     const deletedFiles = [];
     const failedDeletesCauses = [];
     if (filesToDelete && Array.isArray(filesToDelete)) {
         for(const fileToDelete of filesToDelete) {
             if(artwork.files.some(((file: any) => file._id?.toString() === fileToDelete._id))) {
                 const absoluteFilePath = path.join(__dirname, "..", fileToDelete.filePath as string);
-                if (fs.existsSync(absoluteFilePath)) fs.unlinkSync(absoluteFilePath)
-                else failedDeletesCauses.push({filename: fileToDelete.originalFilename, cause: "Internal server error"})
-                artwork.files = artwork.files.filter(((file: any) => file._id?.toString() !== fileToDelete._id))
-                await artwork.save({session})
-                deletedFiles.push(fileToDelete.originalFilename)
+                if (fs.existsSync(absoluteFilePath)) {
+                    fs.unlinkSync(absoluteFilePath)
+                    artwork.files = artwork.files.filter(((file: any) => file._id?.toString() !== fileToDelete._id))
+                    await artwork.save({session})
+                    deletedFiles.push(fileToDelete.originalFilename)
+                }
+                else {
+                    failedDeletesCauses.push({filename: fileToDelete.originalFilename, cause: "Internal server error"})
+                }
             } else {
                 failedDeletesCauses.push({filename: fileToDelete.originalFilename, cause: "File not found"})
             }
