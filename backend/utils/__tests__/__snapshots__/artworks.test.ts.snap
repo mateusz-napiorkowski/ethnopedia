@@ -261,6 +261,47 @@ exports[`artworks util functions tests constructTopmostCategorySearchTextFilter 
 }
 `;
 
+exports[`artworks util functions tests handleFileUploads test - no files to upload 1`] = `
+{
+  "failedUploadsCauses": [],
+  "failedUploadsCount": 0,
+  "uploadedFilesCount": 0,
+}
+`;
+
+exports[`artworks util functions tests handleFileUploads test - upload 5 files when artwork doesn't have any associated files 1`] = `
+{
+  "failedUploadsCauses": [],
+  "failedUploadsCount": 0,
+  "uploadedFilesCount": 5,
+}
+`;
+
+exports[`artworks util functions tests handleFileUploads test - upload of 2 out of 4 files fails - one file has inapropriate extension and another has maximal size exceeded 1`] = `
+{
+  "failedUploadsCauses": [
+    {
+      "cause": "Invalid file extension",
+      "filename": "pdf_file.pdf",
+    },
+    {
+      "cause": "File size exceeded",
+      "filename": "lyrics.mei",
+    },
+  ],
+  "failedUploadsCount": 2,
+  "uploadedFilesCount": 2,
+}
+`;
+
+exports[`artworks util functions tests handleFileUploads test - upload two files when artwork has two associated files with indices 0 and 2 1`] = `
+{
+  "failedUploadsCauses": [],
+  "failedUploadsCount": 0,
+  "uploadedFilesCount": 2,
+}
+`;
+
 exports[`artworks util functions tests sortRecordsByCategory test - category to sort records by doesn't exist on some records 1`] = `
 [
   {

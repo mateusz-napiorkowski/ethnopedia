@@ -187,6 +187,7 @@ export const sortRecordsByCategory = (records: any, categoryToSortBy: string, as
 
 export const handleFileUploads = async (artwork: any, files: any, collectionId: mongoose.Types.ObjectId, session: ClientSession) => {
     const failed = []
+    let uploadedFilesCount = 0
     if (files && Array.isArray(files)) {
         const uploadsDir = path.join(__dirname, "..", `uploads/`);
         const collectionUploadsDir = path.join(__dirname, "..", `uploads/${collectionId}`);
@@ -194,12 +195,13 @@ export const handleFileUploads = async (artwork: any, files: any, collectionId: 
         if (!fs.existsSync(collectionUploadsDir)) fs.mkdirSync(collectionUploadsDir);
 
         for(const file of files) {
-            const availableIndex = [...Array(5).keys()].find(index => 
-                !artwork.files.some((file: any) => file.newFilename?.startsWith(`${artwork.Id}_${index}`))
-            )
-            const fileName = availableIndex !== undefined
-                ? `${artwork.id}_${availableIndex}${path.extname(file.originalname)}`
-                : undefined;
+            const availableIndex = artwork.files.length > 0 ?
+                [0, 1, 2, 3, 4].find(index => {
+                    if(!artwork.files.some((file: any) => file.newFilename.startsWith(`${artwork._id}_${index}`)))
+                        return true             
+                }) 
+                : 0
+            const fileName = `${artwork._id}_${availableIndex}${path.extname(file.originalname)}`
             const filePath = `uploads/${collectionId}/${fileName}`;
 
             const maxFileSize = 25 * 1024 * 1024 // 25 MB
@@ -217,15 +219,16 @@ export const handleFileUploads = async (artwork: any, files: any, collectionId: 
                     size: file.size,
                     uploadedAt: new Date(Date.now())
                 });
+                uploadedFilesCount++;
             } catch (error) {
                 const err = error as Error
                 failed.push({filename: file.originalname, cause: err.message})
             }
-        }
-        await artwork.save({session});
+        }   
+        await artwork.save({session});  
     }
     return {
-        uploadedFilesCount: artwork.files.length,
+        uploadedFilesCount,
         failedUploadsCount: failed.length,
         failedUploadsCauses: failed
     }
