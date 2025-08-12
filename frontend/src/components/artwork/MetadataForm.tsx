@@ -1,10 +1,9 @@
-import React, { useEffect, useMemo, useState, useCallback } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { Metadata } from '../../@types/Metadata';
 import FormField from './FormField';
 
 interface MetadataFormProps {
-    initialMetadataTree?: Metadata[];
-    categoryPaths?: string[];
+    categories: Metadata[];
     setFieldValue: (
         field: string,
         value: any,
@@ -13,49 +12,11 @@ interface MetadataFormProps {
     suggestionsByCategory?: Record<string, string[]>;
 }
 
-const buildHierarchy = (paths: string[]): Metadata[] => {
-    const map: Record<string, Metadata> = {};
-    const result: Metadata[] = [];
-
-    paths.forEach((path) => {
-        const parts = path.split('.');
-        let parentList = result;
-        let prefix = '';
-
-        parts.forEach((part, idx) => {
-            prefix = idx === 0 ? part : `${prefix}.${part}`;
-            if (!map[prefix]) {
-                map[prefix] = { name: part, value: '', subcategories: [] };
-                parentList.push(map[prefix]);
-            }
-            parentList = map[prefix].subcategories!;
-        });
-    });
-
-    return result;
-};
-
 const MetadataForm: React.FC<MetadataFormProps> = ({
-                                                       initialMetadataTree,
-                                                       categoryPaths,
+                                                       categories,
                                                        setFieldValue,
                                                        suggestionsByCategory = {},
                                                    }) => {
-    const [categories, setCategories] = useState<Metadata[]>([]);
-
-    // Build tree from API or dot-paths
-    useEffect(() => {
-        if (initialMetadataTree) {
-            setCategories(initialMetadataTree);
-        } else if (categoryPaths) {
-            setCategories(buildHierarchy(categoryPaths));
-        }
-    }, [initialMetadataTree, categoryPaths]);
-
-    // Sync to Formik
-    useEffect(() => {
-        setFieldValue('categories', categories, false);
-    }, [categories, setFieldValue]);
 
     // Flatten all field indices
     const allPaths = useMemo(() => {
@@ -114,18 +75,29 @@ const MetadataForm: React.FC<MetadataFormProps> = ({
     }, [allPaths]);
 
     // Update a single node value
-    const updateValue = useCallback(
-        (path: number[], value: string) => {
-            const newTree = [...categories];
-            let nodeList = newTree;
-            for (let i = 0; i < path.length - 1; i++) {
-                nodeList = nodeList[path[i]].subcategories!;
-            }
-            nodeList[path[path.length - 1]].value = value;
-            setCategories(newTree);
-        },
-        [categories]
-    );
+    const updateValue = useCallback((path: number[], value: string) => {
+        // Create a deep copy of the categories array
+        const deepCopyCategories = (cats: Metadata[]): Metadata[] => {
+            return cats.map(cat => ({
+                ...cat,
+                subcategories: cat.subcategories ? deepCopyCategories(cat.subcategories) : []
+            }));
+        };
+
+        const newTree = deepCopyCategories(categories);
+
+        // Navigate to the target node and update its value
+        let nodeList = newTree;
+        for (let i = 0; i < path.length - 1; i++) {
+            const index = path[i];
+            nodeList = nodeList[index].subcategories!;
+        }
+
+        const lastIndex = path[path.length - 1];
+        nodeList[lastIndex] = { ...nodeList[lastIndex], value };
+
+        setFieldValue('categories', newTree, false);
+    }, [categories, setFieldValue]);
 
     // Recursive renderer
     const renderFields = (
