@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import EmptyCollectionMessage from '../../components/artwork/EmptyCollectionMessage';
 import NoSearchResultMessage from '../../components/artwork/NoSearchResultMessage';
 import LoadingPage from '../../pages/LoadingPage';
@@ -36,6 +36,7 @@ const ArtworksList: React.FC<ArtworksListProps> = ({
                                                        jwtToken,
                                                    }) => {
     const navigate = useNavigate();
+    const { collectionId } = useParams();
 
     if (isLoading || isFetching || !artworksData) {
         return <LoadingPage />;
@@ -57,7 +58,12 @@ const ArtworksList: React.FC<ArtworksListProps> = ({
                     key={artwork._id}
                     className="px-4 max-w-screen-xl py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4 border border-gray-300 dark:border-gray-600 cursor-pointer"
                     data-testid={artwork._id}
-                    onClick={() => navigate(`/collections/${artwork.collectionId}/artworks/${artwork._id}`)}
+                    onClick={() => {
+                        // Use collectionId from URL params if available, otherwise fall back to artwork.collectionId
+                        const targetCollectionId = collectionId || artwork.collectionId;
+                        navigate(`/collections/${targetCollectionId}/artworks/${artwork._id}`);
+                    }}
+
                 >
                     <div className="flex flex-row">
             <span className="mr-4 flex items-center">

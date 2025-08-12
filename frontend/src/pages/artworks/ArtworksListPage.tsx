@@ -88,6 +88,9 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
     });
 
 
+    console.log("collectionId:", collectionId);
+
+
     const { data: collectionData } = useQuery({
         queryKey: [collectionId],
         enabled: !!collectionId,

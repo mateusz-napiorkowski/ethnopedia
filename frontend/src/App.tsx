@@ -21,6 +21,8 @@ const App = () => {
                 <BrowserRouter basename="/ethnopedia">
                     <Routes>
                         <Route path="/collections/:collectionId/artworks/:artworkId" element={<ArtworkPage />} />
+                        <Route path="/artworks/:artworkId" element={<ArtworkPage />} />
+
                         <Route path="/collections/:collectionId/create-artwork" element={<CreateArtworkPage />} />
                         <Route path="/collections/:collectionId/artworks/:artworkId/edit-artwork" element={<CreateArtworkPage />} />
                         <Route path="/create-collection" element={<CreateCollectionPage />} />
