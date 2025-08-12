@@ -95,7 +95,7 @@ const StructureFormField: React.FC<Props> = ({
                         onChange={handleChange}
                         onBlur={handleBlur}
                         placeholder={level === 0 ? "Nazwa kategorii" : "Nazwa podkategorii"}
-                        className={`w-full border-b focus:outline-none p-1 ${
+                        className={`w-full border-b focus:outline-none px-4 py-2  ${
                             hasAnyError
                                 ? "border-red-500 text-red-600"
                                 : "border-gray-300 text-gray-700 dark:text-white dark:border-gray-600"
@@ -116,7 +116,7 @@ const StructureFormField: React.FC<Props> = ({
                             onClick={() => canAdd && handleAddSubcategory(index)}
                             disabled={!canAdd}
                             title={addTitle}
-                            className={`p-2 text-sm rounded-md transition-colors
+                            className={`p-2 text-sm rounded-md hover:dark:text-white bg-white
                                 ${hover ? 'opacity-100' : 'opacity-0'}
                                 ${canAdd
                                 ? 'text-blue-600 hover:text-blue-800 cursor-pointer'
@@ -124,20 +124,20 @@ const StructureFormField: React.FC<Props> = ({
                             `}
                             type="button"
                         >
-                            <PlusIcon className="w-4 h-4"/>
+                            <PlusIcon className="w-5 h-5"/>
                         </button>
                         <button
                             onClick={() => handleRemove(index)}
                             disabled={isEditMode && !formData.isNew}
                             title={isEditMode && !formData.isNew ? "Usuwanie tylko nowych kategorii w trybie edycji" : "Usuń"}
-                            className={`p-2 text-sm rounded-md transition-colors
+                            className={`p-2 text-sm rounded-md hover:dark:text-white bg-white
                                 ${hover ? 'opacity-100' : 'opacity-0'}
                                 text-red-600 hover:text-red-800
                                 ${isEditMode && !formData.isNew ? 'opacity-50 cursor-not-allowed hover:text-red-600' : ''}
                             `}
                             type="button"
                         >
-                            <DeleteIcon className="w-4 h-4"/>
+                            <DeleteIcon className="w-5 h-5"/>
                         </button>
                 </div>
             </div>

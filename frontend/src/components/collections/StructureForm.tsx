@@ -206,8 +206,8 @@ const StructureForm: React.FC<StructureFormProps> = ({
         {renderList(initialFormData, [], 0)}
         <button
             onClick={handleAddCat}
-            className={`mt-4 inline-flex items-center gap-1 p-3 text-sm text-blue-600 hover:text-blue-800 rounded-md transition-colors ${
-                !isEditMode ? "ml-[20px]" : ""
+            className={`inline-flex items-center gap-1 p-3 text-sm bg-white dark:bg-gray-800 text-blue-600 hover:dark:text-white hover:text-blue-800 rounded-md ${
+                !isEditMode ? "ml-[24px]" : ""
             }`}
             type="button"
             title="Dodaj nową kategorię"

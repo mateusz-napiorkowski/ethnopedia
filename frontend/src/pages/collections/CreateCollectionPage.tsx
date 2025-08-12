@@ -291,113 +291,121 @@ const CreateCollectionPage = () => {
     }, [handleUndo, handleRedo]);
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col overflow-y-auto">
             <Navbar />
-            <div className="container mx-auto px-24 sm:px-32 md:px-40 lg:px-48 mt-4 max-w-screen-lg">
+            <div className="container px-8 mt-6 max-w-3xl mx-auto">
                 <Navigation />
-                <div className="mt-4 bg-white dark:bg-gray-800 rounded-lg shadow-md border dark:border-gray-600 p-8">
-                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                        {isEditMode ? "Edytuj kolekcję" : "Dodaj nową kolekcję"}
-                    </h3>
-                    <form onSubmit={handleSubmit}>
-                        <label className="block text-sm text-gray-700 dark:text-white my-2">Nazwa</label>
-                        <input
-                            type="text"
-                            value={formValues.name}
-                            onChange={handleNameChange}
-                            className={`w-full px-4 py-2 border rounded-lg text-gray-700 dark:text-white dark:bg-gray-700 focus:outline-none ${
-                                formErrors.name ? "border-red-500" : "border-gray-300 dark:border-gray-600"
-                            }`}
-                        />
-                        {formErrors.name && (
-                            <div className="text-red-500 text-sm mt-1">{formErrors.name}</div>
-                        )}
+                <h2 className="text-2xl font-bold mt-2">
+                    {isEditMode ? "Edytuj kolekcję" : "Dodaj nową kolekcję"}
+                </h2>
 
-                        <label className="block text-sm text-gray-700 dark:text-white my-2 mt-4">Opis</label>
-                        <textarea
-                            value={formValues.description}
-                            onChange={handleDescriptionChange}
-                            className={`w-full px-4 py-2 border rounded-lg resize-y focus:outline-none dark:bg-gray-700 dark:text-white ${
-                                formErrors.description ? "border-red-500" : "border-gray-300 dark:border-gray-600"
-                            }`}
-                            rows={4}
-                        />
-                        {formErrors.description && (
-                            <div className="text-red-500 text-sm mt-1">{formErrors.description}</div>
-                        )}
+                <form onSubmit={handleSubmit}>
+                    <label className="block text-sm text-gray-700 dark:text-white my-2 mt-4">Nazwa</label>
+                    <input
+                        type="text"
+                        value={formValues.name}
+                        onChange={handleNameChange}
+                        className={`w-full px-4 py-2 border rounded-lg text-gray-700 dark:text-white dark:bg-gray-700 focus:outline-none ${
+                            formErrors.name ? "border-red-500" : "border-gray-300 dark:border-gray-600"
+                        }`}
+                    />
+                    {formErrors.name && (
+                        <div className="text-red-500 text-sm mt-1">{formErrors.name}</div>
+                    )}
 
-                        <hr className="mt-6"/>
-                        <label className="block text-sm font-bold text-gray-700 dark:text-white my-2 mt-4">
-                            Struktura metadanych w kolekcji
-                        </label>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                            Zbuduj hierarchię kategorii i podkategorii dla tej kolekcji.
-                            Dodawaj i usuwaj elementy za pomocą przycisków po prawej stronie pola.
-                        </p>
+                    <label className="block text-sm text-gray-700 dark:text-white my-2 mt-4">Opis</label>
+                    <textarea
+                        value={formValues.description}
+                        onChange={handleDescriptionChange}
+                        className={`w-full px-4 py-2 border rounded-lg resize-y focus:outline-none dark:bg-gray-700 dark:text-white ${
+                            formErrors.description ? "border-red-500" : "border-gray-300 dark:border-gray-600"
+                        }`}
+                        rows={4}
+                    />
+                    {formErrors.description && (
+                        <div className="text-red-500 text-sm mt-1">{formErrors.description}</div>
+                    )}
 
-                        <StructureForm
-                            initialFormData={formValues.categories}
-                            setFieldValue={handleSetFieldValue}
-                            isEditMode={isEditMode}
-                            categoryErrors={formErrors.categories || {}}
-                            hasSubmitted={hasSubmitted}
-                            // Pass the undo/redo system for structural changes
-                            undoRedoSystem={{
-                                setState: setFormValues,
-                                currentState: formValues
-                            }}
-                        />
+                    <hr className="mt-6"/>
+                    <label className="block text-sm font-bold text-gray-700 dark:text-white my-2 mt-4">
+                        Struktura metadanych w kolekcji
+                    </label>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                        Zbuduj hierarchię kategorii i podkategorii dla tej kolekcji.
+                        Dodawaj i usuwaj elementy za pomocą przycisków po prawej stronie pola.
+                    </p>
 
-                        {submitError && (
-                            <div className="text-red-500 text-sm my-2">{submitError}</div>
-                        )}
+                    <StructureForm
+                        initialFormData={formValues.categories}
+                        setFieldValue={handleSetFieldValue}
+                        isEditMode={isEditMode}
+                        categoryErrors={formErrors.categories || {}}
+                        hasSubmitted={hasSubmitted}
+                        // Pass the undo/redo system for structural changes
+                        undoRedoSystem={{
+                            setState: setFormValues,
+                            currentState: formValues
+                        }}
+                    />
 
-                        <div className="flex justify-end mt-6 gap-4">
-                            <button
-                                type="button"
-                                onClick={handleUndo}
-                                disabled={!canUndo}
-                                className={`px-2 py-2 border rounded ${
-                                    !canUndo
-                                        ? "text-gray-400 border-gray-300 cursor-not-allowed"
-                                        : "text-blue-600 border-blue-600"
-                                }`}
-                                title="Cofnij (Ctrl+Z)"
-                            >
-                                <UndoArrow className="w-5 h-5"/>
-                            </button>
+                    {submitError && (
+                        <div className="text-red-500 text-sm my-2">{submitError}</div>
+                    )}
 
-                            <button
-                                type="button"
-                                onClick={handleRedo}
-                                disabled={!canRedo}
-                                className={`px-2 py-2 border rounded ${
-                                    !canRedo
-                                        ? "text-gray-400 border-gray-300 cursor-not-allowed"
-                                        : "text-blue-600 border-blue-600"
-                                }`}
-                                title="Przywróć (Ctrl+Y)"
-                            >
-                                <RedoArrow className="w-5 h-5"/>
-                            </button>
+                    <div className="fixed bottom-0 left-0 w-full bg-white dark:bg-gray-900 border-t border-gray-300 dark:border-gray-500 py-3 px-4 flex justify-between items-center shadow-[0_-2px_4px_rgba(0,0,0,0.05)] z-50">
+                        <div className="max-w-3xl w-full mx-auto flex justify-between items-center">
+                            {/* Undo/Redo buttons on the left */}
+                            <div className="flex gap-2">
+                                <button
+                                    type="button"
+                                    onClick={handleUndo}
+                                    disabled={!canUndo}
+                                    className={`px-2 py-2 border rounded ${
+                                        !canUndo
+                                            ? "text-gray-400 border-gray-300 cursor-not-allowed"
+                                            : "text-blue-600 border-blue-600"
+                                    }`}
+                                    title="Cofnij (Ctrl+Z)"
+                                >
+                                    <UndoArrow className="w-5 h-5"/>
+                                </button>
 
-                            <button
-                                type="button"
-                                onClick={() => navigate(-1)}
-                                className="px-4 py-2"
-                            >
-                                Anuluj
-                            </button>
-                            <button
-                                type="submit"
-                                className="px-4 py-2 color-button"
-                            >
-                                {isEditMode ? "Zapisz zmiany" : "Utwórz"}
-                            </button>
+                                <button
+                                    type="button"
+                                    onClick={handleRedo}
+                                    disabled={!canRedo}
+                                    className={`px-2 py-2 border rounded ${
+                                        !canRedo
+                                            ? "text-gray-400 border-gray-300 cursor-not-allowed"
+                                            : "text-blue-600 border-blue-600"
+                                    }`}
+                                    title="Przywróć (Ctrl+Y)"
+                                >
+                                    <RedoArrow className="w-5 h-5"/>
+                                </button>
+                            </div>
+
+                            {/* Cancel/Save buttons on the right */}
+                            <div className="flex gap-2">
+                                <button
+                                    type="button"
+                                    onClick={() => navigate(-1)}
+                                    className="px-4 py-2 border rounded"
+                                >
+                                    Anuluj
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="px-4 py-2 bg-blue-600 text-white rounded"
+                                >
+                                    {isEditMode ? "Zapisz zmiany" : "Utwórz"}
+                                </button>
+                            </div>
                         </div>
+                    </div>
 
-                    </form>
-                </div>
+                    <div className="h-20"/>
+                </form>
             </div>
         </div>
     );
