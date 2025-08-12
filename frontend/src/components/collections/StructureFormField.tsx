@@ -79,11 +79,14 @@ const StructureFormField: React.FC<Props> = ({
         >
             <div className="inline-flex items-center gap-2 group w-full">
                 {/* Drag handle: only drag via the dots icon */}
-                <DotsIcon title="Przeciągnij, aby zmienić kolejność"
-                          {...attributes}
-                          {...listeners}
-                          className="w-4 h-4 cursor-grab text-gray-400 hover:text-gray-600 flex-shrink-0"
-                />
+                {!isEditMode && (
+                    <DotsIcon
+                        title="Przeciągnij, aby zmienić kolejność"
+                        {...attributes}
+                        {...listeners}
+                        className="w-4 h-4 cursor-grab text-gray-400 hover:text-gray-600 flex-shrink-0"
+                    />
+                )}
                 <div className="flex-1">
                     <input
                         type="text"
@@ -108,8 +111,7 @@ const StructureFormField: React.FC<Props> = ({
                         </div>
                     )}
                 </div>
-                {(isEditMode || !isEditMode) && (
-                    <div className="inline-flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150 flex-shrink-0">
+                <div className="inline-flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150 flex-shrink-0">
                         <button
                             onClick={() => canAdd && handleAddSubcategory(index)}
                             disabled={!canAdd}
@@ -137,8 +139,7 @@ const StructureFormField: React.FC<Props> = ({
                         >
                             <DeleteIcon className="w-4 h-4"/>
                         </button>
-                    </div>
-                )}
+                </div>
             </div>
         </div>
     );

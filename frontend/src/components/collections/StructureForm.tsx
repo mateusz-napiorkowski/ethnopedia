@@ -59,6 +59,9 @@ const StructureForm: React.FC<StructureFormProps> = ({
   };
 
   const handleDragEnd = (e: DragEndEvent) => {
+    // jeśli jesteśmy w trybie edycji, blokujemy wszelkie operacje drag&drop
+    if (isEditMode) return;
+
     const { active, over } = e;
     if (!over || active.id === over.id) return;
 
@@ -67,17 +70,16 @@ const StructureForm: React.FC<StructureFormProps> = ({
 
     const parentFrom = fromPath.slice(0, -1).join();
     const parentTo = toPath.slice(0, -1).join();
-    // don't allow moving between different parent lists
     if (parentFrom !== parentTo) return;
 
     const oldIndex = fromPath.pop()!;
     const newIndex = toPath.pop()!;
 
     const newData = moveAt(initialFormData, fromPath, oldIndex, newIndex);
-
-    // Reorder is a structural change -> commit immediately (and record in undo/redo)
+    // traktujemy przestawienie jako zmiane strukturalną
     setFieldValue('categories', newData, true);
   };
+
 
   const addSub = (list: Category[], path: number[]): Category[] => {
     if (path.length === 0)
