@@ -7,7 +7,8 @@ interface MetadataFormProps {
     setFieldValue: (
         field: string,
         value: any,
-        shouldValidate?: boolean
+        isUserTyping?: boolean,
+        fieldPath?: string
     ) => void;
     suggestionsByCategory?: Record<string, string[]>;
 }
@@ -47,35 +48,41 @@ const MetadataForm: React.FC<MetadataFormProps> = ({
         return pathParts.join('.');
     }, [categories]);
 
-    // Handle Enter → next field
-    const handleKeyDown = useCallback((path: number[], e: React.KeyboardEvent<HTMLInputElement>) => {
-        // nie pozwalamy Enterowi na submit
+    // Handle navigation between fields
+    const handleFieldNavigation = useCallback((path: number[], e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter' || e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-            e.preventDefault();
+            // Only prevent default for navigation, not when suggestions are showing
+            const input = e.target as HTMLInputElement;
+            const suggestionDropdown = input.parentElement?.querySelector('[data-suggestions-dropdown]');
+            const showingSuggestions = suggestionDropdown && !suggestionDropdown.classList.contains('hidden');
 
-            // znajdź nasz indeks w mapa wszystkich ścieżek
-            const idx = allPaths.findIndex(p => p.join('-') === path.join('-'));
-            let targetIdx = idx;
+            if (!showingSuggestions || e.key === 'Enter') {
+                e.preventDefault();
 
-            if (e.key === 'Enter' || e.key === 'ArrowDown') {
-                // w dół
-                targetIdx = idx + 1;
-            } else if (e.key === 'ArrowUp') {
-                // w górę
-                targetIdx = idx - 1;
-            }
+                // znajdź nasz indeks w mapie wszystkich ścieżek
+                const idx = allPaths.findIndex(p => p.join('-') === path.join('-'));
+                let targetIdx = idx;
 
-            // jeśli target jest w granicach
-            if (targetIdx >= 0 && targetIdx < allPaths.length) {
-                const nextId = `field-${allPaths[targetIdx].join('-')}`;
-                const next = document.getElementById(nextId);
-                if (next) (next as HTMLElement).focus();
+                if (e.key === 'Enter' || e.key === 'ArrowDown') {
+                    // w dół
+                    targetIdx = idx + 1;
+                } else if (e.key === 'ArrowUp') {
+                    // w górę
+                    targetIdx = idx - 1;
+                }
+
+                // jeśli target jest w granicach
+                if (targetIdx >= 0 && targetIdx < allPaths.length) {
+                    const nextId = `field-${allPaths[targetIdx].join('-')}`;
+                    const next = document.getElementById(nextId);
+                    if (next) (next as HTMLElement).focus();
+                }
             }
         }
     }, [allPaths]);
 
     // Update a single node value
-    const updateValue = useCallback((path: number[], value: string) => {
+    const updateValue = useCallback((path: number[], value: string, isUserTyping: boolean = false) => {
         // Create a deep copy of the categories array
         const deepCopyCategories = (cats: Metadata[]): Metadata[] => {
             return cats.map(cat => ({
@@ -96,40 +103,42 @@ const MetadataForm: React.FC<MetadataFormProps> = ({
         const lastIndex = path[path.length - 1];
         nodeList[lastIndex] = { ...nodeList[lastIndex], value };
 
-        setFieldValue('categories', newTree, false);
+        // Create field path for debouncing (each field gets its own debounce)
+        const fieldPath = `field-${path.join('-')}`;
+
+        setFieldValue('categories', newTree, isUserTyping, fieldPath);
     }, [categories, setFieldValue]);
 
     // Recursive renderer
     const renderFields = (
         list: Metadata[],
-        basePath: number[] = [],
-        parentLast: boolean[] = []
+        basePath: number[] = []
     ) =>
         list.map((meta, idx) => {
             const path = [...basePath, idx];
             const key = path.join('-');
             const level = basePath.length;
             const isLastInThisList = idx === list.length - 1;
-            const updatedParentLast = [...parentLast, isLastInThisList];
             const categoryPath = getCategoryPath(path);
             const suggestions = suggestionsByCategory[categoryPath] || [];
+            const hasSubcategories = meta.subcategories && meta.subcategories.length > 0;
 
             return (
                 <div key={key} className={`relative ${level > 0 ? 'pl-6' : ''}`}>
-                    {/* Pionowa linia */}
+                    {/* Vertical line - only for direct parent-child connections */}
                     {level > 0 && (
                         <div
                             className="absolute left-0 w-px bg-gray-300 dark:bg-gray-600"
                             style={{
                                 top: '-0.5rem',
-                                // Jeśli jest to ostatnia podkategoria na tym poziomie lub tylko jedna podkategoria,
-                                // linia powinna kończyć się przed poziomą linią
-                                bottom: isLastInThisList  ? '2.1rem' : 0,
+                                // End the line at the current element if it's the last in this list
+                                // This prevents lines from extending to unrelated deeper subcategories
+                                bottom: isLastInThisList ? '2.1rem' : '0'
                             }}
                         />
                     )}
 
-                    {/* Pozioma linia */}
+                    {/* Horizontal line */}
                     {level > 0 && (
                         <div className="absolute left-0 top-6 h-px w-6 bg-gray-300 dark:bg-gray-600" />
                     )}
@@ -138,15 +147,15 @@ const MetadataForm: React.FC<MetadataFormProps> = ({
                         id={`field-${key}`}
                         label={meta.name}
                         value={meta.value || ''}
-                        onChange={(val) => updateValue(path, val)}
-                        onKeyDown={(e) => handleKeyDown(path, e)}
+                        onChange={(val, isUserTyping) => updateValue(path, val, isUserTyping)}
+                        onKeyDown={(e) => handleFieldNavigation(path, e)}
                         level={level}
                         suggestions={suggestions}
                     />
 
-                    {meta.subcategories && (
-                        <div className="ml-4">
-                            {renderFields(meta.subcategories, path, updatedParentLast)}
+                    {hasSubcategories && (
+                        <div className="ml-4 relative">
+                            {renderFields(meta.subcategories!, path)}
                         </div>
                     )}
                 </div>

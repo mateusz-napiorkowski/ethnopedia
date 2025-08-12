@@ -13,12 +13,20 @@ import { Category } from '../../@types/Category';
 import FormField from './StructureFormField';
 import { HiPlus as PlusIcon } from "react-icons/hi";
 
+interface UndoRedoSystem<T> {
+  setState: (updater: T | ((prev: T) => T), options?: any) => void;
+  currentState: T;
+}
+
 interface StructureFormProps {
   initialFormData: Category[];
-  setFieldValue: (field: string, value: any) => void;
+  // now supports isStructuralChange flag
+  setFieldValue: (field: string, value: any, isStructuralChange?: boolean) => void;
   isEditMode: boolean;
   categoryErrors: { [key: string]: string };
   hasSubmitted: boolean;
+  // optional undo/redo system (passed from CreateCollectionPage)
+  undoRedoSystem?: UndoRedoSystem<any>;
 }
 
 const StructureForm: React.FC<StructureFormProps> = ({
@@ -26,7 +34,8 @@ const StructureForm: React.FC<StructureFormProps> = ({
                                                        setFieldValue,
                                                        isEditMode,
                                                        categoryErrors,
-                                                       hasSubmitted
+                                                       hasSubmitted,
+                                                       undoRedoSystem
                                                      }) => {
   // Helper do przesuwania elementów w drzewie kategorii (w obrębie jednej listy)
   const moveAt = (
@@ -58,13 +67,16 @@ const StructureForm: React.FC<StructureFormProps> = ({
 
     const parentFrom = fromPath.slice(0, -1).join();
     const parentTo = toPath.slice(0, -1).join();
+    // don't allow moving between different parent lists
     if (parentFrom !== parentTo) return;
 
     const oldIndex = fromPath.pop()!;
     const newIndex = toPath.pop()!;
 
     const newData = moveAt(initialFormData, fromPath, oldIndex, newIndex);
-    setFieldValue('categories', newData);
+
+    // Reorder is a structural change -> commit immediately (and record in undo/redo)
+    setFieldValue('categories', newData, true);
   };
 
   const addSub = (list: Category[], path: number[]): Category[] => {
@@ -81,7 +93,8 @@ const StructureForm: React.FC<StructureFormProps> = ({
   const handleAddSub = (idx: string) => {
     const path = idx.split('-').map(Number);
     const newData = addSub(initialFormData, path);
-    setFieldValue('categories', newData);
+    // Structural change -> commit immediately
+    setFieldValue('categories', newData, true);
   };
 
   const handleAddCat = () => {
@@ -89,7 +102,8 @@ const StructureForm: React.FC<StructureFormProps> = ({
       ...initialFormData,
       { name: '', subcategories: [], isNew: true }
     ];
-    setFieldValue('categories', newData);
+    // Structural change -> commit immediately
+    setFieldValue('categories', newData, true);
   };
 
   const removeAt = (list: Category[], path: number[]): Category[] => {
@@ -104,9 +118,12 @@ const StructureForm: React.FC<StructureFormProps> = ({
 
   const handleRemove = (idx: string) => {
     const newData = removeAt(initialFormData, idx.split('-').map(Number));
-    setFieldValue('categories', newData);
+    // Structural change -> commit immediately
+    setFieldValue('categories', newData, true);
   };
 
+  // Handle typing / input changes. We try to use undoRedoSystem.setState with per-field debounce
+  // when it's available. Otherwise fall back to setFieldValue (non-debounced).
   const handleInputChange = (
       idx: string,
       e: React.ChangeEvent<HTMLInputElement>
@@ -121,8 +138,34 @@ const StructureForm: React.FC<StructureFormProps> = ({
       cur = cur[i].subcategories;
     });
     cur[parts[parts.length - 1]][e.target.name] = newValue;
-    setFieldValue('categories', clone);
+
+    // Jeśli mamy dostęp do undoRedoSystem, użyjemy jego setState z opcją debounce per-field.
+    if (undoRedoSystem && typeof undoRedoSystem.setState === 'function') {
+      undoRedoSystem.setState((prev: any) => ({ ...prev, categories: clone }), {
+        shouldDebounce: true,
+        fieldKey: `category-${idx}`,
+        debounceMs: 500
+      });
+    } else {
+      // fallback: zwykłe ustawienie (nie structural)
+      setFieldValue('categories', clone, false);
+    }
   };
+
+  // commit immediately on blur (no debounce)
+  const handleInputBlur = (idx: string, value: string) => {
+    const parts = idx.split('-').map(Number);
+    const clone = JSON.parse(JSON.stringify(initialFormData)) as Category[];
+    let cur: any = clone;
+    parts.slice(0, -1).forEach((i) => {
+      cur = cur[i].subcategories;
+    });
+    cur[parts[parts.length - 1]]['name'] = value;
+
+    // Commit immediate (non-structural)
+    setFieldValue('categories', clone, false);
+  };
+
 
   const renderList = (list: Category[], path: number[], lvl: number) => {
     const ids = list.map((_, i) => [...path, i].join('-'));
@@ -140,6 +183,7 @@ const StructureForm: React.FC<StructureFormProps> = ({
                       level={lvl}
                       formData={item}
                       handleInputChange={handleInputChange}
+                      handleInputBlur={handleInputBlur}
                       handleRemove={handleRemove}
                       handleAddSubcategory={handleAddSub}
                       isEditMode={isEditMode}

@@ -1,138 +1,196 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useCallback, useEffect, useRef, useState, useMemo } from "react";
+
+export interface UndoRedoOptions {
+    shouldDebounce?: boolean;
+    debounceMs?: number;
+    fieldKey?: string; // For per-field debouncing
+}
 
 export function useUndoRedoFormState<T>(initialState: T) {
-    const [state, setState] = useState<T>(initialState);
+    const MAX_HISTORY = 50;
+    const DEFAULT_DEBOUNCE_MS = 800;
+
     const [history, setHistory] = useState<T[]>([initialState]);
-    const [historyIndex, setHistoryIndex] = useState(0);
+    const [currentIndex, setCurrentIndex] = useState<number>(0);
 
-    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-    const isRestoringRef = useRef(false);
-    const lastSavedStateRef = useRef<string>(JSON.stringify(initialState));
+    // Per-field pending states for debounced changes
+    const [pendingByField, setPendingByField] = useState<Map<string, T>>(new Map());
+    const timersRef = useRef<Map<string, NodeJS.Timeout>>(new Map());
 
-    const updateState = useCallback((newState: T | ((prev: T) => T)) => {
-        setState(prev => {
-            const computed = typeof newState === 'function'
-                ? (newState as (prev: T) => T)(prev)
-                : newState;
-            return computed;
+    // Get the most recent state (considering all pending changes)
+    const visibleState: T = useMemo(() => {
+        if (pendingByField.size === 0) {
+            return history[currentIndex];
+        }
+        // Return the most recently updated pending state
+        const pendingEntries = Array.from(pendingByField.entries());
+        const mostRecent = pendingEntries[pendingEntries.length - 1];
+        return mostRecent[1];
+    }, [history, currentIndex, pendingByField]);
+
+    // Commit a specific field's pending state
+    const commitPendingField = useCallback((fieldKey: string, state: T) => {
+        const currentState = history[currentIndex];
+        if (JSON.stringify(currentState) === JSON.stringify(state)) {
+            return; // No change
+        }
+
+        setHistory(prev => {
+            const trimmed = prev.slice(0, currentIndex + 1);
+            const updated = [...trimmed, state];
+            const final = updated.length > MAX_HISTORY
+                ? updated.slice(updated.length - MAX_HISTORY)
+                : updated;
+
+            setTimeout(() => setCurrentIndex(final.length - 1), 0);
+            return final;
         });
+    }, [history, currentIndex]);
+
+    // Clear pending state for a field
+    const clearPendingField = useCallback((fieldKey: string) => {
+        setPendingByField(prev => {
+            const newMap = new Map(prev);
+            newMap.delete(fieldKey);
+            return newMap;
+        });
+
+        const timer = timersRef.current.get(fieldKey);
+        if (timer) {
+            clearTimeout(timer);
+            timersRef.current.delete(fieldKey);
+        }
     }, []);
 
-    // Save to history when state changes (debounced)
-    useEffect(() => {
-        // Skip if we're in the middle of undo/redo
-        if (isRestoringRef.current) {
-            return;
-        }
+    // Main setState function
+    const setState = useCallback((
+        updater: T | ((prev: T) => T),
+        options: UndoRedoOptions = {}
+    ) => {
+        const {
+            shouldDebounce = false,
+            debounceMs = DEFAULT_DEBOUNCE_MS,
+            fieldKey = 'default'
+        } = options;
 
-        const currentStateStr = JSON.stringify(state);
+        // Calculate new state based on the most current state
+        const baseState = pendingByField.get(fieldKey) || history[currentIndex];
+        const newState = typeof updater === "function"
+            ? (updater as (p: T) => T)(baseState)
+            : updater;
 
-        // Don't save if state hasn't actually changed
-        if (currentStateStr === lastSavedStateRef.current) {
-            return;
-        }
+        if (!shouldDebounce) {
+            // Immediate commit - clear any pending state for this field first
+            clearPendingField(fieldKey);
 
-        if (timeoutRef.current) {
-            clearTimeout(timeoutRef.current);
-        }
+            // Clear all pending states when doing immediate commit
+            timersRef.current.forEach(timer => clearTimeout(timer));
+            timersRef.current.clear();
+            setPendingByField(new Map());
 
-        timeoutRef.current = setTimeout(() => {
-            // Double check the state hasn't changed during the timeout
-            const finalStateStr = JSON.stringify(state);
-            if (finalStateStr === lastSavedStateRef.current) {
-                return;
-            }
+            // Commit immediately to history
+            setHistory(prev => {
+                const trimmed = prev.slice(0, currentIndex + 1);
+                const last = trimmed[trimmed.length - 1];
 
-            setHistory(prevHistory => {
-                setHistoryIndex(prevIndex => {
-                    // Remove any history after current index (when undoing then making new changes)
-                    const currentHistory = prevHistory.slice(0, prevIndex + 1);
-
-                    // Add new state to history
-                    const newHistory = [...currentHistory, state];
-
-                    // Keep history size manageable
-                    if (newHistory.length > 50) {
-                        newHistory.shift();
-                        return newHistory.length - 1;
-                    } else {
-                        return newHistory.length - 1;
-                    }
-                });
-
-                // Update history
-                const currentHistory = prevHistory.slice(0, historyIndex + 1);
-                const newHistory = [...currentHistory, state];
-
-                if (newHistory.length > 50) {
-                    newHistory.shift();
+                if (JSON.stringify(last) === JSON.stringify(newState)) {
+                    return prev; // No change
                 }
 
-                return newHistory;
+                const updated = [...trimmed, newState];
+                const final = updated.length > MAX_HISTORY
+                    ? updated.slice(updated.length - MAX_HISTORY)
+                    : updated;
+
+                setTimeout(() => setCurrentIndex(final.length - 1), 0);
+                return final;
+            });
+        } else {
+            // Debounced update - set pending state for this field
+            setPendingByField(prev => {
+                const newMap = new Map(prev);
+                newMap.set(fieldKey, newState);
+                return newMap;
             });
 
-            lastSavedStateRef.current = finalStateStr;
-        }, 300);
-
-        return () => {
-            if (timeoutRef.current) {
-                clearTimeout(timeoutRef.current);
+            // Clear existing timer for this field
+            const existingTimer = timersRef.current.get(fieldKey);
+            if (existingTimer) {
+                clearTimeout(existingTimer);
             }
-        };
-    }, [state, historyIndex]);
 
+            // Set new timer for this field
+            const newTimer = setTimeout(() => {
+                commitPendingField(fieldKey, newState);
+                clearPendingField(fieldKey);
+            }, debounceMs);
+
+            timersRef.current.set(fieldKey, newTimer);
+        }
+    }, [history, currentIndex, pendingByField, commitPendingField, clearPendingField]);
+
+    // Undo function
     const undo = useCallback(() => {
-        if (historyIndex > 0) {
-            isRestoringRef.current = true;
-            const newIndex = historyIndex - 1;
-            const stateToRestore = history[newIndex];
-
-            setHistoryIndex(newIndex);
-            setState(stateToRestore);
-            lastSavedStateRef.current = JSON.stringify(stateToRestore);
-
-            // Clear the restoring flag after a brief delay
-            setTimeout(() => {
-                isRestoringRef.current = false;
-            }, 10);
+        // First, check if there are any pending changes to cancel
+        if (pendingByField.size > 0) {
+            // Cancel all pending changes
+            timersRef.current.forEach(timer => clearTimeout(timer));
+            timersRef.current.clear();
+            setPendingByField(new Map());
+            return;
         }
-    }, [historyIndex, history]);
 
+        // Move back in history
+        if (currentIndex > 0) {
+            setCurrentIndex(prev => prev - 1);
+        }
+    }, [currentIndex, pendingByField.size]);
+
+    // Redo function
     const redo = useCallback(() => {
-        if (historyIndex < history.length - 1) {
-            isRestoringRef.current = true;
-            const newIndex = historyIndex + 1;
-            const stateToRestore = history[newIndex];
-
-            setHistoryIndex(newIndex);
-            setState(stateToRestore);
-            lastSavedStateRef.current = JSON.stringify(stateToRestore);
-
-            // Clear the restoring flag after a brief delay
-            setTimeout(() => {
-                isRestoringRef.current = false;
-            }, 10);
+        // Cancel any pending changes first
+        if (pendingByField.size > 0) {
+            timersRef.current.forEach(timer => clearTimeout(timer));
+            timersRef.current.clear();
+            setPendingByField(new Map());
         }
-    }, [historyIndex, history]);
 
-    // Reset history when initial state changes (but only if it's actually different)
+        // Move forward in history
+        if (currentIndex < history.length - 1) {
+            setCurrentIndex(prev => prev + 1);
+        }
+    }, [currentIndex, history.length, pendingByField.size]);
+
+    // Initialize state without creating history entry
+    const initializeState = useCallback((newState: T) => {
+        // Clear all pending states and timers
+        timersRef.current.forEach(timer => clearTimeout(timer));
+        timersRef.current.clear();
+        setPendingByField(new Map());
+
+        setHistory([newState]);
+        setCurrentIndex(0);
+    }, []);
+
+    const canUndo = currentIndex > 0 || pendingByField.size > 0;
+    const canRedo = currentIndex < history.length - 1 && pendingByField.size === 0;
+
+    // Cleanup on unmount
     useEffect(() => {
-        const initialStateStr = JSON.stringify(initialState);
-        if (initialStateStr !== JSON.stringify(history[0])) {
-            setHistory([initialState]);
-            setHistoryIndex(0);
-            setState(initialState);
-            lastSavedStateRef.current = initialStateStr;
-        }
-    }, [initialState]);
+        return () => {
+            timersRef.current.forEach(timer => clearTimeout(timer));
+            timersRef.current.clear();
+        };
+    }, []);
 
     return {
-        state,
-        setState: updateState,
+        state: visibleState,
+        setState,
+        initializeState,
         undo,
         redo,
-        canUndo: historyIndex > 0,
-        canRedo: historyIndex < history.length - 1,
+        canUndo,
+        canRedo,
     };
 }
 

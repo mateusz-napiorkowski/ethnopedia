@@ -10,6 +10,8 @@ interface Props {
     level: number;
     formData: Category;
     handleInputChange: (idx: string, e: React.ChangeEvent<HTMLInputElement>) => void;
+    // new: commit on blur
+    handleInputBlur: (idx: string, value: string) => void;
     handleRemove: (idx: string) => void;
     handleAddSubcategory: (idx: string) => void;
     isEditMode: boolean;
@@ -20,7 +22,7 @@ interface Props {
 
 const StructureFormField: React.FC<Props> = ({
                                                  id, index, level, formData,
-                                                 handleInputChange, handleRemove, handleAddSubcategory,
+                                                 handleInputChange, handleInputBlur, handleRemove, handleAddSubcategory,
                                                  isEditMode, hasError, errorMessage, hasSubmitted
                                              }) => {
     const {
@@ -41,6 +43,11 @@ const StructureFormField: React.FC<Props> = ({
     // Enhanced input change handler with real-time validation
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         handleInputChange(index, e);
+    };
+
+    // commit value on blur
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+        handleInputBlur(index, e.currentTarget.value);
     };
 
     // Validation logic
@@ -71,19 +78,19 @@ const StructureFormField: React.FC<Props> = ({
             onMouseLeave={() => setHover(false)}
         >
             <div className="inline-flex items-center gap-2 group w-full">
-                {!isEditMode && (
-                    <DotsIcon title="Przeciągnij, aby zmienić kolejność"
-                        {...attributes}
-                        {...listeners}
-                        className="w-4 h-4 cursor-grab text-gray-400 hover:text-gray-600 flex-shrink-0"
-                    />
-                )}
+                {/* Drag handle: only drag via the dots icon */}
+                <DotsIcon title="Przeciągnij, aby zmienić kolejność"
+                          {...attributes}
+                          {...listeners}
+                          className="w-4 h-4 cursor-grab text-gray-400 hover:text-gray-600 flex-shrink-0"
+                />
                 <div className="flex-1">
                     <input
                         type="text"
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
+                        onBlur={handleBlur}
                         placeholder={level === 0 ? "Nazwa kategorii" : "Nazwa podkategorii"}
                         className={`w-full border-b focus:outline-none p-1 ${
                             hasAnyError

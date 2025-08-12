@@ -59,7 +59,7 @@ const CreateArtworkPage: React.FC = () => {
     );
     const [isInitialized, setIsInitialized] = useState(false);
 
-    // Fixed: Use a stable initial state that doesn't change on every render
+    // Stable initial state that doesn't change on every render
     const stableInitialState = useMemo(() => ({
         categories: [] as Metadata[],
     }), []);
@@ -71,7 +71,12 @@ const CreateArtworkPage: React.FC = () => {
         redo: handleRedo,
         canUndo,
         canRedo,
+        initializeState,
     } = useUndoRedoFormState<FormValues>(stableInitialState);
+
+    // Prevent undo/redo until form is properly initialized
+    const safeCanUndo = isInitialized && canUndo;
+    const safeCanRedo = isInitialized && canRedo;
 
     const suggestionsByCategory = useMemo(() => {
         const suggestions: Record<string, Set<string>> = {};
@@ -105,35 +110,51 @@ const CreateArtworkPage: React.FC = () => {
         return result;
     }, [artworksData]);
 
-    // Fixed: Initialize the form state only once when data is ready
+    // Initialize the form state only once when data is ready
     useEffect(() => {
         if (isInitialized) return;
 
         if (artworkId) {
             getArtwork(artworkId).then((res) => {
+                const initialData = { categories: res.artwork.categories || [] };
                 setInitialMetadataTree(res.artwork.categories);
-                setFormValues({ categories: res.artwork.categories || [] });
+                initializeState(initialData);
                 setIsInitialized(true);
             });
         } else if (catData?.categories) {
             setInitialCategoryPaths(catData.categories);
             // Build hierarchy from category paths
             const hierarchy = buildHierarchyFromPaths(catData.categories);
+            const initialData = { categories: hierarchy };
             setInitialMetadataTree(hierarchy);
-            setFormValues({ categories: hierarchy });
+            initializeState(initialData);
             setIsInitialized(true);
         }
-    }, [artworkId, catData, isInitialized, setFormValues]);
+    }, [artworkId, catData, isInitialized, initializeState]);
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errors, setErrors] = useState<Partial<Record<keyof FormValues, string>>>({});
     const [touched, setTouched] = useState<Partial<Record<keyof FormValues, boolean>>>({});
 
-    const handleSetFieldValue = (field: keyof FormValues, value: any) => {
-        setFormValues((prev: FormValues) => ({
-            ...prev,
-            [field]: value,
-        }));
+    // Handle field value changes with appropriate debouncing
+    const handleSetFieldValue = (field: keyof FormValues, value: any, isUserTyping: boolean = false, fieldPath?: string) => {
+        if (isUserTyping && fieldPath) {
+            // For user typing, debounce per field path
+            setFormValues((prev: FormValues) => ({
+                ...prev,
+                [field]: value,
+            }), {
+                shouldDebounce: true,
+                fieldKey: fieldPath,
+                debounceMs: 800
+            });
+        } else {
+            // For programmatic changes (autocomplete selection, etc.), commit immediately
+            setFormValues((prev: FormValues) => ({
+                ...prev,
+                [field]: value,
+            }), { shouldDebounce: false });
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -173,6 +194,22 @@ const CreateArtworkPage: React.FC = () => {
         }
     };
 
+    // Add keyboard shortcuts for undo/redo
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.ctrlKey && e.key === 'z' && !e.shiftKey) {
+                e.preventDefault();
+                handleUndo();
+            } else if ((e.ctrlKey && e.key === 'y') || (e.ctrlKey && e.shiftKey && e.key === 'Z')) {
+                e.preventDefault();
+                handleRedo();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [handleUndo, handleRedo]);
+
     if (
         catsLoading ||
         !isInitialized ||
@@ -194,9 +231,9 @@ const CreateArtworkPage: React.FC = () => {
                 <form onSubmit={handleSubmit}>
                     <MetadataForm
                         categories={formValues.categories}
-                        setFieldValue={(field, value) => {
+                        setFieldValue={(field, value, isUserTyping, fieldPath) => {
                             if (field === 'categories') {
-                                handleSetFieldValue(field, value);
+                                handleSetFieldValue(field, value, isUserTyping, fieldPath);
                             }
                         }}
                         suggestionsByCategory={suggestionsByCategory}
@@ -206,50 +243,56 @@ const CreateArtworkPage: React.FC = () => {
                         <p className="mt-2 text-red-500">{errors.categories}</p>
                     )}
 
-                    <div className="fixed bottom-0 left-0 w-full bg-white dark:bg-gray-900 border-t border-gray-300 dark:border-gray-500 py-3 px-4 flex justify-end gap-2 shadow-[0_-2px_4px_rgba(0,0,0,0.05)] z-50">
-                        <div className="max-w-3xl w-full mx-auto gap-4 flex justify-end">
-                            <button
-                                type="button"
-                                onClick={handleUndo}
-                                disabled={!canUndo}
-                                className={`px-2 py-2 border rounded ${
-                                    !canUndo
-                                        ? "text-gray-400 border-gray-300 cursor-not-allowed"
-                                        : "text-blue-600 border-blue-600"
-                                }`}
-                                title="Cofnij (Ctrl+Z)"
-                            >
-                                <UndoArrow className="w-5 h-5"/>
-                            </button>
+                    <div className="fixed bottom-0 left-0 w-full bg-white dark:bg-gray-900 border-t border-gray-300 dark:border-gray-500 py-3 px-4 flex justify-between items-center shadow-[0_-2px_4px_rgba(0,0,0,0.05)] z-50">
+                        <div className="max-w-3xl w-full mx-auto flex justify-between items-center">
+                            {/* Undo/Redo buttons on the left */}
+                            <div className="flex gap-2">
+                                <button
+                                    type="button"
+                                    onClick={handleUndo}
+                                    disabled={!safeCanUndo}
+                                    className={`px-2 py-2 border rounded ${
+                                        !safeCanUndo
+                                            ? "text-gray-400 border-gray-300 cursor-not-allowed"
+                                            : "text-blue-600 border-blue-600"
+                                    }`}
+                                    title="Cofnij (Ctrl+Z)"
+                                >
+                                    <UndoArrow className="w-5 h-5"/>
+                                </button>
 
-                            <button
-                                type="button"
-                                onClick={handleRedo}
-                                disabled={!canRedo}
-                                className={`px-2 py-2 border rounded ${
-                                    !canRedo
-                                        ? "text-gray-400 border-gray-300 cursor-not-allowed"
-                                        : "text-blue-600 border-blue-600"
-                                }`}
-                                title="Przywróć (Ctrl+Y)"
-                            >
-                                <RedoArrow className="w-5 h-5"/>
-                            </button>
+                                <button
+                                    type="button"
+                                    onClick={handleRedo}
+                                    disabled={!safeCanRedo}
+                                    className={`px-2 py-2 border rounded ${
+                                        !safeCanRedo
+                                            ? "text-gray-400 border-gray-300 cursor-not-allowed"
+                                            : "text-blue-600 border-blue-600"
+                                    }`}
+                                    title="Przywróć (Ctrl+Y)"
+                                >
+                                    <RedoArrow className="w-5 h-5"/>
+                                </button>
+                            </div>
 
-                            <button
-                                type="button"
-                                onClick={() => navigate(-1)}
-                                className="px-4 py-2 border rounded"
-                            >
-                                Anuluj
-                            </button>
-                            <button
-                                type="submit"
-                                disabled={isSubmitting}
-                                className="px-4 py-2 bg-blue-600 text-white rounded"
-                            >
-                                {artworkId ? 'Zapisz' : 'Utwórz'}
-                            </button>
+                            {/* Cancel/Save buttons on the right */}
+                            <div className="flex gap-2">
+                                <button
+                                    type="button"
+                                    onClick={() => navigate(-1)}
+                                    className="px-4 py-2 border rounded"
+                                >
+                                    Anuluj
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    className="px-4 py-2 bg-blue-600 text-white rounded"
+                                >
+                                    {artworkId ? 'Zapisz' : 'Utwórz'}
+                                </button>
+                            </div>
                         </div>
                     </div>
 

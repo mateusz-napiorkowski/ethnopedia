@@ -9,7 +9,6 @@ import { Category } from "../../@types/Category";
 import { MdUndo as UndoArrow, MdRedo as RedoArrow } from "react-icons/md";
 import { useUndoRedoFormState } from "../../hooks/useUndoRedoFormState";
 
-
 interface FormValues {
     name: string;
     description: string;
@@ -36,13 +35,13 @@ const CreateCollectionPage = () => {
         undo: handleUndo,
         redo: handleRedo,
         canUndo,
-        canRedo
+        canRedo,
+        initializeState
     } = useUndoRedoFormState<FormValues>({
         name: location.state?.name || "",
         description: location.state?.description || "",
         categories: location.state?.categories || [{ name: "", subcategories: [] }],
     });
-
 
     const [formErrors, setFormErrors] = useState<FormErrors>({});
     const [submitError, setSubmitError] = useState<string | null>(null);
@@ -141,10 +140,14 @@ const CreateCollectionPage = () => {
         return errors;
     };
 
-    // Real-time validation for name field
+    // Handle name changes with debouncing for typing
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = e.target.value;
-        setFormValues({ ...formValues, name: newValue });
+        setFormValues({ ...formValues, name: newValue }, {
+            shouldDebounce: true,
+            fieldKey: 'name',
+            debounceMs: 500
+        });
 
         // Clear existing name error if field is now valid
         if (formErrors.name && newValue.trim() && !/[.]/.test(newValue)) {
@@ -157,10 +160,14 @@ const CreateCollectionPage = () => {
         }
     };
 
-    // Real-time validation for description field
+    // Handle description changes with debouncing for typing
     const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const newValue = e.target.value;
-        setFormValues({ ...formValues, description: newValue });
+        setFormValues({ ...formValues, description: newValue }, {
+            shouldDebounce: true,
+            fieldKey: 'description',
+            debounceMs: 500
+        });
 
         // Clear description error if field is now valid
         if (formErrors.description && newValue.trim()) {
@@ -219,6 +226,20 @@ const CreateCollectionPage = () => {
         setFormErrors(prev => ({ ...prev, categories: updatedErrors }));
     };
 
+    // Handle category changes - distinguish between structural changes and typing
+    const handleSetFieldValue = (field: string, value: any, isStructuralChange: boolean = false) => {
+        if (field === 'categories') {
+            if (isStructuralChange) {
+                setFormValues({ ...formValues, [field]: value }, { shouldDebounce: false });
+            } else {
+                setFormValues({ ...formValues, [field]: value }, { shouldDebounce: false });
+            }
+            updateCategoryErrors(value);
+        } else {
+            setFormValues({ ...formValues, [field]: value }, { shouldDebounce: false });
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setHasSubmitted(true);
@@ -253,12 +274,13 @@ const CreateCollectionPage = () => {
         }
     };
 
+    // Add keyboard shortcuts for undo/redo
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.ctrlKey && e.key === 'z') {
+            if (e.ctrlKey && e.key === 'z' && !e.shiftKey) {
                 e.preventDefault();
                 handleUndo();
-            } else if (e.ctrlKey && e.key === 'y') {
+            } else if ((e.ctrlKey && e.key === 'y') || (e.ctrlKey && e.shiftKey && e.key === 'Z')) {
                 e.preventDefault();
                 handleRedo();
             }
@@ -267,7 +289,6 @@ const CreateCollectionPage = () => {
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [handleUndo, handleRedo]);
-
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
@@ -316,18 +337,15 @@ const CreateCollectionPage = () => {
 
                         <StructureForm
                             initialFormData={formValues.categories}
-                            setFieldValue={(field, value) => {
-                                setFormValues({
-                                    ...formValues,
-                                    [field]: value,
-                                });
-                                if (field === 'categories') {
-                                    updateCategoryErrors(value);
-                                }
-                            }}
+                            setFieldValue={handleSetFieldValue}
                             isEditMode={isEditMode}
                             categoryErrors={formErrors.categories || {}}
                             hasSubmitted={hasSubmitted}
+                            // Pass the undo/redo system for structural changes
+                            undoRedoSystem={{
+                                setState: setFormValues,
+                                currentState: formValues
+                            }}
                         />
 
                         {submitError && (
