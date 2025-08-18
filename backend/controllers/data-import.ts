@@ -71,14 +71,10 @@ export const importDataAsCollection = authAsyncWrapper(async (req: Request, res:
             const newCollection = await CollectionCollection.create([
                 {name: collectionName, description: description, categories: categories}
             ], {session})
+
             const newRecordIdsMap = getNewRecordIdsMap(importData)
-            const records = await prepRecords(importData, collectionName, true, undefined, newRecordIdsMap)
+            const records = await prepRecords(importData, collectionName, true, newCollection[0]._id.toString(), newRecordIdsMap, zipFile)
             const result = await Artwork.insertMany(records, {session})
-            // for(const record of records) {
-            //     const artwork = new Artwork(record);
-            //     await artwork.save({ session });
-            // }
-            const unzipResult = await handleFilesUnzipAndUpload(zipFile, newCollection[0]._id.toString(), newRecordIdsMap)
             return res.status(201).json({newCollection, result})
         });
         session.endSession()

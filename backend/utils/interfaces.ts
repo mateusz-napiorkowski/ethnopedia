@@ -9,7 +9,8 @@ export interface artworkCategory {
 export interface record {
     _id?: mongoose.Types.ObjectId,
     categories: Array<artworkCategory>,
-    collectionName: string
+    collectionName: string,
+    files?: Array<any>
 }
 
 export interface collectionCategory {
