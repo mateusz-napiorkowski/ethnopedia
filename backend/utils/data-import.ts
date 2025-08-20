@@ -48,7 +48,6 @@ const prepareForUploadFromArchive = async (zipFile: any, collectionId: string) =
 
 export const prepRecords = async (data: Array<Array<string>>, collectionName: string, asNewCollection: boolean, collectionId: string, zipFile?: any) => {
     try {
-        const idMap = asNewCollection ? getNewRecordIdsMap(data) : undefined
         const header = data[0]
             .map(categoryName => categoryName.trim().replace(/\s*\.\s*/g, '.'))
         
@@ -66,11 +65,10 @@ export const prepRecords = async (data: Array<Array<string>>, collectionName: st
         const maxFileSize = 25 * 1024 * 1024 // 25 MB
         for(const row of recordsData) {
             const oldRecordId = isValidObjectId(row[_idColumnIndex].trim()) ? row[_idColumnIndex].trim() : undefined;
-            const newRecord: record = {categories: [], collectionName: collectionName, files: []}
-
-            newRecord._id = oldRecordId
-                ? ((asNewCollection) ? idMap[oldRecordId] : new mongoose.Types.ObjectId(oldRecordId))
-                : new mongoose.Types.ObjectId();
+            const newRecordId = !oldRecordId || asNewCollection 
+                ? new mongoose.Types.ObjectId()
+                : new mongoose.Types.ObjectId(oldRecordId)
+            const newRecord: record = {_id: newRecordId, categories: [], collectionName: collectionName, files: []}
 
             if(filenamesColumnIndex && zipFile) {
                 newRecord.files = []
@@ -80,7 +78,7 @@ export const prepRecords = async (data: Array<Array<string>>, collectionName: st
                     .map(item => {
                         const [index, filename] = item.split(":");
                         const ext = path.extname(filename);
-                        const newFilename = `${idMap[oldRecordId!].toString()}_${index}${ext}`
+                        const newFilename = `${newRecordId.toString()}_${index}${ext}`
                         return {
                             oldFileName: `${oldRecordId}_${index}${ext}`,
                             newFilename: newFilename,
@@ -155,14 +153,4 @@ const fillSubcategories = (fields: Array<string>, depth: number, header: Array<s
         })        
     });
     return subcategories
-}
-
-export const getNewRecordIdsMap = (importData: Array<Array<string>>) => {
-    const _idColumnIndex = importData[0].indexOf("_id")
-    const mapping: any = {}
-    for(const row of importData.slice(1)) {
-        if(isValidObjectId(row[_idColumnIndex]))
-            mapping[row[_idColumnIndex]] = new mongoose.Types.ObjectId()    
-    }
-    return mapping
 }
