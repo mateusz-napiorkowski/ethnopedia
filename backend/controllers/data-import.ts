@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
 import Artwork from "../models/artwork";
 import { authAsyncWrapper } from "../middleware/auth"
-import { getNewRecordIdsMap, prepRecords } from "../utils/data-import";
+import { prepRecords } from "../utils/data-import";
 import CollectionCollection from "../models/collection";
 import mongoose, { ClientSession } from "mongoose";
 import { findMissingParentCategories, transformCategoriesArrayToCategoriesObject } from "../utils/categories";
@@ -72,8 +72,7 @@ export const importDataAsCollection = authAsyncWrapper(async (req: Request, res:
                 {name: collectionName, description: description, categories: categories}
             ], {session})
 
-            const newRecordIdsMap = getNewRecordIdsMap(importData)
-            const {records} = await prepRecords(importData, collectionName, true, newCollection[0]._id.toString(), newRecordIdsMap, zipFile)
+            const {records} = await prepRecords(importData, collectionName, true, newCollection[0]._id.toString(), zipFile)
             const result = await Artwork.insertMany(records, {session})
             return res.status(201).json({newCollection, result})
         });

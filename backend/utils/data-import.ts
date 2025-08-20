@@ -1,52 +1,59 @@
 import mongoose, { isValidObjectId } from "mongoose"
-import { getAllCategories } from "./categories"
 import { artworkCategory, record } from "./interfaces"
 import path from "path"
 import fs from "fs";
 import unzipper from "unzipper"
 
-export const prepRecords = async (data: Array<Array<string>>, collectionName: string, asCollection: boolean, collectionId: string | undefined = undefined, idMap: any, zipFile?: any) => {
-    try {
-        const header = data[0]
-            .map(categoryName => categoryName.trim().replace(/\s*\.\s*/g, '.'))
-        const categories = (asCollection) 
-            ? data[0]
-                .filter(categoryName => categoryName.trim() !== "_id")
-                .map(categoryName => categoryName.trim().replace(/\s*\.\s*/g, '.'))
-            : await getAllCategories([collectionId!])
+const validateCategories = async (header: string[], asNewCollection: boolean) => {
+    if(asNewCollection) {
+        const categories = header.filter(categoryName => categoryName.trim() !== "_id" && categoryName.trim() !== "nazwy plików")
         const missingCategories = categories.filter((category: string) => !header.includes(category))
         const unnecessaryCategories = header.filter((category: string) => {
-            if(category === "_id")
+            if(category === "_id" || category === "nazwy plików")
                 return false
             return !categories.includes(category)
         })
         if(missingCategories.length != 0 || unnecessaryCategories.length != 0) {
             throw new Error(`Brakujące kategorie: ${missingCategories}, Nadmiarowe kategorie: ${unnecessaryCategories}`)
         }
-        if(header.length !== new Set(header).size)
-            throw new Error ("Header has duplicate values")
-        if(header[header.length - 1] == '')
-            throw new Error ("Row contains more columns than the header")
-        if(header.includes(""))
-            throw new Error (`Header has empty fields`)     
-        for(const categoryName of header) {
-            const categoryNameSplitByDot = categoryName.split('.')
-            if(categoryNameSplitByDot.includes(""))
-                throw new Error (`No subcategory name after the dot symbol in header field: ${categoryName}`)
-            const directParentCategoryFullName = categoryNameSplitByDot.slice(0,-1).join('.')
-            if(categoryNameSplitByDot.length > 1 && !header.includes(directParentCategoryFullName))
-                throw new Error (`Missing parent category: '${directParentCategoryFullName}'`)
-        }
+    }
+    if(header.length !== new Set(header).size)
+        throw new Error ("Header has duplicate values")
+    if(header[header.length - 1] == '')
+        throw new Error ("Row contains more columns than the header")
+    if(header.includes(""))
+        throw new Error (`Header has empty fields`)     
+    for(const categoryName of header) {
+        const categoryNameSplitByDot = categoryName.split('.')
+        if(categoryNameSplitByDot.includes(""))
+            throw new Error (`No subcategory name after the dot symbol in header field: ${categoryName}`)
+        const directParentCategoryFullName = categoryNameSplitByDot.slice(0,-1).join('.')
+        if(categoryNameSplitByDot.length > 1 && !header.includes(directParentCategoryFullName))
+            throw new Error (`Missing parent category: '${directParentCategoryFullName}'`)
+    }
+}
 
-        let archiveBuffer;
-        let collectionUploadsDir;
-        if(zipFile) {
-            const uploadsDir = path.join(__dirname, "..", `uploads/`);
-            if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
-            collectionUploadsDir = path.join(__dirname, "..", `uploads/${collectionId}`);
-            if (!fs.existsSync(collectionUploadsDir)) fs.mkdirSync(collectionUploadsDir);
-            archiveBuffer = await unzipper.Open.buffer(zipFile.buffer);
-        }
+const prepareForUploadFromArchive = async (zipFile: any, collectionId: string) => {
+    if(!zipFile) return {}
+
+    const uploadsDir = path.join(__dirname, "..", `uploads/`);
+    if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
+    const collectionUploadsDir = path.join(__dirname, "..", `uploads/${collectionId}`);
+    if (!fs.existsSync(collectionUploadsDir)) fs.mkdirSync(collectionUploadsDir);
+
+    const archiveBuffer = await unzipper.Open.buffer(zipFile.buffer);
+
+    return {archiveBuffer, collectionUploadsDir}
+}
+
+export const prepRecords = async (data: Array<Array<string>>, collectionName: string, asNewCollection: boolean, collectionId: string, zipFile?: any) => {
+    try {
+        const idMap = asNewCollection ? getNewRecordIdsMap(data) : undefined
+        const header = data[0]
+            .map(categoryName => categoryName.trim().replace(/\s*\.\s*/g, '.'))
+        
+        validateCategories(header, asNewCollection)
+        const {collectionUploadsDir, archiveBuffer} = await prepareForUploadFromArchive(zipFile, collectionId)
         
         const totalFilesToUpload = archiveBuffer ? archiveBuffer.files.length : 0
 
@@ -58,11 +65,11 @@ export const prepRecords = async (data: Array<Array<string>>, collectionName: st
         let failed = []
         const maxFileSize = 25 * 1024 * 1024 // 25 MB
         for(const row of recordsData) {
+            const oldRecordId = isValidObjectId(row[_idColumnIndex].trim()) ? row[_idColumnIndex].trim() : undefined;
             const newRecord: record = {categories: [], collectionName: collectionName, files: []}
 
-            let oldRecordId = isValidObjectId(row[_idColumnIndex].trim()) ? row[_idColumnIndex].trim() : undefined;
             newRecord._id = oldRecordId
-                ? ((asCollection) ? idMap[oldRecordId] : new mongoose.Types.ObjectId(oldRecordId))
+                ? ((asNewCollection) ? idMap[oldRecordId] : new mongoose.Types.ObjectId(oldRecordId))
                 : new mongoose.Types.ObjectId();
 
             if(filenamesColumnIndex && zipFile) {
