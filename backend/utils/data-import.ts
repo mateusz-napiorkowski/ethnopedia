@@ -48,11 +48,15 @@ export const prepRecords = async (data: Array<Array<string>>, collectionName: st
             archiveBuffer = await unzipper.Open.buffer(zipFile.buffer);
         }
         
+        const totalFilesToUpload = archiveBuffer ? archiveBuffer.files.length : 0
 
         const recordsData = data.slice(1)
         const records: Array<record> = []
         const _idColumnIndex = header.indexOf("_id")
         const filenamesColumnIndex = header.indexOf("nazwy plików")
+        let uploadedFilesCount = 0
+        let failed = []
+        const maxFileSize = 25 * 1024 * 1024 // 25 MB
         for(const row of recordsData) {
             const newRecord: record = {categories: [], collectionName: collectionName, files: []}
 
@@ -79,17 +83,29 @@ export const prepRecords = async (data: Array<Array<string>>, collectionName: st
                 for(const entry of archiveFilesData) {
                     const fileEntry = archiveBuffer!.files.find(d => d.path === entry.oldFileName);
                     if(fileEntry) {
-                        const fileProps = {
-                            originalFilename: entry.userFilename,
-                            newFilename: entry.newFilename,
-                            filePath: `uploads/${collectionId}/${entry.newFilename}`,
-                            size: fileEntry?.uncompressedSize,
-                            uploadedAt: Date.now()
+                        try {
+                            if(!/\.(mei|mid|midi|txt|text|musicxml|mxl|xml|wav|mp3)$/i.test(entry.oldFileName))
+                                throw Error("Invalid file extension")
+                            if(fileEntry.uncompressedSize > maxFileSize)
+                                throw Error("File size exceeded")
+                            const outputPath = path.join(collectionUploadsDir!, entry.newFilename);
+                            const writeStream = fs.createWriteStream(outputPath);
+                            fileEntry.stream().pipe(writeStream);
+                            const fileProps = {
+                                originalFilename: entry.userFilename,
+                                newFilename: entry.newFilename,
+                                filePath: `uploads/${collectionId}/${entry.newFilename}`,
+                                size: fileEntry?.uncompressedSize,
+                                uploadedAt: Date.now()
+                            }
+                            newRecord.files.push(fileProps)
+                            uploadedFilesCount++;
+                        } catch (error) {
+                            const err = error as Error
+                            failed.push({archiveFilename: entry.oldFileName, userFilename: entry.userFilename, cause: err.message})
                         }
-                        const outputPath = path.join(collectionUploadsDir!, entry.newFilename);
-                        const writeStream = fs.createWriteStream(outputPath);
-                        fileEntry.stream().pipe(writeStream);
-                        newRecord.files.push(fileProps)
+                    } else {
+                        failed.push({archiveFilename: entry.oldFileName, userFilename: entry.userFilename, cause: "File not found in the archive"})         
                     }
                     
                 }
@@ -113,7 +129,7 @@ export const prepRecords = async (data: Array<Array<string>>, collectionName: st
             });
             records.push(newRecord)
         }
-        return records
+        return {records, uploadedFilesCount, failedUploadsCount: failed.length, failedUploadsCauses: failed, unlistedFilesCount: totalFilesToUpload-uploadedFilesCount-failed.length}
     } catch (error) {
         throw new Error("Invalid data in the spreadsheet file", {cause: error})
     }
@@ -142,40 +158,4 @@ export const getNewRecordIdsMap = (importData: Array<Array<string>>) => {
             mapping[row[_idColumnIndex]] = new mongoose.Types.ObjectId()    
     }
     return mapping
-}
-
-export const handleFilesUnzipAndUpload = async (zipFile: any, collectionId: string, idMap: any) => {
-    console.log("AAAAAAAAAAAAAAAAAAAa")
-    const uploadsDir = path.join(__dirname, "..", `uploads/`);
-    if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
-    const collectionUploadsDir = path.join(__dirname, "..", `uploads/${collectionId}`);
-    if (!fs.existsSync(collectionUploadsDir)) fs.mkdirSync(collectionUploadsDir);
-    const archiveBuffer = await unzipper.Open.buffer(zipFile.buffer);
-    const fileEntry = archiveBuffer.files.find(d => d.path === "6899b9f375550769e12ed081_0.mei");
-    if (fileEntry) {
-        const contentBuffer = await fileEntry.buffer();
-        console.log(contentBuffer.toString());
-        const outputPath = path.join("/your/output/directory", path.basename(fileEntry.path));
-        const writeStream = fs.createWriteStream(outputPath);
-
-        // Pipe the file stream to disk
-        fileEntry.stream().pipe(writeStream);
-    }
-
-    // const bufferStream = Readable.from(zipFile.buffer);
-    // const stream = bufferStream.pipe(unzipper.Parse({ forceStream: true }));
-    // for await (const entry of stream) {
-    //     const fileName = entry.path;
-    //     const type = entry.type;
-    //     if (type === "File") {
-    //         const [_, inputFileId, suffix] = fileName.match(/^([a-f0-9]+)(_.*)$/);
-    //         if(idMap[inputFileId]) {
-    //             const targetPath = path.join(collectionUploadsDir, path.basename(`${idMap[inputFileId].toString()}${suffix}`));
-    //             entry.pipe(fs.createWriteStream(targetPath));
-    //             console.log(`Extracted: ${fileName} -> ${targetPath}`);
-    //         }      
-    //     } else {
-    //         entry.autodrain();
-    //     }
-    // }
 }
