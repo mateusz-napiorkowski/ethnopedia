@@ -46,6 +46,58 @@ const prepareForUploadFromArchive = async (zipFile: any, collectionId: string) =
     return {archiveBuffer, collectionUploadsDir}
 }
 
+const processArchiveFiles = (newRecord: any, archiveBuffer: any, oldRecordId: string, newRecordId: string, filenamesCell: string | undefined, collectionUploadsDir: any, collectionId: string, archivePresent: boolean) => {
+    let uploadedFilesCount = 0
+    let failedUploadsCauses = []
+    if(filenamesCell && archivePresent) {
+        newRecord.files = []
+        const maxFileSize = 25 * 1024 * 1024 // 25 MB
+        const archiveFilesData = filenamesCell.trim()
+            .split(";")
+            .filter(Boolean)
+            .map(item => {
+                const [index, filename] = item.split(":");
+                const ext = path.extname(filename);
+                const newFilename = `${newRecordId.toString()}_${index}${ext}`
+                return {
+                    oldFileName: `${oldRecordId}_${index}${ext}`,
+                    newFilename: newFilename,
+                    userFilename: filename
+                };
+            });
+        for(const entry of archiveFilesData) {
+            const fileEntry = archiveBuffer!.files.find((d: any) => d.path === entry.oldFileName);
+            if(fileEntry) {
+                try {
+                    if(!/\.(mei|mid|midi|txt|text|musicxml|mxl|xml|wav|mp3)$/i.test(entry.oldFileName))
+                        throw Error("Invalid file extension")
+                    if(fileEntry.uncompressedSize > maxFileSize)
+                        throw Error("File size exceeded")
+                    const outputPath = path.join(collectionUploadsDir!, entry.newFilename);
+                    const writeStream = fs.createWriteStream(outputPath);
+                    fileEntry.stream().pipe(writeStream);
+                    const fileProps = {
+                        originalFilename: entry.userFilename,
+                        newFilename: entry.newFilename,
+                        filePath: `uploads/${collectionId}/${entry.newFilename}`,
+                        size: fileEntry?.uncompressedSize,
+                        uploadedAt: Date.now()
+                    }
+                    newRecord.files.push(fileProps)
+                    uploadedFilesCount++;
+                } catch (error) {
+                    const err = error as Error
+                    failedUploadsCauses.push({archiveFilename: entry.oldFileName, userFilename: entry.userFilename, cause: err.message})
+                }
+            } else {
+                failedUploadsCauses.push({archiveFilename: entry.oldFileName, userFilename: entry.userFilename, cause: "File not found in the archive"})         
+            }
+            
+        }
+    }
+    return {uploadedFilesCount, failedUploadsCauses}
+}
+
 export const prepRecords = async (data: Array<Array<string>>, collectionName: string, asNewCollection: boolean, collectionId: string, zipFile?: any) => {
     try {
         const header = data[0]
@@ -53,15 +105,14 @@ export const prepRecords = async (data: Array<Array<string>>, collectionName: st
         
         validateCategories(header, asNewCollection)
         const {collectionUploadsDir, archiveBuffer} = await prepareForUploadFromArchive(zipFile, collectionId)
-        
-        const totalFilesToUpload = archiveBuffer ? archiveBuffer.files.length : 0
 
         const recordsData = data.slice(1)
         const records: Array<record> = []
         const _idColumnIndex = header.indexOf("_id")
         const filenamesColumnIndex = header.indexOf("nazwy plików")
-        let uploadedFilesCount = 0
-        let failed = []
+        let totalUploadedFilesCount = 0
+        let totalFailedUploadsCauses = []
+        const totalFilesToUpload = archiveBuffer ? archiveBuffer.files.length : 0
         const maxFileSize = 25 * 1024 * 1024 // 25 MB
         for(const row of recordsData) {
             const oldRecordId = isValidObjectId(row[_idColumnIndex].trim()) ? row[_idColumnIndex].trim() : undefined;
@@ -70,51 +121,16 @@ export const prepRecords = async (data: Array<Array<string>>, collectionName: st
                 : new mongoose.Types.ObjectId(oldRecordId)
             const newRecord: record = {_id: newRecordId, categories: [], collectionName: collectionName, files: []}
 
-            if(filenamesColumnIndex && zipFile) {
-                newRecord.files = []
-                const archiveFilesData = row[filenamesColumnIndex].trim()
-                    .split(";")
-                    .filter(Boolean)
-                    .map(item => {
-                        const [index, filename] = item.split(":");
-                        const ext = path.extname(filename);
-                        const newFilename = `${newRecordId.toString()}_${index}${ext}`
-                        return {
-                            oldFileName: `${oldRecordId}_${index}${ext}`,
-                            newFilename: newFilename,
-                            userFilename: filename
-                        };
-                    });
-                for(const entry of archiveFilesData) {
-                    const fileEntry = archiveBuffer!.files.find(d => d.path === entry.oldFileName);
-                    if(fileEntry) {
-                        try {
-                            if(!/\.(mei|mid|midi|txt|text|musicxml|mxl|xml|wav|mp3)$/i.test(entry.oldFileName))
-                                throw Error("Invalid file extension")
-                            if(fileEntry.uncompressedSize > maxFileSize)
-                                throw Error("File size exceeded")
-                            const outputPath = path.join(collectionUploadsDir!, entry.newFilename);
-                            const writeStream = fs.createWriteStream(outputPath);
-                            fileEntry.stream().pipe(writeStream);
-                            const fileProps = {
-                                originalFilename: entry.userFilename,
-                                newFilename: entry.newFilename,
-                                filePath: `uploads/${collectionId}/${entry.newFilename}`,
-                                size: fileEntry?.uncompressedSize,
-                                uploadedAt: Date.now()
-                            }
-                            newRecord.files.push(fileProps)
-                            uploadedFilesCount++;
-                        } catch (error) {
-                            const err = error as Error
-                            failed.push({archiveFilename: entry.oldFileName, userFilename: entry.userFilename, cause: err.message})
-                        }
-                    } else {
-                        failed.push({archiveFilename: entry.oldFileName, userFilename: entry.userFilename, cause: "File not found in the archive"})         
-                    }
-                    
-                }
-            }
+            const {uploadedFilesCount, failedUploadsCauses} = processArchiveFiles(
+                newRecord,
+                archiveBuffer,
+                oldRecordId!,
+                newRecordId.toString(),
+                filenamesColumnIndex ? row[filenamesColumnIndex] : undefined,
+                collectionUploadsDir,
+                collectionId,
+                zipFile as boolean
+            )
 
             row.forEach((categoryValueUntrimmed, columnIndex) => {
                 if(header[columnIndex] !== "_id" && header[columnIndex] !== "nazwy plików") {
@@ -133,8 +149,16 @@ export const prepRecords = async (data: Array<Array<string>>, collectionName: st
                 }  
             });
             records.push(newRecord)
+            totalUploadedFilesCount += uploadedFilesCount
+            totalFailedUploadsCauses.push(...failedUploadsCauses)
         }
-        return {records, uploadedFilesCount, failedUploadsCount: failed.length, failedUploadsCauses: failed, unlistedFilesCount: totalFilesToUpload-uploadedFilesCount-failed.length}
+        return {
+            records, 
+            uploadedFilesCount: totalUploadedFilesCount,
+            failedUploadsCount: totalFailedUploadsCauses.length,
+            failedUploadsCauses: totalFailedUploadsCauses,
+            unlistedFilesCount: totalFilesToUpload-totalUploadedFilesCount-totalFailedUploadsCauses.length
+        }
     } catch (error) {
         throw new Error("Invalid data in the spreadsheet file", {cause: error})
     }
