@@ -60,7 +60,7 @@ export const importDataAsCollection = authAsyncWrapper(async (req: Request, res:
             throw Error("Invalid file extension")
         const session = await mongoose.startSession()
         await session.withTransaction(async (session: ClientSession) => {
-            const categoriesArray = importData[0].filter((cat: string) => cat !== "_id").map((category: string) => category.trim())
+            const categoriesArray = importData[0].filter((cat: string) => cat !== "_id" && cat !== "nazwy plików").map((category: string) => category.trim())
             const missingCategories = findMissingParentCategories(categoriesArray)
             if(missingCategories.length !== 0)
                 throw new Error(
@@ -72,9 +72,14 @@ export const importDataAsCollection = authAsyncWrapper(async (req: Request, res:
                 {name: collectionName, description: description, categories: categories}
             ], {session})
 
-            const {records} = await prepRecordsAndFiles(importData, collectionName, true, newCollection[0]._id.toString(), zipFile)
+            const {
+                records,
+                uploadedFilesCount,
+                failedUploadsCount,
+                failedUploadsCauses
+            } = await prepRecordsAndFiles(importData, collectionName, true, newCollection[0]._id.toString(), zipFile)
             const result = await Artwork.insertMany(records, {session})
-            return res.status(201).json({newCollection, result})
+            return res.status(201).json({newCollection, result, uploadedFilesCount, failedUploadsCount, failedUploadsCauses})
         });
         session.endSession()
     } catch (error) {

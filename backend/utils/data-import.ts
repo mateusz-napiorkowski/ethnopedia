@@ -173,8 +173,7 @@ export const prepRecordsAndFiles = async (
             records,
             uploadedFilesCount: totalUploadedFilesCount,
             failedUploadsCount: totalFailedUploadsCauses.length,
-            failedUploadsCauses: totalFailedUploadsCauses,
-            unlistedFilesCount: unlistedFiles.length,
+            failedUploadsCauses: totalFailedUploadsCauses
         }
     } catch (error) {
         throw new Error("Invalid data in the spreadsheet file", {cause: error})
