@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
 import Artwork from "../models/artwork";
 import { authAsyncWrapper } from "../middleware/auth"
-import { prepRecords } from "../utils/data-import";
+import { prepRecordsAndFiles } from "../utils/data-import";
 import CollectionCollection from "../models/collection";
 import mongoose, { ClientSession } from "mongoose";
 import { findMissingParentCategories, transformCategoriesArrayToCategoriesObject } from "../utils/categories";
@@ -17,7 +17,7 @@ export const importData = authAsyncWrapper(async (req: Request, res: Response) =
             if (foundCollections.length !== 1 )
                 throw new Error(`Collection not found`)
             const collectionName = foundCollections[0].name!
-            const {records} = await prepRecords(req.body.importData, collectionName, false, collectionId, undefined)
+            const {records} = await prepRecordsAndFiles(req.body.importData, collectionName, false, collectionId, undefined)
             const bulkWriteOps = records.map(record => ({
                 updateOne: {
                     filter: { _id: record._id, },
@@ -72,7 +72,7 @@ export const importDataAsCollection = authAsyncWrapper(async (req: Request, res:
                 {name: collectionName, description: description, categories: categories}
             ], {session})
 
-            const {records} = await prepRecords(importData, collectionName, true, newCollection[0]._id.toString(), zipFile)
+            const {records} = await prepRecordsAndFiles(importData, collectionName, true, newCollection[0]._id.toString(), zipFile)
             const result = await Artwork.insertMany(records, {session})
             return res.status(201).json({newCollection, result})
         });

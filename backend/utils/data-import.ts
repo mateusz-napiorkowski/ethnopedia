@@ -33,7 +33,7 @@ const validateCategories = async (header: string[], asNewCollection: boolean) =>
     }
 }
 
-const prepareForUploadFromArchive = async (zipFile: any, collectionId: string) => {
+const prepUploadsDirAndArchiveBuffer = async (zipFile: Express.Multer.File | undefined, collectionId: string) => {
     if(!zipFile) return {}
 
     const uploadsDir = path.join(__dirname, "..", `uploads/`);
@@ -46,10 +46,14 @@ const prepareForUploadFromArchive = async (zipFile: any, collectionId: string) =
     return {archiveBuffer, collectionUploadsDir}
 }
 
-const processArchiveFiles = (newRecord: any, archiveBuffer: any, oldRecordId: string, newRecordId: string, filenamesCell: string | undefined, collectionUploadsDir: any, collectionId: string, archivePresent: boolean) => {
-    let uploadedFilesCount = 0
+const processArchiveFiles = (
+    newRecord: any, archiveBuffer: any, oldRecordId: string, newRecordId: string,
+    filenamesCell: string | undefined, collectionUploadsDir: any,
+    collectionId: string, zipFile: Express.Multer.File | undefined
+) => {
+    let uploadedFilenames = []
     let failedUploadsCauses = []
-    if(filenamesCell && archivePresent) {
+    if(filenamesCell && zipFile) {
         newRecord.files = []
         const maxFileSize = 25 * 1024 * 1024 // 25 MB
         const archiveFilesData = filenamesCell.trim()
@@ -84,7 +88,7 @@ const processArchiveFiles = (newRecord: any, archiveBuffer: any, oldRecordId: st
                         uploadedAt: Date.now()
                     }
                     newRecord.files.push(fileProps)
-                    uploadedFilesCount++;
+                    uploadedFilenames.push(entry.oldFileName)
                 } catch (error) {
                     const err = error as Error
                     failedUploadsCauses.push({archiveFilename: entry.oldFileName, userFilename: entry.userFilename, cause: err.message})
@@ -95,16 +99,38 @@ const processArchiveFiles = (newRecord: any, archiveBuffer: any, oldRecordId: st
             
         }
     }
-    return {uploadedFilesCount, failedUploadsCauses}
+    return {uploadedFilenames, uploadedFilesCount: uploadedFilenames.length, failedUploadsCauses}
 }
 
-export const prepRecords = async (data: Array<Array<string>>, collectionName: string, asNewCollection: boolean, collectionId: string, zipFile?: any) => {
+const setRecordCategories = (row: string[], newRecord: any, header: string[]) => {
+    row.forEach((categoryValueUntrimmed, columnIndex) => {
+        if(header[columnIndex] !== "_id" && header[columnIndex] !== "nazwy plików") {
+            const categoryValue = categoryValueUntrimmed.trim()
+            const isNotSubcategoryColumn = header[columnIndex].split(".").length === 1
+            if(isNotSubcategoryColumn) {
+                const directSubcategoriesNames = header.filter(columnName => 
+                    columnName.startsWith(`${header[columnIndex]}.`) && columnName.split(".").length === 2
+                )
+                newRecord.categories.push({
+                    name: header[columnIndex],
+                    value: categoryValue,
+                    subcategories: fillSubcategories(directSubcategoriesNames, 2, header, row)
+                })      
+            }
+        }  
+    });
+}
+
+export const prepRecordsAndFiles = async (
+    data: Array<Array<string>>, collectionName: string,
+    asNewCollection: boolean, collectionId: string, zipFile?: Express.Multer.File | undefined
+) => {
     try {
         const header = data[0]
             .map(categoryName => categoryName.trim().replace(/\s*\.\s*/g, '.'))
-        
         validateCategories(header, asNewCollection)
-        const {collectionUploadsDir, archiveBuffer} = await prepareForUploadFromArchive(zipFile, collectionId)
+
+        const {collectionUploadsDir, archiveBuffer} = await prepUploadsDirAndArchiveBuffer(zipFile, collectionId)
 
         const recordsData = data.slice(1)
         const records: Array<record> = []
@@ -112,8 +138,7 @@ export const prepRecords = async (data: Array<Array<string>>, collectionName: st
         const filenamesColumnIndex = header.indexOf("nazwy plików")
         let totalUploadedFilesCount = 0
         let totalFailedUploadsCauses = []
-        const totalFilesToUpload = archiveBuffer ? archiveBuffer.files.length : 0
-        const maxFileSize = 25 * 1024 * 1024 // 25 MB
+        let allUploadedFilenames = []
         for(const row of recordsData) {
             const oldRecordId = isValidObjectId(row[_idColumnIndex].trim()) ? row[_idColumnIndex].trim() : undefined;
             const newRecordId = !oldRecordId || asNewCollection 
@@ -121,7 +146,7 @@ export const prepRecords = async (data: Array<Array<string>>, collectionName: st
                 : new mongoose.Types.ObjectId(oldRecordId)
             const newRecord: record = {_id: newRecordId, categories: [], collectionName: collectionName, files: []}
 
-            const {uploadedFilesCount, failedUploadsCauses} = processArchiveFiles(
+            const {uploadedFilesCount, uploadedFilenames, failedUploadsCauses} = processArchiveFiles(
                 newRecord,
                 archiveBuffer,
                 oldRecordId!,
@@ -129,35 +154,27 @@ export const prepRecords = async (data: Array<Array<string>>, collectionName: st
                 filenamesColumnIndex ? row[filenamesColumnIndex] : undefined,
                 collectionUploadsDir,
                 collectionId,
-                zipFile as boolean
+                zipFile
             )
 
-            row.forEach((categoryValueUntrimmed, columnIndex) => {
-                if(header[columnIndex] !== "_id" && header[columnIndex] !== "nazwy plików") {
-                    const categoryValue = categoryValueUntrimmed.trim()
-                    const isNotSubcategoryColumn = header[columnIndex].split(".").length === 1
-                    if(isNotSubcategoryColumn) {
-                        const directSubcategoriesNames = header.filter(columnName => 
-                            columnName.startsWith(`${header[columnIndex]}.`) && columnName.split(".").length === 2
-                        )
-                        newRecord.categories.push({
-                            name: header[columnIndex],
-                            value: categoryValue,
-                            subcategories: fillSubcategories(directSubcategoriesNames, 2, header, row)
-                        })      
-                    }
-                }  
-            });
+            setRecordCategories(row, newRecord, header)
+            
             records.push(newRecord)
+            allUploadedFilenames.push(...uploadedFilenames)
             totalUploadedFilesCount += uploadedFilesCount
             totalFailedUploadsCauses.push(...failedUploadsCauses)
         }
+        const allArchiveFilenames = archiveBuffer ? archiveBuffer.files.map(file => file.path) : [];
+        const unlistedFiles = allArchiveFilenames.filter(x => !allUploadedFilenames.includes(x))
+        for(const file of unlistedFiles) {
+            totalFailedUploadsCauses.push({archiveFilename: file, cause: "File is not associated with any record"})
+        }
         return {
-            records, 
+            records,
             uploadedFilesCount: totalUploadedFilesCount,
             failedUploadsCount: totalFailedUploadsCauses.length,
             failedUploadsCauses: totalFailedUploadsCauses,
-            unlistedFilesCount: totalFilesToUpload-totalUploadedFilesCount-totalFailedUploadsCauses.length
+            unlistedFilesCount: unlistedFiles.length,
         }
     } catch (error) {
         throw new Error("Invalid data in the spreadsheet file", {cause: error})
