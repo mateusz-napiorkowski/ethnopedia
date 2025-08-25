@@ -33,7 +33,7 @@ const validateCategories = async (header: string[], asNewCollection: boolean) =>
     }
 }
 
-const prepUploadsDirAndArchiveBuffer = async (zipFile: Express.Multer.File | undefined, collectionId: string) => {
+export const prepUploadsDirAndArchiveBuffer = async (zipFile: Express.Multer.File | undefined, collectionId: string) => {
     if(!zipFile) return {}
 
     const uploadsDir = path.join(__dirname, "..", `uploads/`);
