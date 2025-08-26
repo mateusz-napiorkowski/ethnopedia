@@ -179,84 +179,45 @@ describe('data-import controller util functions tests', () => {
             testname: "processArchiveFiles test - no files specified",
             oldRecordId: "68936488200287f547b71f5b",
             filenamesString: undefined,
-            zipFilePath: "utils/archives/archive.zip",
-            returnValue: {uploadedFilenames: [], uploadedFilesCount: 0, failedUploadsCauses: [], filenamesStringValid: undefined}
+            zipFilePath: "utils/archives/archive.zip"
         },
         {
             testname: "processArchiveFiles test - no zipfile provided",
             oldRecordId: "68936488200287f547b71f5b",
             filenamesString: "0:filename.mid;1:music.mp3;2:text.txt",
-            zipFilePath: undefined,
-            returnValue: {uploadedFilenames: [], uploadedFilesCount: 0, failedUploadsCauses: [], filenamesStringValid: true}
+            zipFilePath: undefined
         },
         {
             testname: "processArchiveFiles test - processing successful",
             oldRecordId: "68936488200287f547b71f5b",
             filenamesString: "0:filename.mid;1:music.mp3;2:text.txt",
-            zipFilePath: "utils/archives/archive.zip",
-            returnValue: {uploadedFilenames: [
-                "68936488200287f547b71f5b_0.mid",
-                "68936488200287f547b71f5b_1.mp3",
-                "68936488200287f547b71f5b_2.txt"
-            ], uploadedFilesCount: 3, failedUploadsCauses: [], filenamesStringValid: true}
+            zipFilePath: "utils/archives/archive.zip"
         },
         {
             testname: "processArchiveFiles test - some files are not present in the archive",
             oldRecordId: "68936488200287f547b71f5b",
             filenamesString: "0:filename.mid;3:music.mp3;",
-            zipFilePath: "utils/archives/archive.zip",
-            returnValue: {
-                uploadedFilenames: [
-                    "68936488200287f547b71f5b_0.mid"
-                ],
-                uploadedFilesCount: 1,
-                failedUploadsCauses: [
-                    {
-                        archiveFilename: "68936488200287f547b71f5b_3.mp3",
-                        cause: "File not found in the archive", userFilename: "music.mp3",
-                    }
-                ],
-                filenamesStringValid: true
-            }
+            zipFilePath: "utils/archives/archive.zip"
         },
         {
             testname: "processArchiveFiles test - failed uploads of file with wrong extension and of file with too large size",
             oldRecordId: "68936488200287f547b71f5b",
             filenamesString: "0:filename.mid;3:pdf_file.pdf;4:large_file.txt",
-            zipFilePath: "utils/archives/archive.zip",
-            returnValue: {
-                uploadedFilenames: [
-                    "68936488200287f547b71f5b_0.mid"
-                ],
-                uploadedFilesCount: 1,
-                failedUploadsCauses: [
-                    {
-                        archiveFilename: "68936488200287f547b71f5b_3.pdf",
-                        cause: "Invalid file extension", userFilename: "pdf_file.pdf",
-                    },
-                    {
-                        archiveFilename: "68936488200287f547b71f5b_4.txt",
-                        cause: "File size exceeded", userFilename: "large_file.txt",
-                    },
-                ],
-                filenamesStringValid: true
-            }
+            zipFilePath: "utils/archives/archive.zip"
         },
         {
             testname: "processArchiveFiles test - incorrect filenames string (no file indices)",
             oldRecordId: "68936488200287f547b71f5b",
             filenamesString: "filename.txt;music.mp3",
-            zipFilePath: "utils/archives/archive.zip",
-            returnValue: {uploadedFilenames: [], uploadedFilesCount: 0, failedUploadsCauses: [], filenamesStringValid: false}
+            zipFilePath: "utils/archives/archive.zip"
         },
         {
             testname: "processArchiveFiles test - incorrect filenames string (file indices are not numbers between 0 and 4)",
             oldRecordId: "68936488200287f547b71f5b",
             filenamesString: "5:filename.txt;6:music.mp3",
-            zipFilePath: "utils/archives/archive.zip",
-            returnValue: {uploadedFilenames: [], uploadedFilesCount: 0, failedUploadsCauses: [], filenamesStringValid: false}
+            zipFilePath: "utils/archives/archive.zip"
         },
-    ])("$testname", async ({oldRecordId, filenamesString, zipFilePath, returnValue}) => {
+    ])("$testname", async ({oldRecordId, filenamesString, zipFilePath}) => {
         const newRecord = {
             _id: new mongoose.Types.ObjectId(newRecordId),
             categories: [],
@@ -274,7 +235,9 @@ describe('data-import controller util functions tests', () => {
             "C:\\fake_file_uploads_path",
             collectionId,
             zipFile
-        )).toStrictEqual(returnValue)
+        )).toMatchSnapshot()
+
+        expect((newRecord.files as any[]).map(({ uploadedAt, ...rest }) => rest)).toMatchSnapshot()
     })
 
     // test.each([
