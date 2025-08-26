@@ -6,8 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="0139a19c-6c98-4121-b72c-d8ab5bbc47c1" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/collections/StructureForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/collections/StructureForm.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/collections/StructureFormField.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/collections/StructureFormField.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/artworks/ArtworksListPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/artworks/ArtworksListPage.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/pages/collections/CreateCollectionPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/collections/CreateCollectionPage.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -110,7 +111,9 @@
       <workItem from="1753875284440" duration="13473000" />
       <workItem from="1754426638182" duration="4032000" />
       <workItem from="1754482520810" duration="8880000" />
-      <workItem from="1754995698589" duration="16985000" />
+      <workItem from="1754995698589" duration="17766000" />
+      <workItem from="1756120229453" duration="1271000" />
+      <workItem from="1756207921427" duration="4742000" />
     </task>
     <servers />
   </component>

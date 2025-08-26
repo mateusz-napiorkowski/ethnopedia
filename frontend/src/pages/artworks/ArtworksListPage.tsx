@@ -39,6 +39,7 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
     const navigate = useNavigate();
 
     const hasSearchParams = new URLSearchParams(location.search).toString().length > 0;
+    const [showFullDescription, setShowFullDescription] = useState<boolean>(false);
 
     // Funkcja wyszukująca wartość dla danej kategorii
     const findValue = (artwork: any, categoryPath: any): string => {
@@ -187,42 +188,97 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                     <Navigation />
                     <div
                         data-testid="collection-name-and-description-container"
-                        className="flex flex-row mb-4 mt-2"
+                        className="flex flex-row mb-4 mt-2 items-start w-full"
                     >
-                        <div className="flex flex-col w-full">
-                            <h2 className="text-4xl font-bold text-gray-800 dark:text-white mb-1">
+                        {/* LEWY BLOK: nazwa + opis (zajmuje pozostałą szerokość) */}
+                        <div className="flex-1 min-w-0 pr-4">
+                            {/* NAZWA */}
+                            <h2 className="text-4xl font-bold text-gray-800 dark:text-white mb-1 break-words leading-tight">
                                 {collectionData?.name}
                             </h2>
-                            <p className="text-xl text-gray-600 dark:text-gray-300">
-                                {collectionData?.description}
-                            </p>
+
+                            {/* OPIS */}
+                            {(() => {
+                                const desc = collectionData?.description || "";
+                                const limit = 200; // <- zmienione na 200 znaków
+                                const isLong = desc.length > limit;
+
+                                // przycinamy do ostatniego spacji w obrębie limitu, żeby nie obcinać słowa
+                                const truncated =
+                                    isLong && desc.slice(0, limit).lastIndexOf(" ") > 0
+                                        ? desc.slice(0, desc.slice(0, limit).lastIndexOf(" "))
+                                        : desc.slice(0, limit);
+
+                                return (
+                                    <div className="description-container">
+                                        <p className="text-xl text-gray-600 dark:text-gray-300 whitespace-pre-wrap break-words leading-relaxed">
+                                            {showFullDescription || !isLong ? desc : `${truncated}...`}
+                                        </p>
+
+                                        {/* Pokazujemy strzałkę tylko jeśli opis jest dłuższy niż limit */}
+                                        {isLong && (
+                                            <div className="mt-2">
+                                                <button
+                                                    onClick={() => setShowFullDescription((s) => !s)}
+                                                    aria-expanded={showFullDescription}
+                                                    aria-label={showFullDescription ? "Zwiń opis" : "Rozwiń opis"}
+                                                    title={showFullDescription ? "Zwiń" : "Rozwiń"}
+                                                    className="bg-transparent border-0 p-0 focus:outline-none inline-flex items-center"
+                                                >
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        viewBox="0 0 20 20"
+                                                        fill="currentColor"
+                                                        className={`w-5 h-5 text-gray-700 dark:text-gray-200 transform transition-transform duration-200 ${
+                                                            showFullDescription ? "-rotate-90" : "rotate-90"
+                                                        }`}
+                                                        aria-hidden="true"
+                                                    >
+                                                        <path
+                                                            fillRule="evenodd"
+                                                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                                            clipRule="evenodd"
+                                                        />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })()}
                         </div>
-                        {/* Edytuj kolekcję */}
-                        <div>
+
+                        {/* PRAWA KOLUMNA: Edytuj — przy prawym marginesie */}
+                        <div className="flex-shrink-0">
                             <button
                                 disabled={jwtToken ? false : true}
                                 className={
                                     jwtToken
-                                        ? "text-sm font-semibold h-fit mr-4 flex items-center"
-                                        : "text-sm font-semibold h-fit mr-4 bg-gray-100 hover:bg-gray-100 flex items-center"
+                                        ? "text-sm font-semibold h-fit ml-4 flex items-center"
+                                        : "text-sm font-semibold h-fit ml-4 bg-gray-100 hover:bg-gray-100 flex items-center"
                                 }
-                                onClick={() =>  navigate(`/collections/${collectionId}/edit`, {
-                                    state: {
-                                        collectionId: collectionId,
-                                        mode: 'edit',
-                                        name: collectionData?.name,
-                                        description: collectionData?.description,
-                                        categories: collectionData?.categories
-                                    }
-                                })}
+                                onClick={() =>
+                                    navigate(`/collections/${collectionId}/edit`, {
+                                        state: {
+                                            collectionId: collectionId,
+                                            mode: "edit",
+                                            name: collectionData?.name,
+                                            description: collectionData?.description,
+                                            categories: collectionData?.categories,
+                                        },
+                                    })
+                                }
                             >
-                                <EditIcon/>
+                                <EditIcon />
                                 <p className="ml-1">Edytuj</p>
                             </button>
-
                         </div>
                     </div>
-                    {collectionId && <SearchComponent collectionIds={collectionId} mode="local" />}
+
+
+
+
+                    {collectionId && <SearchComponent collectionIds={collectionId} mode="local"/>}
                     <div className="flex w-full md:w-auto">
                         <div className="flex flex-1 space-x-2">
                             <button
@@ -236,7 +292,7 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                                 onClick={() => navigate(`/collections/${collectionId}/create-artwork`)}
                             >
                                 <span className="mr-2 text-white dark:text-gray-400">
-                                    <PlusIcon />
+                                    <PlusIcon/>
                                 </span>
                                 Nowy rekord
                             </button>
@@ -248,7 +304,7 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                                 }}
                             >
                                 <span className="text-white dark:text-gray-400">
-                                    <FileExportIcon />
+                                    <FileExportIcon/>
                                 </span>
                                 Eksportuj plik
                             </button>
@@ -263,7 +319,7 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                                 onClick={() => setShowImportOptions((prev) => !prev)}
                             >
                                 <span className="text-white dark:text-gray-400">
-                                    <FileImportIcon />
+                                    <FileImportIcon/>
                                 </span>
                                 Importuj plik
                             </button>

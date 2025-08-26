@@ -20,6 +20,8 @@ interface Props {
     hasSubmitted: boolean;
 }
 
+const MAX_LENGTH = 100;
+
 const StructureFormField: React.FC<Props> = ({
                                                  id, index, level, formData,
                                                  handleInputChange, handleInputBlur, handleRemove, handleAddSubcategory,
@@ -77,6 +79,7 @@ const StructureFormField: React.FC<Props> = ({
             onMouseEnter={() => setHover(true)}
             onMouseLeave={() => setHover(false)}
         >
+            {/* Main row with controls - always aligned */}
             <div className="inline-flex items-center gap-2 group w-full">
                 {/* Drag handle: only drag via the dots icon */}
                 {!isEditMode && (
@@ -87,6 +90,8 @@ const StructureFormField: React.FC<Props> = ({
                         className="w-4 h-4 cursor-grab text-gray-400 hover:text-gray-600 flex-shrink-0"
                     />
                 )}
+
+                {/* Input field container - flex-1 to take available space */}
                 <div className="flex-1">
                     <input
                         type="text"
@@ -95,52 +100,59 @@ const StructureFormField: React.FC<Props> = ({
                         onChange={handleChange}
                         onBlur={handleBlur}
                         placeholder={level === 0 ? "Nazwa kategorii" : "Nazwa podkategorii"}
+                        maxLength={MAX_LENGTH}
                         className={`w-full border-b focus:outline-none px-4 py-2  ${
                             hasAnyError
                                 ? "border-red-500 text-red-600"
                                 : "border-gray-300 text-gray-700 dark:text-white dark:border-gray-600"
                         }`}
                     />
-                    {hasAnyError && (
-                        <div className="text-red-500 text-xs mt-1">
-                            {showRequiredError
-                                ? "Nazwa kategorii jest wymagana"
-                                : hasForbiddenChars
-                                    ? "Nazwa zawiera zakazane znaki"
-                                    : errorMessage}
-                        </div>
-                    )}
                 </div>
+
+                {/* Action buttons - always aligned with input */}
                 <div className="inline-flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150 flex-shrink-0">
-                        <button
-                            onClick={() => canAdd && handleAddSubcategory(index)}
-                            disabled={!canAdd}
-                            title={addTitle}
-                            className={`p-2 text-sm rounded-md hover:dark:text-white bg-white
-                                ${hover ? 'opacity-100' : 'opacity-0'}
-                                ${canAdd
-                                ? 'text-blue-600 hover:text-blue-800 cursor-pointer'
-                                : 'text-gray-400 cursor-not-allowed'}
-                            `}
-                            type="button"
-                        >
-                            <PlusIcon className="w-5 h-5"/>
-                        </button>
-                        <button
-                            onClick={() => handleRemove(index)}
-                            disabled={isEditMode && !formData.isNew}
-                            title={isEditMode && !formData.isNew ? "Usuwanie tylko nowych kategorii w trybie edycji" : "Usuń"}
-                            className={`p-2 text-sm rounded-md hover:dark:text-white bg-white
-                                ${hover ? 'opacity-100' : 'opacity-0'}
-                                text-red-600 hover:text-red-800
-                                ${isEditMode && !formData.isNew ? 'opacity-50 cursor-not-allowed hover:text-red-600' : ''}
-                            `}
-                            type="button"
-                        >
-                            <DeleteIcon className="w-5 h-5"/>
-                        </button>
+                    <button
+                        onClick={() => canAdd && handleAddSubcategory(index)}
+                        disabled={!canAdd}
+                        title={addTitle}
+                        className={`p-2 text-sm rounded-md hover:dark:text-white bg-white
+                            ${hover ? 'opacity-100' : 'opacity-0'}
+                            ${canAdd
+                            ? 'text-blue-600 hover:text-blue-800 cursor-pointer'
+                            : 'text-gray-400 cursor-not-allowed'}
+                        `}
+                        type="button"
+                    >
+                        <PlusIcon className="w-5 h-5"/>
+                    </button>
+                    <button
+                        onClick={() => handleRemove(index)}
+                        disabled={isEditMode && !formData.isNew}
+                        title={isEditMode && !formData.isNew ? "Usuwanie tylko nowych kategorii w trybie edycji" : "Usuń"}
+                        className={`p-2 text-sm rounded-md hover:dark:text-white bg-white
+                            ${hover ? 'opacity-100' : 'opacity-0'}
+                            text-red-600 hover:text-red-800
+                            ${isEditMode && !formData.isNew ? 'opacity-50 cursor-not-allowed hover:text-red-600' : ''}
+                        `}
+                        type="button"
+                    >
+                        <DeleteIcon className="w-5 h-5"/>
+                    </button>
                 </div>
             </div>
+
+            {/* Error message - separate row, doesn't affect alignment */}
+            {hasAnyError && (
+                <div className="mt-1" style={{ marginLeft: !isEditMode ? '24px' : '0px' }}>
+                    <div className="text-red-500 text-xs">
+                        {showRequiredError
+                            ? "Nazwa kategorii jest wymagana"
+                            : hasForbiddenChars
+                                ? "Nazwa nie może zawierać znaku: ."
+                                : errorMessage}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

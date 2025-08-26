@@ -103,7 +103,7 @@ const CreateCollectionPage = () => {
                 errors.name = "Nazwa jest wymagana";
             }
         } else if (forbiddenChars.test(values.name)) {
-            errors.name = "Nazwa zawiera zakazane znaki";
+            errors.name = "Nazwa nie może zawierać znaku: .";
         }
 
         // Description validation
@@ -122,7 +122,7 @@ const CreateCollectionPage = () => {
                 }
                 // Forbidden characters - always validate
                 else if (forbiddenChars.test(cat.name)) {
-                    errors.categories![currentPath] = "Nazwa zawiera zakazane znaki";
+                    errors.categories![currentPath] = "Nazwa nie może zawierać znaku: .";
                 }
 
                 if (cat.subcategories) {
@@ -149,14 +149,17 @@ const CreateCollectionPage = () => {
             debounceMs: 500
         });
 
-        // Clear existing name error if field is now valid
-        if (formErrors.name && newValue.trim() && !/[.]/.test(newValue)) {
-            setFormErrors({ ...formErrors, name: undefined });
-        }
-
-        // Show error for forbidden characters immediately
-        if (/[.]/.test(newValue)) {
-            setFormErrors({ ...formErrors, name: "Nazwa zawiera zakazane znaki" });
+        // Only clear name error if it's not a required field error, or if field is now valid
+        if (formErrors.name) {
+            if (formErrors.name !== "Nazwa jest wymagana" || (newValue.trim() && !hasSubmitted)) {
+                if (newValue.trim() && !/[.]/.test(newValue)) {
+                    setFormErrors({ ...formErrors, name: undefined });
+                }
+            }
+            // Clear required field error only after submit if field becomes valid
+            if (formErrors.name === "Nazwa jest wymagana" && hasSubmitted && newValue.trim()) {
+                setFormErrors({ ...formErrors, name: undefined });
+            }
         }
     };
 
@@ -169,18 +172,21 @@ const CreateCollectionPage = () => {
             debounceMs: 500
         });
 
-        // Clear description error if field is now valid
-        if (formErrors.description && newValue.trim()) {
-            setFormErrors({ ...formErrors, description: undefined });
+        // Only clear description error if it's not a required field error or if field is now valid after submit
+        if (formErrors.description) {
+            if (formErrors.description !== "Opis jest wymagany" || (hasSubmitted && newValue.trim())) {
+                if (newValue.trim()) {
+                    setFormErrors({ ...formErrors, description: undefined });
+                }
+            }
         }
     };
 
     // Function to update category errors with real-time validation
     const updateCategoryErrors = (categories: Category[]) => {
         const currentErrors = formErrors.categories || {};
-        const newErrors = validate({ ...formValues, categories }, false);
+        const newErrors = validate({ ...formValues, categories }, false); // Don't show required errors here
 
-        // Only update errors, don't clear required field errors unless hasSubmitted is true
         const updatedErrors: { [key: string]: string } = {};
 
         // Keep existing required field errors if we haven't submitted yet
@@ -190,38 +196,48 @@ const CreateCollectionPage = () => {
             }
         });
 
-        // Add new validation errors (forbidden chars, duplicates)
+        // Add new validation errors (forbidden chars, duplicates) - these show immediately
         Object.keys(newErrors.categories || {}).forEach(key => {
-            if (newErrors.categories![key] !== "Nazwa kategorii jest wymagana" || hasSubmitted) {
-                updatedErrors[key] = newErrors.categories![key];
+            const errorType = newErrors.categories![key];
+            if (errorType !== "Nazwa kategorii jest wymagana") {
+                // Non-required errors show immediately
+                updatedErrors[key] = errorType;
+            } else if (hasSubmitted) {
+                // Required errors only show after submit
+                updatedErrors[key] = errorType;
             }
         });
 
-        // Clear errors for fields that are now valid
-        if (hasSubmitted) {
-            Object.keys(currentErrors).forEach(key => {
-                const path = key.split('-').map(Number);
-                let current: any = categories;
+        // Clear errors for fields that are now valid (only if hasSubmitted for required field errors)
+        Object.keys(currentErrors).forEach(key => {
+            const path = key.split('-').map(Number);
+            let current: any = categories;
 
-                // Navigate to the specific category
-                for (let i = 0; i < path.length - 1; i++) {
-                    current = current[path[i]].subcategories;
-                }
-                const category = current[path[path.length - 1]];
+            // Navigate to the specific category
+            for (let i = 0; i < path.length - 1; i++) {
+                current = current[path[i]].subcategories;
+            }
+            const category = current[path[path.length - 1]];
 
-                // If field is now valid, remove the error
-                if (category && category.name.trim() && !(/[.]/.test(category.name))) {
-                    // Check if it's not a duplicate
-                    const allNames = getAllCategoryNames(categories);
-                    const trimmedName = category.name.trim().toLowerCase();
-                    const isDuplicate = allNames.filter(name => name === trimmedName).length > 1;
+            if (category && category.name.trim() && !(/[.]/.test(category.name))) {
+                // Check if it's not a duplicate
+                const allNames = getAllCategoryNames(categories);
+                const trimmedName = category.name.trim().toLowerCase();
+                const isDuplicate = allNames.filter(name => name === trimmedName).length > 1;
 
-                    if (!isDuplicate) {
+                if (!isDuplicate) {
+                    // For required field errors, only clear after submit
+                    if (currentErrors[key] === "Nazwa kategorii jest wymagana") {
+                        if (hasSubmitted) {
+                            delete updatedErrors[key];
+                        }
+                    } else {
+                        // For other errors, clear immediately
                         delete updatedErrors[key];
                     }
                 }
-            });
-        }
+            }
+        });
 
         setFormErrors(prev => ({ ...prev, categories: updatedErrors }));
     };
@@ -242,10 +258,15 @@ const CreateCollectionPage = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        // Set hasSubmitted FIRST, before validation
         setHasSubmitted(true);
+
+        // Then validate with submit validation (which will show required field errors)
         const errors = validate(formValues, true);
         setFormErrors(errors);
 
+        // Check if there are any errors
         if (Object.keys(errors).some(key =>
             key === 'name' && errors.name ||
             key === 'description' && errors.description ||
@@ -274,9 +295,16 @@ const CreateCollectionPage = () => {
         }
     };
 
+    // Prevent Enter key from submitting form when pressed in input fields
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' && e.target instanceof HTMLInputElement) {
+            e.preventDefault();
+        }
+    };
+
     // Add keyboard shortcuts for undo/redo
     useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
+        const handleGlobalKeyDown = (e: KeyboardEvent) => {
             if (e.ctrlKey && e.key === 'z' && !e.shiftKey) {
                 e.preventDefault();
                 handleUndo();
@@ -286,8 +314,8 @@ const CreateCollectionPage = () => {
             }
         };
 
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
+        window.addEventListener('keydown', handleGlobalKeyDown);
+        return () => window.removeEventListener('keydown', handleGlobalKeyDown);
     }, [handleUndo, handleRedo]);
 
     return (
@@ -299,12 +327,13 @@ const CreateCollectionPage = () => {
                     {isEditMode ? "Edytuj kolekcję" : "Dodaj nową kolekcję"}
                 </h2>
 
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} onKeyDown={handleKeyDown}>
                     <label className="block text-sm text-gray-700 dark:text-white my-2 mt-4">Nazwa</label>
                     <input
                         type="text"
                         value={formValues.name}
                         onChange={handleNameChange}
+                        maxLength={100}
                         className={`w-full px-4 py-2 border rounded-lg text-gray-700 dark:text-white dark:bg-gray-700 focus:outline-none ${
                             formErrors.name ? "border-red-500" : "border-gray-300 dark:border-gray-600"
                         }`}
@@ -317,6 +346,7 @@ const CreateCollectionPage = () => {
                     <textarea
                         value={formValues.description}
                         onChange={handleDescriptionChange}
+                        maxLength={1000}
                         className={`w-full px-4 py-2 border rounded-lg resize-y focus:outline-none dark:bg-gray-700 dark:text-white ${
                             formErrors.description ? "border-red-500" : "border-gray-300 dark:border-gray-600"
                         }`}
