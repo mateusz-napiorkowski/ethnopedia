@@ -3,30 +3,34 @@ import { artworkCategory, record } from "./interfaces"
 import path from "path"
 import fs from "fs";
 import unzipper from "unzipper"
+import { getAllCategories } from "./categories";
 
-const validateCategories = async (header: string[], asNewCollection: boolean) => {
-    if(asNewCollection) {
-        const categories = header.filter(categoryName => categoryName.trim() !== "_id" && categoryName.trim() !== "nazwy plików")
-        const missingCategories = categories.filter((category: string) => !header.includes(category))
-        const unnecessaryCategories = header.filter((category: string) => {
-            if(category === "_id" || category === "nazwy plików")
-                return false
-            return !categories.includes(category)
-        })
-        if(missingCategories.length != 0 || unnecessaryCategories.length != 0) {
+export const validateExcelData = async (header: string[], dataRows: string[][], asNewCollection: boolean, collectionId: string) => {
+    if(!asNewCollection) {
+        const headerCategories = header.filter(categoryName => categoryName.trim() !== "_id" && categoryName.trim() !== "nazwy plików")
+        const collectionCategories = await getAllCategories([collectionId])
+        const missingCategories = collectionCategories.filter((category: string) => !headerCategories.includes(category))
+        const unnecessaryCategories = headerCategories.filter((category: string) => !collectionCategories.includes(category))
+        if(missingCategories.length != 0 || unnecessaryCategories.length != 0) 
             throw new Error(`Brakujące kategorie: ${missingCategories}, Nadmiarowe kategorie: ${unnecessaryCategories}`)
-        }
     }
-    if(header.length !== new Set(header).size)
+
+    const categoryShortNames = header.map((cat) => cat.split('.').pop())
+    const duplicates = [...new Set(
+        categoryShortNames.filter((item, index) => categoryShortNames.indexOf(item) !== index)
+    )];
+    
+    if(header.length !== new Set(header).size || duplicates.length > 0)
         throw new Error ("Header has duplicate values")
-    if(header[header.length - 1] == '')
+    if(header[header.length - 1] == '' || Math.max(...dataRows.map(row => row.length)) > header.length)
         throw new Error ("Row contains more columns than the header")
     if(header.includes(""))
-        throw new Error (`Header has empty fields`)     
+        throw new Error (`Header has empty fields`)  
+
     for(const categoryName of header) {
-        const categoryNameSplitByDot = categoryName.split('.')
+        const categoryNameSplitByDot = categoryName.split('.').map(part => part.trim())
         if(categoryNameSplitByDot.includes(""))
-            throw new Error (`No subcategory name after the dot symbol in header field: ${categoryName}`)
+            throw new Error (`No subcategory name after the dot symbol in header field: '${categoryName}'`)
         const directParentCategoryFullName = categoryNameSplitByDot.slice(0,-1).join('.')
         if(categoryNameSplitByDot.length > 1 && !header.includes(directParentCategoryFullName))
             throw new Error (`Missing parent category: '${directParentCategoryFullName}'`)
@@ -46,60 +50,66 @@ export const prepUploadsDirAndArchiveBuffer = async (zipFile: Express.Multer.Fil
     return {archiveBuffer, collectionUploadsDir}
 }
 
-const processArchiveFiles = (
+export const processArchiveFiles = (
     newRecord: any, archiveBuffer: any, oldRecordId: string, newRecordId: string,
-    filenamesCell: string | undefined, collectionUploadsDir: any,
+    filenamesString: string | undefined, collectionUploadsDir: any,
     collectionId: string, zipFile: Express.Multer.File | undefined
 ) => {
     let uploadedFilenames = []
     let failedUploadsCauses = []
-    if(filenamesCell && zipFile) {
+    let filenamesStringValid = filenamesString ? true : undefined
+    if(filenamesString && zipFile) {
         newRecord.files = []
         const maxFileSize = 25 * 1024 * 1024 // 25 MB
-        const archiveFilesData = filenamesCell.trim()
-            .split(";")
-            .filter(Boolean)
-            .map(item => {
-                const [index, filename] = item.split(":");
-                const ext = path.extname(filename);
-                const newFilename = `${newRecordId.toString()}_${index}${ext}`
-                return {
-                    oldFileName: `${oldRecordId}_${index}${ext}`,
-                    newFilename: newFilename,
-                    userFilename: filename
-                };
-            });
-        for(const entry of archiveFilesData) {
-            const fileEntry = archiveBuffer!.files.find((d: any) => d.path === entry.oldFileName);
-            if(fileEntry) {
-                try {
-                    if(!/\.(mei|mid|midi|txt|text|musicxml|mxl|xml|wav|mp3)$/i.test(entry.oldFileName))
-                        throw Error("Invalid file extension")
-                    if(fileEntry.uncompressedSize > maxFileSize)
-                        throw Error("File size exceeded")
-                    const outputPath = path.join(collectionUploadsDir!, entry.newFilename);
-                    const writeStream = fs.createWriteStream(outputPath);
-                    fileEntry.stream().pipe(writeStream);
-                    const fileProps = {
-                        originalFilename: entry.userFilename,
-                        newFilename: entry.newFilename,
-                        filePath: `uploads/${collectionId}/${entry.newFilename}`,
-                        size: fileEntry?.uncompressedSize,
-                        uploadedAt: Date.now()
+        try {
+            const archiveFilesData = filenamesString.trim()
+                .split(";")
+                .filter(Boolean)
+                .map(item => {
+                    const [index, filename] = item.split(":");
+                    if(!/^[0-4]$/.test(index))
+                        throw Error("Index must be a number between 0 and 4")
+                    const ext = path.extname(filename);
+                    const newFilename = `${newRecordId.toString()}_${index}${ext}`
+                    return {
+                        oldFileName: `${oldRecordId}_${index}${ext}`,
+                        newFilename: newFilename,
+                        userFilename: filename
+                    };
+                });
+            for(const entry of archiveFilesData) {
+                const fileEntry = archiveBuffer!.files.find((d: any) => d.path === entry.oldFileName);
+                if(fileEntry) {
+                    try {
+                        if(!/\.(mei|mid|midi|txt|text|musicxml|mxl|xml|wav|mp3)$/i.test(entry.oldFileName))
+                            throw Error("Invalid file extension")
+                        if(fileEntry.uncompressedSize > maxFileSize)
+                            throw Error("File size exceeded")
+                        const outputPath = path.join(collectionUploadsDir!, entry.newFilename);
+                        const writeStream = fs.createWriteStream(outputPath);
+                        fileEntry.stream().pipe(writeStream);
+                        const fileProps = {
+                            originalFilename: entry.userFilename,
+                            newFilename: entry.newFilename,
+                            filePath: `uploads/${collectionId}/${entry.newFilename}`,
+                            size: fileEntry?.uncompressedSize,
+                            uploadedAt: Date.now()
+                        }
+                        newRecord.files.push(fileProps)
+                        uploadedFilenames.push(entry.oldFileName)
+                    } catch (error) {
+                        const err = error as Error
+                        failedUploadsCauses.push({archiveFilename: entry.oldFileName, userFilename: entry.userFilename, cause: err.message})
                     }
-                    newRecord.files.push(fileProps)
-                    uploadedFilenames.push(entry.oldFileName)
-                } catch (error) {
-                    const err = error as Error
-                    failedUploadsCauses.push({archiveFilename: entry.oldFileName, userFilename: entry.userFilename, cause: err.message})
-                }
-            } else {
-                failedUploadsCauses.push({archiveFilename: entry.oldFileName, userFilename: entry.userFilename, cause: "File not found in the archive"})         
+                } else {
+                    failedUploadsCauses.push({archiveFilename: entry.oldFileName, userFilename: entry.userFilename, cause: "File not found in the archive"})         
+                }  
             }
-            
+        } catch {
+            filenamesStringValid = false
         }
     }
-    return {uploadedFilenames, uploadedFilesCount: uploadedFilenames.length, failedUploadsCauses}
+    return {uploadedFilenames, uploadedFilesCount: uploadedFilenames.length, failedUploadsCauses, filenamesStringValid}
 }
 
 const setRecordCategories = (row: string[], newRecord: any, header: string[]) => {
@@ -128,11 +138,12 @@ export const prepRecordsAndFiles = async (
     try {
         const header = data[0]
             .map(categoryName => categoryName.trim().replace(/\s*\.\s*/g, '.'))
-        validateCategories(header, asNewCollection)
+        const recordsData = data.slice(1)
+
+        validateExcelData(header, recordsData, asNewCollection, collectionId)
 
         const {collectionUploadsDir, archiveBuffer} = await prepUploadsDirAndArchiveBuffer(zipFile, collectionId)
 
-        const recordsData = data.slice(1)
         const records: Array<record> = []
         const _idColumnIndex = header.indexOf("_id")
         const filenamesColumnIndex = header.indexOf("nazwy plików")
