@@ -1,5 +1,5 @@
 import {describe, expect, test, jest, beforeEach} from "@jest/globals"
-import {validateExcelData, prepUploadsDirAndArchiveBuffer, processArchiveFiles} from "../data-import"
+import {validateExcelData, prepUploadsDirAndArchiveBuffer, processArchiveFiles, setRecordCategories} from "../data-import"
 import path from "path"
 import fs from "fs"
 import { Readable } from "stream";
@@ -240,66 +240,47 @@ describe('data-import controller util functions tests', () => {
         expect((newRecord.files as any[]).map(({ uploadedAt, ...rest }) => rest)).toMatchSnapshot()
     })
 
-    // test.each([
-    //     {
-    //         testName: 'prepRecords test - three levels deep data',
-    //         data: [
-    //             ['Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Artists'],
-    //             ['title 1', 'subtitle 1',
-    //             'subsubtitle 1'],
-    //         ],
-    //         getAllCategories: ['Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Artists']
-    //     },
-    //     {
-    //         testName: 'prepRecords test - unusual column order',
-    //         data: [ ['Title.Subtitle', 'Title', 'Title.Subtitle.Subsubtitle'],
-    //         ['subtitle 1', 'title 1', 
-    //             'subsubtitle 1']],
-    //         getAllCategories: ['Title.Subtitle', 'Title', 'Title.Subtitle.Subsubtitle']
-    //     },
-    //     {
-    //         testName: 'prepRecords test - skipped category values in some records',
-    //         data: [
-    //             ['Title', 'Artists', 'Release Year'],
-    //             ['title 1', '', 'release year 1'],
-    //             ['', 'artists 2', 'release year 2'],
-    //             ['title 3', '', ''],
-    //         ],
-    //         getAllCategories: ['Title', 'Artists', 'Release Year']
-    //     },
-    //     {
-    //         testName: 'prepRecords test - trim all whitespace category values to empty string',
-    //         data: [
-    //             ['Title', 'Title.Subtitle', 'Artists'],
-    //             ['title 1', ' ', ' ',]
+    test.each([
+        {
+            testname: "setRecordCategories test - three levels deep data",
+            header: ['Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Artists'],
+            row: ['title 1', 'subtitle 1', 'subsubtitle 1', 'artist 1']
+        },
+        {
+            testname: "setRecordCategories test - unusual column order",
+            header: ['Title.Subtitle', 'Title', 'Title.Subtitle.Subsubtitle'],
+            row: ['subtitle 1', 'title 1', 'subsubtitle 1']
+        },
+        {
+            testname: "setRecordCategories test - some empty values in row",
+            header: ['Title', 'Artists', 'Release Year', "Region"],
+            row: ['title 1', '', 'release year 1', '']
+        },
+        {
+            testname: "setRecordCategories test - trim all whitespace category values to empty string",
+            header: ['Title', 'Title.Subtitle', 'Artists'],
+            row: ['title 1', ' ', '    ',]
+        },
+        {
+            testname: "setRecordCategories test - remove leading/trailing whitespace in category values",
+            header: ['Title', 'Title.Subtitle', 'Artists'],
+            row: ['  title 1   ', '  subtitle 1   ', '    artists 1    ',]
+        },
+        {
+            testname: "setRecordCategories test - omit '_id' and 'nazwy plików' columns",
+            header: ['Title', "_id", 'Title.Subtitle', 'nazwy plików', 'Artists'],
+            row: ['title 1', '1234e516d6303ed5ac5a8e77', 'subtitle 1', '0:music.mp3', 'artists 1',]
+        },
+    ])("$testname", async ({header, row}) => {
+        const newRecord = {
+            _id: new mongoose.Types.ObjectId(newRecordId),
+            categories: [],
+            collectionName: 'collection name',
+            files: []
+        }
 
-    //         ],
-    //         getAllCategories: ['Title', 'Title.Subtitle', 'Artists']
-    //     },
-    //     {
-    //         testName: 'prepRecords test - remove leading/trailing whitespace in each part of full category name',
-    //         data: [
-    //             [' Title', 'Title . Subtitle ', '  Artists   '],
-    //             ['title 1', 'subtitle 1', 'artists 1',]
+        setRecordCategories(row, newRecord, header)
 
-    //         ],
-    //         getAllCategories: ['Title', 'Title.Subtitle', 'Artists']
-    //     },
-    //     {
-    //         testName: 'prepRecords test - remove leading/trailing whitespace in category values',
-    //         data: [
-    //             ['Title', 'Title.Subtitle', 'Artists'],
-    //             ['  title 1   ', '  subtitle 1   ', '    artists 1    ',]
-
-    //         ],
-    //         getAllCategories: ['Title', 'Title.Subtitle', 'Artists']
-    //     },
-    // ])(`$testName`,
-    //     async ({data, getAllCategories}) => {
-    //         mockGetAllCategories.mockReturnValue(getAllCategories)
-    //         expect(await prepRecordsAndFiles(data,
-    //             "collection", false, collectionId, undefined
-    //         )).toMatchSnapshot()
-    //     }
-    // )
+        expect(newRecord.categories).toMatchSnapshot()
+    })
 })

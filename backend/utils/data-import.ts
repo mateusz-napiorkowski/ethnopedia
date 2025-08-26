@@ -112,7 +112,7 @@ export const processArchiveFiles = (
     return {uploadedFilenames, uploadedFilesCount: uploadedFilenames.length, failedUploadsCauses, filenamesStringValid}
 }
 
-const setRecordCategories = (row: string[], newRecord: any, header: string[]) => {
+export const setRecordCategories = (row: string[], newRecord: any, header: string[]) => {
     row.forEach((categoryValueUntrimmed, columnIndex) => {
         if(header[columnIndex] !== "_id" && header[columnIndex] !== "nazwy plików") {
             const categoryValue = categoryValueUntrimmed.trim()
