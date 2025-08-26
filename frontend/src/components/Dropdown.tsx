@@ -58,12 +58,12 @@ const Dropdown: React.FC<DropdownProps> = ({ options, value, onChange, placehold
                 data-testid="dropdown-menu"
                 onClick={() => setOpen((prev) => !prev)}
                 className={`cursor-pointer py-2 px-4 border text-sm rounded-lg flex items-center justify-between
-                            bg-white dark:bg-gray-800
-                             ${error ? "border-red-500" : "border-gray-300 dark:border-gray-600"}
-                `}
-                style={{minWidth: dropdownWidth}}
+                bg-white dark:bg-gray-800
+                 ${error ? "border-red-500" : "border-gray-300 dark:border-gray-600"}
+    `}
+                style={{minWidth: dropdownWidth, maxWidth: "300px"}} // <- dodany maxWidth
             >
-                <span>
+                <span className="truncate" title={options.find((opt) => opt.value === value)?.label || placeholder}>
                     {options.find((opt) => opt.value === value)?.label || placeholder}
                 </span>
                 <svg
@@ -75,23 +75,26 @@ const Dropdown: React.FC<DropdownProps> = ({ options, value, onChange, placehold
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"/>
                 </svg>
             </div>
+
             {open && (
                 <div
                     className="absolute top-full mt-1 z-10 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-md max-h-52 overflow-y-auto"
-                    style={{minWidth: dropdownWidth}}
+                    style={{ minWidth: dropdownWidth, maxWidth: "400px" }} // <- max szerokość dropdownu
                 >
                     {options.map((option) => (
                         <div
                             key={option.value}
                             onClick={() => handleSelect(option.value)}
                             aria-label={option.value}
-                            className="cursor-pointer py-2 px-4 hover:bg-gray-200 dark:hover:bg-gray-700"
+                            className="cursor-pointer py-2 px-4 hover:bg-gray-200 dark:hover:bg-gray-700 truncate"
+                            title={option.label} // <- tooltip z pełną nazwą
                         >
                             {option.label}
                         </div>
                     ))}
                 </div>
             )}
+
         </div>
     )
 }

@@ -133,19 +133,6 @@
         box-shadow: inset 0 0 0 1px #ccc; /* Wewnętrzny cień o grubości 2px i kolorze #ccc */
     }
 
-    /* ograniczenie do 2 linii */
-    .clamp-2 {
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 2;
-        overflow: hidden;
-    }
-
-    /* padding-right, żeby absolutny przycisk nie obcinał tekstu */
-    .pr-10 { padding-right: 2.5rem; }
-
-    /* kontener opis (dla absolutnego przycisku) */
-    .description-container { position: relative; }
 
 
 }

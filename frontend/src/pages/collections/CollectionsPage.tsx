@@ -83,6 +83,7 @@ const CollectionsPage = () => {
         }
     };
 
+
     if (fetchedData === undefined) {
         return <LoadingPage />;
     } else {
@@ -254,13 +255,31 @@ const CollectionsPage = () => {
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                             {sortedCollections.map((collection: Collection) => {
                                 const isChecked = checkedCollections[collection.id!] || false;
+
+                                // przycinamy nazwy i opisy jeśli są za długie
+                                const maxNameLength = 65;
+                                const maxDescLength = 120;
+                                const name =
+                                    collection.name.length > maxNameLength
+                                        ? collection.name.slice(0, maxNameLength) + "..."
+                                        : collection.name;
+                                const description =
+                                    collection.description && collection.description.length > maxDescLength
+                                        ? collection.description.slice(0, maxDescLength) + "..."
+                                        : collection.description;
+
                                 return (
                                     <div
                                         key={collection.id}
                                         className="relative group px-4 py-3 bg-white dark:bg-gray-800 shadow-md rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                                        onClick={() => navigate(`/collections/${collection.id}/artworks`, { state: { collectionId: collection.id } })}
+                                        title={collection.name}
+                                        onClick={() =>
+                                            navigate(`/collections/${collection.id}/artworks`, {
+                                                state: { collectionId: collection.id },
+                                            })
+                                        }
                                     >
-                                        {/* Checkbox – widoczny stale, jeśli zaznaczony, lub przy hover */}
+                                        {/* Checkbox */}
                                         <div
                                             className={`absolute top-2 right-2 transition-opacity ${
                                                 isChecked ? "opacity-100" : "opacity-0 group-hover:opacity-100"
@@ -274,14 +293,21 @@ const CollectionsPage = () => {
                                                 className="cursor-pointer"
                                             />
                                         </div>
-                                        <div className="flex flex-col h-full">
-                                            <h2 className="text-lg font-semibold mb-2">{collection.name}</h2>
-                                            <p className="text-gray-600 dark:text-gray-300 flex-grow">{collection.description}</p>
+
+                                        {/* Zawartość */}
+                                        <div className="flex flex-col h-full pr-2"> {/* <-- pr-2 = odstęp od checkboxa */}
+                                            <h2 className="text-lg font-semibold mb-2 break-words">{name}</h2>
+                                            <p className="text-gray-600 dark:text-gray-300 flex-grow break-words">
+                                                {description}
+                                            </p>
                                             <div className="mt-2 text-md flex items-center">
-                                                <span className="font-bold mr-1">{collection.artworksCount ?? 0}</span>
+          <span className="font-bold mr-1">
+            {collection.artworksCount ?? 0}
+          </span>
                                                 {(collection.artworksCount ?? 0) === 1
                                                     ? "rekord"
-                                                    : (collection.artworksCount ?? 0) > 1 && (collection.artworksCount ?? 0) < 5
+                                                    : (collection.artworksCount ?? 0) > 1 &&
+                                                    (collection.artworksCount ?? 0) < 5
                                                         ? "rekordy"
                                                         : "rekordów"}
                                             </div>
@@ -289,6 +315,7 @@ const CollectionsPage = () => {
                                     </div>
                                 );
                             })}
+
                         </div>
 
                         <div className="flex justify-center mt-4 mb-4">

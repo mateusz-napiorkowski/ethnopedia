@@ -84,7 +84,10 @@ const MultiselectDropdown: React.FC<MultiselectDropdownProps> = ({
                         readOnly
                         className="mr-2"
                     />
-                    <span>{highlightMatch(option.label, searchTerm)}</span>
+                    <span className="truncate" title={option.label}>
+                        {highlightMatch(option.label, searchTerm)}
+                    </span>
+
                 </div>
             );
         }
@@ -116,12 +119,9 @@ const MultiselectDropdown: React.FC<MultiselectDropdownProps> = ({
         <div className="relative" ref={dropdownRef}>
             <div
                 onClick={() => setOpen(!open)}
-                className="cursor-pointer py-2 px-4 border gap-3 bg-white dark:bg-gray-800 border-gray-300 rounded-lg text-sm flex items-center justify-between w-full"
+                className="cursor-pointer py-2 px-4 border gap-3 bg-white dark:bg-gray-800 border-gray-300 rounded-lg text-sm flex items-center justify-between w-full max-w-xs"
             >
-                {/*<span className="pr-4">*/}
-                {/*    {selectedValues.length > 0 ? `${selectedValues.length}` : placeholder}*/}
-                {/*</span>*/}
-                <span className="text-sm text-gray-500 dark:text-gray-400">
+                <span className="text-sm text-gray-500 dark:text-gray-400 truncate">
                     Zaznaczono {selectedValues.length} z {filteredOptions.length}
                 </span>
                 <svg
@@ -134,9 +134,10 @@ const MultiselectDropdown: React.FC<MultiselectDropdownProps> = ({
                 </svg>
             </div>
 
+
             {open && (
                 <div
-                    className="absolute z-10 bg-white dark:bg-gray-800 border border-gray-300 mt-1 rounded shadow-md max-h-60 overflow-y-auto min-w-full w-max"
+                    className="absolute z-10 bg-white dark:bg-gray-800 border border-gray-300 mt-1 rounded shadow-md max-h-60 overflow-y-auto min-w-full max-w-md"
                 >
 
                     <div
