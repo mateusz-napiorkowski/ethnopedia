@@ -13,12 +13,19 @@ interface DropdownProps {
     error?: boolean
 }
 
-const Dropdown: React.FC<DropdownProps> = ({ options, value, onChange, placeholder = "Wybierz...", error }) => {
+const Dropdown: React.FC<DropdownProps> = ({
+                                               options,
+                                               value,
+                                               onChange,
+                                               placeholder = "Wybierz...",
+                                               error
+                                           }) => {
     const [open, setOpen] = useState(false)
     const dropdownRef = useRef<HTMLDivElement>(null)
     const buttonRef = useRef<HTMLDivElement>(null)
-    const [dropdownWidth, setDropdownWidth] = useState<string>("auto")
+    const [calculatedWidth, setCalculatedWidth] = useState<number>(120)
 
+    // zamykanie po kliknięciu poza dropdown
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -29,8 +36,9 @@ const Dropdown: React.FC<DropdownProps> = ({ options, value, onChange, placehold
         return () => document.removeEventListener("mousedown", handleClickOutside)
     }, [])
 
+    // obliczenie szerokości dropdownu według najdłuższej opcji
     useEffect(() => {
-        if (buttonRef.current) {
+        if (buttonRef.current && options.length) {
             const longestOption = options.reduce(
                 (max, opt) => (opt.label.length > max.length ? opt.label : max),
                 ""
@@ -41,33 +49,38 @@ const Dropdown: React.FC<DropdownProps> = ({ options, value, onChange, placehold
             tempSpan.style.whiteSpace = "nowrap"
             tempSpan.textContent = longestOption
             document.body.appendChild(tempSpan)
-            setDropdownWidth(`${tempSpan.offsetWidth + 40}px`)
+            const width = tempSpan.offsetWidth + 40 // + miejsce na strzałkę
+            setCalculatedWidth(width > 300 ? 300 : width) // maxWidth = 300px
             document.body.removeChild(tempSpan)
         }
     }, [options])
 
-    const handleSelect = (value: string) => {
-        onChange(value)
+    const handleSelect = (val: string) => {
+        onChange(val)
         setOpen(false)
     }
 
     return (
-        <div className="relative" ref={dropdownRef}>
+        <div className="relative inline-block" ref={dropdownRef}>
+            {/* przycisk */}
             <div
                 ref={buttonRef}
                 data-testid="dropdown-menu"
-                onClick={() => setOpen((prev) => !prev)}
+                onClick={() => setOpen(prev => !prev)}
                 className={`cursor-pointer py-2 px-4 border text-sm rounded-lg flex items-center justify-between
-                            bg-white dark:bg-gray-800
-                             ${error ? "border-red-500" : "border-gray-300 dark:border-gray-600"}
+                    bg-white dark:bg-gray-800
+                    ${error ? "border-red-500" : "border-gray-300 dark:border-gray-600"}
                 `}
-                style={{minWidth: dropdownWidth}}
+                style={{ minWidth: calculatedWidth, maxWidth: 300 }}
             >
-                <span>
-                    {options.find((opt) => opt.value === value)?.label || placeholder}
+                <span
+                    className="truncate"
+                    title={options.find(opt => opt.value === value)?.label || placeholder}
+                >
+                    {options.find(opt => opt.value === value)?.label || placeholder}
                 </span>
                 <svg
-                    className={`h-4 w-4 ml-2 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+                    className={`h-4 w-4 ml-2 shrink-0 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -75,17 +88,20 @@ const Dropdown: React.FC<DropdownProps> = ({ options, value, onChange, placehold
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"/>
                 </svg>
             </div>
+
+            {/* menu */}
             {open && (
                 <div
                     className="absolute top-full mt-1 z-10 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-md max-h-52 overflow-y-auto"
-                    style={{minWidth: dropdownWidth}}
+                    style={{ minWidth: calculatedWidth, maxWidth: 400 }}
                 >
-                    {options.map((option) => (
+                    {options.map(option => (
                         <div
                             key={option.value}
                             onClick={() => handleSelect(option.value)}
                             aria-label={option.value}
-                            className="cursor-pointer py-2 px-4 hover:bg-gray-200 dark:hover:bg-gray-700"
+                            className="cursor-pointer py-2 px-4 hover:bg-gray-200 dark:hover:bg-gray-700 truncate"
+                            title={option.label}
                         >
                             {option.label}
                         </div>

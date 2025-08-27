@@ -12,8 +12,10 @@ import DOMPurify from "dompurify"
 import Dropdown from "../Dropdown"
 
 interface SearchComponentProps {
-    collectionId: string
+    collectionIds: string | string[];
+    mode: "local" | "global";
 }
+
 
 interface Rule {
     field: string
@@ -21,7 +23,7 @@ interface Rule {
     id: string
 }
 
-const AdvancedSearch: React.FC<SearchComponentProps> = ({ collectionId }) => {
+const AdvancedSearch: React.FC<SearchComponentProps> = ({ collectionIds, mode }) => {
     const navigate = useNavigate()
     const location = useLocation()
     const [rules, setRules] = useState<Rule[]>([])
@@ -39,17 +41,47 @@ const AdvancedSearch: React.FC<SearchComponentProps> = ({ collectionId }) => {
         }
     }, [location])
 
-    const { data: categoriesData } = useQuery({
-        queryKey: ["allCategories"],
-        queryFn: () => getAllCategories([collectionId as string]),
-        enabled: !!collectionId,
-    })
+    const { data: categoriesData, isLoading } = useQuery({
+        queryKey: ["allCategories", mode, collectionIds],
+        queryFn: () =>
+            Array.isArray(collectionIds)
+                ? getAllCategories(collectionIds)
+                : getAllCategories([collectionIds]),
+        enabled: !!collectionIds,
+    });
+
+    useEffect(() => {
+        console.log("AdvancedSearch collectionIds:", collectionIds);
+    }, [collectionIds]);
+
+    const options: { label: string; value: string }[] = React.useMemo(() => {
+        if (!categoriesData?.categories) return [];
+
+        const allCategories = categoriesData.categories;
+
+        // Jeśli global – usuwamy duplikaty
+        const uniqueCategories = mode === "global"
+            ? Array.from(new Set(allCategories))
+            : allCategories;
+
+        return uniqueCategories.map((cat: string) => ({
+            value: cat,
+            label: cat,
+        }));
+    }, [categoriesData, mode]);
+
+
 
     const formik = useFormik({
         initialValues: {},
         onSubmit: () => {
-            const queryString = rules.map(rule => `${rule.field}=${rule.value}`).join("&")
-            navigate(`/collections/${collectionId}/artworks?${queryString}`, { state: { rules } })
+            const queryString = rules.map(rule => `${rule.field}=${rule.value}`).join("&");
+
+            if (mode === "global") {
+                navigate(`/global-search?${queryString}`, { state: { rules } });
+            } else {
+                navigate(`/collections/${collectionIds}/artworks?${queryString}`, { state: { rules } });
+            }
         },
     })
 
@@ -125,13 +157,10 @@ const AdvancedSearch: React.FC<SearchComponentProps> = ({ collectionId }) => {
 
     return (
         <div className="my-2" data-testid="advancedSearchComponent">
-            <form onSubmit={formik.handleSubmit} className="flex flex-col gap-4">
+            <form onSubmit={formik.handleSubmit} className="flex gap-2 items-center flex-wrap">
                 <div className="flex items-center gap-2 flex-wrap">
                     <Dropdown
-                        options={categoriesData.categories.map((category: string) => ({
-                            label: category,
-                            value: category,
-                        }))}
+                        options={options}
                         value={currentRuleCategory}
                         onChange={handleCurrentRuleCategoryChange}
                         placeholder="Wybierz kategorię"
@@ -141,39 +170,51 @@ const AdvancedSearch: React.FC<SearchComponentProps> = ({ collectionId }) => {
                     <input
                         name="value"
                         type="text"
-                        maxLength={100}
+                        maxLength={250}
                         onChange={handleCurrentRuleValueChange}
                         value={currentRuleValue}
-                        className={`border p-2 rounded-lg ${valueError ? "border-red-500" : ""}`}
+                        className={`border px-2 py-1.5 rounded-lg ${valueError ? "border-red-500" : ""}`}
+                        style={{width: "250px"}}
                     />
 
-                    <button type="button" onClick={handleAddRule}
-                            className="border-gray-800 flex items-center bg-gray-800 hover:bg-gray-700 text-white p-2 font-semibold"
+                    <button
+                        type="button"
+                        onClick={handleAddRule}
+                        className="border-gray-800 flex items-center bg-gray-800 hover:bg-gray-700 text-white py-2 pl-3 pr-4 gap-1 font-semibold"
                     >
-                        <span className="mr-1">
-                            <PlusIcon />
+                        <span>
+                            <PlusIcon/>
                         </span>
                         Dodaj regułę
                     </button>
-                    <button type="submit" className="flex items-center font-semibold color-button p-2">
-                        <span className="mr-1">
-                            <SearchLoopIcon />
+
+                    <button
+                        type="submit"
+                        className="flex items-center font-semibold color-button py-2 pl-3 pr-4 gap-1"
+                    >
+                        <span>
+                            <SearchLoopIcon/>
                         </span>
                         Wyszukaj
                     </button>
-                    {errorMessage && (
-                        <p className="w-full text-red-500 text-sm mt-2 ml-1">
-                            {errorMessage}
-                        </p>
-                    )}
                 </div>
+
+                {errorMessage && (
+                    <p className="w-full text-red-500 text-sm mt-2 ml-1">
+                        {errorMessage}
+                    </p>
+                )}
+
+
+
             </form>
 
             <div data-testid="rules-container">
                 {rules.map((rule) => (
                     <div key={rule.id} className="flex items-center gap-2 mt-4">
-                        <button aria-label={`delete ${rule.field}`} onClick={() => handleDeleteRule(rule.id)} className="border-none p-0 mr-2">
-                            <CloseIcon />
+                        <button aria-label={`delete ${rule.field}`} onClick={() => handleDeleteRule(rule.id)}
+                                className="border-none p-0 mr-2">
+                            <CloseIcon/>
                         </button>
                         <span className="border border-blue-300 p-2 rounded-lg bg-blue-100 text-blue-500 font-semibold">
                             {rule.field}
@@ -184,7 +225,7 @@ const AdvancedSearch: React.FC<SearchComponentProps> = ({ collectionId }) => {
                     </div>
                 ))}
             </div>
-            <hr className="border-t border-gray-200 my-4 dark:border-gray-600" />
+            <hr className="border-t border-gray-200 my-4 dark:border-gray-600"/>
         </div>
     )
 }

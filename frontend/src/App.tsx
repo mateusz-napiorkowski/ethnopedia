@@ -12,6 +12,7 @@ import CreateCollectionPage from "./pages/collections/CreateCollectionPage";
 import Home from "./pages/Home"
 import ImportCollectionPage from "./pages/collections/ImportCollectionPage"
 import ExportDataPage from "./pages/artworks/ExportDataPage"
+import GlobalSearchPage from "./pages/artworks/GlobalSearchPage";
 
 const queryClient = new QueryClient()
 
@@ -22,12 +23,15 @@ const App = () => {
                 <BrowserRouter basename="/ethnopedia">
                     <Routes>
                         <Route path="/collections/:collectionId/artworks/:artworkId" element={<ArtworkPage />} />
+                        <Route path="/artworks/:artworkId" element={<ArtworkPage />} />
+
                         <Route path="/collections/:collectionId/create-artwork" element={<CreateArtworkPage />} />
                         <Route path="/collections/:collectionId/artworks/:artworkId/edit-artwork" element={<CreateArtworkPage />} />
                         <Route path="/create-collection" element={<CreateCollectionPage />} />
                         <Route path="/collections/:collection/edit" element={<CreateCollectionPage />} />
                         <Route path="/import-collection" element={<ImportCollectionPage />} />
                         <Route path="/collections/:collection/export-data" element={<ExportDataPage />} />
+                        <Route path="/global-search" element={<GlobalSearchPage />} />
 
                         <Route path="/" element={<Home />} />
                         <Route path="/collections/:collectionId/artworks" element={<Artworks />} />

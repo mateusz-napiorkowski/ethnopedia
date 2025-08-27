@@ -31,7 +31,7 @@ const CollectionsPage = () => {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const selectedIds = Object.keys(checkedCollections).filter(id => checkedCollections[id]);
-    
+
     const deleteCollectionMutation = useMutation(() => deleteCollections(selectedIds, jwtToken), {
         onSuccess: () => {
             queryClient.invalidateQueries(["collection"]);
@@ -85,7 +85,7 @@ const CollectionsPage = () => {
         });
     };
 
-    const deleteSelected = () => { 
+    const deleteSelected = () => {
         if (selectedIds.length > 0) {
             deleteCollectionMutation.mutate()
         }
@@ -94,7 +94,18 @@ const CollectionsPage = () => {
     if (fetchedData === undefined) {
         return <LoadingPage />;
     } else {
+        // Sortowanie kolekcji – sortujemy wyłącznie po nazwie, zgodnie ze stanem sortDirection
         const sortedCollections = fetchedData.collections
+            ? [...fetchedData.collections].sort((a, b) => {
+                if (sortDirection === "asc") {
+                    return a.name.localeCompare(b.name);
+                } else {
+                    return b.name.localeCompare(a.name);
+                }
+            })
+            : [];
+
+        // Opcje dla sortowania kategorii – tutaj mamy tylko jedną opcję (sortuj po nazwie)
         const categorySortOptions: Option[] = [
             { value: "name", label: "Nazwa kolekcji" }
         ];
@@ -118,7 +129,7 @@ const CollectionsPage = () => {
                         <div className="flex flex-row">
                             <div className="w-full">
                                 <h1 className="font-bold text-4xl mb-4">
-                                    Witaj {firstName}!
+                                    Witaj{firstName ? ` ${firstName}` : ""}!
                                 </h1>
                                 <h2 className="mb-2 text-lg">
                                     Twoje kolekcje:
@@ -127,9 +138,14 @@ const CollectionsPage = () => {
 
                             <div className="flex items-center justify-end w-full">
                                 <button
+                                    disabled={!jwtToken}
                                     type="button"
                                     className={`flex items-center justify-center dark:text-white text-sm px-4 py-2 mb-2
-                    text-white border-gray-800 font-semibold mr-2 bg-gray-800 hover:bg-gray-700`}
+                    text-white border-gray-800 font-semibold mr-2 ${
+                                        jwtToken
+                                            ? "bg-gray-800 hover:bg-gray-700"
+                                            : "bg-gray-600 hover:bg-gray-600"
+                                    }`}
                                     onClick={() => navigate("/create-collection")}
                                 >
                   <span className="mr-2">
@@ -161,7 +177,7 @@ const CollectionsPage = () => {
                     <FileExportIcon />
                   </span>
                                     Eksportuj kolekcje
-                                </button>  
+                                </button>
                                 <button
                                     className="flex items-center justify-center dark:text-white text-sm px-4 py-2 mb-2 hover:bg-gray-700 bg-gray-800 text-white border-gray-800 font-semibold"
                                     type="button"
@@ -189,28 +205,46 @@ const CollectionsPage = () => {
                                 </button>
                             </div>
                             <span className="mb-2">
-                <SortOptions
-                    options={categorySortOptions}
-                    sortCategory={sortCategory}
-                    sortDirection={sortDirection}
-                    onSelectCategory={setSortCategory}
-                    onSelectDirection={setSortDirection}
-                    setCurrentPage={setCurrentPage}
-                />
-              </span>
+                                <SortOptions
+                                    options={categorySortOptions}
+                                    sortCategory={sortCategory}
+                                    sortDirection={sortDirection}
+                                    onSelectCategory={setSortCategory}
+                                    onSelectDirection={setSortDirection}
+                                    setCurrentPage={setCurrentPage}
+                                />
+                            </span>
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                             {sortedCollections.map((collection: Collection) => {
                                 const isChecked = checkedCollections[collection.id!] || false;
+
+                                // przycinamy nazwy i opisy jeśli są za długie
+                                const maxNameLength = 65;
+                                const maxDescLength = 120;
+                                const name =
+                                    collection.name.length > maxNameLength
+                                        ? collection.name.slice(0, maxNameLength) + "..."
+                                        : collection.name;
+                                const description =
+                                    collection.description && collection.description.length > maxDescLength
+                                        ? collection.description.slice(0, maxDescLength) + "..."
+                                        : collection.description;
+
                                 return (
                                     <div
                                         key={collection.id}
                                         aria-label={collection.id}
                                         className="relative group px-4 py-3 bg-white dark:bg-gray-800 shadow-md rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                                        onClick={() => navigate(`/collections/${collection.id}/artworks`, { state: { collectionId: collection.id } })}
+                                        title={collection.name}
+                                        onClick={() =>
+                                            navigate(`/collections/${collection.id}/artworks`, {
+                                                state: { collectionId: collection.id },
+                                            })
+                                        }
                                     >
-                                        {/* Checkbox – widoczny stale, jeśli zaznaczony, lub przy hover */}
+                                        {/* Checkbox */}
                                         <div
                                             className={`absolute top-2 right-2 transition-opacity ${
                                                 isChecked ? "opacity-100" : "opacity-0 group-hover:opacity-100"
@@ -224,14 +258,21 @@ const CollectionsPage = () => {
                                                 className="cursor-pointer"
                                             />
                                         </div>
-                                        <div className="flex flex-col h-full">
-                                            <h2 className="text-lg font-semibold mb-2">{collection.name}</h2>
-                                            <p className="text-gray-600 dark:text-gray-300 flex-grow">{collection.description}</p>
+
+                                        {/* Zawartość */}
+                                        <div className="flex flex-col h-full pr-2"> {/* <-- pr-2 = odstęp od checkboxa */}
+                                            <h2 className="text-lg font-semibold mb-2 break-words">{name}</h2>
+                                            <p className="text-gray-600 dark:text-gray-300 flex-grow break-words">
+                                                {description}
+                                            </p>
                                             <div className="mt-2 text-md flex items-center">
-                                                <span className="font-bold mr-1">{collection.artworksCount ?? 0}</span>
+          <span className="font-bold mr-1">
+            {collection.artworksCount ?? 0}
+          </span>
                                                 {(collection.artworksCount ?? 0) === 1
                                                     ? "rekord"
-                                                    : (collection.artworksCount ?? 0) > 1 && (collection.artworksCount ?? 0) < 5
+                                                    : (collection.artworksCount ?? 0) > 1 &&
+                                                    (collection.artworksCount ?? 0) < 5
                                                         ? "rekordy"
                                                         : "rekordów"}
                                             </div>

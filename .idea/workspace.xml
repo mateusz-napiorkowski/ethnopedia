@@ -5,13 +5,48 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0139a19c-6c98-4121-b72c-d8ab5bbc47c1" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/MultiselectDropdown.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/navbar/GlobalSearch.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/hooks/useUndoRedoFormState.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/pages/artworks/GlobalSearchPage.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/DisplayCategoriesSelect.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/Dropdown.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Dropdown.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/Navigation.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Navigation.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/Pagination.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Pagination.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/SortOptions.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/SortOptions.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/__tests__/DisplayCategoriesSelect.test.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/artwork/ArtworkDetails.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/artwork/ArtworkDetails.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/artwork/ArtworksList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/artwork/ArtworksList.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/artwork/FormField.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/artwork/FormField.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/artwork/MetadataForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/artwork/MetadataForm.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/collections/StructureForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/collections/StructureForm.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/collections/StructureFormField.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/collections/StructureFormField.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/navbar/Navbar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/navbar/Navbar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/search/AdvancedSearch.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/search/AdvancedSearch.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/search/QuickSearch.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/search/QuickSearch.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/search/SearchComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/search/SearchComponent.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/artworks/ArtworkPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/artworks/ArtworkPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/artworks/ArtworksListPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/artworks/ArtworksListPage.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/pages/artworks/CreateArtworkPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/artworks/CreateArtworkPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/collections/CollectionsPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/collections/CollectionsPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/collections/CreateCollectionPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/collections/CreateCollectionPage.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="TypeScript File" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -39,19 +74,19 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;frontend&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\wikto\\OneDrive\\Dokumenty\\PROJEKTY\\PP\\ethnopedia\\backend\\node_modules\\typescript\\lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "Merging main",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "ts.external.directory.path": "C:\\Users\\wikto\\OneDrive\\Dokumenty\\PROJEKTY\\PP\\ethnopedia\\backend\\node_modules\\typescript\\lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\wikto\OneDrive\Dokumenty\PROJEKTY\PP\ethnopedia\frontend\src\assets\icons" />
@@ -82,10 +117,44 @@
       <workItem from="1746023531401" duration="4960000" />
       <workItem from="1746426926823" duration="16189000" />
       <workItem from="1746517918974" duration="7815000" />
+      <workItem from="1747828340885" duration="9141000" />
+      <workItem from="1748259854426" duration="2908000" />
+      <workItem from="1748359449293" duration="15953000" />
+      <workItem from="1748937127959" duration="9061000" />
+      <workItem from="1748962476565" duration="2895000" />
+      <workItem from="1749038878222" duration="2859000" />
+      <workItem from="1749214431743" duration="2637000" />
+      <workItem from="1749470128193" duration="3801000" />
+      <workItem from="1749543408764" duration="3655000" />
+      <workItem from="1749568466958" duration="4779000" />
+      <workItem from="1749646481165" duration="8121000" />
+      <workItem from="1750253212579" duration="5359000" />
+      <workItem from="1750853115347" duration="5746000" />
+      <workItem from="1751229748992" duration="8000" />
+      <workItem from="1752049102281" duration="16972000" />
+      <workItem from="1752672145876" duration="4006000" />
+      <workItem from="1753875284440" duration="13473000" />
+      <workItem from="1754426638182" duration="4032000" />
+      <workItem from="1754482520810" duration="8880000" />
+      <workItem from="1754995698589" duration="17766000" />
+      <workItem from="1756120229453" duration="1271000" />
+      <workItem from="1756207921427" duration="9585000" />
+      <workItem from="1756287750363" duration="5899000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>
