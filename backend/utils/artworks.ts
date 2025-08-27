@@ -4,6 +4,28 @@ import { artworkCategory, collectionCategory, fileToDelete } from "./interfaces"
 import path from "path"
 import fs from "fs";
 
+export const diacriticSensitiveRegex = (string = '') => {
+    return string
+        .replace(/a/g, '[a,ą,ã]')
+        .replace(/A/g, '[A,a,ą,ã]')
+        .replace(/c/g, '[c,ć]')
+        .replace(/C/g, '[C,c,ć]')
+        .replace(/e/g, '[e,ę,é,ë]')
+        .replace(/E/g, '[E,e,ę,é,ë]')
+        .replace(/l/g, '[l,ł]')
+        .replace(/L/g, '[Ł,l,ł]')
+        .replace(/n/g, '[n,ń]')
+        .replace(/N/g, '[N,n,ń]')
+        .replace(/o/g, '[o,ó,ŏ,ō,ô,õ,ò]')
+        .replace(/O/g, '[O,o,ó,ŏ,ō,ô,õ,ò]')
+        .replace(/s/g, '[s,ś]')
+        .replace(/S/g, '[S,s,ś]')
+        .replace(/u/g, '[u,ù]')
+        .replace(/U/g, '[U,u,ù]')
+        .replace(/z/g, '[z,ż,ź]')
+        .replace(/Z/g, '[Z,z,ż,ź]')       
+}
+
 export const updateArtworkCategories = (artworkSubcategories: Array<artworkCategory>, collectionSubcategories: Array<collectionCategory>) => {
     const newArtworkCategories: Array<artworkCategory> = []
     for(const [categoryIndex, category] of collectionSubcategories.entries()) {
@@ -68,11 +90,7 @@ const constructAdvSearchSubcategoriesFilter = (searchRules: Array<Array<string>>
         };
 
         if(subcategoryValue) {
-            const wordsToMatch = subcategoryValue
-                .split(/\s+/)
-                .filter(Boolean)
-                .map(word => new RegExp(`(^|\\s)${word}($|\\s)`, 'i'));
-            newFilterPart.$elemMatch.$and = wordsToMatch.map(regex => ({ value: regex }))
+            newFilterPart.$elemMatch.value = new RegExp(diacriticSensitiveRegex(subcategoryValue), 'i')
         }
             
 
@@ -134,11 +152,7 @@ export const constructAdvSearchFilter = (requestQuery: any, collectionNames: Arr
         };
 
         if(categoryValue) {
-            const wordsToMatch = categoryValue
-                .split(/\s+/)
-                .filter(Boolean)
-                .map((word: string) => new RegExp(`(^|\\s)${word}($|\\s)`, 'i'));
-            categoryFilter.$elemMatch.$and = wordsToMatch.map((regex: any) => ({ value: regex }))
+            categoryFilter.$elemMatch.value = new RegExp(diacriticSensitiveRegex(categoryValue), 'i')
         }
         
         if(currentCategorySubcategoriesSearchRules.length > 0)
