@@ -44,17 +44,12 @@ export const updateArtworkCategories = (artworkSubcategories: Array<artworkCateg
 const fillSubcategoriesFilterPart: any = (searchText: string, currentDepth: number, maxDepth: number) => {
     if (maxDepth === 0) return []
 
-    const wordsToMatch = searchText
-        .split(/\s+/)
-        .filter(Boolean)
-        .map(word => new RegExp(`(^|\\s)${word}($|\\s)`, 'i'));
-
     return {
         $elemMatch: {
             $or: currentDepth === maxDepth 
-                ? [{ $and: wordsToMatch.map(regex => ({ value: regex })) } ] 
+                ? [{ value: new RegExp(diacriticSensitiveRegex(searchText), 'i') } ] 
                 : [
-                    { $and: wordsToMatch.map(regex => ({ value: regex })) },
+                    { value: new RegExp(diacriticSensitiveRegex(searchText), 'i') },
                     { subcategories: fillSubcategoriesFilterPart(searchText, currentDepth + 1, maxDepth) }
                 ]
         }
