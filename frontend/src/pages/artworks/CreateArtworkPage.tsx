@@ -226,7 +226,10 @@ const CreateArtworkPage: React.FC = () => {
                 <h2 className="text-2xl font-bold mt-2">
                     {artworkId ? 'Edytuj rekord z kolekcji' : 'Dodaj nowy rekord do kolekcji'}
                 </h2>
-                <h2 className="text-2xl mb-4">{collData?.name}</h2>
+                <h2 className="text-2xl mb-4 break-words max-w-full">
+                    {collData?.name}
+                </h2>
+
 
                 <form onSubmit={handleSubmit}>
                     <MetadataForm

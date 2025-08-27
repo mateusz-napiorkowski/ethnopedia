@@ -11,7 +11,7 @@ interface FormFieldProps {
     suggestions?: string[];
 }
 
-const MAX_LENGTH = 100;
+const MAX_LENGTH = 250;
 
 const FormField: React.FC<FormFieldProps> = ({
                                                  id,
@@ -171,10 +171,12 @@ const FormField: React.FC<FormFieldProps> = ({
         <div ref={containerRef} className="relative w-full mb-2">
             <label
                 htmlFor={id}
-                className="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800"
+                className="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800 max-w-[calc(100%-16px)] truncate"
+                title={label} // tooltip pokazujący pełną nazwę
             >
                 {label}
             </label>
+
 
             <input
                 ref={inputRef}
