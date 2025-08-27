@@ -6,8 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="0139a19c-6c98-4121-b72c-d8ab5bbc47c1" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/artwork/FormField.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/artwork/FormField.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/artworks/CreateArtworkPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/artworks/CreateArtworkPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/artwork/ArtworkDetails.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/artwork/ArtworkDetails.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/artwork/ArtworksList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/artwork/ArtworksList.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -112,7 +112,7 @@
       <workItem from="1754995698589" duration="17766000" />
       <workItem from="1756120229453" duration="1271000" />
       <workItem from="1756207921427" duration="9585000" />
-      <workItem from="1756287750363" duration="3425000" />
+      <workItem from="1756287750363" duration="5899000" />
     </task>
     <servers />
   </component>

@@ -66,28 +66,32 @@ const ArtworksList: React.FC<ArtworksListProps> = ({
 
                 >
                     <div className="flex flex-row">
-            <span className="mr-4 flex items-center">
-              <input
-                  type="checkbox"
-                  data-testid={`${artwork._id}-checkbox`}
-                  checked={selectedArtworks[artwork._id]}
-                  onClick={(e) => e.stopPropagation()}
-                  onChange={() => onToggleSelect(artwork._id)}
-              />
-            </span>
-                        <div>
-                            {selectedDisplayCategories.length > 0
-                                && selectedDisplayCategories.map((cat) => {
-                                    const label = cat.includes('.') ? cat.split('.').pop() : cat;
-                                    return (
-                                        <div key={cat} className="text-lg text-gray-800 dark:text-white">
-                                            <span className="text-gray-400 inline">{label}: </span>
-                                            {findValue(artwork, cat)}
-                                        </div>
-                                    );
-                                })}
+                      <span className="mr-4 flex items-center">
+                        <input
+                            type="checkbox"
+                            data-testid={`${artwork._id}-checkbox`}
+                            checked={selectedArtworks[artwork._id]}
+                            onClick={(e) => e.stopPropagation()}
+                            onChange={() => onToggleSelect(artwork._id)}
+                        />
+                      </span>
+                        <div className="flex-1 min-w-0">
+                            {selectedDisplayCategories.map((cat) => {
+                                const label = cat.includes('.') ? cat.split('.').pop() : cat;
+                                return (
+                                    <div
+                                        key={cat}
+                                        className="text-lg text-gray-800 dark:text-white w-full break-words"
+                                        title={findValue(artwork, cat)} // pokaże pełną wartość po najechaniu
+                                    >
+                                        <span className="text-gray-400">{label}: </span>
+                                        <span>{findValue(artwork, cat)}</span>
+                                    </div>
+                                );
+                            })}
                         </div>
                     </div>
+
                 </div>
             ))}
         </>
