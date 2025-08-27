@@ -1,11 +1,10 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import * as XLSX from 'xlsx';
 import Navbar from "../../components/navbar/Navbar"
 import Navigation from "../../components/Navigation";
 import { ReactComponent as DragAndDrop } from "../../assets/icons/dragAndDrop.svg"
 import { ReactComponent as ExcelIcon } from "../../assets/icons/excel.svg"
-import { ReactComponent as ArchiveIcon } from "../../assets/icons/archive_icon.svg"
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { importData } from "../../api/dataImport";
 import { useUser } from "../../providers/UserProvider";
@@ -18,15 +17,11 @@ const ImportToExistingCollectionPage = () => {
     const [fileLoaded, setFileLoaded] = useState(false)
     const [fileName, setFileName]: any = useState(false)
     const [fileData, setFileData]: any = useState(false)
-    const [archiveLoaded, setArchiveLoaded] = useState(false)
-    const [archiveFilename, setArchiveFilename]: any = useState(false)
-    const [archiveFile, setArchiveFile]: any = useState(false)
-    const [collectionName, setCollectionName] = useState("")
-    const [collectionDescription, setCollectionDescription] = useState("")
     const [excelCollectionCategoryPairs, setExcelCollectionCategoryPairs]: any = useState([])
     const [fileNotLoadedError, setFileNotLoadedError] = useState(nbsp)
     const [circularReferences, setCircularReferences]= useState<Array<string>>([])
     const [serverError, setServerError] = useState(nbsp)
+    let dataToSend: string[][] = []
     
     const navigate = useNavigate();
     const queryClient = useQueryClient()
@@ -37,10 +32,6 @@ const ImportToExistingCollectionPage = () => {
         queryFn: () => getAllCategories([collectionId!]),
         enabled: !!collectionId,
     })
-
-    useEffect(() => {
-        handleFileDataHeaderUpdate()
-    }, [excelCollectionCategoryPairs]);
 
     const handleFileUpload = (event: any) => {
         const file = event.target.files[0]
@@ -63,6 +54,8 @@ const ImportToExistingCollectionPage = () => {
                 .map((headerCategory: string) => {
                     if(headerCategory === "_id")
                         return [headerCategory, "_id"]
+                    if(headerCategory === "nazwy plików")
+                        return [headerCategory, "nazwy plików"]
                     const matchedCollectionCategory = categoriesData.categories.find((collectionCategory: string) => collectionCategory.toLowerCase() === headerCategory.toLowerCase())
                     return [headerCategory, matchedCollectionCategory]
                 })
@@ -70,14 +63,6 @@ const ImportToExistingCollectionPage = () => {
             setFileNotLoadedError(nbsp)
         };
         reader.readAsArrayBuffer(file)
-    }
-
-    const handleArchiveFileUpload = (event: any) => {
-        const file = event.target.files[0]
-        if(!file) return
-        setArchiveLoaded(true)
-        setArchiveFilename(file.name)
-        setArchiveFile(file)
     }
 
     const handleOptionChange = ((event: ChangeEvent<HTMLSelectElement>) => {
@@ -98,28 +83,15 @@ const ImportToExistingCollectionPage = () => {
         else
             setServerError("Import kolekcji nie powiódł się")
     })
-
-    const handleFileDataHeaderUpdate = () => {
-        if(excelCollectionCategoryPairs.length === 0)
-            return
-
-        const pairsMap = Object.fromEntries(excelCollectionCategoryPairs);
-        let header = fileData[0]
-        for(let [index, cat] of header.entries()) {
-            header[index] = pairsMap[cat]
-        }
-        setFileData((prev: Array<Array<string>>) => {
-            return [header ,...prev.slice(1)]
-        });
-    }
     
     const handleCollectionSubmit = (event: any) => {
         event.preventDefault()
         setFileNotLoadedError(fileLoaded ? nbsp : "Nie wczytano pliku")
+        const newHeader = excelCollectionCategoryPairs.map((pair: String[]) => pair[1])
+        dataToSend = [newHeader, ...fileData.slice(1)]
         importDataMutation.mutate()
     }
-
-    const importDataMutation = useMutation(() => importData(fileData, jwtToken, collectionId), {
+    const importDataMutation = useMutation(() => importData(dataToSend, jwtToken, collectionId), {
             onSuccess: () => {
                 queryClient.invalidateQueries("collection")
                 navigate(`/collections/${collectionId}/artworks`)
@@ -177,51 +149,9 @@ const ImportToExistingCollectionPage = () => {
                                     onChange={handleFileUpload}
                                 />
                             </label>
-                            {/* <label
-                                htmlFor="dropzone-zip-file"
-                                className="block text-sm font-bold text-gray-700 dark:text-white my-2"
-                            >
-                                Archiwum zip z plikami do skojarzenia z rekorami kolekcji
-                            </label>
-                            <label
-                                aria-label="upload-zip"
-                                htmlFor="dropzone-zip-file"
-                                className="flex flex-col items-start justify-start p-2 border-2 border-gray-200
-                                            border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-600
-                                            dark:bg-gray-800 hover:bg-gray-100 dark:border-gray-600
-                                            dark:hover:border-gray-500 dark:hover:bg-gray-700"
-                            >
-                                {archiveLoaded 
-                                    ? <div className="flex flex-row items-center justify-center gap-4">
-                                        <ArchiveIcon className="w-12 h-12"/>
-                                        <p className="text-sm font-bold text-gray-500 dark:text-gray-400">
-                                            {archiveFilename}
-                                        </p>
-                                    </div> 
-                                    : <div className="flex flex-row items-center justify-center gap-4">
-                                        <DragAndDrop className="w-12 h-12 text-gray-500 dark:text-gray-400"/>
-                                        <p className="text-sm font-normal text-gray-500 dark:text-gray-400">
-                                            Kliknij, aby przesłać plik
-                                        </p>
-                                    </div>
-                                }
-                                <input
-                                    id="dropzone-zip-file"
-                                    type="file"
-                                    className="hidden"
-                                    onChange={handleArchiveFileUpload}
-                                />
-                            </label> */}
                             <p
                                 className={`block text-sm ${fileNotLoadedError != nbsp ? "text-red-500 font-normal": "font-semibold text-gray-700 dark:text-white"} my-2`}
                             >
-                                {/* {fileLoaded ? (
-                                    <span>
-                                        Liczba rekordów: <span className="font-normal">{fileData.length - 1}</span>
-                                    </span>
-                                    ) : (
-                                    fileNotLoadedError
-                                )} */}
                             </p>
 
                             <hr />
@@ -236,7 +166,7 @@ const ImportToExistingCollectionPage = () => {
                                         <span className="block w-1/2 text-sm font-semibold text-gray-700 dark:text-white my-2">Kategorie w kolekcji:</span>
                                     </div>
                                     {excelCollectionCategoryPairs
-                                        .filter((pair: string) => pair[0] !== "_id")
+                                        .filter((pair: string) => pair[0] !== "_id" && pair[0] !== "nazwy_plików")
                                         .map((pair: any) => {
                                             const headerCategoryName = pair[0]
                                             const collectionCategoryName = pair[1]
