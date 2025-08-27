@@ -157,7 +157,7 @@ const AdvancedSearch: React.FC<SearchComponentProps> = ({ collectionIds, mode })
 
     return (
         <div className="my-2" data-testid="advancedSearchComponent">
-            <form onSubmit={formik.handleSubmit} className="flex flex-col gap-4">
+            <form onSubmit={formik.handleSubmit} className="flex gap-2 items-center flex-wrap">
                 <div className="flex items-center gap-2 flex-wrap">
                     <Dropdown
                         options={options}
@@ -170,39 +170,51 @@ const AdvancedSearch: React.FC<SearchComponentProps> = ({ collectionIds, mode })
                     <input
                         name="value"
                         type="text"
-                        maxLength={100}
+                        maxLength={250}
                         onChange={handleCurrentRuleValueChange}
                         value={currentRuleValue}
-                        className={`border p-2 rounded-lg ${valueError ? "border-red-500" : ""}`}
+                        className={`border px-2 py-1.5 rounded-lg ${valueError ? "border-red-500" : ""}`}
+                        style={{width: "250px"}}
                     />
 
-                    <button type="button" onClick={handleAddRule}
-                            className="border-gray-800 flex items-center bg-gray-800 hover:bg-gray-700 text-white p-2 font-semibold"
+                    <button
+                        type="button"
+                        onClick={handleAddRule}
+                        className="border-gray-800 flex items-center bg-gray-800 hover:bg-gray-700 text-white py-2 pl-3 pr-4 gap-1 font-semibold"
                     >
-                        <span className="mr-1">
-                            <PlusIcon />
+                        <span>
+                            <PlusIcon/>
                         </span>
                         Dodaj regułę
                     </button>
-                    <button type="submit" className="flex items-center font-semibold color-button p-2">
-                        <span className="mr-1">
-                            <SearchLoopIcon />
+
+                    <button
+                        type="submit"
+                        className="flex items-center font-semibold color-button py-2 pl-3 pr-4 gap-1"
+                    >
+                        <span>
+                            <SearchLoopIcon/>
                         </span>
                         Wyszukaj
                     </button>
-                    {errorMessage && (
-                        <p className="w-full text-red-500 text-sm mt-2 ml-1">
-                            {errorMessage}
-                        </p>
-                    )}
                 </div>
+
+                {errorMessage && (
+                    <p className="w-full text-red-500 text-sm mt-2 ml-1">
+                        {errorMessage}
+                    </p>
+                )}
+
+
+
             </form>
 
             <div data-testid="rules-container">
                 {rules.map((rule) => (
                     <div key={rule.id} className="flex items-center gap-2 mt-4">
-                        <button aria-label={`delete ${rule.field}`} onClick={() => handleDeleteRule(rule.id)} className="border-none p-0 mr-2">
-                            <CloseIcon />
+                        <button aria-label={`delete ${rule.field}`} onClick={() => handleDeleteRule(rule.id)}
+                                className="border-none p-0 mr-2">
+                            <CloseIcon/>
                         </button>
                         <span className="border border-blue-300 p-2 rounded-lg bg-blue-100 text-blue-500 font-semibold">
                             {rule.field}
@@ -213,7 +225,7 @@ const AdvancedSearch: React.FC<SearchComponentProps> = ({ collectionIds, mode })
                     </div>
                 ))}
             </div>
-            <hr className="border-t border-gray-200 my-4 dark:border-gray-600" />
+            <hr className="border-t border-gray-200 my-4 dark:border-gray-600"/>
         </div>
     )
 }

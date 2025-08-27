@@ -56,7 +56,7 @@ const SortOptions: React.FC<SortOptionsProps> = ({
             tempSpan.style.fontFamily = "sans-serif";
             tempSpan.textContent = longestOption;
             document.body.appendChild(tempSpan);
-            const calculatedWidth = tempSpan.offsetWidth + 40; // padding i strzałka
+            const calculatedWidth = tempSpan.offsetWidth + 60; // padding i strzałka
             document.body.removeChild(tempSpan);
 
             setButtonWidth(`${Math.min(calculatedWidth, MAX_BUTTON_WIDTH)}px`);

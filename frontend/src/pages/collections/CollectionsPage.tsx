@@ -241,15 +241,15 @@ const CollectionsPage = () => {
                                 )}
                             </div>
                             <span className="mb-2">
-                <SortOptions
-                    options={categorySortOptions}
-                    sortCategory={sortCategory}
-                    sortDirection={sortDirection}
-                    onSelectCategory={setSortCategory}
-                    onSelectDirection={setSortDirection}
-                    setCurrentPage={setCurrentPage}
-                />
-              </span>
+                                <SortOptions
+                                    options={categorySortOptions}
+                                    sortCategory={sortCategory}
+                                    sortDirection={sortDirection}
+                                    onSelectCategory={setSortCategory}
+                                    onSelectDirection={setSortDirection}
+                                    setCurrentPage={setCurrentPage}
+                                />
+                            </span>
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">

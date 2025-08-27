@@ -48,13 +48,14 @@ const QuickSearch: React.FC<QuickSearchProps> = ({ collectionIds, mode }) => {
                 <form onSubmit={formik.handleSubmit} className="flex space-x-2">
                     <input
                         type="text"
-                        maxLength={100}
+                        maxLength={250}
                         name="searchText"
                         onChange={formik.handleChange}
                         value={formik.values.searchText}
-                        className="border border-gray-300 p-2 rounded-lg"
+                        className="border border-gray-300 px-2 py-1.5 p-2 rounded-lg"
+                        style={{width: "250px"}}
                     />
-                    <button type="submit" className="font-semibold color-button p-2 flex items-center">
+                    <button type="submit" className="flex items-center font-semibold color-button py-2 pl-3 pr-4 gap-1">
                         <span className="mr-1">
                             <SearchLoopIcon />
                         </span>
