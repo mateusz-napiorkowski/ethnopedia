@@ -1,5 +1,6 @@
 import {describe, expect, test, jest, beforeEach} from "@jest/globals"
-import {validateExcelData, prepUploadsDirAndArchiveBuffer, processArchiveFiles, setRecordCategories} from "../data-import"
+import * as dataImport from "../data-import"
+const {validateExcelData, prepUploadsDirAndArchiveBuffer, processArchiveFiles, setRecordCategories, prepRecordsAndFiles} = dataImport;
 import path from "path"
 import fs from "fs"
 import { Readable } from "stream";
@@ -282,5 +283,40 @@ describe('data-import controller util functions tests', () => {
         setRecordCategories(row, newRecord, header)
 
         expect(newRecord.categories).toMatchSnapshot()
+    })
+
+    it("should run prepRecordsAndFiles and return correct data", async() => {
+        const excelData = [
+            ["_id", "nazwy plików", 'Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Artists'],
+            ["68936488200287f547b71f5b", "0:filename.mid", 'title 1', 'subtitle 1', 'subsubtitle 1', 'artist 1'],
+            ["12345488200287f547b71123", "0:textfile.txt; 1:mid_file.mid;4:pdf_file.pdf", 'title 2', 'subtitle 2', 'subsubtitle 2', 'artist 2']
+        ]
+        const zipFile = readArchive(path.join(__dirname, "utils/archives/archive.zip"))
+
+        const result = await prepRecordsAndFiles(excelData, "collection name", true, collectionId, zipFile);
+        const stableResult = {
+            ...result,
+            records: result.records.map(record => ({
+                ...record,
+                _id: "<id>",
+                files: (record.files ?? []).map(file => ({
+                    ...file,
+                    filePath: `/uploads/${collectionId}/<id>${file.newFilename.replace(/^[^_]+/, "")}`,
+                    newFilename: `<id>${file.newFilename.replace(/^[^_]+/, "")}`,
+                    uploadedAt: "<timestamp>"
+                }))
+            }))
+        };
+        
+        expect(stableResult).toMatchSnapshot();
+    })
+
+    it("should throw Invalid data in the spreadsheet file error", async() => {
+        const excelData = [
+            ['Title', 'Title'],
+            ['title 1', 'title 1']
+        ]
+        jest.spyOn(dataImport, "validateExcelData").mockImplementation(() => {throw Error("Header has duplicate values")});
+        expect(async () => await prepRecordsAndFiles(excelData, "collection name", true, collectionId, undefined)).rejects.toThrow("Invalid data in the spreadsheet file")
     })
 })

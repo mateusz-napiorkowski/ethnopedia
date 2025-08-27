@@ -67,12 +67,12 @@ export const processArchiveFiles = (
                 .filter(Boolean)
                 .map(item => {
                     const [index, filename] = item.split(":");
-                    if(!/^[0-4]$/.test(index))
+                    if(!/^[0-4]$/.test(index.trim()))
                         throw Error("Index must be a number between 0 and 4")
-                    const ext = path.extname(filename);
-                    const newFilename = `${newRecordId.toString()}_${index}${ext}`
+                    const ext = path.extname(filename.trim());
+                    const newFilename = `${newRecordId.toString()}_${index.trim()}${ext}`
                     return {
-                        oldFileName: `${oldRecordId}_${index}${ext}`,
+                        oldFileName: `${oldRecordId}_${index.trim()}${ext}`,
                         newFilename: newFilename,
                         userFilename: filename
                     };
@@ -151,7 +151,7 @@ export const prepRecordsAndFiles = async (
         let totalFailedUploadsCauses = []
         let allUploadedFilenames = []
         for(const row of recordsData) {
-            const oldRecordId = isValidObjectId(row[_idColumnIndex].trim()) ? row[_idColumnIndex].trim() : undefined;
+            const oldRecordId = _idColumnIndex != -1 && isValidObjectId(row[_idColumnIndex].trim()) ? row[_idColumnIndex].trim() : undefined;
             const newRecordId = !oldRecordId || asNewCollection 
                 ? new mongoose.Types.ObjectId()
                 : new mongoose.Types.ObjectId(oldRecordId)
@@ -175,10 +175,12 @@ export const prepRecordsAndFiles = async (
             totalUploadedFilesCount += uploadedFilesCount
             totalFailedUploadsCauses.push(...failedUploadsCauses)
         }
+
         const allArchiveFilenames = archiveBuffer ? archiveBuffer.files.map(file => file.path) : [];
-        const unlistedFiles = allArchiveFilenames.filter(x => !allUploadedFilenames.includes(x))
+        const failedUploadsFilenames = archiveBuffer ? totalFailedUploadsCauses.map(file => file.archiveFilename) : [];
+        const unlistedFiles = allArchiveFilenames.filter(x => !allUploadedFilenames.includes(x) && !failedUploadsFilenames.includes(x))
         for(const file of unlistedFiles) {
-            totalFailedUploadsCauses.push({archiveFilename: file, cause: "File is not associated with any record"})
+            totalFailedUploadsCauses.push({archiveFilename: file, cause: "File is not associated with any record from spreadsheet/csv file"})
         }
         return {
             records,
@@ -189,7 +191,6 @@ export const prepRecordsAndFiles = async (
     } catch (error) {
         throw new Error("Invalid data in the spreadsheet file", {cause: error})
     }
-    
 }
 
 const fillSubcategories = (fields: Array<string>, depth: number, header: Array<string>, rowValues: Array<string>) => {
