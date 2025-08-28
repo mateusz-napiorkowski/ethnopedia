@@ -273,7 +273,7 @@ const ImportCollectionPage = () => {
                                         <span className="block w-1/2 text-sm font-semibold text-gray-700 dark:text-white my-2">Kategoria/podkategoria:</span>
                                         <span className="block w-1/2 text-sm font-semibold text-gray-700 dark:text-white my-2">Kategoria/podkategoria nadrzędna:</span>
                                     </div>
-                                    {childParentPairs.filter((pair: any) => pair[0] !== "_id").map((pair: any) => {
+                                    {childParentPairs.filter((pair: any) => pair[0] !== "_id" && pair[0] !== "nazwy plików").map((pair: any) => {
                                         const categoryShortName = pair[0]
                                         const categoryParentShortName = pair[1]
                                         return (
