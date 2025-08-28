@@ -22,7 +22,7 @@ const ArtworkPage = () => {
         enabled: !!artworkId,
     })
 
-
+    // Keep the flexible collectionId logic from search-all-frontend
     const collectionId = paramCollectionId || fetchedData?.artwork?.collectionId
 
     const deleteArtworksMutation = useMutation(
@@ -30,6 +30,7 @@ const ArtworkPage = () => {
         {
             onSuccess: () => {
                 queryClient.invalidateQueries("artwork")
+                // Keep the flexible navigation logic from search-all-frontend
                 if (collectionId) {
                     navigate(`/collections/${collectionId}/artworks/`)
                 } else {
@@ -40,13 +41,16 @@ const ArtworkPage = () => {
     )
 
     if (!fetchedData)
-        return <LoadingPage />
-
+        return (
+            <div data-testid="loading-page-container">
+                <LoadingPage />
+            </div>
+        )
 
     const artworkData = fetchedData.artwork
 
     return (
-        <div>
+        <div data-testid="loaded-artwork-page-container">
             <Navbar />
             {showDeleteArtworkWarning &&
                 <WarningPopup
@@ -62,6 +66,7 @@ const ArtworkPage = () => {
                         collectionName={artworkData.collectionName}
                         detailsToShow={artworkData}
                         handleEditClick={() => {
+                            // Keep the more specific navigation from search-all-frontend
                             navigate(
                                 `/collections/${collectionId}/artworks/${artworkId}/edit-artwork`,
                                 { state: { categories: artworkData.categories } }
