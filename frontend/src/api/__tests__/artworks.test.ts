@@ -33,9 +33,9 @@ describe("artworks tests", () => {
         it.each([
             {case: "no search", search: false, searchText: null, searchRules: {}},
             {case: "quick search", search: true, searchText: "testowy", searchRules: {}},
-            {case: "advanced search", search: true, searchText: null, searchRules: {"Tytuł": "testowy"}},       
+            {case: "advanced search", search: true, searchText: null, searchRules: {"Tytuł": "testowy"}},
         ])('should call axios.get with correct parameters and return correct data if API call succeeds - $case', async ({search, searchText, searchRules: searchRules}) => {
-            
+
             mockAxios.get.mockResolvedValueOnce({ data: getArtworkForPageMockReturnValue });
             const queryParams = {
                 params: {
@@ -61,7 +61,7 @@ describe("artworks tests", () => {
             );
 
             expect(mockAxios.get).toHaveBeenCalledWith(`${process.env.REACT_APP_API_URL}v1/artworks/`, queryParams)
-            expect(result).toEqual(getArtworkForPageMockReturnValue);    
+            expect(result).toEqual(getArtworkForPageMockReturnValue);
         })
 
         it("should throw error if API call fails", async () => {
@@ -75,43 +75,55 @@ describe("artworks tests", () => {
         it("should call axios.post with correct parameters and return correct data if API call succeeds", async () => {
             mockAxios.post.mockResolvedValueOnce({ data: createArtworkMockReturnValue });
 
-            const result = await createArtwork(artworkPayload, jwtToken);
+            const files: File[] = []; // brakujące pliki w teście
+            const result = await createArtwork(collectionId, artworkPayload, files, jwtToken);
 
             expect(mockAxios.post).toHaveBeenCalledWith(
                 `${process.env.REACT_APP_API_URL}v1/artworks/create`,
-                artworkPayload,
-                {headers: {Authorization: `Bearer ${jwtToken}`}}
-            )
+                expect.any(FormData),
+                { headers: { Authorization: `Bearer ${jwtToken}` } }
+            );
             expect(result).toEqual(createArtworkMockReturnValue);
         });
 
         it("should throw error if API call fails", async () => {
             mockAxios.post.mockRejectedValueOnce(new Error("Network Error"));
 
-            await expect(createArtwork(artworkPayload, jwtToken)).rejects.toThrow(axiosError);
+            await expect(
+                createArtwork(collectionId, artworkPayload, [], jwtToken)
+            ).rejects.toThrow(axiosError);
         });
-    })
+    });
 
     describe("editArtwork tests", () => {
         it("should call axios.put with correct parameters and return correct data if API call succeeds", async () => {
             mockAxios.put.mockResolvedValueOnce({ data: editArtworkReturnValue });
 
-            const result = await editArtwork(artworkPayload, artworkId, jwtToken)
+            const result = await editArtwork(
+                artworkId,
+                collectionId,
+                artworkPayload,
+                [],       // filesToUpload
+                [],       // filesToDelete
+                jwtToken
+            );
 
             expect(mockAxios.put).toHaveBeenCalledWith(
                 `${process.env.REACT_APP_API_URL}v1/artworks/edit/${artworkId}`,
-                artworkPayload,
-                {headers: {Authorization: `Bearer ${jwtToken}`}}
-            )
+                expect.any(FormData),
+                { headers: { Authorization: `Bearer ${jwtToken}` } }
+            );
             expect(result).toEqual(editArtworkReturnValue);
         });
 
         it("should throw error if API call fails", async () => {
             mockAxios.put.mockRejectedValueOnce(new Error("Network Error"));
 
-            await expect(editArtwork(artworkPayload, artworkId, jwtToken)).rejects.toThrow(axiosError);
+            await expect(
+                editArtwork(artworkId, collectionId, artworkPayload, [], [], jwtToken)
+            ).rejects.toThrow(axiosError);
         });
-    })
+    });
 
     describe("deleteArtworks tests", () => {
         it("should call axios.delete with correct parameters and return correct data if API call succeeds", async () => {

@@ -6,9 +6,22 @@
   <component name="ChangeListManager">
     <list default="true" id="0139a19c-6c98-4121-b72c-d8ab5bbc47c1" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/artwork/ArtworkDetails.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/artwork/ArtworkDetails.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/artwork/MetadataForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/artwork/MetadataForm.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/artworks/CreateArtworkPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/artworks/CreateArtworkPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/api/__tests__/artworks.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/__tests__/artworks.test.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/api/__tests__/dataExport.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/__tests__/dataExport.test.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/__tests__/__snapshots__/DisplayCategoriesSelect.test.tsx.snap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/__tests__/__snapshots__/Pagination.test.tsx.snap" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/__tests__/__snapshots__/Pagination.test.tsx.snap" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/__tests__/__snapshots__/SortOptions.test.tsx.snap" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/__tests__/__snapshots__/SortOptions.test.tsx.snap" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/artwork/__tests__/MetadataForm.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/artwork/__tests__/MetadataForm.test.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/artwork/__tests__/__snapshots__/MetadataForm.test.tsx.snap" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/artwork/__tests__/__snapshots__/MetadataForm.test.tsx.snap" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/search/__tests__/AdvancedSearch.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/search/__tests__/AdvancedSearch.test.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/search/__tests__/QuickSearch.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/search/__tests__/QuickSearch.test.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/search/__tests__/SearchComponent.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/search/__tests__/SearchComponent.test.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/search/__tests__/__snapshots__/AdvancedSearch.test.tsx.snap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/__tests__/__snapshots__/LandingPage.test.tsx.snap" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/__tests__/__snapshots__/LandingPage.test.tsx.snap" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/artworks/__tests__/__snapshots__/ArtworksListPage.test.tsx.snap" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/artworks/__tests__/__snapshots__/ArtworksListPage.test.tsx.snap" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/collections/CollectionsPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/collections/CollectionsPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/collections/__tests__/__snapshots__/CreateCollectionPage.test.tsx.snap" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/collections/__tests__/__snapshots__/CreateCollectionPage.test.tsx.snap" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/collections/__tests__/__snapshots__/ImportCollectionPage.test.tsx.snap" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/collections/__tests__/__snapshots__/ImportCollectionPage.test.tsx.snap" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,7 +51,7 @@
   }
 }</component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="CurrentFile" />
+    <option name="selectedTabId" value="ProjectErrors" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 8
@@ -114,7 +127,7 @@
       <workItem from="1756120229453" duration="1271000" />
       <workItem from="1756207921427" duration="9585000" />
       <workItem from="1756287750363" duration="5899000" />
-      <workItem from="1756376828288" duration="5484000" />
+      <workItem from="1756376828288" duration="7990000" />
     </task>
     <servers />
   </component>

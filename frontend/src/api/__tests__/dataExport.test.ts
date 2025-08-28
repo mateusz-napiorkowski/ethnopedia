@@ -26,7 +26,9 @@ describe("dataExport tests", () => {
                 ExportExtent.all,
                 {},
                 new URLSearchParams(),
-                "test.xlsx"
+                "test.xlsx",
+                false,
+                false
             );
 
 
@@ -54,7 +56,9 @@ describe("dataExport tests", () => {
                 ExportExtent.all,
                 {},
                 new URLSearchParams(),
-                "test.xlsx"
+                "test.xlsx",
+                false,
+                false
             )).rejects.toThrow(axiosError);
         });
     })

@@ -22,7 +22,6 @@ interface Option {
 
 const CollectionsPage = () => {
     const { firstName, jwtToken } = useUser();
-    const [showImportOptions, setShowImportOptions] = useState<boolean>(false);
     const [checkedCollections, setCheckedCollections] = useState<{ [key: string]: boolean }>({});
     const [showWarningPopup, setShowWarningPopup] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);

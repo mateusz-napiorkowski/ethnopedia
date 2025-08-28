@@ -22,7 +22,10 @@ const renderPage = (
             <QueryClientProvider client={queryClient}>
                 <MemoryRouter initialEntries={[`/collections/${exampleCollectionId}/artworks`]}>
                     <Routes>
-                        <Route path="/collections/:collection/artworks" element={<SearchComponent collectionId={collectionId} />}/>
+                        <Route
+                            path="/collections/:collection/artworks"
+                            element={<SearchComponent collectionIds={collectionId} mode="local" />}
+                        />
                     </Routes>  
                 </MemoryRouter>
             </QueryClientProvider>
