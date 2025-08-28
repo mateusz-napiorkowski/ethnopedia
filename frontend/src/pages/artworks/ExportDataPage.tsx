@@ -23,6 +23,7 @@ const ExportDataPage: React.FC = () => {
     const selectedArtworks = location.state && location.state.selectedArtworks ? location.state.selectedArtworks : []
     const searchParams = location.state && location.state.searchParams ? location.state.searchParams : {}
     const [includeIds, setIncludeIds] = useState(true)
+    const [includeFilenames, setIncludeFilenames] = useState(true)
     const [excelMenuScrollPosition, setExcelMenuScrollPosition] = useState(0)
     
     const { data: categoriesData } = useQuery({
@@ -73,6 +74,7 @@ const ExportDataPage: React.FC = () => {
                 searchParams,      
                 filename,
                 includeIds,
+                includeFilenames,
                 exportAsCSV
             );
         } else {
@@ -210,7 +212,15 @@ const ExportDataPage: React.FC = () => {
                                         Kolumna _id służy do późniejszej identyfikacji odpowiednich rekordów w Ethnopedii.
                                         Przy procedurze dodawania nowych rekordów poprzez arkusz/plik CSV, komórki w kolumnie _id pozostawiaj puste. Id dla tych rekorów zostanie nadane automatycznie po zaimportowaniu danych.
                                     </p>
-
+                                    <input className='m-2 hover:cursor-pointer'
+                                        type="checkbox"
+                                        onClick={() => setIncludeFilenames(!includeFilenames)}
+                                        checked={includeFilenames}
+                                    />
+                                    <label className='text-sm'>Zawrzyj w pliku kolumnę z nazwami skojarzonych plików</label>
+                                    <p className='text-sm'>    
+                                        Kolumna 'nazwy plików' jest konieczna, jeśli chcemy poźniej zaimportować do nowej kolekcji wyeksportowane dane wraz z plikami.
+                                    </p>
                                 </div>
                                 <div className="flex flex-row items-center space-x-2 text-sm py-2">
                                     <label className="text-base">

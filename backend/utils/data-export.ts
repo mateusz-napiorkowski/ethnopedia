@@ -11,13 +11,20 @@ const findValue: any = (subcategories: Array<artworkCategory>, categoryNameSplit
     return matchingCategory ? matchingCategory.value : ""
 }
 
-export const fillRow = (keys: string[], categories: artworkCategory[], _id?: string) => {
+export const fillRow = (keys: string[], categories: artworkCategory[], _id?: string, files?: any) => {
     const rowdata: any = {}
     keys.forEach(key => {
-        if(key !== "_id")
+        if(key !== "_id" && key !== "nazwy plików")
             rowdata[key] = findValue(categories, key.split("."))
-        else
+        else if(key === "_id")
             rowdata[key] = _id
+        else {
+            const filenamesMap = files.map((file: any) => {
+                const match = file.newFilename.match(/_(\d+)\./);
+                return `${match[1]}:${file.originalFilename}`
+            })
+            rowdata[key] = filenamesMap.join(';')
+        }
     });
     return rowdata
 }

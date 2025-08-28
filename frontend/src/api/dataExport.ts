@@ -10,6 +10,7 @@ export const getXlsxWithArtworksData = async (
     searchParams: URLSearchParams,
     filename: string,
     includeIds: boolean,
+    includeFilenames: boolean,
     exportAsCSV: boolean
 ) => {
     return await axios.get(`${API_URL}v1/dataExport`, {
@@ -21,6 +22,7 @@ export const getXlsxWithArtworksData = async (
             collectionIds: collectionIds,
             searchParams,
             includeIds,
+            includeFilenames,
             exportAsCSV
         }
     }).then((response) => {
