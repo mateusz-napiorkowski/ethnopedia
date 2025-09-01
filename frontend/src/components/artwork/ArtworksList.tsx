@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import EmptyCollectionMessage from '../../components/artwork/EmptyCollectionMessage';
 import NoSearchResultMessage from '../../components/artwork/NoSearchResultMessage';
 import LoadingPage from '../../pages/LoadingPage';
@@ -8,15 +8,14 @@ interface Artwork {
     _id: string;
     collectionId: string;
     categories: any[];
-    createdAt: any,
-    updatedAt: any
+    createdAt?: any;
+    updatedAt?: any;
 }
 
 interface ArtworksListProps {
     artworksData: {
         artworks: Artwork[];
     } | undefined;
-    collectionId: string;
     isLoading: boolean;
     isFetching: boolean;
     hasSearchParams: boolean;
@@ -29,7 +28,6 @@ interface ArtworksListProps {
 
 const ArtworksList: React.FC<ArtworksListProps> = ({
                                                        artworksData,
-                                                       collectionId,
                                                        isLoading,
                                                        isFetching,
                                                        hasSearchParams,
@@ -40,8 +38,9 @@ const ArtworksList: React.FC<ArtworksListProps> = ({
                                                        jwtToken,
                                                    }) => {
     const navigate = useNavigate();
+    const { collectionId } = useParams();
 
-    if (isLoading || !artworksData) {
+    if (isLoading || isFetching || !artworksData) {
         return <LoadingPage />;
     }
 
@@ -55,15 +54,19 @@ const ArtworksList: React.FC<ArtworksListProps> = ({
     }
 
     const formatDate = (date: any) => {
-        const newDate = new Date(date).toLocaleDateString(
-            "pl-pl",
-            { year: "numeric", month: "numeric", day: "numeric" , hour: "numeric", minute: "numeric", second: "numeric"}
-        )
-        return newDate.toString()
-    }
+        if (!date) return "";
+        return new Date(date).toLocaleDateString("pl-PL", {
+            year: "numeric",
+            month: "numeric",
+            day: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+            second: "numeric",
+        });
+    };
 
     const specialLabels: Record<string, string> = {
-        createdAt: "Data utworzenia Rekordu",
+        createdAt: "Data utworzenia rekordu",
         updatedAt: "Data ostatniej modyfikacji",
     };
 
@@ -74,53 +77,43 @@ const ArtworksList: React.FC<ArtworksListProps> = ({
                     key={artwork._id}
                     className="px-4 max-w-screen-xl py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4 border border-gray-300 dark:border-gray-600 cursor-pointer"
                     data-testid={artwork._id}
-                    onClick={() => navigate(`/collections/${collectionId}/artworks/${artwork._id}`)}
+                    onClick={() => {
+                        const targetCollectionId = collectionId || artwork.collectionId;
+                        navigate(`/collections/${targetCollectionId}/artworks/${artwork._id}`);
+                    }}
                 >
                     <div className="flex flex-row">
-            <span className="mr-4 flex items-center">
-              <input
-                  type="checkbox"
-                  data-testid={`${artwork._id}-checkbox`}
-                  checked={selectedArtworks[artwork._id]}
-                  onClick={(e) => e.stopPropagation()}
-                  onChange={() => onToggleSelect(artwork._id)}
-              />
-            </span>
-                        <div>
-                            {selectedDisplayCategories.length > 0
-                                ? selectedDisplayCategories.map((cat) => {
-                                    const label = cat.includes(".")
-                                        ? cat.split(".").pop()!
-                                        : specialLabels[cat] ?? cat;
-                                    const isSpecialLabel = label == specialLabels["createdAt"] || label == specialLabels["updatedAt"]
-                                    let value: string;
-                                    if (label === specialLabels["createdAt"])
-                                        value = formatDate(artwork.createdAt);
-                                    else if (label === specialLabels["updatedAt"])
-                                        value = formatDate(artwork.updatedAt);
-                                    else
-                                        value = findValue(artwork, cat);
+                        <span className="mr-4 flex items-center">
+                            <input
+                                type="checkbox"
+                                data-testid={`${artwork._id}-checkbox`}
+                                checked={selectedArtworks[artwork._id] || false}
+                                onClick={(e) => e.stopPropagation()}
+                                onChange={() => onToggleSelect(artwork._id)}
+                            />
+                        </span>
+                        <div className="flex-1 min-w-0">
+                            {selectedDisplayCategories.map((cat) => {
+                                const label = cat.includes(".")
+                                    ? cat.split(".").pop()!
+                                    : specialLabels[cat] ?? cat;
 
-                                    return (
-                                        <div key={cat} className={ `text-${isSpecialLabel ? "sm" : "lg"} text-gray-800 dark:text-white`}>
-                                            <span className="text-gray-400 inline">{label}: </span>
-                                            {value}
-                                        </div>
-                                    );
-                                })
-                                : (
-                                    <>
-                                        <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-                                            {findValue(artwork, 'Tytuł')}
-                                        </h3>
-                                        <p className="text-gray-600 dark:text-gray-400 mb-1">
-                                            {findValue(artwork, 'Artyści')}
-                                        </p>
-                                        <p className="text-gray-500 dark:text-gray-300">
-                                            {findValue(artwork, 'Rok')}
-                                        </p>
-                                    </>
-                                )}
+                                let value: string;
+                                if (cat === "createdAt") value = formatDate(artwork.createdAt);
+                                else if (cat === "updatedAt") value = formatDate(artwork.updatedAt);
+                                else value = findValue(artwork, cat);
+
+                                return (
+                                    <div
+                                        key={cat}
+                                        className="text-lg text-gray-800 dark:text-white w-full break-words"
+                                        title={value} // pokazuje pełną wartość po najechaniu
+                                    >
+                                        <span className="text-gray-400">{label}: </span>
+                                        <span>{value}</span>
+                                    </div>
+                                );
+                            })}
                         </div>
                     </div>
                 </div>

@@ -3,13 +3,13 @@
 exports[`CreateCollectionPage tests should fill initial category scructure correctly when in edit mode and call updateCollection with correct arguments when save button is clicked 1`] = `
 <div>
   <div
-    class="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col"
+    class="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col overflow-y-auto"
   >
     <nav
       class="bg-gray-800 border-gray-200 dark:bg-gray-200 w-full border-b dark:border-gray-600"
     >
       <div
-        class="max-w-screen-xl flex flex-wrap justify-between mx-auto p-4"
+        class="max-w-screen-xl flex flex-wrap justify-between mx-auto p-1"
       >
         <div
           class="flex items-center mt-1"
@@ -23,6 +23,31 @@ exports[`CreateCollectionPage tests should fill initial category scructure corre
         <div
           class="flex items-center md:order-2"
         >
+          <button
+            class="text-gray-800 bg-white border border-gray-300 focus:outline-none
+                           hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm
+                           p-2.5 mr-2 dark:bg-gray-800 dark:text-white dark:border-gray-600
+                           dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="w-5 h-5 text-gray-800 dark:text-gray-200"
+              fill="none"
+              height="1em"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="1em"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
           <button
             class="text-gray-800 bg-white border border-gray-300 focus:outline-none
                            hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm
@@ -50,7 +75,7 @@ exports[`CreateCollectionPage tests should fill initial category scructure corre
       </div>
     </nav>
     <div
-      class="container mx-auto px-24 sm:px-32 md:px-40 lg:px-48 mt-4 max-w-screen-lg"
+      class="container px-8 mt-6 max-w-3xl mx-auto"
     >
       <nav
         class="flex"
@@ -68,276 +93,572 @@ exports[`CreateCollectionPage tests should fill initial category scructure corre
               Strona główna
             </a>
           </li>
-          <span
-            class="self-center"
-          >
-            <svg
-              class="w-3 h-3 text-gray-600 dark:text-gray-400"
-            />
-          </span>
-          <li
-            class="inline-flex items-center text-lg"
-          >
-            <a
-              class="inline-flex items-center font-medium text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-600"
-              href="/collections/undefined/artworks"
-            >
-              Kolekcja
-            </a>
-          </li>
         </ol>
       </nav>
-      <div
-        class="mt-4"
+      <h2
+        class="text-2xl font-bold mt-2"
       >
+        Edytuj kolekcję
+      </h2>
+      <form>
+        <label
+          class="block text-sm text-gray-700 dark:text-white my-2 mt-4"
+        >
+          Nazwa
+        </label>
+        <input
+          class="w-full px-4 py-2 border rounded-lg text-gray-700 dark:text-white dark:bg-gray-700 focus:outline-none border-gray-300 dark:border-gray-600"
+          maxlength="100"
+          type="text"
+          value="collection name"
+        />
+        <label
+          class="block text-sm text-gray-700 dark:text-white my-2 mt-4"
+        >
+          Opis
+        </label>
+        <textarea
+          class="w-full px-4 py-2 border rounded-lg resize-y focus:outline-none dark:bg-gray-700 dark:text-white border-gray-300 dark:border-gray-600"
+          maxlength="1000"
+          rows="4"
+        >
+          collection description
+        </textarea>
+        <hr
+          class="mt-6"
+        />
+        <label
+          class="block text-sm font-bold text-gray-700 dark:text-white my-2 mt-4"
+        >
+          Struktura metadanych w kolekcji
+        </label>
+        <p
+          class="text-sm text-gray-600 dark:text-gray-400 mb-4"
+        >
+          Zbuduj hierarchię kategorii i podkategorii dla tej kolekcji. Dodawaj i usuwaj elementy za pomocą przycisków po prawej stronie pola.
+        </p>
         <div
-          class="bg-white dark:bg-gray-800 rounded-lg shadow-md border dark:border-gray-600 p-8"
+          class="mb-3"
+          style="opacity: 1; margin-left: 0px;"
         >
           <div
-            class="flex items-start rounded-t border-b pb-2"
+            class="inline-flex items-center gap-2 group w-full"
           >
-            <h3
-              class="text-2xl font-bold text-gray-900 dark:text-white"
-            >
-              Edytuj kolekcję
-            </h3>
-          </div>
-          <form
-            action="#"
-          >
-            <label
-              class="block text-sm font-bold text-gray-700 dark:text-white my-2"
-              for="name"
-            >
-              Nazwa
-            </label>
-            <input
-              aria-label="name"
-              class="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none border-gray-300"
-              id="name"
-              name="name"
-              type="text"
-              value="collection name"
-            />
-            <label
-              class="block text-sm font-bold text-gray-700 dark:text-white my-2"
-              for="description"
-            >
-              Opis
-            </label>
-            <textarea
-              aria-label="description"
-              class="w-full resize-y mb-8 px-4 py-2 border rounded-lg focus:outline-none dark:border-gray-600 dark:bg-gray-800 border-gray-300"
-              id="description"
-              name="description"
-              rows="4"
-            >
-              collection description
-            </textarea>
-            <hr />
-            <label
-              class="block text-sm mt-4 font-bold text-gray-700 dark:text-white my-2"
-            >
-              Struktura metadanych w kolekcji
-            </label>
-            <p
-              class="text-sm text-gray-600 dark:text-gray-400 mb-4"
-            >
-              Podaj strukturę metadanych, które chcesz przechowywać w tej kolekcji...
-            </p>
             <div
-              class="flex-grow"
+              class="flex-1"
             >
-              <div
-                style="overflow-y: auto;"
-              >
-                <form>
-                  <div
-                    class="relative flex flex-col mt-1"
-                  >
-                    <div
-                      class="field-container relative flex items-center"
-                    >
-                      <label
-                        class="flex items-center"
-                      >
-                        <input
-                          class="p-2 border rounded border-gray-300"
-                          name="name"
-                          placeholder="Podaj nazwę kategorii..."
-                          type="text"
-                          value="Tytuł"
-                        />
-                      </label>
-                      <div
-                        class="actions ml-1 space-x-1"
-                      />
-                    </div>
-                    <div
-                      class="children-container ml-8"
-                    />
-                  </div>
-                  <div
-                    class="relative flex flex-col mt-1"
-                  >
-                    <div
-                      class="field-container relative flex items-center"
-                    >
-                      <label
-                        class="flex items-center"
-                      >
-                        <input
-                          class="p-2 border rounded border-gray-300"
-                          name="name"
-                          placeholder="Podaj nazwę kategorii..."
-                          type="text"
-                          value="Region"
-                        />
-                      </label>
-                      <div
-                        class="actions ml-1 space-x-1"
-                      />
-                    </div>
-                    <div
-                      class="children-container ml-8"
-                    >
-                      <div
-                        class="relative"
-                      >
-                        <div
-                          class="tree-line vertical-helper"
-                        />
-                        <div
-                          class="relative flex flex-col mt-1"
-                        >
-                          <div
-                            class="field-container relative flex items-center"
-                          >
-                            <div
-                              class="tree-line vertical"
-                            />
-                            <div
-                              class="tree-line horizontal"
-                            />
-                            <label
-                              class="flex items-center"
-                            >
-                              <input
-                                class="p-2 border rounded border-gray-300"
-                                name="name"
-                                placeholder="Podaj nazwę kategorii..."
-                                type="text"
-                                value="Podregion"
-                              />
-                            </label>
-                            <div
-                              class="actions ml-1 space-x-1"
-                            />
-                          </div>
-                          <div
-                            class="children-container ml-8"
-                          >
-                            <div
-                              class="relative"
-                            >
-                              <div
-                                class="tree-line vertical-helper"
-                              />
-                              <div
-                                class="relative flex flex-col mt-1"
-                              >
-                                <div
-                                  class="field-container relative flex items-center"
-                                >
-                                  <div
-                                    class="tree-line vertical"
-                                  />
-                                  <div
-                                    class="tree-line horizontal"
-                                  />
-                                  <label
-                                    class="flex items-center"
-                                  >
-                                    <input
-                                      class="p-2 border rounded border-gray-300"
-                                      name="name"
-                                      placeholder="Podaj nazwę kategorii..."
-                                      type="text"
-                                      value="Miasto"
-                                    />
-                                  </label>
-                                  <div
-                                    class="actions ml-1 space-x-1"
-                                  />
-                                </div>
-                                <div
-                                  class="children-container ml-8"
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    class="relative flex flex-col mt-1"
-                  >
-                    <div
-                      class="field-container relative flex items-center"
-                    >
-                      <label
-                        class="flex items-center"
-                      >
-                        <input
-                          class="p-2 border rounded border-gray-300"
-                          name="name"
-                          placeholder="Podaj nazwę kategorii..."
-                          type="text"
-                          value="rok wydania"
-                        />
-                      </label>
-                      <div
-                        class="actions ml-1 space-x-1"
-                      />
-                    </div>
-                    <div
-                      class="children-container ml-8"
-                    />
-                  </div>
-                  <div
-                    class="actions mt-1"
-                  >
-                    <button
-                      title="Dodaj kategorię"
-                      type="button"
-                    >
-                      <svg />
-                    </button>
-                  </div>
-                </form>
-                <pre />
-              </div>
+              <input
+                class="w-full border-b focus:outline-none px-4 py-2  border-gray-300 text-gray-700 dark:text-white dark:border-gray-600"
+                maxlength="100"
+                name="name"
+                placeholder="Nazwa kategorii"
+                type="text"
+                value="Tytuł"
+              />
             </div>
             <div
-              class="flex justify-end mt-6"
+              class="inline-flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150 flex-shrink-0"
             >
               <button
-                class="px-4 py-2 mr-2"
+                class="p-2 text-sm rounded-md hover:dark:text-white bg-white
+                            opacity-0
+                            text-blue-600 hover:text-blue-800 cursor-pointer
+                        "
+                title="Dodaj podkategorię"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="w-5 h-5"
+                  fill="currentColor"
+                  height="1em"
+                  stroke="currentColor"
+                  stroke-width="0"
+                  viewBox="0 0 20 20"
+                  width="1em"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    clip-rule="evenodd"
+                    d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                    fill-rule="evenodd"
+                  />
+                </svg>
+              </button>
+              <button
+                class="p-2 text-sm rounded-md hover:dark:text-white bg-white
+                            opacity-0
+                            text-red-600 hover:text-red-800
+                            opacity-50 cursor-not-allowed hover:text-red-600
+                        "
+                disabled=""
+                title="Usuwanie tylko nowych kategorii w trybie edycji"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="w-5 h-5"
+                  fill="currentColor"
+                  height="1em"
+                  stroke="currentColor"
+                  stroke-width="0"
+                  viewBox="0 0 20 20"
+                  width="1em"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    clip-rule="evenodd"
+                    d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                    fill-rule="evenodd"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div
+          class="mb-3"
+          style="opacity: 1; margin-left: 0px;"
+        >
+          <div
+            class="inline-flex items-center gap-2 group w-full"
+          >
+            <div
+              class="flex-1"
+            >
+              <input
+                class="w-full border-b focus:outline-none px-4 py-2  border-gray-300 text-gray-700 dark:text-white dark:border-gray-600"
+                maxlength="100"
+                name="name"
+                placeholder="Nazwa kategorii"
+                type="text"
+                value="Region"
+              />
+            </div>
+            <div
+              class="inline-flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150 flex-shrink-0"
+            >
+              <button
+                class="p-2 text-sm rounded-md hover:dark:text-white bg-white
+                            opacity-0
+                            text-blue-600 hover:text-blue-800 cursor-pointer
+                        "
+                title="Dodaj podkategorię"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="w-5 h-5"
+                  fill="currentColor"
+                  height="1em"
+                  stroke="currentColor"
+                  stroke-width="0"
+                  viewBox="0 0 20 20"
+                  width="1em"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    clip-rule="evenodd"
+                    d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                    fill-rule="evenodd"
+                  />
+                </svg>
+              </button>
+              <button
+                class="p-2 text-sm rounded-md hover:dark:text-white bg-white
+                            opacity-0
+                            text-red-600 hover:text-red-800
+                            opacity-50 cursor-not-allowed hover:text-red-600
+                        "
+                disabled=""
+                title="Usuwanie tylko nowych kategorii w trybie edycji"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="w-5 h-5"
+                  fill="currentColor"
+                  height="1em"
+                  stroke="currentColor"
+                  stroke-width="0"
+                  viewBox="0 0 20 20"
+                  width="1em"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    clip-rule="evenodd"
+                    d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                    fill-rule="evenodd"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div
+          class="mb-3"
+          style="opacity: 1; margin-left: 20px;"
+        >
+          <div
+            class="inline-flex items-center gap-2 group w-full"
+          >
+            <div
+              class="flex-1"
+            >
+              <input
+                class="w-full border-b focus:outline-none px-4 py-2  border-gray-300 text-gray-700 dark:text-white dark:border-gray-600"
+                maxlength="100"
+                name="name"
+                placeholder="Nazwa podkategorii"
+                type="text"
+                value="Podregion"
+              />
+            </div>
+            <div
+              class="inline-flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150 flex-shrink-0"
+            >
+              <button
+                class="p-2 text-sm rounded-md hover:dark:text-white bg-white
+                            opacity-0
+                            text-blue-600 hover:text-blue-800 cursor-pointer
+                        "
+                title="Dodaj podkategorię"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="w-5 h-5"
+                  fill="currentColor"
+                  height="1em"
+                  stroke="currentColor"
+                  stroke-width="0"
+                  viewBox="0 0 20 20"
+                  width="1em"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    clip-rule="evenodd"
+                    d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                    fill-rule="evenodd"
+                  />
+                </svg>
+              </button>
+              <button
+                class="p-2 text-sm rounded-md hover:dark:text-white bg-white
+                            opacity-0
+                            text-red-600 hover:text-red-800
+                            opacity-50 cursor-not-allowed hover:text-red-600
+                        "
+                disabled=""
+                title="Usuwanie tylko nowych kategorii w trybie edycji"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="w-5 h-5"
+                  fill="currentColor"
+                  height="1em"
+                  stroke="currentColor"
+                  stroke-width="0"
+                  viewBox="0 0 20 20"
+                  width="1em"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    clip-rule="evenodd"
+                    d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                    fill-rule="evenodd"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div
+          class="mb-3"
+          style="opacity: 1; margin-left: 40px;"
+        >
+          <div
+            class="inline-flex items-center gap-2 group w-full"
+          >
+            <div
+              class="flex-1"
+            >
+              <input
+                class="w-full border-b focus:outline-none px-4 py-2  border-gray-300 text-gray-700 dark:text-white dark:border-gray-600"
+                maxlength="100"
+                name="name"
+                placeholder="Nazwa podkategorii"
+                type="text"
+                value="Miasto"
+              />
+            </div>
+            <div
+              class="inline-flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150 flex-shrink-0"
+            >
+              <button
+                class="p-2 text-sm rounded-md hover:dark:text-white bg-white
+                            opacity-0
+                            text-blue-600 hover:text-blue-800 cursor-pointer
+                        "
+                title="Dodaj podkategorię"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="w-5 h-5"
+                  fill="currentColor"
+                  height="1em"
+                  stroke="currentColor"
+                  stroke-width="0"
+                  viewBox="0 0 20 20"
+                  width="1em"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    clip-rule="evenodd"
+                    d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                    fill-rule="evenodd"
+                  />
+                </svg>
+              </button>
+              <button
+                class="p-2 text-sm rounded-md hover:dark:text-white bg-white
+                            opacity-0
+                            text-red-600 hover:text-red-800
+                            opacity-50 cursor-not-allowed hover:text-red-600
+                        "
+                disabled=""
+                title="Usuwanie tylko nowych kategorii w trybie edycji"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="w-5 h-5"
+                  fill="currentColor"
+                  height="1em"
+                  stroke="currentColor"
+                  stroke-width="0"
+                  viewBox="0 0 20 20"
+                  width="1em"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    clip-rule="evenodd"
+                    d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                    fill-rule="evenodd"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div
+          class="mb-3"
+          style="opacity: 1; margin-left: 0px;"
+        >
+          <div
+            class="inline-flex items-center gap-2 group w-full"
+          >
+            <div
+              class="flex-1"
+            >
+              <input
+                class="w-full border-b focus:outline-none px-4 py-2  border-gray-300 text-gray-700 dark:text-white dark:border-gray-600"
+                maxlength="100"
+                name="name"
+                placeholder="Nazwa kategorii"
+                type="text"
+                value="rok wydania"
+              />
+            </div>
+            <div
+              class="inline-flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150 flex-shrink-0"
+            >
+              <button
+                class="p-2 text-sm rounded-md hover:dark:text-white bg-white
+                            opacity-0
+                            text-blue-600 hover:text-blue-800 cursor-pointer
+                        "
+                title="Dodaj podkategorię"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="w-5 h-5"
+                  fill="currentColor"
+                  height="1em"
+                  stroke="currentColor"
+                  stroke-width="0"
+                  viewBox="0 0 20 20"
+                  width="1em"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    clip-rule="evenodd"
+                    d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                    fill-rule="evenodd"
+                  />
+                </svg>
+              </button>
+              <button
+                class="p-2 text-sm rounded-md hover:dark:text-white bg-white
+                            opacity-0
+                            text-red-600 hover:text-red-800
+                            opacity-50 cursor-not-allowed hover:text-red-600
+                        "
+                disabled=""
+                title="Usuwanie tylko nowych kategorii w trybie edycji"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="w-5 h-5"
+                  fill="currentColor"
+                  height="1em"
+                  stroke="currentColor"
+                  stroke-width="0"
+                  viewBox="0 0 20 20"
+                  width="1em"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    clip-rule="evenodd"
+                    d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                    fill-rule="evenodd"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <button
+          class="inline-flex items-center gap-1 p-3 text-sm bg-white dark:bg-gray-800 text-blue-600 hover:dark:text-white hover:text-blue-800 rounded-md "
+          title="Dodaj nową kategorię"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="w-4 h-4"
+            fill="currentColor"
+            height="1em"
+            stroke="currentColor"
+            stroke-width="0"
+            viewBox="0 0 20 20"
+            width="1em"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              clip-rule="evenodd"
+              d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+              fill-rule="evenodd"
+            />
+          </svg>
+          <span
+            class="px-1"
+          >
+            Dodaj kategorię
+          </span>
+        </button>
+        <div
+          id="DndDescribedBy-10"
+          style="display: none;"
+        >
+          
+    To pick up a draggable item, press the space bar.
+    While dragging, use the arrow keys to move the item.
+    Press space again to drop the item in its new position, or press escape to cancel.
+  
+        </div>
+        <div
+          aria-atomic="true"
+          aria-live="assertive"
+          id="DndLiveRegion-10"
+          role="status"
+          style="position: fixed; top: 0px; left: 0px; width: 1px; height: 1px; margin: -1px; border: 0px; padding: 0px; overflow: hidden; clip-path: inset(100%); white-space: nowrap;"
+        />
+        <div
+          class="fixed bottom-0 left-0 w-full bg-white dark:bg-gray-900 border-t border-gray-300 dark:border-gray-500 py-3 px-4 flex justify-between items-center shadow-[0_-2px_4px_rgba(0,0,0,0.05)] z-50"
+        >
+          <div
+            class="max-w-3xl w-full mx-auto flex justify-between items-center"
+          >
+            <div
+              class="flex gap-2"
+            >
+              <button
+                class="px-2 py-2 border rounded text-gray-400 border-gray-300 cursor-not-allowed"
+                disabled=""
+                title="Cofnij (Ctrl+Z)"
+                type="button"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="currentColor"
+                  height="1em"
+                  stroke="currentColor"
+                  stroke-width="0"
+                  viewBox="0 0 24 24"
+                  width="1em"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M0 0h24v24H0z"
+                    fill="none"
+                  />
+                  <path
+                    d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"
+                  />
+                </svg>
+              </button>
+              <button
+                class="px-2 py-2 border rounded text-gray-400 border-gray-300 cursor-not-allowed"
+                disabled=""
+                title="Przywróć (Ctrl+Y)"
+                type="button"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="currentColor"
+                  height="1em"
+                  stroke="currentColor"
+                  stroke-width="0"
+                  viewBox="0 0 24 24"
+                  width="1em"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M0 0h24v24H0z"
+                    fill="none"
+                  />
+                  <path
+                    d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16a8.002 8.002 0 017.6-5.5c1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div
+              class="flex gap-2"
+            >
+              <button
+                class="px-4 py-2 border rounded"
                 type="button"
               >
                 Anuluj
               </button>
               <button
-                class="px-4 py-2 color-button"
+                class="px-4 py-2 bg-blue-600 text-white rounded"
                 type="submit"
               >
                 Zapisz zmiany
               </button>
             </div>
-          </form>
+          </div>
         </div>
-      </div>
+        <div
+          class="h-20"
+        />
+      </form>
     </div>
   </div>
 </div>
@@ -346,13 +667,13 @@ exports[`CreateCollectionPage tests should fill initial category scructure corre
 exports[`CreateCollectionPage tests should render loading state 1`] = `
 <div>
   <div
-    class="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col"
+    class="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col overflow-y-auto"
   >
     <nav
       class="bg-gray-800 border-gray-200 dark:bg-gray-200 w-full border-b dark:border-gray-600"
     >
       <div
-        class="max-w-screen-xl flex flex-wrap justify-between mx-auto p-4"
+        class="max-w-screen-xl flex flex-wrap justify-between mx-auto p-1"
       >
         <div
           class="flex items-center mt-1"
@@ -366,6 +687,31 @@ exports[`CreateCollectionPage tests should render loading state 1`] = `
         <div
           class="flex items-center md:order-2"
         >
+          <button
+            class="text-gray-800 bg-white border border-gray-300 focus:outline-none
+                           hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm
+                           p-2.5 mr-2 dark:bg-gray-800 dark:text-white dark:border-gray-600
+                           dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="w-5 h-5 text-gray-800 dark:text-gray-200"
+              fill="none"
+              height="1em"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="1em"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
           <button
             class="text-gray-800 bg-white border border-gray-300 focus:outline-none
                            hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm
@@ -393,7 +739,7 @@ exports[`CreateCollectionPage tests should render loading state 1`] = `
       </div>
     </nav>
     <div
-      class="container mx-auto px-24 sm:px-32 md:px-40 lg:px-48 mt-4 max-w-screen-lg"
+      class="container px-8 mt-6 max-w-3xl mx-auto"
     >
       <nav
         class="flex"
@@ -411,146 +757,276 @@ exports[`CreateCollectionPage tests should render loading state 1`] = `
               Strona główna
             </a>
           </li>
-          <span
-            class="self-center"
-          >
-            <svg
-              class="w-3 h-3 text-gray-600 dark:text-gray-400"
-            />
-          </span>
-          <li
-            class="inline-flex items-center text-lg"
-          >
-            <a
-              class="inline-flex items-center font-medium text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-600"
-              href="/collections/undefined/artworks"
-            >
-              Kolekcja
-            </a>
-          </li>
         </ol>
       </nav>
-      <div
-        class="mt-4"
+      <h2
+        class="text-2xl font-bold mt-2"
       >
+        Dodaj nową kolekcję
+      </h2>
+      <form>
+        <label
+          class="block text-sm text-gray-700 dark:text-white my-2 mt-4"
+        >
+          Nazwa
+        </label>
+        <input
+          class="w-full px-4 py-2 border rounded-lg text-gray-700 dark:text-white dark:bg-gray-700 focus:outline-none border-gray-300 dark:border-gray-600"
+          maxlength="100"
+          type="text"
+          value=""
+        />
+        <label
+          class="block text-sm text-gray-700 dark:text-white my-2 mt-4"
+        >
+          Opis
+        </label>
+        <textarea
+          class="w-full px-4 py-2 border rounded-lg resize-y focus:outline-none dark:bg-gray-700 dark:text-white border-gray-300 dark:border-gray-600"
+          maxlength="1000"
+          rows="4"
+        />
+        <hr
+          class="mt-6"
+        />
+        <label
+          class="block text-sm font-bold text-gray-700 dark:text-white my-2 mt-4"
+        >
+          Struktura metadanych w kolekcji
+        </label>
+        <p
+          class="text-sm text-gray-600 dark:text-gray-400 mb-4"
+        >
+          Zbuduj hierarchię kategorii i podkategorii dla tej kolekcji. Dodawaj i usuwaj elementy za pomocą przycisków po prawej stronie pola.
+        </p>
         <div
-          class="bg-white dark:bg-gray-800 rounded-lg shadow-md border dark:border-gray-600 p-8"
+          class="mb-3"
+          style="opacity: 1; margin-left: 0px;"
         >
           <div
-            class="flex items-start rounded-t border-b pb-2"
+            class="inline-flex items-center gap-2 group w-full"
           >
-            <h3
-              class="text-2xl font-bold text-gray-900 dark:text-white"
+            <svg
+              aria-describedby="DndDescribedBy-0"
+              aria-disabled="false"
+              aria-hidden="true"
+              aria-roledescription="sortable"
+              class="w-4 h-4 cursor-grab text-gray-400 hover:text-gray-600 flex-shrink-0"
+              fill="currentColor"
+              height="1em"
+              role="button"
+              stroke="currentColor"
+              stroke-width="0"
+              tabindex="0"
+              viewBox="0 0 20 20"
+              width="1em"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              Dodaj nową kolekcję
-            </h3>
-          </div>
-          <form
-            action="#"
-          >
-            <label
-              class="block text-sm font-bold text-gray-700 dark:text-white my-2"
-              for="name"
-            >
-              Nazwa
-            </label>
-            <input
-              aria-label="name"
-              class="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none border-gray-300"
-              id="name"
-              name="name"
-              type="text"
-              value=""
-            />
-            <label
-              class="block text-sm font-bold text-gray-700 dark:text-white my-2"
-              for="description"
-            >
-              Opis
-            </label>
-            <textarea
-              aria-label="description"
-              class="w-full resize-y mb-8 px-4 py-2 border rounded-lg focus:outline-none dark:border-gray-600 dark:bg-gray-800 border-gray-300"
-              id="description"
-              name="description"
-              rows="4"
-            />
-            <hr />
-            <label
-              class="block text-sm mt-4 font-bold text-gray-700 dark:text-white my-2"
-            >
-              Struktura metadanych w kolekcji
-            </label>
-            <p
-              class="text-sm text-gray-600 dark:text-gray-400 mb-4"
-            >
-              Podaj strukturę metadanych, które chcesz przechowywać w tej kolekcji...
-            </p>
+              <title>
+                Przeciągnij, aby zmienić kolejność
+              </title>
+              <path
+                d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"
+              />
+            </svg>
             <div
-              class="flex-grow"
+              class="flex-1"
             >
-              <div
-                style="overflow-y: auto;"
-              >
-                <form>
-                  <div
-                    class="relative flex flex-col mt-1"
-                  >
-                    <div
-                      class="field-container relative flex items-center"
-                    >
-                      <label
-                        class="flex items-center"
-                      >
-                        <input
-                          class="p-2 border rounded border-gray-300"
-                          name="name"
-                          placeholder="Podaj nazwę kategorii..."
-                          type="text"
-                          value=""
-                        />
-                      </label>
-                      <div
-                        class="actions ml-1 space-x-1"
-                      />
-                    </div>
-                    <div
-                      class="children-container ml-8"
-                    />
-                  </div>
-                  <div
-                    class="actions mt-1"
-                  >
-                    <button
-                      title="Dodaj kategorię"
-                      type="button"
-                    >
-                      <svg />
-                    </button>
-                  </div>
-                </form>
-                <pre />
-              </div>
+              <input
+                class="w-full border-b focus:outline-none px-4 py-2  border-gray-300 text-gray-700 dark:text-white dark:border-gray-600"
+                maxlength="100"
+                name="name"
+                placeholder="Nazwa kategorii"
+                type="text"
+                value=""
+              />
             </div>
             <div
-              class="flex justify-end mt-6"
+              class="inline-flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150 flex-shrink-0"
             >
               <button
-                class="px-4 py-2 mr-2"
+                class="p-2 text-sm rounded-md hover:dark:text-white bg-white
+                            opacity-0
+                            text-blue-600 hover:text-blue-800 cursor-pointer
+                        "
+                title="Dodaj podkategorię"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="w-5 h-5"
+                  fill="currentColor"
+                  height="1em"
+                  stroke="currentColor"
+                  stroke-width="0"
+                  viewBox="0 0 20 20"
+                  width="1em"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    clip-rule="evenodd"
+                    d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                    fill-rule="evenodd"
+                  />
+                </svg>
+              </button>
+              <button
+                class="p-2 text-sm rounded-md hover:dark:text-white bg-white
+                            opacity-0
+                            text-red-600 hover:text-red-800
+                            
+                        "
+                title="Usuń"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="w-5 h-5"
+                  fill="currentColor"
+                  height="1em"
+                  stroke="currentColor"
+                  stroke-width="0"
+                  viewBox="0 0 20 20"
+                  width="1em"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    clip-rule="evenodd"
+                    d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                    fill-rule="evenodd"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <button
+          class="inline-flex items-center gap-1 p-3 text-sm bg-white dark:bg-gray-800 text-blue-600 hover:dark:text-white hover:text-blue-800 rounded-md ml-[24px]"
+          title="Dodaj nową kategorię"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="w-4 h-4"
+            fill="currentColor"
+            height="1em"
+            stroke="currentColor"
+            stroke-width="0"
+            viewBox="0 0 20 20"
+            width="1em"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              clip-rule="evenodd"
+              d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+              fill-rule="evenodd"
+            />
+          </svg>
+          <span
+            class="px-1"
+          >
+            Dodaj kategorię
+          </span>
+        </button>
+        <div
+          id="DndDescribedBy-0"
+          style="display: none;"
+        >
+          
+    To pick up a draggable item, press the space bar.
+    While dragging, use the arrow keys to move the item.
+    Press space again to drop the item in its new position, or press escape to cancel.
+  
+        </div>
+        <div
+          aria-atomic="true"
+          aria-live="assertive"
+          id="DndLiveRegion-0"
+          role="status"
+          style="position: fixed; top: 0px; left: 0px; width: 1px; height: 1px; margin: -1px; border: 0px; padding: 0px; overflow: hidden; clip-path: inset(100%); white-space: nowrap;"
+        />
+        <div
+          class="fixed bottom-0 left-0 w-full bg-white dark:bg-gray-900 border-t border-gray-300 dark:border-gray-500 py-3 px-4 flex justify-between items-center shadow-[0_-2px_4px_rgba(0,0,0,0.05)] z-50"
+        >
+          <div
+            class="max-w-3xl w-full mx-auto flex justify-between items-center"
+          >
+            <div
+              class="flex gap-2"
+            >
+              <button
+                class="px-2 py-2 border rounded text-gray-400 border-gray-300 cursor-not-allowed"
+                disabled=""
+                title="Cofnij (Ctrl+Z)"
+                type="button"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="currentColor"
+                  height="1em"
+                  stroke="currentColor"
+                  stroke-width="0"
+                  viewBox="0 0 24 24"
+                  width="1em"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M0 0h24v24H0z"
+                    fill="none"
+                  />
+                  <path
+                    d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"
+                  />
+                </svg>
+              </button>
+              <button
+                class="px-2 py-2 border rounded text-gray-400 border-gray-300 cursor-not-allowed"
+                disabled=""
+                title="Przywróć (Ctrl+Y)"
+                type="button"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="currentColor"
+                  height="1em"
+                  stroke="currentColor"
+                  stroke-width="0"
+                  viewBox="0 0 24 24"
+                  width="1em"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M0 0h24v24H0z"
+                    fill="none"
+                  />
+                  <path
+                    d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16a8.002 8.002 0 017.6-5.5c1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div
+              class="flex gap-2"
+            >
+              <button
+                class="px-4 py-2 border rounded"
                 type="button"
               >
                 Anuluj
               </button>
               <button
-                class="px-4 py-2 color-button"
+                class="px-4 py-2 bg-blue-600 text-white rounded"
                 type="submit"
               >
                 Utwórz
               </button>
             </div>
-          </form>
+          </div>
         </div>
-      </div>
+        <div
+          class="h-20"
+        />
+      </form>
     </div>
   </div>
 </div>

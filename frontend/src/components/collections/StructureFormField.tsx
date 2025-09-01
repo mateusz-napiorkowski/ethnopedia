@@ -1,121 +1,160 @@
 import React, { useState } from 'react';
 import { Category } from '../../@types/Category';
-import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg";
-import { ReactComponent as MinusIcon } from "../../assets/icons/minus.svg";
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { HiDotsVertical as DotsIcon, HiPlus as PlusIcon, HiTrash as DeleteIcon } from 'react-icons/hi';
 
-interface FormFieldProps {
-    formData: Category;
-    formDataList: Category[];
+interface Props {
+    id: string;
     index: string;
     level: number;
-    handleInputChange: (index: string, e: React.ChangeEvent<HTMLInputElement>) => void;
-    handleRemove: (index: string) => void;
-    handleAddSubcategory: (index: string) => void;
+    formData: Category;
+    handleInputChange: (idx: string, e: React.ChangeEvent<HTMLInputElement>) => void;
+    // new: commit on blur
+    handleInputBlur: (idx: string, value: string) => void;
+    handleRemove: (idx: string) => void;
+    handleAddSubcategory: (idx: string) => void;
     isEditMode: boolean;
+    hasError?: string;
+    errorMessage?: string;
+    hasSubmitted: boolean;
 }
 
-const StructureFormField: React.FC<FormFieldProps> = ({
-                                                          formData,
-                                                          formDataList,
-                                                          index,
-                                                          level,
-                                                          handleInputChange,
-                                                          handleRemove,
-                                                          handleAddSubcategory,
-                                                          isEditMode,
-                                                      }) => {
-    const [isHovered, setIsHovered] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+const MAX_LENGTH = 100;
 
-    const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { value } = e.target;
+const StructureFormField: React.FC<Props> = ({
+                                                 id, index, level, formData,
+                                                 handleInputChange, handleInputBlur, handleRemove, handleAddSubcategory,
+                                                 isEditMode, hasError, errorMessage, hasSubmitted
+                                             }) => {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging,
+    } = useSortable({ id });
+    const [hover, setHover] = useState(false);
 
-        // Walidacja: sprawdzenie czy nazwa zawiera kropkę
-        if (value.includes('.')) {
-            setError('Nazwa kategorii nie może zawierać kropki');
-        } else {
-            setError(null); // Jeśli nie zawiera kropki, usuwamy komunikat o błędzie
-        }
+    const canAdd = level < 5;
+    const addTitle = canAdd
+        ? 'Dodaj podkategorię'
+        : 'Osiągnięto maksymalny poziom zagnieżdżenia';
 
-        handleInputChange(index, e); // Wywołanie oryginalnej funkcji zmiany danych
+    // Enhanced input change handler with real-time validation
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        handleInputChange(index, e);
     };
 
+    // commit value on blur
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+        handleInputBlur(index, e.currentTarget.value);
+    };
+
+    // Validation logic
+    const isNameEmpty = !formData.name.trim();
+    const forbiddenChars = /[.]/;
+    const hasForbiddenChars = forbiddenChars.test(formData.name);
+
+    // Show required field error only after submit
+    const showRequiredError = isNameEmpty && hasSubmitted;
+
+    // Show other errors (forbidden chars, duplicates) immediately
+    const showOtherErrors = (hasForbiddenChars || (hasError && hasError !== "Nazwa kategorii jest wymagana"));
+
+    // Determine if there's any error to show
+    const hasAnyError = showRequiredError || showOtherErrors;
+
     return (
-        <div className="relative flex flex-col mt-1">
-            <div
-                className="field-container relative flex items-center"
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-            >
-                {level > 0 && (
-                    <>
-                        <div className="tree-line vertical" />
-                        <div className="tree-line horizontal" />
-                    </>
+        <div
+            ref={setNodeRef}
+            style={{
+                transform: CSS.Transform.toString(transform),
+                transition,
+                opacity: isDragging ? 0.4 : 1,
+                marginLeft: `${level * 20}px`,
+            }}
+            className="mb-3"
+            onMouseEnter={() => setHover(true)}
+            onMouseLeave={() => setHover(false)}
+        >
+            {/* Main row with controls - always aligned */}
+            <div className="inline-flex items-center gap-2 group w-full">
+                {/* Drag handle: only drag via the dots icon */}
+                {!isEditMode && (
+                    <DotsIcon
+                        title="Przeciągnij, aby zmienić kolejność"
+                        {...attributes}
+                        {...listeners}
+                        className="w-4 h-4 cursor-grab text-gray-400 hover:text-gray-600 flex-shrink-0"
+                    />
                 )}
-                <label className="flex items-center">
+
+                {/* Input field container - flex-1 to take available space */}
+                <div className="flex-1">
                     <input
                         type="text"
                         name="name"
                         value={formData.name}
-                        onChange={handleNameChange} // Zmieniamy na handleNameChange
-                        placeholder={`Podaj nazwę kategorii...`}
-                        className={`p-2 border rounded ${
-                            error ? 'border-red-500' : 'border-gray-300'
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        placeholder={level === 0 ? "Nazwa kategorii" : "Nazwa podkategorii"}
+                        maxLength={MAX_LENGTH}
+                        className={`w-full border-b focus:outline-none px-4 py-2  ${
+                            hasAnyError
+                                ? "border-red-500 text-red-600"
+                                : "border-gray-300 text-gray-700 dark:text-white dark:border-gray-600"
                         }`}
                     />
-                </label>
-                <div className="actions ml-1 space-x-1">
-                    {level < 5 && isHovered && (
-                        <button
-                            type="button"
-                            onClick={() => handleAddSubcategory(index)}
-                            title={`Dodaj podkategorię`}
-                        >
-                            <PlusIcon />
-                        </button>
-                    )}
-                    {isHovered && formData.isNew && (
-                        <button
-                            type="button"
-                            onClick={() => handleRemove(index)}
-                            title={`Usuń kategorię`}
-                        >
-                            <MinusIcon />
-                        </button>
-                    )}
+                </div>
+
+                {/* Action buttons - always aligned with input */}
+                <div className="inline-flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150 flex-shrink-0">
+                    <button
+                        onClick={() => canAdd && handleAddSubcategory(index)}
+                        disabled={!canAdd}
+                        title={addTitle}
+                        className={`p-2 text-sm rounded-md hover:dark:text-white bg-white
+                            ${hover ? 'opacity-100' : 'opacity-0'}
+                            ${canAdd
+                            ? 'text-blue-600 hover:text-blue-800 cursor-pointer'
+                            : 'text-gray-400 cursor-not-allowed'}
+                        `}
+                        type="button"
+                    >
+                        <PlusIcon className="w-5 h-5"/>
+                    </button>
+                    <button
+                        onClick={() => handleRemove(index)}
+                        disabled={isEditMode && !formData.isNew}
+                        title={isEditMode && !formData.isNew ? "Usuwanie tylko nowych kategorii w trybie edycji" : "Usuń"}
+                        className={`p-2 text-sm rounded-md hover:dark:text-white bg-white
+                            ${hover ? 'opacity-100' : 'opacity-0'}
+                            text-red-600 hover:text-red-800
+                            ${isEditMode && !formData.isNew ? 'opacity-50 cursor-not-allowed hover:text-red-600' : ''}
+                        `}
+                        type="button"
+                    >
+                        <DeleteIcon className="w-5 h-5"/>
+                    </button>
                 </div>
             </div>
 
-            {error && (
-                <div className="text-red-500 text-sm mt-1">{error}</div>
+            {/* Error message - separate row, doesn't affect alignment */}
+            {hasAnyError && (
+                <div className="mt-1" style={{ marginLeft: !isEditMode ? '24px' : '0px' }}>
+                    <div className="text-red-500 text-xs">
+                        {showRequiredError
+                            ? "Nazwa kategorii jest wymagana"
+                            : hasForbiddenChars
+                                ? "Nazwa nie może zawierać znaku: ."
+                                : errorMessage}
+                    </div>
+                </div>
             )}
-
-            <div className="children-container ml-8">
-                {formData.subcategories &&
-                    formData.subcategories.map((subCategory, subIndex) => {
-                        const uniqueSubIndex = `${index}-${subIndex}`;
-                        return (
-                            <div key={uniqueSubIndex} className="relative">
-                                <div className="tree-line vertical-helper" />
-                                <StructureFormField
-                                    index={uniqueSubIndex}
-                                    level={level + 1}
-                                    formData={subCategory}
-                                    formDataList={formDataList}
-                                    handleInputChange={handleInputChange}
-                                    handleRemove={handleRemove}
-                                    handleAddSubcategory={handleAddSubcategory}
-                                    isEditMode={isEditMode}
-                                />
-                            </div>
-                        );
-                    })}
-            </div>
         </div>
     );
 };
-
-
 
 export default React.memo(StructureFormField);
