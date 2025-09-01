@@ -12,7 +12,7 @@ import ArtworkDetails from "../../components/artwork/ArtworkDetails"
 const ArtworkPage = () => {
     const { jwtToken } = useUser()
     const queryClient = useQueryClient()
-    const { collectionId, artworkId } = useParams<string>()
+    const { collectionId: paramCollectionId, artworkId } = useParams<string>()
     const navigate = useNavigate()
     const [showDeleteArtworkWarning, setShowDeleteArtworkWarning] = useState(false)
 
@@ -22,13 +22,24 @@ const ArtworkPage = () => {
         enabled: !!artworkId,
     })
 
-    const deleteArtworksMutation = useMutation(() => deleteArtworks([artworkId as string], jwtToken as string), {
-        onSuccess: () => {
-            queryClient.invalidateQueries("artwork")
-            navigate(`/collections/${collectionId}/artworks/`)
+    // Keep the flexible collectionId logic from search-all-frontend
+    const collectionId = paramCollectionId || fetchedData?.artwork?.collectionId
+
+    const deleteArtworksMutation = useMutation(
+        () => deleteArtworks([artworkId as string], jwtToken as string),
+        {
+            onSuccess: () => {
+                queryClient.invalidateQueries("artwork")
+                // Keep the flexible navigation logic from search-all-frontend
+                if (collectionId) {
+                    navigate(`/collections/${collectionId}/artworks/`)
+                } else {
+                    navigate(`/global-search`)
+                }
+            }
         }
-    })
-    
+    )
+
     if (!fetchedData)
         return (
             <div data-testid="loading-page-container">
@@ -54,7 +65,13 @@ const ArtworkPage = () => {
                     <ArtworkDetails
                         collectionName={artworkData.collectionName}
                         detailsToShow={artworkData}
-                        handleEditClick={() => navigate(`edit-artwork`)}
+                        handleEditClick={() => {
+                            // Keep the more specific navigation from search-all-frontend
+                            navigate(
+                                `/collections/${collectionId}/artworks/${artworkId}/edit-artwork`,
+                                { state: { categories: artworkData.categories } }
+                            )
+                        }}
                         setShowDeleteArtworkWarning={setShowDeleteArtworkWarning}
                     />
                 </div>
@@ -62,4 +79,5 @@ const ArtworkPage = () => {
         </div>
     )
 }
+
 export default ArtworkPage

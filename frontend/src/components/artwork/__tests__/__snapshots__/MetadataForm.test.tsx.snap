@@ -278,26 +278,27 @@ exports[`EmptyCollectionMessage should render component correctly when in create
         class="relative w-full mb-2"
       >
         <label
-          class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800"
+          class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800 max-w-[calc(100%-16px)] truncate"
           for="field-0"
+          title="Tytuł"
         >
           Tytuł
         </label>
         <input
-          aria-label="Tytuł-input"
+          autocomplete="off"
           class="block w-full rounded-none border border-gray-300 bg-white px-3 pt-7 pb-2 text-sm
                placeholder-transparent focus:border-blue-400 focus:outline-none
                focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]
                dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500
                dark:focus:border-blue-400 dark:focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]"
           id="field-0"
-          maxlength="100"
+          maxlength="250"
           type="text"
           value=""
         />
       </div>
       <div
-        class="ml-4"
+        class="ml-4 relative"
       >
         <div
           class="relative pl-6"
@@ -313,27 +314,25 @@ exports[`EmptyCollectionMessage should render component correctly when in create
             class="relative w-full mb-2"
           >
             <label
-              class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800"
+              class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800 max-w-[calc(100%-16px)] truncate"
               for="field-0-0"
+              title="Podtytuł"
             >
               Podtytuł
             </label>
             <input
-              aria-label="Podtytuł-input"
+              autocomplete="off"
               class="block w-full rounded-none border border-gray-300 bg-white px-3 pt-7 pb-2 text-sm
                placeholder-transparent focus:border-blue-400 focus:outline-none
                focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]
                dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500
                dark:focus:border-blue-400 dark:focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]"
               id="field-0-0"
-              maxlength="100"
+              maxlength="250"
               type="text"
               value=""
             />
           </div>
-          <div
-            class="ml-4"
-          />
         </div>
       </div>
     </div>
@@ -344,27 +343,25 @@ exports[`EmptyCollectionMessage should render component correctly when in create
         class="relative w-full mb-2"
       >
         <label
-          class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800"
+          class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800 max-w-[calc(100%-16px)] truncate"
           for="field-1"
+          title="Artyści"
         >
           Artyści
         </label>
         <input
-          aria-label="Artyści-input"
+          autocomplete="off"
           class="block w-full rounded-none border border-gray-300 bg-white px-3 pt-7 pb-2 text-sm
                placeholder-transparent focus:border-blue-400 focus:outline-none
                focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]
                dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500
                dark:focus:border-blue-400 dark:focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]"
           id="field-1"
-          maxlength="100"
+          maxlength="250"
           type="text"
           value=""
         />
       </div>
-      <div
-        class="ml-4"
-      />
     </div>
     <div
       class="relative "
@@ -373,28 +370,75 @@ exports[`EmptyCollectionMessage should render component correctly when in create
         class="relative w-full mb-2"
       >
         <label
-          class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800"
+          class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800 max-w-[calc(100%-16px)] truncate"
           for="field-2"
+          title="Rok"
         >
           Rok
         </label>
         <input
-          aria-label="Rok-input"
+          autocomplete="off"
           class="block w-full rounded-none border border-gray-300 bg-white px-3 pt-7 pb-2 text-sm
                placeholder-transparent focus:border-blue-400 focus:outline-none
                focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]
                dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500
                dark:focus:border-blue-400 dark:focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]"
           id="field-2"
-          maxlength="100"
+          maxlength="250"
           type="text"
           value=""
         />
       </div>
-      <div
-        class="ml-4"
-      />
     </div>
+  </div>
+  <div>
+    <label
+      class="block text-sm font-bold text-gray-700 dark:text-white my-2"
+      for="dropzone-file"
+    >
+      Wgraj pliki
+    </label>
+    <p
+      class="block text-sm font-normal"
+    >
+      Obsługiwane formaty plików: mei, midi, musicxml, xml, wav, mp3, txt.
+    </p>
+    <p
+      class="block text-sm font-normal mb-2"
+    >
+      Maksymalny rozmiar pliku: 
+      <span
+        class=""
+      >
+        25 MB.
+      </span>
+    </p>
+    <label
+      aria-label="upload"
+      class="flex flex-col items-start justify-start p-2 border-2 border-gray-200
+                                    border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-600
+                                    dark:bg-gray-800 hover:bg-gray-100 dark:border-gray-600
+                                    dark:hover:border-gray-500 dark:hover:bg-gray-700"
+      for="dropzone-file"
+    >
+      <div
+        class="flex flex-row items-center justify-center gap-4"
+      >
+        <svg
+          class="w-12 h-12 text-gray-500 dark:text-gray-400"
+        />
+        <p
+          class="text-sm font-normal text-gray-500 dark:text-gray-400"
+        >
+          Kliknij, aby przesłać pierwszy plik
+        </p>
+      </div>
+      <input
+        class="hidden"
+        id="dropzone-file"
+        type="file"
+      />
+    </label>
   </div>
 </div>
 `;
@@ -411,26 +455,27 @@ exports[`EmptyCollectionMessage should render component correctly when in edit m
         class="relative w-full mb-2"
       >
         <label
-          class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800"
+          class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800 max-w-[calc(100%-16px)] truncate"
           for="field-0"
+          title="Tytuł"
         >
           Tytuł
         </label>
         <input
-          aria-label="Tytuł-input"
+          autocomplete="off"
           class="block w-full rounded-none border border-gray-300 bg-white px-3 pt-7 pb-2 text-sm
                placeholder-transparent focus:border-blue-400 focus:outline-none
                focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]
                dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500
                dark:focus:border-blue-400 dark:focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]"
           id="field-0"
-          maxlength="100"
+          maxlength="250"
           type="text"
           value="Tytuł utworu"
         />
       </div>
       <div
-        class="ml-4"
+        class="ml-4 relative"
       >
         <div
           class="relative pl-6"
@@ -446,27 +491,25 @@ exports[`EmptyCollectionMessage should render component correctly when in edit m
             class="relative w-full mb-2"
           >
             <label
-              class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800"
+              class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800 max-w-[calc(100%-16px)] truncate"
               for="field-0-0"
+              title="Podtytuł"
             >
               Podtytuł
             </label>
             <input
-              aria-label="Podtytuł-input"
+              autocomplete="off"
               class="block w-full rounded-none border border-gray-300 bg-white px-3 pt-7 pb-2 text-sm
                placeholder-transparent focus:border-blue-400 focus:outline-none
                focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]
                dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500
                dark:focus:border-blue-400 dark:focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]"
               id="field-0-0"
-              maxlength="100"
+              maxlength="250"
               type="text"
               value="Podtytuł utworu"
             />
           </div>
-          <div
-            class="ml-4"
-          />
         </div>
       </div>
     </div>
@@ -477,27 +520,25 @@ exports[`EmptyCollectionMessage should render component correctly when in edit m
         class="relative w-full mb-2"
       >
         <label
-          class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800"
+          class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800 max-w-[calc(100%-16px)] truncate"
           for="field-1"
+          title="Artyści"
         >
           Artyści
         </label>
         <input
-          aria-label="Artyści-input"
+          autocomplete="off"
           class="block w-full rounded-none border border-gray-300 bg-white px-3 pt-7 pb-2 text-sm
                placeholder-transparent focus:border-blue-400 focus:outline-none
                focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]
                dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500
                dark:focus:border-blue-400 dark:focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]"
           id="field-1"
-          maxlength="100"
+          maxlength="250"
           type="text"
           value="Nazwa Artysty"
         />
       </div>
-      <div
-        class="ml-4"
-      />
     </div>
     <div
       class="relative "
@@ -506,28 +547,75 @@ exports[`EmptyCollectionMessage should render component correctly when in edit m
         class="relative w-full mb-2"
       >
         <label
-          class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800"
+          class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800 max-w-[calc(100%-16px)] truncate"
           for="field-2"
+          title="Rok"
         >
           Rok
         </label>
         <input
-          aria-label="Rok-input"
+          autocomplete="off"
           class="block w-full rounded-none border border-gray-300 bg-white px-3 pt-7 pb-2 text-sm
                placeholder-transparent focus:border-blue-400 focus:outline-none
                focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]
                dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500
                dark:focus:border-blue-400 dark:focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]"
           id="field-2"
-          maxlength="100"
+          maxlength="250"
           type="text"
           value="1999"
         />
       </div>
-      <div
-        class="ml-4"
-      />
     </div>
+  </div>
+  <div>
+    <label
+      class="block text-sm font-bold text-gray-700 dark:text-white my-2"
+      for="dropzone-file"
+    >
+      Wgraj pliki
+    </label>
+    <p
+      class="block text-sm font-normal"
+    >
+      Obsługiwane formaty plików: mei, midi, musicxml, xml, wav, mp3, txt.
+    </p>
+    <p
+      class="block text-sm font-normal mb-2"
+    >
+      Maksymalny rozmiar pliku: 
+      <span
+        class=""
+      >
+        25 MB.
+      </span>
+    </p>
+    <label
+      aria-label="upload"
+      class="flex flex-col items-start justify-start p-2 border-2 border-gray-200
+                                    border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-600
+                                    dark:bg-gray-800 hover:bg-gray-100 dark:border-gray-600
+                                    dark:hover:border-gray-500 dark:hover:bg-gray-700"
+      for="dropzone-file"
+    >
+      <div
+        class="flex flex-row items-center justify-center gap-4"
+      >
+        <svg
+          class="w-12 h-12 text-gray-500 dark:text-gray-400"
+        />
+        <p
+          class="text-sm font-normal text-gray-500 dark:text-gray-400"
+        >
+          Kliknij, aby przesłać pierwszy plik
+        </p>
+      </div>
+      <input
+        class="hidden"
+        id="dropzone-file"
+        type="file"
+      />
+    </label>
   </div>
 </div>
 `;

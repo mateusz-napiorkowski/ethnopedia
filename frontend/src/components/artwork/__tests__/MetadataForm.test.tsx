@@ -46,24 +46,52 @@ const treeData = [
 ]
 
 const renderComponent = (edit = false) => {
-        return render(
-            <QueryClientProvider client={queryClient}>
-                <MemoryRouter initialEntries={[
-                    edit ? 
-                        `/collections/${collectionData._id}/artworks/${artworkId}/edit-artwork`
-                        : `/collections/${collectionData._id}/create-artwork/`
-                    ]}>
-                    <Routes>
-                        <Route path={
-                            edit ?
-                                "/collections/:collectionId/artworks/:artworkId/edit-artwork"
+    return render(
+        <QueryClientProvider client={queryClient}>
+            <MemoryRouter
+                initialEntries={[
+                    edit
+                        ? `/collections/${collectionData._id}/artworks/${artworkId}/edit-artwork`
+                        : `/collections/${collectionData._id}/create-artwork/`,
+                ]}
+            >
+                <Routes>
+                    <Route
+                        path={
+                            edit
+                                ? "/collections/:collectionId/artworks/:artworkId/edit-artwork"
                                 : "/collections/:collectionId/create-artwork/"
-                        } element={<MetadataForm initialMetadataTree={edit ? treeData : undefined} categoryPaths={edit ? undefined : ['Tytuł', 'Tytuł.Podtytuł', 'Artyści', 'Rok']} setFieldValue={() => {}}/>}/>
-                    </Routes>  
-                </MemoryRouter>
-            </QueryClientProvider>    
-        );
+                        }
+                        element={
+                            <MetadataForm
+                                categories={edit ? treeData : collectionData.categories.map(c => ({ ...c, value: '' }))}
+                                setFieldValue={() => {}}
+                                suggestionsByCategory={
+                                    edit
+                                        ? undefined
+                                        : {
+                                            'Tytuł': [],
+                                            'Tytuł.Podtytuł': [],
+                                            'Artyści': [],
+                                            'Rok': [],
+                                        }
+                                }
+                                filesToUpload={[]}
+                                setFilesToUpload={() => {}}
+                                currentFiles={[]}
+                                setCurrentFiles={() => {}}
+                                filesToDelete={[]}
+                                setFilesToDelete={() => {}}
+                                onFileFieldChange={() => {}}
+                            />
+                        }
+                    />
+                </Routes>
+            </MemoryRouter>
+        </QueryClientProvider>
+    );
 };
+
 
 describe("EmptyCollectionMessage", () => {
     beforeEach(() => {

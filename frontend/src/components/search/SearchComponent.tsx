@@ -3,23 +3,24 @@ import QuickSearch from "./QuickSearch"
 import AdvancedSearch from "./AdvancedSearch"
 
 interface SearchComponentProps {
-    collectionId: string
+    collectionIds: string | string[];
+    mode: "local" | "global";
 }
 
-const SearchComponent: React.FC<SearchComponentProps> = ({ collectionId }) => {
-    const [activeTab, setActiveTab] = useState<string>("quickSearch")
+const SearchComponent: React.FC<SearchComponentProps> = ({ collectionIds, mode }) => {
+    const [activeTab, setActiveTab] = useState<string>("quickSearch");
 
     useEffect(() => {
-        const savedTab = localStorage.getItem("activeSearchTab")
+        const savedTab = localStorage.getItem("activeSearchTab");
         if (savedTab) {
-            setActiveTab(savedTab)
+            setActiveTab(savedTab);
         }
-    }, [])
+    }, []);
 
     const handleTabClick = (tabName: string) => {
-        setActiveTab(tabName)
-        localStorage.setItem("activeSearchTab", tabName)
-    }
+        setActiveTab(tabName);
+        localStorage.setItem("activeSearchTab", tabName);
+    };
 
     return (
         <div className="mb-2" data-testid="searchComponent">
@@ -44,10 +45,14 @@ const SearchComponent: React.FC<SearchComponentProps> = ({ collectionId }) => {
                 </li>
             </ul>
 
-            {activeTab === "quickSearch" && <QuickSearch collectionId={collectionId} />}
-            {activeTab === "advancedSearch" && <AdvancedSearch collectionId={collectionId} />}
+            {activeTab === "quickSearch" && (
+                <QuickSearch collectionIds={collectionIds} mode={mode} />
+            )}
+            {activeTab === "advancedSearch" && (
+                <AdvancedSearch collectionIds={collectionIds} mode={mode} />
+            )}
         </div>
-    )
-}
+    );
+};
 
-export default SearchComponent
+export default SearchComponent;

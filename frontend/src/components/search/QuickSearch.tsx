@@ -4,40 +4,43 @@ import { ReactComponent as SearchLoopIcon } from "../../assets/icons/searchLoop.
 import { useNavigate } from "react-router-dom"
 import DOMPurify from 'dompurify'
 
-
-interface SearchComponentProps {
-    collectionId: string;
+interface QuickSearchProps {
+    collectionIds: string | string[];
+    mode: 'global' | 'local';
 }
 
-const QuickSearch: React.FC<SearchComponentProps> = ({ collectionId }) => {
+const QuickSearch: React.FC<QuickSearchProps> = ({ collectionIds, mode }) => {
     const navigate = useNavigate()
     const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
     const handleSearch = (searchText: string) => {
         const query = searchText ? `?searchText=${encodeURIComponent(searchText)}` : "";
-        navigate(query);
-    }
+
+        if (mode === "global") {
+            navigate(`/global-search${query}`);
+        } else {
+            navigate(`/collections/${collectionIds}/artworks${query}`);
+        }
+    };
 
     const formik = useFormik({
         initialValues: {
-            collectionId: collectionId,
             searchText: "",
         },
         onSubmit: (values, { resetForm }) => {
             const trimmedText = values.searchText.trim();
             const sanitizedText = DOMPurify.sanitize(trimmedText);
 
-            // Walidacja: sprawdzenie, czy tekst zawiera niedozwolone znaki
             if (sanitizedText !== trimmedText) {
                 setErrorMessage("Wartość zawiera niedozwolone znaki, np. <, >, lub inne specjalne znaki.");
                 return;
             }
 
-            setErrorMessage(null); // Resetowanie błędu, jeśli wszystko jest poprawne
+            setErrorMessage(null);
             handleSearch(sanitizedText);
             resetForm();
         },
-    })
+    });
 
     return (
         <>
@@ -45,13 +48,14 @@ const QuickSearch: React.FC<SearchComponentProps> = ({ collectionId }) => {
                 <form onSubmit={formik.handleSubmit} className="flex space-x-2">
                     <input
                         type="text"
-                        maxLength={100}
+                        maxLength={250}
                         name="searchText"
                         onChange={formik.handleChange}
                         value={formik.values.searchText}
-                        className="border border-gray-300 p-2 rounded-lg"
+                        className="border border-gray-300 px-2 py-1.5 p-2 rounded-lg"
+                        style={{width: "250px"}}
                     />
-                    <button type="submit" className="font-semibold color-button p-2 flex items-center">
+                    <button type="submit" className="flex items-center font-semibold color-button py-2 pl-3 pr-4 gap-1">
                         <span className="mr-1">
                             <SearchLoopIcon />
                         </span>

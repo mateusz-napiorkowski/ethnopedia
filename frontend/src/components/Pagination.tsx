@@ -1,4 +1,5 @@
 import { ChangeEvent, useState } from "react"
+import { HiChevronLeft, HiChevronRight } from "react-icons/hi"
 
 interface PaginationProps {
     currentPage: number
@@ -46,7 +47,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, setCurrentPage, to
     const buttonDisabled = inputedPage > totalPages || inputedPage < 1
     return (
         <nav aria-label="Page navigation example" data-testid="pagination-menu" className="flex space-x-2">
-            <span className="flex items-center justify-center text-gray-700 text-sm h-8">
+            <span className="flex items-center justify-center text-gray-700 text-sm h-8 mb-2">
                 Strona
                 <input 
                     type="number"
@@ -77,7 +78,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, setCurrentPage, to
                      hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
                      dark:hover:text-white cursor-pointer"
                     >
-                        Poprzednia strona
+                        <HiChevronLeft size={18} />
                     </div>
                 </li>
                 {
@@ -191,7 +192,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, setCurrentPage, to
                             dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
                             dark:hover:text-white cursor-pointer"
                     >
-                        Następna strona
+                        <HiChevronRight size={18} />
                     </div>
                 </li>
             </ul>

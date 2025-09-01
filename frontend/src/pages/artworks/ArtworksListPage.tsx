@@ -1,3 +1,4 @@
+// src/pages/artwork/ArtworksListPage.tsx
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { getArtworksForPage, deleteArtworks } from "../../api/artworks";
 import { getCollection } from "../../api/collections";
@@ -7,6 +8,7 @@ import Navbar from "../../components/navbar/Navbar";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import SearchComponent from "../../components/search/SearchComponent";
 import ImportOptions from "../../components/ImportOptions";
+import ExportOptions from "../../components/ExportOptions";
 import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg";
 import { ReactComponent as FileImportIcon } from "../../assets/icons/fileImport.svg";
 import { ReactComponent as FileExportIcon } from "../../assets/icons/fileExport.svg";
@@ -16,15 +18,14 @@ import Navigation from "../../components/Navigation";
 import Pagination from "../../components/Pagination";
 import { useUser } from "../../providers/UserProvider";
 import { getAllCategories } from "../../api/categories";
-import DisplayCategoriesSelect from "../../components/DisplayCategoriesSelect";
+import MultiselectDropdown from "../../components/MultiselectDropdown";
 import { ReactComponent as EditIcon } from "../../assets/icons/edit.svg"
 import ArtworksList from '../../components/artwork/ArtworksList';
-
-
 
 const ArtworksListPage = ({ pageSize = 10 }) => {
     const [selectedArtworks, setSelectedArtworks] = useState<{ [key: string]: boolean }>({});
     const [showImportOptions, setShowImportOptions] = useState<boolean>(false);
+    const [showExportOptions, setShowExportOptions] = useState<boolean>(false);
     const [showDeleteRecordsWarning, setShowDeleteRecordsWarning] = useState(false);
     const [sortCategory, setSortCategory] = useState<string>("");
     const [sortDirection, setSortDirection] = useState<string>("asc");
@@ -33,60 +34,43 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
     const location = useLocation();
     const [currentPage, setCurrentPage] = useState(1);
     const { collectionId } = useParams();
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchParams] = useSearchParams();
     const queryClient = useQueryClient();
     const navigate = useNavigate();
 
     const hasSearchParams = new URLSearchParams(location.search).toString().length > 0;
+    const [showFullDescription, setShowFullDescription] = useState<boolean>(false);
 
-    // Funkcja wyszukująca wartość dla danej kategorii
     const findValue = (artwork: any, categoryPath: any): string => {
         const parts = categoryPath.split(".");
-
         const searchCategory = (categories: any[], parts: string[]): string => {
             if (parts.length === 0) return "";
             const current = categories.find((cat) => cat.name === parts[0]);
             if (!current) return "";
-            if (parts.length === 1) {
-                return current.value || "";
-            }
+            if (parts.length === 1) return current.value || "";
             if (current.subcategories && current.subcategories.length > 0) {
                 return searchCategory(current.subcategories, parts.slice(1));
             }
             return "";
         };
-
         return searchCategory(artwork.categories, parts);
     };
 
-
-    const {
-        data: artworkData,
-        isLoading: isLoadingArtworks,
-        isFetching: isFetchingArtworks,
-    } = useQuery({
-        queryKey: [
-            "artwork",
-            [collectionId],
-            currentPage,
-            location.search,
-            sortCategory,
-            sortDirection,
-        ],
+    const { data: artworkData, isLoading: isLoadingArtworks, isFetching: isFetchingArtworks } = useQuery({
+        queryKey: ["artwork", [collectionId], currentPage, location.search, sortCategory, sortDirection],
         queryFn: () =>
             getArtworksForPage(
                 [collectionId as string],
                 currentPage,
                 pageSize,
-                sortCategory,
-                sortDirection,
+                sortCategory || "createdAt", // sortBy
+                sortDirection || "asc",      // sortOrder
                 new URLSearchParams(location.search).get("searchText"),
                 Object.fromEntries(new URLSearchParams(location.search).entries())
             ),
-        enabled: !!collectionId && !!currentPage && !!pageSize && !!sortCategory && !!sortDirection,
-        keepPreviousData: true,
+        enabled: !!collectionId,
+        keepPreviousData: false,
     });
-
 
     const { data: collectionData } = useQuery({
         queryKey: [collectionId],
@@ -100,28 +84,22 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
         enabled: !!collectionId,
     });
 
+    type Option = { value: string; label: string };
 
-    // Przygotowanie opcji – lista wszyskich kategorii
     const categoryOptions: Option[] = [
-        ...(categoriesData?.categories?.map((cat: string) => ({
-            value: cat,
-            label: cat,
-        })) || []),
-        {value: "createdAt", label: "Data utworzenia rekordu"},
-        {value: "updatedAt", label: "Data ostatniej modyfikacji"}
-    ]
+        ...(categoriesData?.categories?.map((cat: string) => ({ value: cat, label: cat })) || []),
+        { value: "createdAt", label: "Data utworzenia rekordu" },
+        { value: "updatedAt", label: "Data ostatniej modyfikacji" },
+    ];
 
-    // Ustaw domyślnie wybraną kategorię sortowania na pierwszą kategorię z listy (jeśli istnieje)
     useEffect(() => {
-        if (categoriesData && categoriesData.categories && categoriesData.categories.length > 0 && !sortCategory) {
+        if (categoriesData?.categories?.length > 0 && !sortCategory) {
             setSortCategory(categoriesData.categories[0]);
         }
     }, [categoriesData, sortCategory]);
 
-    // Ustaw domyślnie pierwsze 3 kategorie, jeśli jeszcze nie wybrano żadnych
     useEffect(() => {
-        if (categoriesData && categoriesData.categories && selectedDisplayCategories.length === 0) {
-            // Wyciągamy pierwsze 3 kategorie z listy
+        if (categoriesData?.categories?.length && selectedDisplayCategories.length === 0) {
             setSelectedDisplayCategories(categoriesData.categories.slice(0, 3));
         }
     }, [categoriesData, selectedDisplayCategories]);
@@ -134,20 +112,10 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
         setSelectedArtworks(newSelection);
     };
 
-    const deselectAll = () => {
-        setSelectedArtworks({});
-    };
+    const deselectAll = () => setSelectedArtworks({});
 
     const handleCheck = (id: string) => {
-        setSelectedArtworks((prev) => {
-            const newSelection = { ...prev };
-            if (newSelection[id]) {
-                delete newSelection[id];
-            } else {
-                newSelection[id] = true;
-            }
-            return newSelection;
-        });
+        setSelectedArtworks((prev) => ({ ...prev, [id]: !prev[id] }));
     };
 
     const deleteArtworksMutation = useMutation(
@@ -159,49 +127,16 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
         {
             onSuccess: () => {
                 queryClient.invalidateQueries("artwork");
-                setShowDeleteRecordsWarning((prev) => !prev);
+                setShowDeleteRecordsWarning(false);
                 deselectAll();
             },
         }
     );
 
-    if (!artworkData || !collectionData) {
-        return (
-            <div data-testid="loading-page-container">
-                <LoadingPage />
-            </div>
-        );
-    }
-
-
-    type Option = {
-        value: string;
-        label: string;
-    };
-
-    // Dodanie opcji specjalnych na początku listy
-    const customOptions = [
-        { value: "select_all", label: "Zaznacz wszystkie" },
-        { value: "deselect_all", label: "Odznacz wszystkie" },
-        ...categoryOptions
-    ];
-    const formatOptionLabel = (option: Option, { context }: { context: string }) => {
-        if (context === "menu") {
-            if (option.value === "select_all" || option.value === "deselect_all") {
-                return (
-                    <div
-                        className="text-gray-500 dark:text-gray-300 underline"
-                    >
-                        {option.label}
-                    </div>
-                );
-            }
-        }
-        return option.label;
-    }
+    if (!artworkData || !collectionData) return <LoadingPage />;
 
     return (
-        <><div data-testid="loaded-artwork-page-container">
+        <div data-testid="loaded-artwork-page-container">
             <Navbar />
             {showDeleteRecordsWarning && (
                 <WarningPopup
@@ -210,47 +145,61 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                     warningMessage={"Czy na pewno chcesz usunąć zaznaczone rekordy?"}
                 />
             )}
+
             <div className="flex flex-col w-full items-center bg-gray-50 dark:bg-gray-900 p-2 sm:p-4">
                 <div className="flex flex-col max-w-screen-xl w-full lg:px-6">
                     <Navigation />
-                    <div
-                        data-testid="collection-name-and-description-container"
-                        className="flex flex-row mb-4 mt-2"
-                    >
-                        <div className="flex flex-col w-full">
-                            <h2 className="text-4xl font-bold text-gray-800 dark:text-white mb-1">
+                    {/* Nazwa + opis */}
+                    <div className="flex flex-row mb-4 mt-2 items-start w-full">
+                        <div className="flex-1 min-w-0 pr-4">
+                            <h2 className="text-4xl font-bold text-gray-800 dark:text-white mb-1 break-words leading-tight">
                                 {collectionData?.name}
                             </h2>
-                            <p className="text-xl text-gray-600 dark:text-gray-300">
-                                {collectionData?.description}
-                            </p>
+                            {(() => {
+                                const desc = collectionData?.description || "";
+                                const limit = 200;
+                                const isLong = desc.length > limit;
+                                const truncated = isLong && desc.slice(0, limit).lastIndexOf(" ") > 0
+                                    ? desc.slice(0, desc.slice(0, limit).lastIndexOf(" "))
+                                    : desc.slice(0, limit);
+                                return (
+                                    <div className="description-container">
+                                        <p className="text-xl text-gray-600 dark:text-gray-300 whitespace-pre-wrap break-words leading-relaxed">
+                                            {showFullDescription || !isLong ? desc : `${truncated}...`}
+                                        </p>
+                                        {isLong && (
+                                            <button
+                                                onClick={() => setShowFullDescription((s) => !s)}
+                                                className="bg-transparent border-0 p-0 focus:outline-none inline-flex items-center mt-2"
+                                            >
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    viewBox="0 0 20 20"
+                                                    fill="currentColor"
+                                                    className={`w-5 h-5 text-gray-700 dark:text-gray-200 transform transition-transform duration-200 ${showFullDescription ? "-rotate-90" : "rotate-90"}`}
+                                                >
+                                                    <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                                                </svg>
+                                            </button>
+                                        )}
+                                    </div>
+                                );
+                            })()}
                         </div>
-                        {/* Edytuj kolekcję */}
-                        <div>
+                        <div className="flex-shrink-0">
                             <button
-                                disabled={jwtToken ? false : true}
-                                className={
-                                    jwtToken
-                                        ? "text-sm font-semibold h-fit mr-4 flex items-center"
-                                        : "text-sm font-semibold h-fit mr-4 bg-gray-100 hover:bg-gray-100 flex items-center"
-                                }
-                                onClick={() =>  navigate(`/collections/${collectionId}/edit`, {
-                                    state: {
-                                        collectionId: collectionId,
-                                        mode: 'edit',
-                                        name: collectionData?.name,
-                                        description: collectionData?.description,
-                                        categories: collectionData?.categories
-                                    }
-                                })}
+                                disabled={!jwtToken}
+                                className={`text-sm font-semibold h-fit ml-4 flex items-center ${jwtToken ? "" : "bg-gray-100 hover:bg-gray-100"}`}
+                                onClick={() => navigate(`/collections/${collectionId}/edit`, { state: { collectionId, mode: "edit", name: collectionData?.name, description: collectionData?.description, categories: collectionData?.categories } })}
                             >
-                                <EditIcon/>
-                                <p className="ml-1">Edytuj</p>
+                                <EditIcon /> <p className="ml-1">Edytuj</p>
                             </button>
-
                         </div>
                     </div>
-                    {collectionId && <SearchComponent collectionId={collectionId} />}
+
+                    {collectionId && <SearchComponent collectionIds={collectionId} mode="local" />}
+
+                    {/* PRZYWRÓCONE PRZYCISKI - wygląd jak podałaś */}
                     <div className="flex w-full md:w-auto">
                         <div className="flex flex-1 space-x-2">
                             <button
@@ -264,7 +213,7 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                                 onClick={() => navigate(`/collections/${collectionId}/create-artwork`)}
                             >
                                 <span className="mr-2 text-white dark:text-gray-400">
-                                    <PlusIcon />
+                                    <PlusIcon/>
                                 </span>
                                 Nowy rekord
                             </button>
@@ -272,19 +221,11 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                                 className="flex items-center justify-center dark:text-white hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium px-4 py-2 dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
                                 type="button"
                                 onClick={async () => {
-                                    navigate(`/collections/${collectionId}/export-data`, {
-                                        state: {
-                                            selectedArtworks: selectedArtworks,
-                                            searchParams: Object.fromEntries( searchParams.entries() ),
-                                            initialFilename: `${collectionData?.name}`,
-                                            collectionIds: [`${collectionData?._id}`],
-                                            initialArchiveFilename: `${collectionData?.name}`
-                                        }
-                                    })
+                                    setShowExportOptions((prev) => !prev);
                                 }}
                             >
                                 <span className="text-white dark:text-gray-400">
-                                    <FileExportIcon />
+                                    <FileExportIcon/>
                                 </span>
                                 Eksportuj dane
                             </button>
@@ -300,7 +241,7 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                                 onClick={() => navigate(`/collections/${collectionId}/import-data`)}
                             >
                                 <span className="text-white dark:text-gray-400">
-                                    <FileImportIcon />
+                                    <FileImportIcon/>
                                 </span>
                                 Importuj dane
                             </button>
@@ -336,37 +277,45 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                             </button>
                         </div>
                     </div>
+
                     {showImportOptions && <ImportOptions onClose={() => setShowImportOptions(false)} collectionData={collectionData}/>}
+
+                    {showExportOptions && (
+                        <ExportOptions
+                            onClose={() => setShowExportOptions(false)}
+                            selectedArtworks={selectedArtworks}
+                            initialFilename={`${collectionData?.name}.xlsx`}
+                            collectionIds={[collectionData?._id]}
+                        />
+                    )}
+
+                    {/* Kategorie + sortowanie */}
                     <div className="flex w-full md:w-auto pt-4 flex-row items-center text-sm">
                         <p className="pr-2">Wyświetlane kategorie:</p>
-                        <DisplayCategoriesSelect
-                            selectedDisplayCategories={selectedDisplayCategories}
-                            setSelectedDisplayCategories={setSelectedDisplayCategories}
-                            categoryOptions={categoryOptions} // wcześniej zdefiniowana tablica opcji
-                            customOptions={customOptions}     // wcześniej zdefiniowana tablica z opcjami specjalnymi i zwykłymi
-                            formatOptionLabel={formatOptionLabel} // funkcja wyróżniająca opcje specjalne
+                        <MultiselectDropdown
+                            selectedValues={selectedDisplayCategories}
+                            setSelectedValues={setSelectedDisplayCategories}
+                            options={categoryOptions}
+                            specialOptions={[{ value: "select_all", label: "Zaznacz wszystko" }, { value: "deselect_all", label: "Odznacz wszystko" }]}
+                            placeholder="Wybierz kategorię"
                         />
                         <p className="pl-2 pr-2">Sortuj według:</p>
-                        {categoryOptions && (
-                            <SortOptions
-                                options={categoryOptions}
-                                sortCategory={sortCategory}
-                                sortDirection={sortDirection}
-                                onSelectCategory={setSortCategory}
-                                onSelectDirection={setSortDirection}
-                                setCurrentPage={setCurrentPage}
-                            />
-                        )}
+                        <SortOptions
+                            options={categoryOptions}
+                            sortCategory={sortCategory}
+                            sortDirection={sortDirection}
+                            onSelectCategory={setSortCategory}
+                            onSelectDirection={setSortDirection}
+                            setCurrentPage={setCurrentPage}
+                        />
                     </div>
                 </div>
             </div>
 
-            <div className="flex flex-row">
-                <div className="flex mx-auto flex-1 justify-end w-full"></div>
-                <div data-testid="artworks-listed" className="w-full flex-2 lg:px-6 max-w-screen-xl">
+            <div className="flex flex-row w-full justify-center">
+                <div className="w-full max-w-screen-xl lg:px-6">
                     <ArtworksList
                         artworksData={artworkData}
-                        collectionId={collectionId as string}
                         isLoading={isLoadingArtworks}
                         isFetching={isFetchingArtworks}
                         hasSearchParams={hasSearchParams}
@@ -377,9 +326,8 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                         jwtToken={jwtToken}
                     />
                 </div>
-
-                <div className="mx-auto w-full flex-1"></div>
             </div>
+
             <div className="flex justify-center mb-2">
                 <Pagination
                     currentPage={currentPage}
@@ -389,7 +337,6 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                 />
             </div>
         </div>
-        </>
     );
 };
 

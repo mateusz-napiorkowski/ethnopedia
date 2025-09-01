@@ -20,7 +20,7 @@ exports[`LandingPage tests renders page when collection data is fetched from API
       class="bg-gray-800 border-gray-200 dark:bg-gray-200 w-full border-b dark:border-gray-600"
     >
       <div
-        class="max-w-screen-xl flex flex-wrap justify-between mx-auto p-4"
+        class="max-w-screen-xl flex flex-wrap justify-between mx-auto p-1"
       >
         <div
           class="flex items-center mt-1"
@@ -34,6 +34,31 @@ exports[`LandingPage tests renders page when collection data is fetched from API
         <div
           class="flex items-center md:order-2"
         >
+          <button
+            class="text-gray-800 bg-white border border-gray-300 focus:outline-none
+                           hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm
+                           p-2.5 mr-2 dark:bg-gray-800 dark:text-white dark:border-gray-600
+                           dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="w-5 h-5 text-gray-800 dark:text-gray-200"
+              fill="none"
+              height="1em"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="1em"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
           <button
             class="text-gray-800 bg-white border border-gray-300 focus:outline-none
                            hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm
@@ -294,21 +319,23 @@ exports[`LandingPage tests renders page when collection data is fetched from API
               Przeglądaj istniejące kolekcje:
             </h2>
             <div
-              class="flex items-center space-x-1"
+              class="flex items-center space-x-2"
             >
               <div
                 class="relative"
               >
                 <div
-                  aria-label="sortby-category-dropdown"
-                  class="cursor-pointer py-2 px-4 border bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-sm rounded-lg flex items-center justify-between"
-                  style="min-width: 40px;"
+                  class="cursor-pointer py-2 px-4 border bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-sm rounded-lg flex items-center justify-between overflow-hidden"
+                  style="width: 60px;"
                 >
-                  <span>
+                  <span
+                    class="truncate"
+                    title="Nazwa kolekcji"
+                  >
                     Nazwa kolekcji
                   </span>
                   <svg
-                    class="h-4 w-4 ml-2 transition-transform duration-200 "
+                    class="h-4 w-4 ml-2 flex-shrink-0 transition-transform duration-200 "
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -323,9 +350,8 @@ exports[`LandingPage tests renders page when collection data is fetched from API
                 </div>
               </div>
               <button
-                aria-label="Zmień kierunek sortowania"
-                class="p-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                title="Sortuj rosnąco"
+                class="p-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-center"
+                title="Sortowanie rosnące (A → Z)"
               >
                 <svg
                   class="h-5 w-5 text-gray-700 dark:text-gray-200 transition-transform duration-200 rotate-180"
@@ -444,7 +470,7 @@ exports[`LandingPage tests renders page when collection data is fetched from API
             data-testid="pagination-menu"
           >
             <span
-              class="flex items-center justify-center text-gray-700 text-sm h-8"
+              class="flex items-center justify-center text-gray-700 text-sm h-8 mb-2"
             >
               Strona
               <input
@@ -472,7 +498,22 @@ exports[`LandingPage tests renders page when collection data is fetched from API
                      hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
                      dark:hover:text-white cursor-pointer"
                 >
-                  Poprzednia strona
+                  <svg
+                    aria-hidden="true"
+                    fill="currentColor"
+                    height="18"
+                    stroke="currentColor"
+                    stroke-width="0"
+                    viewBox="0 0 20 20"
+                    width="18"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      clip-rule="evenodd"
+                      d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
                 </div>
               </li>
               <li>
@@ -492,7 +533,22 @@ exports[`LandingPage tests renders page when collection data is fetched from API
                             dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
                             dark:hover:text-white cursor-pointer"
                 >
-                  Następna strona
+                  <svg
+                    aria-hidden="true"
+                    fill="currentColor"
+                    height="18"
+                    stroke="currentColor"
+                    stroke-width="0"
+                    viewBox="0 0 20 20"
+                    width="18"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      clip-rule="evenodd"
+                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
                 </div>
               </li>
             </ul>
