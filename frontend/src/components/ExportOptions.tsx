@@ -183,6 +183,7 @@ const ExportOptions = ({onClose, selectedArtworks, initialFilename, collectionId
                                             searchParams,      
                                             filename,
                                             false,
+                                            false,
                                             false
                                         )}
                                     >

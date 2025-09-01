@@ -12,6 +12,7 @@ import CreateCollectionPage from "./pages/collections/CreateCollectionPage";
 import Home from "./pages/Home"
 import ImportCollectionPage from "./pages/collections/ImportCollectionPage"
 import ExportDataPage from "./pages/artworks/ExportDataPage"
+import ImportToExistingCollectionPage from "./pages/artworks/ImportToExistingCollectionPage"
 import GlobalSearchPage from "./pages/artworks/GlobalSearchPage";
 
 const queryClient = new QueryClient()
@@ -31,6 +32,7 @@ const App = () => {
                         <Route path="/collections/:collection/edit" element={<CreateCollectionPage />} />
                         <Route path="/import-collection" element={<ImportCollectionPage />} />
                         <Route path="/collections/:collection/export-data" element={<ExportDataPage />} />
+                        <Route path="/collections/:collection/import-data" element={<ImportToExistingCollectionPage />} />
                         <Route path="/global-search" element={<GlobalSearchPage />} />
 
                         <Route path="/" element={<Home />} />

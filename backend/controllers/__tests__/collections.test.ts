@@ -42,9 +42,11 @@ jest.mock("../../models/artwork", () => ({
 
 const mockHasValidCategoryFormat = jest.fn()
 const mockIsValidCollectionCategoryStructureForCollectionUpdate = jest.fn()
+const mockTrimCategoryNames = jest.fn()
 jest.mock("../../utils/categories", () => ({
     hasValidCategoryFormat: () => mockHasValidCategoryFormat(),
-    isValidCollectionCategoryStructureForCollectionUpdate: () => mockIsValidCollectionCategoryStructureForCollectionUpdate()
+    isValidCollectionCategoryStructureForCollectionUpdate: () => mockIsValidCollectionCategoryStructureForCollectionUpdate(),
+    trimCategoryNames: () => mockTrimCategoryNames()
 }))
 
 const mockUpdateArtworkCategories = jest.fn()
@@ -233,6 +235,7 @@ describe('collections controller', () =>{
             mockStartSession.mockImplementation(() => startSessionDefaultReturnValue)
             mockCollectionFindOne.mockReturnValue({ exec: () => Promise.resolve(null) })
             mockCollectionCreate.mockReturnValue(collectionPromise)
+            mockTrimCategoryNames.mockReturnValue(correctCategories)
             
             const payload = {
                 name: collectionName,
@@ -301,6 +304,7 @@ describe('collections controller', () =>{
             mockStartSession.mockImplementation(startSession)
             mockCollectionFindOne.mockReturnValue(findOne)
             mockCollectionCreate.mockImplementation(() => {throw Error()})
+            mockTrimCategoryNames.mockReturnValue(payload.categories)
 
             const res = await request(app.use(CollectionsRouter))
             .post('/create')
@@ -435,6 +439,8 @@ describe('collections controller', () =>{
                 { name: 'Tytuł', subcategories: []}, 
                 { name: 'Wykonawca', subcategories: []},]
             }
+            mockTrimCategoryNames.mockReturnValue(payload.categories)
+
             const res = await request(app.use(CollectionsRouter))
             .put(`/edit/${collectionId}`)
             .send(payload)

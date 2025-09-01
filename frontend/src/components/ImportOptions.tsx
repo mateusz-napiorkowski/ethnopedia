@@ -83,7 +83,7 @@ const ImportOptions = ({ onClose, collectionData }: Props) => {
         }
     })
 
-    const importCollectionMutation = useMutation(() => importDataAsCollection(dataToSend, collectionName, description, jwtToken), {
+    const importCollectionMutation = useMutation(() => importDataAsCollection(dataToSend, collectionName, description, jwtToken, undefined), {
         onSuccess: () => {
             queryClient.invalidateQueries("collection")
             onClose()

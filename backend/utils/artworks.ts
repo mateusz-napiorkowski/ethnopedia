@@ -4,6 +4,28 @@ import { artworkCategory, collectionCategory, fileToDelete } from "./interfaces"
 import path from "path"
 import fs from "fs";
 
+export const diacriticSensitiveRegex = (string = '') => {
+    return string
+        .replace(/a/g, '[a,ą,ã]')
+        .replace(/A/g, '[A,a,ą,ã]')
+        .replace(/c/g, '[c,ć]')
+        .replace(/C/g, '[C,c,ć]')
+        .replace(/e/g, '[e,ę,é,ë]')
+        .replace(/E/g, '[E,e,ę,é,ë]')
+        .replace(/l/g, '[l,ł]')
+        .replace(/L/g, '[Ł,l,ł]')
+        .replace(/n/g, '[n,ń]')
+        .replace(/N/g, '[N,n,ń]')
+        .replace(/o/g, '[o,ó,ŏ,ō,ô,õ,ò]')
+        .replace(/O/g, '[O,o,ó,ŏ,ō,ô,õ,ò]')
+        .replace(/s/g, '[s,ś]')
+        .replace(/S/g, '[S,s,ś]')
+        .replace(/u/g, '[u,ù]')
+        .replace(/U/g, '[U,u,ù]')
+        .replace(/z/g, '[z,ż,ź]')
+        .replace(/Z/g, '[Z,z,ż,ź]')       
+}
+
 export const updateArtworkCategories = (artworkSubcategories: Array<artworkCategory>, collectionSubcategories: Array<collectionCategory>) => {
     const newArtworkCategories: Array<artworkCategory> = []
     for(const [categoryIndex, category] of collectionSubcategories.entries()) {
@@ -22,17 +44,12 @@ export const updateArtworkCategories = (artworkSubcategories: Array<artworkCateg
 const fillSubcategoriesFilterPart: any = (searchText: string, currentDepth: number, maxDepth: number) => {
     if (maxDepth === 0) return []
 
-    const wordsToMatch = searchText
-        .split(/\s+/)
-        .filter(Boolean)
-        .map(word => new RegExp(`(^|\\s)${word}($|\\s)`, 'i'));
-
     return {
         $elemMatch: {
             $or: currentDepth === maxDepth 
-                ? [{ $and: wordsToMatch.map(regex => ({ value: regex })) } ] 
+                ? [{ value: new RegExp(diacriticSensitiveRegex(searchText), 'i') } ] 
                 : [
-                    { $and: wordsToMatch.map(regex => ({ value: regex })) },
+                    { value: new RegExp(diacriticSensitiveRegex(searchText), 'i') },
                     { subcategories: fillSubcategoriesFilterPart(searchText, currentDepth + 1, maxDepth) }
                 ]
         }
@@ -68,11 +85,7 @@ const constructAdvSearchSubcategoriesFilter = (searchRules: Array<Array<string>>
         };
 
         if(subcategoryValue) {
-            const wordsToMatch = subcategoryValue
-                .split(/\s+/)
-                .filter(Boolean)
-                .map(word => new RegExp(`(^|\\s)${word}($|\\s)`, 'i'));
-            newFilterPart.$elemMatch.$and = wordsToMatch.map(regex => ({ value: regex }))
+            newFilterPart.$elemMatch.value = new RegExp(diacriticSensitiveRegex(subcategoryValue), 'i')
         }
             
 
@@ -134,11 +147,7 @@ export const constructAdvSearchFilter = (requestQuery: any, collectionNames: Arr
         };
 
         if(categoryValue) {
-            const wordsToMatch = categoryValue
-                .split(/\s+/)
-                .filter(Boolean)
-                .map((word: string) => new RegExp(`(^|\\s)${word}($|\\s)`, 'i'));
-            categoryFilter.$elemMatch.$and = wordsToMatch.map((regex: any) => ({ value: regex }))
+            categoryFilter.$elemMatch.value = new RegExp(diacriticSensitiveRegex(categoryValue), 'i')
         }
         
         if(currentCategorySubcategoriesSearchRules.length > 0)
@@ -187,6 +196,7 @@ export const sortRecordsByCategory = (records: any, categoryToSortBy: string, as
 
 export const handleFileUploads = async (artwork: any, files: any, collectionId: mongoose.Types.ObjectId, session: ClientSession) => {
     const failed = []
+    let uploadedFilesCount = 0
     if (files && Array.isArray(files)) {
         const uploadsDir = path.join(__dirname, "..", `uploads/`);
         const collectionUploadsDir = path.join(__dirname, "..", `uploads/${collectionId}`);
@@ -194,12 +204,13 @@ export const handleFileUploads = async (artwork: any, files: any, collectionId: 
         if (!fs.existsSync(collectionUploadsDir)) fs.mkdirSync(collectionUploadsDir);
 
         for(const file of files) {
-            const availableIndex = [...Array(5).keys()].find(index => 
-                !artwork.files.some((file: any) => file.newFilename?.startsWith(`${artwork.Id}_${index}`))
-            )
-            const fileName = availableIndex !== undefined
-                ? `${artwork.id}_${availableIndex}${path.extname(file.originalname)}`
-                : undefined;
+            const availableIndex = artwork.files.length > 0 ?
+                [0, 1, 2, 3, 4].find(index => {
+                    if(!artwork.files.some((file: any) => file.newFilename.startsWith(`${artwork._id}_${index}`)))
+                        return true             
+                }) 
+                : 0
+            const fileName = `${artwork._id}_${availableIndex}${path.extname(file.originalname)}`
             const filePath = `uploads/${collectionId}/${fileName}`;
 
             const maxFileSize = 25 * 1024 * 1024 // 25 MB
@@ -217,32 +228,37 @@ export const handleFileUploads = async (artwork: any, files: any, collectionId: 
                     size: file.size,
                     uploadedAt: new Date(Date.now())
                 });
+                uploadedFilesCount++;
             } catch (error) {
                 const err = error as Error
                 failed.push({filename: file.originalname, cause: err.message})
             }
-        }
-        await artwork.save({session});
+        }   
+        await artwork.save({session});  
     }
     return {
-        uploadedFilesCount: artwork.files.length,
+        uploadedFilesCount,
         failedUploadsCount: failed.length,
         failedUploadsCauses: failed
     }
 }
 
-export const handleFileDeletions = async (artwork: any, filesToDelete: fileToDelete[], collectionId: mongoose.Types.ObjectId, session: ClientSession) => {
+export const handleFileDeletions = async (artwork: any, filesToDelete: fileToDelete[], session: ClientSession) => {
     const deletedFiles = [];
     const failedDeletesCauses = [];
     if (filesToDelete && Array.isArray(filesToDelete)) {
         for(const fileToDelete of filesToDelete) {
             if(artwork.files.some(((file: any) => file._id?.toString() === fileToDelete._id))) {
                 const absoluteFilePath = path.join(__dirname, "..", fileToDelete.filePath as string);
-                if (fs.existsSync(absoluteFilePath)) fs.unlinkSync(absoluteFilePath)
-                else failedDeletesCauses.push({filename: fileToDelete.originalFilename, cause: "Internal server error"})
-                artwork.files = artwork.files.filter(((file: any) => file._id?.toString() !== fileToDelete._id))
-                await artwork.save({session})
-                deletedFiles.push(fileToDelete.originalFilename)
+                if (fs.existsSync(absoluteFilePath)) {
+                    fs.unlinkSync(absoluteFilePath)
+                    artwork.files = artwork.files.filter(((file: any) => file._id?.toString() !== fileToDelete._id))
+                    await artwork.save({session})
+                    deletedFiles.push(fileToDelete.originalFilename)
+                }
+                else {
+                    failedDeletesCauses.push({filename: fileToDelete.originalFilename, cause: "Internal server error"})
+                }
             } else {
                 failedDeletesCauses.push({filename: fileToDelete.originalFilename, cause: "File not found"})
             }

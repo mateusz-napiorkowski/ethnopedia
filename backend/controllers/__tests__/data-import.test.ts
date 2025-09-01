@@ -3,6 +3,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import request from "supertest";
 import DataImportRouter from "../../routes/dataImport";
+import path from "path";
 
 const app = express()
 app.use(bodyParser.json());
@@ -13,9 +14,9 @@ jest.mock('mongoose', () => ({
     startSession: () => mockStartSession()
 }))
 
-const mockPrepRecords = jest.fn()
+const mockPrepRecordsAndFiles = jest.fn()
 jest.mock("../../utils/data-import", () => ({
-    prepRecords: () => mockPrepRecords(),
+    prepRecordsAndFiles: () => mockPrepRecordsAndFiles(),
     findMissingParentCategories: () => mockFindMissingParentCategories()
 }))
 
@@ -34,8 +35,10 @@ jest.mock("../../models/collection", () => ({
 }))
 
 const mockInsertMany = jest.fn()
+const mockBulkWrite = jest.fn()
 jest.mock("../../models/artwork", () => ({
-    insertMany: () => mockInsertMany()
+    insertMany: () => mockInsertMany(),
+    bulkWrite: () => mockBulkWrite()
 }))
 
 jest.mock("jsonwebtoken", () => ({
@@ -66,7 +69,14 @@ describe('data-import controller', () => {
         
         test("importData should respond with status 201 and correct body", async () => {
             mockStartSession.mockImplementation(() => startSessionDefaultReturnValue)
-            mockPrepRecords.mockImplementation(() => {})
+            mockPrepRecordsAndFiles.mockReturnValue({records: [
+                {
+                    _id: "68af30c1c32f825809e7ac7c",
+                    categories: [ { name: 'Title', value: 'An artwork title', subcategories: [] } ],
+                    collectionName: 'collection',
+                    files: []
+                }
+            ]})
             mockFind.mockReturnValue({exec: () => Promise.resolve([
                 {
                   _id: `${artworkId}`,
@@ -75,16 +85,15 @@ describe('data-import controller', () => {
                   __v: 0
                 }
               ])})
-            mockInsertMany.mockReturnValue([
-                {
-                  _id: `${artworkId}`,
-                  categories: [ { name: 'Title', value:  'An artwork title', subcategories: [] } ],
-                  collectionName: 'collection',
-                  __v: 0,
-                  createdAt: '2024-09-25T02:43:33.416Z',
-                  updatedAt: '2024-09-25T02:43:33.416Z'
-                }
-              ])
+            mockBulkWrite.mockReturnValue({
+                insertedCount: 0,
+                matchedCount: 0,
+                modifiedCount: 0,
+                deletedCount: 0,
+                upsertedCount: 1,
+                upsertedIds: {'0': "68af30c1c32f825809e7ac7c"},
+                insertedIds: {}
+            })
             const payload = {
                 importData: [["Title"], ["An artwork title"]],
                 collectionId: collectionId
@@ -107,49 +116,49 @@ describe('data-import controller', () => {
                 statusCode: 400, error: 'Incorrect request body provided',
                 startSession: () => startSessionDefaultReturnValue,
                 find: undefined,
-                prepRecords: () => []
+                prepRecordsAndFiles: () => ({records: []})
             },
             {
                 payload: {collectionId: collectionId},
                 statusCode: 400, error: 'Incorrect request body provided',
                 startSession: () => startSessionDefaultReturnValue,
                 find: undefined,
-                prepRecords: () => []
+                prepRecordsAndFiles: () => ({records: []})
             },
             {
                 payload: {importData: [["Title"], ["An artwork title"]]},
                 statusCode: 400, error: 'Incorrect request body provided',
                 startSession: () => startSessionDefaultReturnValue,
                 find: undefined,
-                prepRecords: () => []
+                prepRecordsAndFiles: () => ({records: []})
             },
             {
                 payload: {importData: [["Title"]], collectionId: collectionId},
                 statusCode: 400, error: 'Incorrect request body provided',
                 startSession: () => startSessionDefaultReturnValue,
                 find: undefined,
-                prepRecords: () => []
+                prepRecordsAndFiles: () => ({records: []})
             },
             {
                 payload: {importData: [["Title"], ["An artwork title"]], collectionId: collectionId},
                 statusCode: 503, error: 'Database unavailable',
                 startSession: () => startSessionDefaultReturnValue,
                 find: () => {throw Error()},
-                prepRecords: () => [] 
+                prepRecordsAndFiles: () => ({records: []})
             },
             {
                 payload: {importData: [["Title"], ["An artwork title"]], collectionId: collectionId},
                 statusCode: 503, error: 'Database unavailable',
                 startSession: () => {throw Error()},
                 find: undefined,
-                prepRecords: () => [] 
+                prepRecordsAndFiles: () => ({records: []}) 
             },
             {
                 payload: {importData: [["Title"], ["An artwork title"]], collectionId: collectionId},
                 statusCode: 404, error: 'Collection not found',
                 startSession: () => startSessionDefaultReturnValue,
                 find: {exec: () => Promise.resolve([])},
-                prepRecords: () => [ { categories: [ { name: 'Title', value: 'An artwork title', subcategories: [] } ], collectionName: 'collection' } ] 
+                prepRecordsAndFiles: () => [] 
             },
             {
                 payload: {importData: [["Title"], ["An artwork title"]], collectionId: collectionId},
@@ -163,7 +172,7 @@ describe('data-import controller', () => {
                       __v: 0
                     }
                   ])},
-                prepRecords: () => {throw Error('Invalid data in the spreadsheet file')} 
+                prepRecordsAndFiles: () => {throw Error('Invalid data in the spreadsheet file')} 
             },
             {
                 payload: {importData: [["Title"], ["An artwork title"]], collectionId: collectionId},
@@ -177,14 +186,14 @@ describe('data-import controller', () => {
                       __v: 0
                     }
                   ])},
-                prepRecords: () => [ { categories: [ { name: 'Title', value: 'An artwork title', subcategories: [] } ], collectionName: 'collection' } ] 
+                prepRecordsAndFiles: () => [] 
             },
         ])(`importData should respond with status $statusCode and correct error message`,
-            async ({ payload, statusCode, error, startSession, find, prepRecords }) => {
+            async ({ payload, statusCode, error, startSession, find, prepRecordsAndFiles: prepRecords }) => {
                 mockStartSession.mockImplementation(startSession)
-                mockPrepRecords.mockImplementation(prepRecords)
+                mockPrepRecordsAndFiles.mockImplementation(prepRecords)
                 mockFind.mockReturnValue(find)
-                mockInsertMany.mockImplementation(() => {throw Error()})
+                mockBulkWrite.mockImplementation(() => {throw Error()})
                 
                 const res = await request(app)
                     .post('/')
@@ -198,33 +207,55 @@ describe('data-import controller', () => {
             }
         )
 
-        const collectionCreatePromise = Promise.resolve({
+        const collectionCreatePromise = Promise.resolve([{
             _id: "66c4e516d6303ed5ac5a8e55",
             name: 'collection',
             description: 'collection-description',
             categories: [{name: "Title", subcategories: [{name: "subtitle", subcategories: []}]}],
             __v: 0
-        })
+        }])
 
         test("importDataAsCollection should respond with status 201 and correct body", async () => {
             const payload = {
-                importData: [["Title", "Title.subtitle"], ["An artwork title", "An artwork subtitle"]],
+                importData: `[["Title", "Title.subtitle"], ["An artwork title", "An artwork subtitle"]]`,
                 collectionName: 'collection',
                 description: "collection-description"
             }
             mockStartSession.mockImplementation(() => startSessionDefaultReturnValue)
             mockFindMissingParentCategories.mockImplementation(() => [])
-            mockTransformCategoriesArrayToCategoriesObject.mockImplementation(() => ([{name: "Title", subcategories: [{name: "subtitle", subcategories: []}]}]))
+            mockTransformCategoriesArrayToCategoriesObject.mockImplementation(() => ([{name: "Title", subcategories: []}]))
             mockCollectionCreate.mockImplementation(() => collectionCreatePromise)
-            mockPrepRecords.mockImplementation(() => [ { categories: [ { name: 'Title', value: 'An artwork title', subcategories: [{ name: 'subtitle', value: 'An artwork subtitle', subcategories: [] }] } ], collectionName: 'collection' } ])
-            mockInsertMany.mockImplementation(() => {})
+            mockPrepRecordsAndFiles.mockReturnValue({
+                records: [
+                    {
+                        _id: "68af30c1c32f825809e7ac7c",
+                        categories: [ { name: 'Title', value: 'An artwork title', subcategories: [] } ],
+                        collectionName: 'collection',
+                        files: []
+                    },
+                ],
+                uploadedFilesCount: 0, 
+                failedUploadsCount: 0,
+                failedUploadsCauses: {}
+            })
+            mockInsertMany.mockReturnValue(
+                [
+                    {
+                        _id: "68af30c1c32f825809e7ac7c",
+                        categories: [ { name: 'Title', value: 'An artwork title', subcategories: [] } ],
+                        collectionName: 'collection',
+                        files: []
+                    }
+                ] 
+            )
             
             const res = await request(app)
                 .post(`/${payload.collectionName}`)
-                .send(payload)
                 .set('Authorization', `Bearer ${jwtToken}`)
-                .set('Content-Type', 'application/json')
                 .set('Accept', 'application/json')
+                .field("importData", payload.importData)
+                .field("collectionName", payload.collectionName)
+                .field("description", payload.description)
 
             expect(res.status).toBe(201)
             expect(res.body).toMatchSnapshot()
@@ -236,6 +267,7 @@ describe('data-import controller', () => {
                     collectionName: 'collection',
                     description: "collection-description"
                 },
+                archivePath: undefined,
                 startSession: () => startSessionDefaultReturnValue,
                 findMissingParentCategories: () => [],
                 transformCategoriesArrayToCategoriesObject: () => {},
@@ -246,10 +278,11 @@ describe('data-import controller', () => {
             },
             {
                 payload: {
-                    importData: [["Title"]],
+                    importData: `[["Title"]]`,
                     collectionName: 'collection',
                     description: "collection-description"
                 },
+                archivePath: undefined,
                 startSession: () => startSessionDefaultReturnValue,
                 findMissingParentCategories: () => [],
                 transformCategoriesArrayToCategoriesObject: () => {},
@@ -260,9 +293,10 @@ describe('data-import controller', () => {
             },
             {
                 payload: {
-                    importData: [["Title"], ["An artwork title"]],
+                    importData: `[["Title"], ["An artwork title"]]`,
                     description: "collection-description"
                 },
+                archivePath: undefined,
                 startSession: () => startSessionDefaultReturnValue,
                 findMissingParentCategories: () => [],
                 transformCategoriesArrayToCategoriesObject: () => {},
@@ -273,9 +307,10 @@ describe('data-import controller', () => {
             },
             {
                 payload: {
-                    importData: [["Title"], ["An artwork title"]],
+                    importData: `[["Title"], ["An artwork title"]]`,
                     collectionName: 'collection',
                 },
+                archivePath: undefined,
                 startSession: () => startSessionDefaultReturnValue,
                 findMissingParentCategories: () => [],
                 transformCategoriesArrayToCategoriesObject: () => {},
@@ -286,10 +321,26 @@ describe('data-import controller', () => {
             },
             {
                 payload: {
-                    importData: [["Title"], ["An artwork title"]],
+                    importData: `unparsable import data`,
                     collectionName: 'collection',
                     description: "collection-description"
                 },
+                archivePath: undefined,
+                startSession: () => {throw Error()},
+                findMissingParentCategories: () => [],
+                transformCategoriesArrayToCategoriesObject: () => {},
+                create: () => {},
+                prepRecords: () => {},
+                insertMany: () => {},
+                statusCode: 400, error: 'Incorrect request body provided',
+            },
+            {
+                payload: {
+                    importData: `[["Title"], ["An artwork title"]]`,
+                    collectionName: 'collection',
+                    description: "collection-description"
+                },
+                archivePath: undefined,
                 startSession: () => {throw Error()},
                 findMissingParentCategories: () => [],
                 transformCategoriesArrayToCategoriesObject: () => {},
@@ -300,10 +351,11 @@ describe('data-import controller', () => {
             },
             {
                 payload: {
-                    importData: [["Title", "Title.subtitle.subsubtitle"], ["An artwork title", "An artwork subsubtitle"]],
+                    importData: `[["Title", "Title.subtitle.subsubtitle"], ["An artwork title", "An artwork subsubtitle"]]`,
                     collectionName: 'collection',
                     description: "collection-description"
                 },
+                archivePath: undefined,
                 startSession: () => startSessionDefaultReturnValue,
                 findMissingParentCategories: () => ["Title.subtitle"],
                 transformCategoriesArrayToCategoriesObject: () => {},
@@ -314,10 +366,11 @@ describe('data-import controller', () => {
             },
             {
                 payload: {
-                    importData: [["Title", "Title.subtitle"], ["An artwork title", "An artwork subtitle"]],
+                    importData: `[["Title", "Title.subtitle"], ["An artwork title", "An artwork subtitle"]]`,
                     collectionName: 'collection',
                     description: "collection-description"
                 },
+                archivePath: undefined,
                 startSession: () => startSessionDefaultReturnValue,
                 findMissingParentCategories: () => [],
                 transformCategoriesArrayToCategoriesObject: () => ([{name: "Title", subcategories: [{name: "subtitle", subcategories: []}]}]),
@@ -328,10 +381,11 @@ describe('data-import controller', () => {
             },
             {
                 payload: {
-                    importData: [["Title", "Title.subtitle"], ["An artwork title", "An artwork subtitle"]],
+                    importData: `[["Title", "Title.subtitle"], ["An artwork title", "An artwork subtitle"]]`,
                     collectionName: 'collection',
                     description: "collection-description"
                 },
+                archivePath: undefined,
                 startSession: () => startSessionDefaultReturnValue,
                 findMissingParentCategories: () => [],
                 transformCategoriesArrayToCategoriesObject: () => ([{name: "Title", subcategories: [{name: "subtitle", subcategories: []}]}]),
@@ -342,10 +396,11 @@ describe('data-import controller', () => {
             },
             {
                 payload: {
-                    importData: [["Title", "Title.subtitle"], ["An artwork title", "An artwork subtitle"]],
+                    importData: `[["Title", "Title.subtitle"], ["An artwork title", "An artwork subtitle"]]`,
                     collectionName: 'collection',
                     description: "collection-description"
                 },
+                archivePath: undefined,
                 startSession: () => startSessionDefaultReturnValue,
                 findMissingParentCategories: () => [],
                 transformCategoriesArrayToCategoriesObject: () => ([{name: "Title", subcategories: [{name: "subtitle", subcategories: []}]}]),
@@ -354,22 +409,47 @@ describe('data-import controller', () => {
                 insertMany: () => {throw Error()},
                 statusCode: 503, error: 'Database unavailable',
             },
+            {
+                payload: {
+                    importData: `[["Title", "Title.subtitle"], ["An artwork title", "An artwork subtitle"]]`,
+                    collectionName: 'collection',
+                    description: "collection-description",
+                },
+                archivePath: `utils/files-for-upload/FileForUpload.mid`,
+                startSession: () => startSessionDefaultReturnValue,
+                findMissingParentCategories: () => [],
+                transformCategoriesArrayToCategoriesObject: () => ([{name: "Title", subcategories: [{name: "subtitle", subcategories: []}]}]),
+                create: () => collectionCreatePromise,
+                prepRecords: () => [ { categories: [ { name: 'Title', value: 'An artwork title', subcategories: [{ name: 'subtitle', value: 'An artwork subtitle', subcategories: [] }] } ], collectionName: 'collection' } ],
+                insertMany: () => {throw Error()},
+                statusCode: 400, error: 'Invalid file extension',
+                
+            }
         ])("importDataAsCollection should respond with status $statusCode and correct error message", async ({
-            payload, startSession, findMissingParentCategories, transformCategoriesArrayToCategoriesObject, create, insertMany, prepRecords, statusCode, error}) => {
+            payload, startSession, findMissingParentCategories, transformCategoriesArrayToCategoriesObject, create, insertMany, prepRecords, archivePath, statusCode, error}) => {
             mockStartSession.mockImplementation(startSession)
             mockFindMissingParentCategories.mockImplementation(findMissingParentCategories)
             mockTransformCategoriesArrayToCategoriesObject.mockImplementation(transformCategoriesArrayToCategoriesObject)
             mockCollectionCreate.mockImplementation(create)
-            mockPrepRecords.mockImplementation(prepRecords)
+            mockPrepRecordsAndFiles.mockImplementation(prepRecords)
             mockInsertMany.mockImplementation(insertMany)
-            
-            const res = await request(app)
+
+            let req = request(app)
                 .post(`/${payload.collectionName}`)
-                .send(payload)
                 .set('Authorization', `Bearer ${jwtToken}`)
-                .set('Content-Type', 'application/json')
                 .set('Accept', 'application/json')
-    
+            if(payload.importData)
+                req = req.field("importData", payload.importData)
+            if(payload.collectionName)
+                req = req.field("collectionName", payload.collectionName)
+            if(payload.description)
+                req = req.field("description", payload.description)
+            if(archivePath){
+                req = req.attach("file", path.resolve(__dirname, archivePath))
+            }
+
+            const res = await req
+
             expect(res.status).toBe(statusCode)
             expect(res.body.error).toBe(error)
         })

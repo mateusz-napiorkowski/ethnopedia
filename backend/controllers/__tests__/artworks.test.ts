@@ -28,7 +28,7 @@ jest.mock('../../utils/artworks', () => ({
     constructTopmostCategorySearchTextFilter: jest.fn(),
     sortRecordsByCategory: () => mockSortRecordsByCategory(),
     handleFileUploads: (artwork: any, filesToUpload: any, collectionId: string, session: any) => mockHandleFileUploads(artwork, filesToUpload, collectionId, session),
-    handleFileDeletions: (artwork: any, filesToDelete: any, collectionId: string, session: any) => mockHandleFileDeletions(artwork, filesToDelete, collectionId, session)
+    handleFileDeletions: (artwork: any, filesToDelete: any, session: any) => mockHandleFileDeletions(artwork, filesToDelete, session)
 }))
 
 const mockArtworkCategoriesHaveValidFormat = jest.fn() 

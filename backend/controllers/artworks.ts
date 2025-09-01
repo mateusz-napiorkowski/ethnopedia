@@ -214,7 +214,7 @@ export const editArtwork = authAsyncWrapper((async (req: Request, res: Response)
                 deletedFilesCount,
                 failedDeletesCount,
                 failedDeletesCauses
-            } = await handleFileDeletions(artwork, filesToDelete, collection._id, session)
+            } = await handleFileDeletions(artwork, filesToDelete, session)
             const {
                 uploadedFilesCount,
                 failedUploadsCount,

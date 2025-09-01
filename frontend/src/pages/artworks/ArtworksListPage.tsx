@@ -227,7 +227,7 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                                 <span className="text-white dark:text-gray-400">
                                     <FileExportIcon/>
                                 </span>
-                                Eksportuj plik
+                                Eksportuj dane
                             </button>
                             <button
                                 disabled={jwtToken ? false : true}
@@ -237,12 +237,13 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                                         : "bg-gray-600 hover:bg-gray-600 border-gray-800"
                                 }`}
                                 type="button"
-                                onClick={() => setShowImportOptions((prev) => !prev)}
+                                // onClick={() => setShowImportOptions((prev) => !prev)}
+                                onClick={() => navigate(`/collections/${collectionId}/import-data`)}
                             >
                                 <span className="text-white dark:text-gray-400">
                                     <FileImportIcon/>
                                 </span>
-                                Importuj plik
+                                Importuj dane
                             </button>
                             <button
                                 className="flex items-center justify-center dark:text-white hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2 dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"

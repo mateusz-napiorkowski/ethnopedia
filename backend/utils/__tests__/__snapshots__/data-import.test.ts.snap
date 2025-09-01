@@ -1,198 +1,392 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`data-import controller util functions tests prepRecords test - remove leading/trailing whitespace in category values 1`] = `
+exports[`data-import controller util functions tests processArchiveFiles test - failed uploads of file with wrong extension and of file with too large size 1`] = `
+{
+  "failedUploadsCauses": [
+    {
+      "archiveFilename": "68936488200287f547b71f5b_3.pdf",
+      "cause": "Invalid file extension",
+      "userFilename": "pdf_file.pdf",
+    },
+    {
+      "archiveFilename": "68936488200287f547b71f5b_4.txt",
+      "cause": "File size exceeded",
+      "userFilename": "large_file.txt",
+    },
+  ],
+  "filenamesStringValid": true,
+  "uploadedFilenames": [
+    "68936488200287f547b71f5b_0.mid",
+  ],
+  "uploadedFilesCount": 1,
+}
+`;
+
+exports[`data-import controller util functions tests processArchiveFiles test - failed uploads of file with wrong extension and of file with too large size 2`] = `
 [
   {
-    "categories": [
+    "filePath": "uploads/66c4e516d6303ed5ac5a8e55/1234e516d6303ed5ac5a8e77_0.mid",
+    "newFilename": "1234e516d6303ed5ac5a8e77_0.mid",
+    "originalFilename": "filename.mid",
+    "size": 0,
+  },
+]
+`;
+
+exports[`data-import controller util functions tests processArchiveFiles test - incorrect filenames string (file indices are not numbers between 0 and 4) 1`] = `
+{
+  "failedUploadsCauses": [],
+  "filenamesStringValid": false,
+  "uploadedFilenames": [],
+  "uploadedFilesCount": 0,
+}
+`;
+
+exports[`data-import controller util functions tests processArchiveFiles test - incorrect filenames string (file indices are not numbers between 0 and 4) 2`] = `[]`;
+
+exports[`data-import controller util functions tests processArchiveFiles test - incorrect filenames string (no file indices) 1`] = `
+{
+  "failedUploadsCauses": [],
+  "filenamesStringValid": false,
+  "uploadedFilenames": [],
+  "uploadedFilesCount": 0,
+}
+`;
+
+exports[`data-import controller util functions tests processArchiveFiles test - incorrect filenames string (no file indices) 2`] = `[]`;
+
+exports[`data-import controller util functions tests processArchiveFiles test - no files specified 1`] = `
+{
+  "failedUploadsCauses": [],
+  "filenamesStringValid": undefined,
+  "uploadedFilenames": [],
+  "uploadedFilesCount": 0,
+}
+`;
+
+exports[`data-import controller util functions tests processArchiveFiles test - no files specified 2`] = `[]`;
+
+exports[`data-import controller util functions tests processArchiveFiles test - no zipfile provided 1`] = `
+{
+  "failedUploadsCauses": [],
+  "filenamesStringValid": true,
+  "uploadedFilenames": [],
+  "uploadedFilesCount": 0,
+}
+`;
+
+exports[`data-import controller util functions tests processArchiveFiles test - no zipfile provided 2`] = `[]`;
+
+exports[`data-import controller util functions tests processArchiveFiles test - processing successful 1`] = `
+{
+  "failedUploadsCauses": [],
+  "filenamesStringValid": true,
+  "uploadedFilenames": [
+    "68936488200287f547b71f5b_0.mid",
+    "68936488200287f547b71f5b_1.mp3",
+    "68936488200287f547b71f5b_2.txt",
+  ],
+  "uploadedFilesCount": 3,
+}
+`;
+
+exports[`data-import controller util functions tests processArchiveFiles test - processing successful 2`] = `
+[
+  {
+    "filePath": "uploads/66c4e516d6303ed5ac5a8e55/1234e516d6303ed5ac5a8e77_0.mid",
+    "newFilename": "1234e516d6303ed5ac5a8e77_0.mid",
+    "originalFilename": "filename.mid",
+    "size": 0,
+  },
+  {
+    "filePath": "uploads/66c4e516d6303ed5ac5a8e55/1234e516d6303ed5ac5a8e77_1.mp3",
+    "newFilename": "1234e516d6303ed5ac5a8e77_1.mp3",
+    "originalFilename": "music.mp3",
+    "size": 0,
+  },
+  {
+    "filePath": "uploads/66c4e516d6303ed5ac5a8e55/1234e516d6303ed5ac5a8e77_2.txt",
+    "newFilename": "1234e516d6303ed5ac5a8e77_2.txt",
+    "originalFilename": "text.txt",
+    "size": 5,
+  },
+]
+`;
+
+exports[`data-import controller util functions tests processArchiveFiles test - some files are not present in the archive 1`] = `
+{
+  "failedUploadsCauses": [
+    {
+      "archiveFilename": "68936488200287f547b71f5b_3.mp3",
+      "cause": "File not found in the archive",
+      "userFilename": "music.mp3",
+    },
+  ],
+  "filenamesStringValid": true,
+  "uploadedFilenames": [
+    "68936488200287f547b71f5b_0.mid",
+  ],
+  "uploadedFilesCount": 1,
+}
+`;
+
+exports[`data-import controller util functions tests processArchiveFiles test - some files are not present in the archive 2`] = `
+[
+  {
+    "filePath": "uploads/66c4e516d6303ed5ac5a8e55/1234e516d6303ed5ac5a8e77_0.mid",
+    "newFilename": "1234e516d6303ed5ac5a8e77_0.mid",
+    "originalFilename": "filename.mid",
+    "size": 0,
+  },
+]
+`;
+
+exports[`data-import controller util functions tests setRecordCategories test - omit '_id' and 'nazwy plików' columns 1`] = `
+[
+  {
+    "name": "Title",
+    "subcategories": [
       {
-        "name": "Title",
+        "name": "Subtitle",
+        "subcategories": [],
+        "value": "subtitle 1",
+      },
+    ],
+    "value": "title 1",
+  },
+  {
+    "name": "Artists",
+    "subcategories": [],
+    "value": "artists 1",
+  },
+]
+`;
+
+exports[`data-import controller util functions tests setRecordCategories test - remove leading/trailing whitespace in category values 1`] = `
+[
+  {
+    "name": "Title",
+    "subcategories": [
+      {
+        "name": "Subtitle",
+        "subcategories": [],
+        "value": "subtitle 1",
+      },
+    ],
+    "value": "title 1",
+  },
+  {
+    "name": "Artists",
+    "subcategories": [],
+    "value": "artists 1",
+  },
+]
+`;
+
+exports[`data-import controller util functions tests setRecordCategories test - some empty values in row 1`] = `
+[
+  {
+    "name": "Title",
+    "subcategories": [],
+    "value": "title 1",
+  },
+  {
+    "name": "Artists",
+    "subcategories": [],
+    "value": "",
+  },
+  {
+    "name": "Release Year",
+    "subcategories": [],
+    "value": "release year 1",
+  },
+  {
+    "name": "Region",
+    "subcategories": [],
+    "value": "",
+  },
+]
+`;
+
+exports[`data-import controller util functions tests setRecordCategories test - three levels deep data 1`] = `
+[
+  {
+    "name": "Title",
+    "subcategories": [
+      {
+        "name": "Subtitle",
         "subcategories": [
           {
-            "name": "Subtitle",
+            "name": "Subsubtitle",
             "subcategories": [],
-            "value": "subtitle 1",
+            "value": "subsubtitle 1",
           },
         ],
-        "value": "title 1",
-      },
-      {
-        "name": "Artists",
-        "subcategories": [],
-        "value": "artists 1",
+        "value": "subtitle 1",
       },
     ],
-    "collectionName": "collection",
+    "value": "title 1",
+  },
+  {
+    "name": "Artists",
+    "subcategories": [],
+    "value": "artist 1",
   },
 ]
 `;
 
-exports[`data-import controller util functions tests prepRecords test - remove leading/trailing whitespace in each part of full category name 1`] = `
+exports[`data-import controller util functions tests setRecordCategories test - trim all whitespace category values to empty string 1`] = `
 [
   {
-    "categories": [
+    "name": "Title",
+    "subcategories": [
       {
-        "name": "Title",
+        "name": "Subtitle",
+        "subcategories": [],
+        "value": "",
+      },
+    ],
+    "value": "title 1",
+  },
+  {
+    "name": "Artists",
+    "subcategories": [],
+    "value": "",
+  },
+]
+`;
+
+exports[`data-import controller util functions tests setRecordCategories test - unusual column order 1`] = `
+[
+  {
+    "name": "Title",
+    "subcategories": [
+      {
+        "name": "Subtitle",
         "subcategories": [
           {
-            "name": "Subtitle",
+            "name": "Subsubtitle",
             "subcategories": [],
-            "value": "subtitle 1",
+            "value": "subsubtitle 1",
           },
         ],
-        "value": "title 1",
-      },
-      {
-        "name": "Artists",
-        "subcategories": [],
-        "value": "artists 1",
+        "value": "subtitle 1",
       },
     ],
-    "collectionName": "collection",
+    "value": "title 1",
   },
 ]
 `;
 
-exports[`data-import controller util functions tests prepRecords test - skipped category values in some records 1`] = `
-[
-  {
-    "categories": [
-      {
-        "name": "Title",
-        "subcategories": [],
-        "value": "title 1",
-      },
-      {
-        "name": "Artists",
-        "subcategories": [],
-        "value": "",
-      },
-      {
-        "name": "Release Year",
-        "subcategories": [],
-        "value": "release year 1",
-      },
-    ],
-    "collectionName": "collection",
-  },
-  {
-    "categories": [
-      {
-        "name": "Title",
-        "subcategories": [],
-        "value": "",
-      },
-      {
-        "name": "Artists",
-        "subcategories": [],
-        "value": "artists 2",
-      },
-      {
-        "name": "Release Year",
-        "subcategories": [],
-        "value": "release year 2",
-      },
-    ],
-    "collectionName": "collection",
-  },
-  {
-    "categories": [
-      {
-        "name": "Title",
-        "subcategories": [],
-        "value": "title 3",
-      },
-      {
-        "name": "Artists",
-        "subcategories": [],
-        "value": "",
-      },
-      {
-        "name": "Release Year",
-        "subcategories": [],
-        "value": "",
-      },
-    ],
-    "collectionName": "collection",
-  },
-]
-`;
-
-exports[`data-import controller util functions tests prepRecords test - three levels deep data 1`] = `
-[
-  {
-    "categories": [
-      {
-        "name": "Title",
-        "subcategories": [
-          {
-            "name": "Subtitle",
-            "subcategories": [
-              {
-                "name": "Subsubtitle",
-                "subcategories": [],
-                "value": "subsubtitle 1",
-              },
-            ],
-            "value": "subtitle 1",
-          },
-        ],
-        "value": "title 1",
-      },
-    ],
-    "collectionName": "collection",
-  },
-]
-`;
-
-exports[`data-import controller util functions tests prepRecords test - trim all whitespace category values to empty string 1`] = `
-[
-  {
-    "categories": [
-      {
-        "name": "Title",
-        "subcategories": [
-          {
-            "name": "Subtitle",
-            "subcategories": [],
-            "value": "",
-          },
-        ],
-        "value": "title 1",
-      },
-      {
-        "name": "Artists",
-        "subcategories": [],
-        "value": "",
-      },
-    ],
-    "collectionName": "collection",
-  },
-]
-`;
-
-exports[`data-import controller util functions tests prepRecords test - unusual column order 1`] = `
-[
-  {
-    "categories": [
-      {
-        "name": "Title",
-        "subcategories": [
-          {
-            "name": "Subtitle",
-            "subcategories": [
-              {
-                "name": "Subsubtitle",
-                "subcategories": [],
-                "value": "subsubtitle 1",
-              },
-            ],
-            "value": "subtitle 1",
-          },
-        ],
-        "value": "title 1",
-      },
-    ],
-    "collectionName": "collection",
-  },
-]
+exports[`data-import controller util functions tests should run prepRecordsAndFiles and return correct data 1`] = `
+{
+  "failedUploadsCauses": [
+    {
+      "archiveFilename": "12345488200287f547b71123_4.pdf",
+      "cause": "Invalid file extension",
+      "userFilename": "pdf_file.pdf",
+    },
+    {
+      "archiveFilename": "68936488200287f547b71f5b_1.mp3",
+      "cause": "File is not associated with any record from spreadsheet/csv file",
+    },
+    {
+      "archiveFilename": "68936488200287f547b71f5b_2.txt",
+      "cause": "File is not associated with any record from spreadsheet/csv file",
+    },
+    {
+      "archiveFilename": "68936488200287f547b71f5b_3.pdf",
+      "cause": "File is not associated with any record from spreadsheet/csv file",
+    },
+    {
+      "archiveFilename": "68936488200287f547b71f5b_4.txt",
+      "cause": "File is not associated with any record from spreadsheet/csv file",
+    },
+  ],
+  "failedUploadsCount": 5,
+  "records": [
+    {
+      "_id": "<id>",
+      "categories": [
+        {
+          "name": "Title",
+          "subcategories": [
+            {
+              "name": "Subtitle",
+              "subcategories": [
+                {
+                  "name": "Subsubtitle",
+                  "subcategories": [],
+                  "value": "subsubtitle 1",
+                },
+              ],
+              "value": "subtitle 1",
+            },
+          ],
+          "value": "title 1",
+        },
+        {
+          "name": "Artists",
+          "subcategories": [],
+          "value": "artist 1",
+        },
+      ],
+      "collectionName": "collection name",
+      "files": [
+        {
+          "filePath": "/uploads/66c4e516d6303ed5ac5a8e55/<id>_0.mid",
+          "newFilename": "<id>_0.mid",
+          "originalFilename": "filename.mid",
+          "size": 0,
+          "uploadedAt": "<timestamp>",
+        },
+      ],
+    },
+    {
+      "_id": "<id>",
+      "categories": [
+        {
+          "name": "Title",
+          "subcategories": [
+            {
+              "name": "Subtitle",
+              "subcategories": [
+                {
+                  "name": "Subsubtitle",
+                  "subcategories": [],
+                  "value": "subsubtitle 2",
+                },
+              ],
+              "value": "subtitle 2",
+            },
+          ],
+          "value": "title 2",
+        },
+        {
+          "name": "Artists",
+          "subcategories": [],
+          "value": "artist 2",
+        },
+      ],
+      "collectionName": "collection name",
+      "files": [
+        {
+          "filePath": "/uploads/66c4e516d6303ed5ac5a8e55/<id>_0.txt",
+          "newFilename": "<id>_0.txt",
+          "originalFilename": "textfile.txt",
+          "size": 5,
+          "uploadedAt": "<timestamp>",
+        },
+        {
+          "filePath": "/uploads/66c4e516d6303ed5ac5a8e55/<id>_1.mid",
+          "newFilename": "<id>_1.mid",
+          "originalFilename": "mid_file.mid",
+          "size": 0,
+          "uploadedAt": "<timestamp>",
+        },
+      ],
+    },
+  ],
+  "uploadedFilesCount": 3,
+}
 `;

@@ -20,24 +20,11 @@ exports[`artworks util functions tests constructAdvSearchFilter test - standard 
     "$all": [
       {
         "$elemMatch": {
-          "$and": [
-            {
-              "value": /\\(\\^\\|\\\\s\\)testowy\\(\\$\\|\\\\s\\)/i,
-            },
-          ],
           "name": "Tytuł",
           "subcategories": {
             "$all": [
               {
                 "$elemMatch": {
-                  "$and": [
-                    {
-                      "value": /\\(\\^\\|\\\\s\\)testowy\\(\\$\\|\\\\s\\)/i,
-                    },
-                    {
-                      "value": /\\(\\^\\|\\\\s\\)podtytuł\\(\\$\\|\\\\s\\)/i,
-                    },
-                  ],
                   "name": "Podtytuł",
                   "subcategories": {
                     "$all": [
@@ -48,15 +35,8 @@ exports[`artworks util functions tests constructAdvSearchFilter test - standard 
                             "$all": [
                               {
                                 "$elemMatch": {
-                                  "$and": [
-                                    {
-                                      "value": /\\(\\^\\|\\\\s\\)testowy\\(\\$\\|\\\\s\\)/i,
-                                    },
-                                    {
-                                      "value": /\\(\\^\\|\\\\s\\)podpodpodtytuł\\(\\$\\|\\\\s\\)/i,
-                                    },
-                                  ],
                                   "name": "Podpodpodtytuł",
+                                  "value": /t\\[e,ę,é,ë\\]\\[s,ś\\]t\\[o,ó,ŏ,ō,ô,õ,ò\\]wy p\\[o,ó,ŏ,ō,ô,õ,ò\\]dp\\[o,ó,ŏ,ō,ô,õ,ò\\]dp\\[o,ó,ŏ,ō,ô,õ,ò\\]dtyt\\[u,ù\\]ł/i,
                                 },
                               },
                             ],
@@ -65,44 +45,34 @@ exports[`artworks util functions tests constructAdvSearchFilter test - standard 
                       },
                     ],
                   },
+                  "value": /t\\[e,ę,é,ë\\]\\[s,ś\\]t\\[o,ó,ŏ,ō,ô,õ,ò\\]wy p\\[o,ó,ŏ,ō,ô,õ,ò\\]dtyt\\[u,ù\\]ł/i,
                 },
               },
             ],
           },
+          "value": /t\\[e,ę,é,ë\\]\\[s,ś\\]t\\[o,ó,ŏ,ō,ô,õ,ò\\]wy/i,
         },
       },
       {
         "$elemMatch": {
-          "$and": [
-            {
-              "value": /\\(\\^\\|\\\\s\\)testowi\\(\\$\\|\\\\s\\)/i,
-            },
-          ],
           "name": "Artyści",
+          "value": /t\\[e,ę,é,ë\\]\\[s,ś\\]t\\[o,ó,ŏ,ō,ô,õ,ò\\]wi/i,
         },
       },
       {
         "$elemMatch": {
-          "$and": [
-            {
-              "value": /\\(\\^\\|\\\\s\\)966\\(\\$\\|\\\\s\\)/i,
-            },
-          ],
           "name": "Rok",
           "subcategories": {
             "$all": [
               {
                 "$elemMatch": {
-                  "$and": [
-                    {
-                      "value": /\\(\\^\\|\\\\s\\)Luty\\(\\$\\|\\\\s\\)/i,
-                    },
-                  ],
                   "name": "Miesiąc",
+                  "value": /\\[Ł,l,ł\\]\\[u,ù\\]ty/i,
                 },
               },
             ],
           },
+          "value": /966/i,
         },
       },
     ],
@@ -134,17 +104,7 @@ exports[`artworks util functions tests constructQuickSearchFilter test - maxDept
     "$elemMatch": {
       "$or": [
         {
-          "$and": [
-            {
-              "value": /\\(\\^\\|\\\\s\\)text\\(\\$\\|\\\\s\\)/i,
-            },
-            {
-              "value": /\\(\\^\\|\\\\s\\)to\\(\\$\\|\\\\s\\)/i,
-            },
-            {
-              "value": /\\(\\^\\|\\\\s\\)find\\(\\$\\|\\\\s\\)/i,
-            },
-          ],
+          "value": /t\\[e,ę,é,ë\\]xt t\\[o,ó,ŏ,ō,ô,õ,ò\\] fi\\[n,ń\\]d/i,
         },
       ],
     },
@@ -164,68 +124,28 @@ exports[`artworks util functions tests constructQuickSearchFilter test - maxDept
     "$elemMatch": {
       "$or": [
         {
-          "$and": [
-            {
-              "value": /\\(\\^\\|\\\\s\\)text\\(\\$\\|\\\\s\\)/i,
-            },
-            {
-              "value": /\\(\\^\\|\\\\s\\)to\\(\\$\\|\\\\s\\)/i,
-            },
-            {
-              "value": /\\(\\^\\|\\\\s\\)find\\(\\$\\|\\\\s\\)/i,
-            },
-          ],
+          "value": /t\\[e,ę,é,ë\\]xt t\\[o,ó,ŏ,ō,ô,õ,ò\\] fi\\[n,ń\\]d/i,
         },
         {
           "subcategories": {
             "$elemMatch": {
               "$or": [
                 {
-                  "$and": [
-                    {
-                      "value": /\\(\\^\\|\\\\s\\)text\\(\\$\\|\\\\s\\)/i,
-                    },
-                    {
-                      "value": /\\(\\^\\|\\\\s\\)to\\(\\$\\|\\\\s\\)/i,
-                    },
-                    {
-                      "value": /\\(\\^\\|\\\\s\\)find\\(\\$\\|\\\\s\\)/i,
-                    },
-                  ],
+                  "value": /t\\[e,ę,é,ë\\]xt t\\[o,ó,ŏ,ō,ô,õ,ò\\] fi\\[n,ń\\]d/i,
                 },
                 {
                   "subcategories": {
                     "$elemMatch": {
                       "$or": [
                         {
-                          "$and": [
-                            {
-                              "value": /\\(\\^\\|\\\\s\\)text\\(\\$\\|\\\\s\\)/i,
-                            },
-                            {
-                              "value": /\\(\\^\\|\\\\s\\)to\\(\\$\\|\\\\s\\)/i,
-                            },
-                            {
-                              "value": /\\(\\^\\|\\\\s\\)find\\(\\$\\|\\\\s\\)/i,
-                            },
-                          ],
+                          "value": /t\\[e,ę,é,ë\\]xt t\\[o,ó,ŏ,ō,ô,õ,ò\\] fi\\[n,ń\\]d/i,
                         },
                         {
                           "subcategories": {
                             "$elemMatch": {
                               "$or": [
                                 {
-                                  "$and": [
-                                    {
-                                      "value": /\\(\\^\\|\\\\s\\)text\\(\\$\\|\\\\s\\)/i,
-                                    },
-                                    {
-                                      "value": /\\(\\^\\|\\\\s\\)to\\(\\$\\|\\\\s\\)/i,
-                                    },
-                                    {
-                                      "value": /\\(\\^\\|\\\\s\\)find\\(\\$\\|\\\\s\\)/i,
-                                    },
-                                  ],
+                                  "value": /t\\[e,ę,é,ë\\]xt t\\[o,ó,ŏ,ō,ô,õ,ò\\] fi\\[n,ń\\]d/i,
                                 },
                               ],
                             },
@@ -258,6 +178,89 @@ exports[`artworks util functions tests constructTopmostCategorySearchTextFilter 
       "value": /\\^Searched text\\$/i,
     },
   },
+}
+`;
+
+exports[`artworks util functions tests handleFileDeletions test - file to delete not found 1`] = `
+{
+  "deletedFilesCount": 0,
+  "failedDeletesCauses": [
+    {
+      "cause": "File not found",
+      "filename": "lyrics.mei",
+    },
+  ],
+  "failedDeletesCount": 1,
+}
+`;
+
+exports[`artworks util functions tests handleFileDeletions test - file to delete with given filepath doesn't exist 1`] = `
+{
+  "deletedFilesCount": 0,
+  "failedDeletesCauses": [
+    {
+      "cause": "Internal server error",
+      "filename": "lyrics.mei",
+    },
+  ],
+  "failedDeletesCount": 1,
+}
+`;
+
+exports[`artworks util functions tests handleFileDeletions test - no files to delete 1`] = `
+{
+  "deletedFilesCount": 0,
+  "failedDeletesCauses": [],
+  "failedDeletesCount": 0,
+}
+`;
+
+exports[`artworks util functions tests handleFileDeletions test - one file to delete 1`] = `
+{
+  "deletedFilesCount": 1,
+  "failedDeletesCauses": [],
+  "failedDeletesCount": 0,
+}
+`;
+
+exports[`artworks util functions tests handleFileUploads test - no files to upload 1`] = `
+{
+  "failedUploadsCauses": [],
+  "failedUploadsCount": 0,
+  "uploadedFilesCount": 0,
+}
+`;
+
+exports[`artworks util functions tests handleFileUploads test - upload 5 files when artwork doesn't have any associated files 1`] = `
+{
+  "failedUploadsCauses": [],
+  "failedUploadsCount": 0,
+  "uploadedFilesCount": 5,
+}
+`;
+
+exports[`artworks util functions tests handleFileUploads test - upload of 2 out of 4 files fails - one file has inapropriate extension and another has maximal size exceeded 1`] = `
+{
+  "failedUploadsCauses": [
+    {
+      "cause": "Invalid file extension",
+      "filename": "pdf_file.pdf",
+    },
+    {
+      "cause": "File size exceeded",
+      "filename": "lyrics.mei",
+    },
+  ],
+  "failedUploadsCount": 2,
+  "uploadedFilesCount": 2,
+}
+`;
+
+exports[`artworks util functions tests handleFileUploads test - upload two files when artwork has two associated files with indices 0 and 2 1`] = `
+{
+  "failedUploadsCauses": [],
+  "failedUploadsCount": 0,
+  "uploadedFilesCount": 2,
 }
 `;
 
