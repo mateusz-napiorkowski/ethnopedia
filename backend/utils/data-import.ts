@@ -112,7 +112,7 @@ export const processArchiveFiles = (
     return {uploadedFilenames, uploadedFilesCount: uploadedFilenames.length, failedUploadsCauses, filenamesStringValid}
 }
 
-export const setRecordCategories = (row: string[], newRecord: any, header: string[]) => {
+export const setRecordCategories = (row: string[], newRecord: any, header: string[]) => {   
     row.forEach((categoryValueUntrimmed, columnIndex) => {
         if(header[columnIndex] !== "_id" && header[columnIndex] !== "nazwy plików") {
             const categoryValue = categoryValueUntrimmed.trim()
@@ -176,9 +176,9 @@ export const prepRecordsAndFiles = async (
             totalFailedUploadsCauses.push(...failedUploadsCauses)
         }
 
-        const allArchiveFilenames = archiveBuffer ? archiveBuffer.files.map(file => file.path) : [];
-        const failedUploadsFilenames = archiveBuffer ? totalFailedUploadsCauses.map(file => file.archiveFilename) : [];
-        const unlistedFiles = allArchiveFilenames.filter(x => !allUploadedFilenames.includes(x) && !failedUploadsFilenames.includes(x))
+        const allArchiveFilenames = archiveBuffer ? archiveBuffer.files.map((file: any) => file.path) : [];
+        const failedUploadsFilenames = archiveBuffer ? totalFailedUploadsCauses.map((file: any) => file.archiveFilename) : [];
+        const unlistedFiles = allArchiveFilenames.filter((x: any) => !allUploadedFilenames.includes(x) && !failedUploadsFilenames.includes(x))
         for(const file of unlistedFiles) {
             totalFailedUploadsCauses.push({archiveFilename: file, cause: "File is not associated with any record from spreadsheet/csv file"})
         }

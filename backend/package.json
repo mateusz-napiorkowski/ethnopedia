@@ -49,6 +49,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.1.0",
     "mongoose": "^7.6.6",
-    "multer": "^2.0.1"
+    "multer": "^2.0.1",
+    "unzipper": "^0.12.3"
   }
 }
