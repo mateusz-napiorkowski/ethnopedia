@@ -6,22 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="0139a19c-6c98-4121-b72c-d8ab5bbc47c1" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/api/__tests__/artworks.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/__tests__/artworks.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/api/__tests__/dataExport.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/__tests__/dataExport.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/__tests__/__snapshots__/DisplayCategoriesSelect.test.tsx.snap" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/__tests__/__snapshots__/Pagination.test.tsx.snap" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/__tests__/__snapshots__/Pagination.test.tsx.snap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/__tests__/__snapshots__/SortOptions.test.tsx.snap" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/__tests__/__snapshots__/SortOptions.test.tsx.snap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/artwork/__tests__/MetadataForm.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/artwork/__tests__/MetadataForm.test.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/artwork/__tests__/__snapshots__/MetadataForm.test.tsx.snap" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/artwork/__tests__/__snapshots__/MetadataForm.test.tsx.snap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/search/__tests__/AdvancedSearch.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/search/__tests__/AdvancedSearch.test.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/search/__tests__/QuickSearch.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/search/__tests__/QuickSearch.test.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/search/__tests__/SearchComponent.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/search/__tests__/SearchComponent.test.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/search/__tests__/__snapshots__/AdvancedSearch.test.tsx.snap" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/__tests__/__snapshots__/LandingPage.test.tsx.snap" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/__tests__/__snapshots__/LandingPage.test.tsx.snap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/artworks/__tests__/__snapshots__/ArtworksListPage.test.tsx.snap" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/artworks/__tests__/__snapshots__/ArtworksListPage.test.tsx.snap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/collections/CollectionsPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/collections/CollectionsPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/collections/__tests__/__snapshots__/CreateCollectionPage.test.tsx.snap" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/collections/__tests__/__snapshots__/CreateCollectionPage.test.tsx.snap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/collections/__tests__/__snapshots__/ImportCollectionPage.test.tsx.snap" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/collections/__tests__/__snapshots__/ImportCollectionPage.test.tsx.snap" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,7 +49,7 @@
   &quot;keyToString&quot;: {
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;1d208866&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
@@ -128,6 +112,7 @@
       <workItem from="1756207921427" duration="9585000" />
       <workItem from="1756287750363" duration="5899000" />
       <workItem from="1756376828288" duration="7990000" />
+      <workItem from="1756899658324" duration="1237000" />
     </task>
     <servers />
   </component>

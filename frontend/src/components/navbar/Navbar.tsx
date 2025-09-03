@@ -7,12 +7,13 @@ import { deleteAccount } from "../../api/auth"
 import { useMutation } from "react-query"
 import { useUser } from "../../providers/UserProvider"
 import WarningPopup from "../../pages/WarningPopup"
+import { AiOutlineQuestion as HelpIcon } from "react-icons/ai";
 
 const Navbar = () => {
     const navigate = useNavigate()
 
     const { isUserLoggedIn, firstName, userId, jwtToken, setUserData} = useUser()
-    
+
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
     const [showDeleteAccountWarning, setShowDeleteAccountWarning] = useState(false)
 
@@ -95,6 +96,18 @@ const Navbar = () => {
 
                 <ToggleTheme/>
 
+                <button
+                    type="button"
+                    onClick={() => navigate("/help")}
+                    title="Pomoc / FAQ"
+                    className="text-gray-800 bg-white border border-gray-300 focus:outline-none
+                   hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm
+                   p-2.5 mr-2 dark:bg-gray-800 dark:text-white dark:border-gray-600
+                   dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+                >
+                    <HelpIcon className="w-5 h-5 text-gray-800 dark:text-gray-200"/>
+                </button>
+
                 {isUserLoggedIn ?
                     <>
                         <div aria-label="show-dropdown" onClick={() => setIsDropdownOpen(!isDropdownOpen)} className="rounded-full bg-gray-300
@@ -110,11 +123,13 @@ const Navbar = () => {
                     </> :
                     <>
                         <button type="button"
+                                title="Zaloguj się"
                                 className="mr-2 bg-blue-500 hover:bg-blue-400 font-semibold text-white border-none"
                                 onClick={() => navigate("/login")}>
                             Zaloguj się
                         </button>
                         <button type="button"
+                                title="Zarejestruj się"
                                 className="bg-blue-500 hover:bg-blue-400 font-semibold text-white border-none"
                                 onClick={() => navigate("/register")}>
                             Zarejestruj się
