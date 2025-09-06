@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="0139a19c-6c98-4121-b72c-d8ab5bbc47c1" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/help/HelpPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/help/HelpPage.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,7 +50,7 @@
   &quot;keyToString&quot;: {
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;1d208866&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/help-page-v2&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
@@ -112,7 +113,8 @@
       <workItem from="1756207921427" duration="9585000" />
       <workItem from="1756287750363" duration="5899000" />
       <workItem from="1756376828288" duration="7990000" />
-      <workItem from="1756899658324" duration="1237000" />
+      <workItem from="1756899658324" duration="4387000" />
+      <workItem from="1757168919236" duration="304000" />
     </task>
     <servers />
   </component>

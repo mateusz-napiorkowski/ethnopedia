@@ -163,33 +163,52 @@ const LandingPage = () => {
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                            {fetchedData?.collections.map((collection) => (
-                                <div
-                                    key={collection.id}
-                                    aria-label={collection.id}
-                                    className="relative group px-4 py-3 bg-white dark:bg-gray-800 shadow-md rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                                    onClick={() =>
-                                        navigate(`/collections/${collection.id}/artworks`, {
-                                            state: {collectionId: collection.id},
-                                        })
-                                    }
-                                >
-                                    <div className="flex flex-col h-full">
-                                        <h2 className="text-lg font-semibold mb-2">{collection.name}</h2>
-                                        <p className="text-gray-600 dark:text-gray-300 flex-grow">{collection.description}</p>
-                                        <div className="mt-2 text-md flex items-center">
-                                            <span className="font-bold mr-1">{collection.artworksCount ?? 0}</span>
-                                            {(collection.artworksCount ?? 0) === 1
-                                                ? "rekord"
-                                                : (collection.artworksCount ?? 0) > 1 &&
-                                                (collection.artworksCount ?? 0) < 5
-                                                    ? "rekordy"
-                                                    : "rekordów"}
+                            {fetchedData?.collections.map((collection) => {
+                                // przycinamy nazwy i opisy jeśli są za długie
+                                const maxNameLength = 65;
+                                const maxDescLength = 120;
+                                const name =
+                                    collection.name.length > maxNameLength
+                                        ? collection.name.slice(0, maxNameLength) + "..."
+                                        : collection.name;
+                                const description =
+                                    collection.description && collection.description.length > maxDescLength
+                                        ? collection.description.slice(0, maxDescLength) + "..."
+                                        : collection.description;
+
+                                return (
+                                    <div
+                                        key={collection.id}
+                                        aria-label={collection.id}
+                                        className="relative group px-4 py-3 bg-white dark:bg-gray-800 shadow-md rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                        onClick={() =>
+                                            navigate(`/collections/${collection.id}/artworks`, {
+                                                state: {collectionId: collection.id},
+                                            })
+                                        }
+                                    >
+                                        <div className="flex flex-col h-full pr-2">
+                                            <h2 className="text-lg font-semibold mb-2 break-words">{name}</h2>
+                                            <p className="text-gray-600 dark:text-gray-300 flex-grow break-words">
+                                                {description}
+                                            </p>
+                                            <div className="mt-2 text-md flex items-center">
+                                                <span className="font-bold mr-1">
+                                                  {collection.artworksCount ?? 0}
+                                                </span>
+                                                {(collection.artworksCount ?? 0) === 1
+                                                    ? "rekord"
+                                                    : (collection.artworksCount ?? 0) > 1 &&
+                                                    (collection.artworksCount ?? 0) < 5
+                                                        ? "rekordy"
+                                                        : "rekordów"}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
+
                     </section>
 
 
@@ -204,7 +223,7 @@ const LandingPage = () => {
                     </div>
                 </div>
 
-                <Footer />
+                <Footer/>
 
             </section>
         </div>
