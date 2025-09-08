@@ -296,7 +296,7 @@ const ImportCollectionPage = () => {
                                                     >
                                                         -
                                                     </option>
-                                                    {childParentPairs.map((a: any) => {
+                                                    {childParentPairs.filter((pair: any) => pair[0] !== "_id" && pair[0] !== "nazwy plików").map((a: any) => {
                                                         const optionValue = a[0]
                                                         if(optionValue != categoryShortName) {
                                                             return (<option
