@@ -5,6 +5,29 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0139a19c-6c98-4121-b72c-d8ab5bbc47c1" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/frontend/public/help/dodawanie-kolekcji-1.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/public/help/dodawanie-kolekcji-2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/public/help/dodawanie-kolekcji-3-1.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/public/help/dodawanie-kolekcji-3-2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/public/help/dodawanie-kolekcji-3-3.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/public/help/dodawanie-kolekcji-3-4.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/public/help/dodawanie-kolekcji-3.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/public/help/dodawanie-kolekcji-4.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/public/help/dodawanie-kolekcji-5.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/public/help/dodawanie-rekordu-1.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/public/help/dodawanie-rekordu-2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/public/help/dodawanie-rekordu-3.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/public/help/edycja-kolekcji.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/public/help/rozwijanie-podkategorii.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/public/help/sortowanie.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/public/help/wyszukiwanie-globalne-1.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/public/help/wyszukiwanie-globalne-2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/public/help/wyszukiwanie-szybkie.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/public/help/wyszukiwanie-zaawansowane-1.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/public/help/wyszukiwanie-zaawansowane-2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/public/help/wyszukiwanie-zaawansowane-3.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/public/help/wyszukiwanie-zaawansowane-4.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/public/help/wyświetlane-kategorie.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/pages/help/HelpPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/help/HelpPage.tsx" afterDir="false" />
     </list>
@@ -36,7 +59,7 @@
   }
 }</component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="ProjectErrors" />
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 8
@@ -61,6 +84,9 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\wikto\OneDrive\Dokumenty\PROJEKTY\PP\ethnopedia\frontend\public" />
+      <recent name="C:\Users\wikto\OneDrive\Dokumenty\PROJEKTY\PP\ethnopedia\frontend\src\assets\images" />
+      <recent name="C:\Users\wikto\OneDrive\Dokumenty\PROJEKTY\PP\ethnopedia\frontend\public\help" />
       <recent name="C:\Users\wikto\OneDrive\Dokumenty\PROJEKTY\PP\ethnopedia\frontend\src\assets\icons" />
     </key>
   </component>
@@ -114,7 +140,9 @@
       <workItem from="1756287750363" duration="5899000" />
       <workItem from="1756376828288" duration="7990000" />
       <workItem from="1756899658324" duration="4387000" />
-      <workItem from="1757168919236" duration="304000" />
+      <workItem from="1757168919236" duration="1929000" />
+      <workItem from="1757426178526" duration="7507000" />
+      <workItem from="1757508638314" duration="8829000" />
     </task>
     <servers />
   </component>
