@@ -16,7 +16,7 @@ export const importDataAsCollection = async (importData: Array<Array<string>>, c
     formData.append("description", description);
     formData.append("file", archiveFile);
     return await axios.post(
-        `${API_URL}v1/dataImport/${collectionName}`,
+        `${API_URL}v1/dataImport/newCollection`,
         formData,
         { headers: { Authorization: `Bearer ${jwtToken}` } }
     ).then(res => res.data)
