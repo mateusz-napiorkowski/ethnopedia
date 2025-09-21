@@ -91,7 +91,7 @@ const ImportToExistingCollectionPage = () => {
         dataToSend = [newHeader, ...fileData.slice(1)]
         importDataMutation.mutate()
     }
-    const importDataMutation = useMutation(() => importData(dataToSend, jwtToken, collectionId), {
+    const importDataMutation = useMutation(() => importData(dataToSend, jwtToken, collectionId!), {
             onSuccess: () => {
                 queryClient.invalidateQueries("collection")
                 navigate(`/collections/${collectionId}/artworks`)

@@ -28,6 +28,7 @@ describe("dataExport tests", () => {
                 new URLSearchParams(),
                 "test.xlsx",
                 false,
+                false,
                 false
             );
 
@@ -40,7 +41,11 @@ describe("dataExport tests", () => {
                         collectionIds: [collectionId],
                         columnNames: ["Tytuł"],
                         exportExtent: "all",  
-                        selectedArtworks: []
+                        selectedArtworks: [],
+                        exportAsCSV: false,
+                        includeFilenames: false,
+                        includeIds: false,
+                        searchParams: expect.any(URLSearchParams)
                     },
                     
                 }
@@ -57,6 +62,7 @@ describe("dataExport tests", () => {
                 {},
                 new URLSearchParams(),
                 "test.xlsx",
+                false,
                 false,
                 false
             )).rejects.toThrow(axiosError);

@@ -18,7 +18,7 @@ const ImportCollectionPage = () => {
     const [fileData, setFileData]: any = useState(false)
     const [archiveLoaded, setArchiveLoaded] = useState(false)
     const [archiveFilename, setArchiveFilename]: any = useState(false)
-    const [archiveFile, setArchiveFile]: any = useState(false)
+    const [archiveFile, setArchiveFile] = useState<File | undefined>(undefined)
     const [collectionName, setCollectionName] = useState("")
     const [collectionDescription, setCollectionDescription] = useState("")
     const [childParentPairs, setChildParentPairs]: any = useState([])

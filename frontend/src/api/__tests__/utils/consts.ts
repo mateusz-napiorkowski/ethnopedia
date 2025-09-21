@@ -70,6 +70,12 @@ export const filesToUpload = [
     })
 ]
 
+export const zipFile = new File(
+  [new Uint8Array([0x50, 0x4B, 0x03, 0x04])],
+  "archive.zip",
+  { type: "application/zip" }
+);
+
 export const createArtworkMockReturnValue = {
     ...categories,
     "_id": "6839828f96472c0836a60c7f",

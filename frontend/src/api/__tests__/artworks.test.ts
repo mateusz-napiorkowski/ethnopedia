@@ -82,6 +82,18 @@ describe("artworks tests", () => {
                 expect.any(FormData),
                 { headers: { Authorization: `Bearer ${jwtToken}` } }
             );
+
+            const formData = mockAxios.post.mock.calls[0][1] as FormData;
+            const entries: Record<string, any> = {};
+                formData.forEach((value, key) => {
+                entries[key] = value;
+            });
+            expect(entries).toEqual({
+                collectionId,
+                categories: JSON.stringify(categories),
+                files: expect.any(File)
+            })
+
             expect(result).toEqual(createArtworkMockReturnValue);
         });
 
@@ -112,6 +124,19 @@ describe("artworks tests", () => {
                 expect.any(FormData),
                 { headers: { Authorization: `Bearer ${jwtToken}` } }
             );
+
+            const formData = mockAxios.put.mock.calls[0][1] as FormData;
+            const entries: Record<string, any> = {};
+                formData.forEach((value, key) => {
+                entries[key] = value;
+            });
+            expect(entries).toEqual({
+                collectionId,
+                categories: JSON.stringify(categories),
+                files: expect.any(File),
+                filesToDelete: JSON.stringify([]),
+            })
+
             expect(result).toEqual(editArtworkReturnValue);
         });
 
