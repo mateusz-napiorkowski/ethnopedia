@@ -38,6 +38,7 @@ exports[`Pagination tests component renders correctly for page 1 of 1 1`] = `
         >
           <svg
             aria-hidden="true"
+            aria-label="previous-page"
             fill="currentColor"
             height="18"
             stroke="currentColor"
@@ -73,6 +74,7 @@ exports[`Pagination tests component renders correctly for page 1 of 1 1`] = `
         >
           <svg
             aria-hidden="true"
+            aria-label="next-page"
             fill="currentColor"
             height="18"
             stroke="currentColor"
@@ -132,6 +134,7 @@ exports[`Pagination tests component renders correctly for page 1 of 4 1`] = `
         >
           <svg
             aria-hidden="true"
+            aria-label="previous-page"
             fill="currentColor"
             height="18"
             stroke="currentColor"
@@ -197,6 +200,7 @@ exports[`Pagination tests component renders correctly for page 1 of 4 1`] = `
         >
           <svg
             aria-hidden="true"
+            aria-label="next-page"
             fill="currentColor"
             height="18"
             stroke="currentColor"
@@ -256,6 +260,7 @@ exports[`Pagination tests component renders correctly for page 1 of 5 1`] = `
         >
           <svg
             aria-hidden="true"
+            aria-label="previous-page"
             fill="currentColor"
             height="18"
             stroke="currentColor"
@@ -331,6 +336,7 @@ exports[`Pagination tests component renders correctly for page 1 of 5 1`] = `
         >
           <svg
             aria-hidden="true"
+            aria-label="next-page"
             fill="currentColor"
             height="18"
             stroke="currentColor"
@@ -390,6 +396,7 @@ exports[`Pagination tests component renders correctly for page 1 of 6 1`] = `
         >
           <svg
             aria-hidden="true"
+            aria-label="previous-page"
             fill="currentColor"
             height="18"
             stroke="currentColor"
@@ -475,6 +482,7 @@ exports[`Pagination tests component renders correctly for page 1 of 6 1`] = `
         >
           <svg
             aria-hidden="true"
+            aria-label="next-page"
             fill="currentColor"
             height="18"
             stroke="currentColor"
@@ -534,6 +542,7 @@ exports[`Pagination tests component renders correctly for page 1 of 7 1`] = `
         >
           <svg
             aria-hidden="true"
+            aria-label="previous-page"
             fill="currentColor"
             height="18"
             stroke="currentColor"
@@ -636,6 +645,7 @@ exports[`Pagination tests component renders correctly for page 1 of 7 1`] = `
         >
           <svg
             aria-hidden="true"
+            aria-label="next-page"
             fill="currentColor"
             height="18"
             stroke="currentColor"
@@ -695,6 +705,7 @@ exports[`Pagination tests component renders correctly for page 1 of 10 1`] = `
         >
           <svg
             aria-hidden="true"
+            aria-label="previous-page"
             fill="currentColor"
             height="18"
             stroke="currentColor"
@@ -797,6 +808,7 @@ exports[`Pagination tests component renders correctly for page 1 of 10 1`] = `
         >
           <svg
             aria-hidden="true"
+            aria-label="next-page"
             fill="currentColor"
             height="18"
             stroke="currentColor"
@@ -856,6 +868,7 @@ exports[`Pagination tests component renders correctly for page 4 of 7 1`] = `
         >
           <svg
             aria-hidden="true"
+            aria-label="previous-page"
             fill="currentColor"
             height="18"
             stroke="currentColor"
@@ -958,6 +971,7 @@ exports[`Pagination tests component renders correctly for page 4 of 7 1`] = `
         >
           <svg
             aria-hidden="true"
+            aria-label="next-page"
             fill="currentColor"
             height="18"
             stroke="currentColor"
@@ -1017,6 +1031,7 @@ exports[`Pagination tests component renders correctly for page 5 of 5 1`] = `
         >
           <svg
             aria-hidden="true"
+            aria-label="previous-page"
             fill="currentColor"
             height="18"
             stroke="currentColor"
@@ -1092,6 +1107,7 @@ exports[`Pagination tests component renders correctly for page 5 of 5 1`] = `
         >
           <svg
             aria-hidden="true"
+            aria-label="next-page"
             fill="currentColor"
             height="18"
             stroke="currentColor"
@@ -1151,6 +1167,7 @@ exports[`Pagination tests component renders correctly for page 5 of 10 1`] = `
         >
           <svg
             aria-hidden="true"
+            aria-label="previous-page"
             fill="currentColor"
             height="18"
             stroke="currentColor"
@@ -1260,6 +1277,7 @@ exports[`Pagination tests component renders correctly for page 5 of 10 1`] = `
         >
           <svg
             aria-hidden="true"
+            aria-label="next-page"
             fill="currentColor"
             height="18"
             stroke="currentColor"
@@ -1319,6 +1337,7 @@ exports[`Pagination tests component renders correctly for page 6 of 6 1`] = `
         >
           <svg
             aria-hidden="true"
+            aria-label="previous-page"
             fill="currentColor"
             height="18"
             stroke="currentColor"
@@ -1404,6 +1423,7 @@ exports[`Pagination tests component renders correctly for page 6 of 6 1`] = `
         >
           <svg
             aria-hidden="true"
+            aria-label="next-page"
             fill="currentColor"
             height="18"
             stroke="currentColor"
@@ -1463,6 +1483,7 @@ exports[`Pagination tests component renders correctly for page 6 of 10 1`] = `
         >
           <svg
             aria-hidden="true"
+            aria-label="previous-page"
             fill="currentColor"
             height="18"
             stroke="currentColor"
@@ -1572,6 +1593,7 @@ exports[`Pagination tests component renders correctly for page 6 of 10 1`] = `
         >
           <svg
             aria-hidden="true"
+            aria-label="next-page"
             fill="currentColor"
             height="18"
             stroke="currentColor"
@@ -1631,6 +1653,7 @@ exports[`Pagination tests component renders correctly for page 7 of 10 1`] = `
         >
           <svg
             aria-hidden="true"
+            aria-label="previous-page"
             fill="currentColor"
             height="18"
             stroke="currentColor"
@@ -1721,6 +1744,7 @@ exports[`Pagination tests component renders correctly for page 7 of 10 1`] = `
         >
           <svg
             aria-hidden="true"
+            aria-label="next-page"
             fill="currentColor"
             height="18"
             stroke="currentColor"
@@ -1780,6 +1804,7 @@ exports[`Pagination tests component renders correctly for page 10 of 10 1`] = `
         >
           <svg
             aria-hidden="true"
+            aria-label="previous-page"
             fill="currentColor"
             height="18"
             stroke="currentColor"
@@ -1870,6 +1895,7 @@ exports[`Pagination tests component renders correctly for page 10 of 10 1`] = `
         >
           <svg
             aria-hidden="true"
+            aria-label="next-page"
             fill="currentColor"
             height="18"
             stroke="currentColor"

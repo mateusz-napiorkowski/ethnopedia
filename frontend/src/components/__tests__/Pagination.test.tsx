@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { render, waitFor } from '@testing-library/react'
+import { getByTestId, render, waitFor } from '@testing-library/react'
 import Pagination from "../Pagination"
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
@@ -52,8 +52,8 @@ describe("Pagination tests", () => {
     })
 
     test("Next page button works correctly when there is a next page", async () => {     
-        const { getByText } = renderComponent(2, 10)
-        const nextPageButton = getByText("Następna strona")
+        const { getByLabelText } = renderComponent(2, 10)
+        const nextPageButton = getByLabelText("next-page")
         
         await user.click(nextPageButton)
         
@@ -62,8 +62,8 @@ describe("Pagination tests", () => {
     })
 
     test("Next page button works correctly when there is no next page", async () => {
-        const { getByText } = renderComponent(10, 10)
-        const nextPageButton = getByText("Następna strona")
+        const { getByLabelText } = renderComponent(10, 10)
+        const nextPageButton = getByLabelText("next-page")
         
         await user.click(nextPageButton)
         
@@ -72,8 +72,8 @@ describe("Pagination tests", () => {
     })
 
     test("Previous page button works correctly when there is a previous page", async () => {        
-        const { getByText } = renderComponent(2, 10)
-        const nextPageButton = getByText("Poprzednia strona")
+        const { getByLabelText } = renderComponent(2, 10)
+        const nextPageButton = getByLabelText("previous-page")
         
         await user.click(nextPageButton)
         
@@ -82,8 +82,8 @@ describe("Pagination tests", () => {
     })
 
     test("Previous page button works correctly when there is no previous page", async () => {   
-        const { getByText } = renderComponent(1, 10)
-        const nextPageButton = getByText("Poprzednia strona")
+        const { getByLabelText } = renderComponent(1, 10)
+        const nextPageButton = getByLabelText("previous-page")
         
         await user.click(nextPageButton)
         
