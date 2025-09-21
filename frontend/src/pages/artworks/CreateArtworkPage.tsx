@@ -14,6 +14,7 @@ import { Metadata } from '../../@types/Metadata';
 import useUndoRedoFormState from '../../hooks/useUndoRedoFormState';
 import {MdRedo as RedoArrow, MdUndo as UndoArrow} from "react-icons/md";
 import FileErrorsPopup from './FileErrorsPopup';
+import { FileToDelete } from '../../@types/Files';
 
 interface FormValues {
     categories: Metadata[];
@@ -64,9 +65,9 @@ const CreateArtworkPage: React.FC = () => {
     const [isInitialized, setIsInitialized] = useState(false);
 
     // File upload state from main branch
-    const [filesToUpload, setFilesToUpload] = useState([]);
+    const [filesToUpload, setFilesToUpload] = useState<File[]>([]);
     const [currentFiles, setCurrentFiles] = useState([]);
-    const [filesToDelete, setFilesToDelete] = useState([]);
+    const [filesToDelete, setFilesToDelete] = useState<FileToDelete[]>([]);
     const [showFileErrorsPopup, setShowFileErrorsPopup] = useState(false);
     const [failedUploadsCauses, setFailedUploadsCauses] = useState([]);
     const [failedDeletesCauses, setFailedDeletesCauses] = useState([]);
@@ -199,7 +200,7 @@ const CreateArtworkPage: React.FC = () => {
             const resData = artworkId ?
                 await editArtwork(artworkId, collectionId as string, formValues.categories,
                     filesToUpload, filesToDelete, jwtToken!) :
-                await createArtwork(collectionId, formValues.categories, filesToUpload, jwtToken!);
+                await createArtwork(collectionId!, formValues.categories, filesToUpload, jwtToken!);
 
             queryClient.invalidateQueries(['artworks', collectionId]);
             queryClient.invalidateQueries(['allArtworks', collectionId]);

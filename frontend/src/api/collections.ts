@@ -1,6 +1,5 @@
 import axios from "axios"
 import { Collection } from "../@types/Collection"
-import { useMutation } from "react-query"
 import { API_URL } from "../config"
 import { Category } from "../@types/Category"
 

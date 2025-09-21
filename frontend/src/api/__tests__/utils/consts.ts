@@ -56,19 +56,22 @@ export const jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6In
     + "lcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaecc"
     + "N-rDSjRS3kApqlA"
 
-export const artworkPayload = {
-    "categories": [
-        {
-            "name": "Tytuł",
-            "value": "testowy",
-            "subcategories": []
-        },
-    ],
-    "collectionName": collectionName
-}
+export const categories = [
+    {
+        "name": "Tytuł",
+        "value": "testowy",
+        "subcategories": []
+    },
+]
+
+export const filesToUpload = [
+    new File(["foo"], "foo.txt", {
+        type: "text/plain",
+    })
+]
 
 export const createArtworkMockReturnValue = {
-    ...artworkPayload,
+    ...categories,
     "_id": "6839828f96472c0836a60c7f",
     "createdAt": "2025-05-30T10:03:59.103Z",
     "updatedAt": "2025-05-30T10:03:59.103Z",
