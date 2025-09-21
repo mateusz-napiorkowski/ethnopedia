@@ -1,7 +1,7 @@
 import axios from "axios";
 import { API_URL } from "../config";
 import { Metadata } from "../@types/Metadata";
-import { FileToDelete } from "../@types/Files";
+import { UploadedFileData } from "../@types/Files";
 
 export const getArtwork = async (id: string) => {
     return await axios
@@ -60,7 +60,7 @@ export const editArtwork = async (
     collectionId: string,
     categories: Metadata[],
     filesToUpload: File[],
-    filesToDelete: FileToDelete[],
+    filesToDelete: UploadedFileData[],
     jwtToken: string
 ) => {
     const formData = new FormData();

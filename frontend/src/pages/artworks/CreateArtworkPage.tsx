@@ -14,7 +14,7 @@ import { Metadata } from '../../@types/Metadata';
 import useUndoRedoFormState from '../../hooks/useUndoRedoFormState';
 import {MdRedo as RedoArrow, MdUndo as UndoArrow} from "react-icons/md";
 import FileErrorsPopup from './FileErrorsPopup';
-import { FileToDelete } from '../../@types/Files';
+import { UploadedFileData } from '../../@types/Files';
 
 interface FormValues {
     categories: Metadata[];
@@ -67,7 +67,7 @@ const CreateArtworkPage: React.FC = () => {
     // File upload state from main branch
     const [filesToUpload, setFilesToUpload] = useState<File[]>([]);
     const [currentFiles, setCurrentFiles] = useState([]);
-    const [filesToDelete, setFilesToDelete] = useState<FileToDelete[]>([]);
+    const [filesToDelete, setFilesToDelete] = useState<UploadedFileData[]>([]);
     const [showFileErrorsPopup, setShowFileErrorsPopup] = useState(false);
     const [failedUploadsCauses, setFailedUploadsCauses] = useState([]);
     const [failedDeletesCauses, setFailedDeletesCauses] = useState([]);

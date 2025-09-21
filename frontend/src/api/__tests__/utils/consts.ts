@@ -393,3 +393,12 @@ export const importDataAsCollectionMockReturnData = {
         }
     ]
 }
+
+export const fileToDownloadData = {
+    "originalFilename": "MIDI_sample.mid",
+    "newFilename": "68d0774653968e8a29c54e99_0.mid",
+    "filePath": "uploads/68d054fb7bce5a5b80f3013f/68d0774653968e8a29c54e99_0.mid",
+    "size": 8444,
+    "uploadedAt": new Date("2025-09-21T22:08:06.816Z"),
+    "_id": "68d0774653968e8a29c54e9b"
+}

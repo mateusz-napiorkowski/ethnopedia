@@ -1,4 +1,4 @@
-export interface FileToDelete {
+export interface UploadedFileData {
     originalFilename: string,
     newFilename: string,
     filePath: string,
