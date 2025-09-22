@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { render } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import MetadataForm from "../MetadataForm"
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
@@ -110,12 +110,12 @@ describe("EmptyCollectionMessage", () => {
 
     it("should fill and clear form fields correctly when focusing on input fields by clicking them", async () => {
         const {container, getByLabelText} = renderComponent()
-        
+
         const titleInputField = getByLabelText("Tytuł-input")
         const subtitleInputField = getByLabelText("Podtytuł-input")
         const artistsInputField = getByLabelText("Artyści-input")
         const yearInputField = getByLabelText("Rok-input")
-
+        console.log(artistsInputField)
         await user.type(subtitleInputField, "an artwork subtitle")
         await user.type(titleInputField, "an artwork title")
         await user.type(artistsInputField, "artist name")
