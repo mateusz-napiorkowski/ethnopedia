@@ -1,0 +1,70 @@
+name: Backend Tests
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+permissions:
+  contents: read
+  actions: read
+  checks: write
+
+jobs:
+  test:
+    name: Backend (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [20.x]
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+
+      - name: Lint
+        run: npm run lint || echo "Lint step failed (non-blocking)"
+
+      - name: Run tests
+        run: npm test -- --coverage
+        env:
+          CI: true
+
+      - name: Upload coverage artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: backend/coverage
+          if-no-files-found: warn
+
+      - name: Jest coverage summary
+        if: always()
+        run: |
+          if [ -f coverage/coverage-final.json ]; then
+            lines=$(jq '.total.lines.pct' coverage/coverage-final.json)
+            statements=$(jq '.total.statements.pct' coverage/coverage-final.json)
+            branches=$(jq '.total.branches.pct' coverage/coverage-final.json)
+            functions=$(jq '.total.functions.pct' coverage/coverage-final.json)
+            echo "Lines: $lines%\nStatements: $statements%\nBranches: $branches%\nFunctions: $functions%" >> $GITHUB_STEP_SUMMARY
+          fi
+
