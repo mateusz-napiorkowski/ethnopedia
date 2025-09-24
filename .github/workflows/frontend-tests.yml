@@ -1,7 +1,7 @@
 name: Frontend Tests
 
 on:
-  pull_request:
+  push:
     branches: ["**"]
 
 permissions:
