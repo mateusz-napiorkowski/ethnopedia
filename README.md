@@ -131,3 +131,7 @@ crontab -e
 And add the following line to run the backup script every day at 2 AM:
 ```bash
 0 2 * * * /bin/bash /path/to/your/project/scripts/backup.sh
+```
+
+### Backup restoration
+To restore a backup, download the desired backup file from your Dropbox account and use the script in `scripts/restore.sh`. Please read that file for more details.
