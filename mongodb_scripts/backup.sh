@@ -21,8 +21,17 @@ tar -czvf "$ARCHIVE_PATH" -C "$DUMP_DIR" .
 
 # Clean up dump directory
 rm -rf "$DUMP_DIR"
+if [ $? -ne 0 ]; then
+  echo "Failed to remove dump directory $DUMP_DIR"
+  exit 1
+fi
+else
+  echo "Dump directory $DUMP_DIR removed successfully"
+fi
 
 echo "Backup created at $ARCHIVE_PATH"
 
-rclone copy $ARCHIVE_PATH remote:$SERVER_PREFIX
+# Upload to Dropbox using rclone
+# Make sure rclone is configured with a remote named "Dropbox"
+rclone copy $ARCHIVE_PATH Dropbox:$SERVER_PREFIX
 
