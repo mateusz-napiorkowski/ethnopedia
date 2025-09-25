@@ -19,14 +19,12 @@ docker exec -it ethnopedia-mongodb mongodump --uri="mongodb://root:DariahHub2025
 mkdir -p backups
 tar -czvf "$ARCHIVE_PATH" -C "$DUMP_DIR" .
 
-# Clean up dump directory
-rm -rf "$DUMP_DIR"
-if [ $? -ne 0 ]; then
-  echo "Failed to remove dump directory $DUMP_DIR"
-  exit 1
-fi
+# Cleanup dump directory
+if rm -rf "${DUMP_DIR}"; then
+  echo "Removed dump directory $DUMP_DIR"
 else
-  echo "Dump directory $DUMP_DIR removed successfully"
+  echo "Failed to remove dump directory ${DUMP_DIR}" >&2
+  exit 1
 fi
 
 echo "Backup created at $ARCHIVE_PATH"
