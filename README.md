@@ -130,7 +130,7 @@ crontab -e
 ```
 And add the following line to run the backup script every day at 2 AM:
 ```bash
-0 2 * * * /bin/bash /path/to/your/project/scripts/backup.sh
+0 2 */2 * * /bin/bash /home/admin/ethnopedia/mongodb_scripts/backup.sh
 ```
 
 ### Backup restoration

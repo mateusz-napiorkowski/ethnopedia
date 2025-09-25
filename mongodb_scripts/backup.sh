@@ -24,7 +24,6 @@ if rm -rf "${DUMP_DIR}"; then
   echo "Removed dump directory $DUMP_DIR"
 else
   echo "Failed to remove dump directory ${DUMP_DIR}" >&2
-  exit 1
 fi
 
 echo "Backup created at $ARCHIVE_PATH"
