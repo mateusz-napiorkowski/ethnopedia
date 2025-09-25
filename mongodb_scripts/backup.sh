@@ -3,8 +3,8 @@ set -e
 
 # Variables
 SERVER_PREFIX="music_put_lab_dariah_pl"
-#SERVER_PREFIX="ckc_uw_edu_pl_"
-#SERVER_PREFIX="metadata_music_put_lab_dariah_pl_"
+#SERVER_PREFIX="ckc_uw_edu_pl"
+#SERVER_PREFIX="metadata_music_put_lab_dariah_pl"
 DUMP_DIR="mongodb_data/dump"
 TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
 ARCHIVE_NAME="$SERVER_PREFIX-ethnopedia-backup-$TIMESTAMP.tar.gz"
