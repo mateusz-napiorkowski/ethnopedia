@@ -21,6 +21,13 @@ tar -czvf "$ARCHIVE_PATH" -C "$DUMP_DIR" .
 
 # Clean up dump directory
 rm -rf "$DUMP_DIR"
+if [ $? -ne 0 ]; then
+  echo "Failed to remove dump directory $DUMP_DIR"
+  exit 1
+fi
+else
+  echo "Dump directory $DUMP_DIR removed successfully"
+fi
 
 echo "Backup created at $ARCHIVE_PATH"
 
