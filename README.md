@@ -99,3 +99,39 @@ To run unit tests for the application, use the following command:
 npm run test
 ```
 
+### Backups 
+
+Install rclone on a machine: 
+```bash
+sudo apt update
+sudo apt install rclone
+```
+
+Configure rclone with your Dropbox account:
+```bash
+rclone config
+```
+Remember that name must be the same as in `scripts/backup.sh` file (default is "Dropbox").
+
+Check if rclone can access your Dropbox:
+```bash
+rclone ls Dropbox:
+```
+
+Run the backup script:
+```bash
+bash scripts/backup.sh
+```
+
+This script will create a backup of your MongoDB database and upload it to your Dropbox account. You can set up a cron job to run this script at regular intervals.
+To steup cron job, run:
+```bash
+crontab -e
+```
+And add the following line to run the backup script every day at 2 AM:
+```bash
+0 2 * * * /bin/bash /path/to/your/project/scripts/backup.sh
+```
+
+### Backup restoration
+To restore a backup, download the desired backup file from your Dropbox account and use the script in `scripts/restore.sh`. Please read that file for more details.
