@@ -24,5 +24,7 @@ rm -rf "$DUMP_DIR"
 
 echo "Backup created at $ARCHIVE_PATH"
 
-rclone copy $ARCHIVE_PATH remote:$SERVER_PREFIX
+# Upload to Dropbox using rclone
+# Make sure rclone is configured with a remote named "Dropbox"
+rclone copy $ARCHIVE_PATH Dropbox:$SERVER_PREFIX
 
