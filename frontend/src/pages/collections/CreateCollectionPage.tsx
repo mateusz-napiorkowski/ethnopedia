@@ -102,8 +102,6 @@ const CreateCollectionPage = () => {
             if (isSubmitValidation) {
                 errors.name = "Nazwa jest wymagana";
             }
-        } else if (forbiddenChars.test(values.name)) {
-            errors.name = "Nazwa nie może zawierać znaku: .";
         }
 
         // Description validation
@@ -331,6 +329,7 @@ const CreateCollectionPage = () => {
                     <label className="block text-sm text-gray-700 dark:text-white my-2 mt-4">Nazwa</label>
                     <input
                         type="text"
+                        aria-label="name"
                         value={formValues.name}
                         onChange={handleNameChange}
                         maxLength={100}
@@ -344,6 +343,7 @@ const CreateCollectionPage = () => {
 
                     <label className="block text-sm text-gray-700 dark:text-white my-2 mt-4">Opis</label>
                     <textarea
+                        aria-label="description"
                         value={formValues.description}
                         onChange={handleDescriptionChange}
                         maxLength={1000}
