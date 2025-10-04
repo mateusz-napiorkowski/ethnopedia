@@ -13,7 +13,7 @@ MONGO_URI="mongodb://ethnopedia-mongodb:27017d"
 
 # Create dump
 #mongodump --uri "$MONGO_URI" --out "$DUMP_DIR"
-docker exec -it ethnopedia-mongodb mongodump --uri="mongodb://root:DariahHub2025root@localhost:27017/?replicaSet=rs0" --out /bitnami/mongodb/dump
+docker exec ethnopedia-mongodb mongodump --uri="mongodb://root:DariahHub2025root@localhost:27017/?replicaSet=rs0" --out /bitnami/mongodb/dump
 
 # Compress dump
 mkdir -p backups
