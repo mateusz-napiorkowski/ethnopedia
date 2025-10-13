@@ -111,7 +111,8 @@ const ExportDataPage: React.FC = () => {
                         <div className="flex flex-col text-sm border-b pb-2 mb-2">
                             <p className='my-2 text-base'>Wybierz zakres eksportowanych danych:</p>
                             <span className="py-1">
-                                <input 
+                                <input
+                                    aria-label="export-all" 
                                     type="radio"
                                     id="exportAll"
                                     name="exportAll"
@@ -123,6 +124,7 @@ const ExportDataPage: React.FC = () => {
                             </span>
                             <span className="py-1">
                                 <input
+                                    aria-label="export-selected"
                                     type="radio"
                                     id="onlyChecked"
                                     name="onlyChecked"
@@ -134,6 +136,7 @@ const ExportDataPage: React.FC = () => {
                             </span>
                             <span className="py-1">
                                 <input
+                                    aria-label="export-search-results"
                                     type="radio"
                                     id="onlySearchResult"
                                     name="onlySearchResult"
@@ -149,6 +152,7 @@ const ExportDataPage: React.FC = () => {
                         </div>
                         <div className='my-4'>
                             <button
+                                aria-label="go-to-export-spreadsheet/CSV-menu"
                                 type="button"
                                 onClick={() => {setExportToExcel(true)}}
                                 className={`px-4 py-2 ${exportToExcel ? "color-button" : ""} rounded-r-none text-xs`}
@@ -156,6 +160,7 @@ const ExportDataPage: React.FC = () => {
                                 Eksportuj dane do arkusza kalkulacyjnego/pliku CSV
                             </button>
                             <button
+                                aria-label="go-to-export-archive-menu"
                                 type="button"
                                 onClick={() => {setExcelMenuScrollPosition(window.scrollY); setExportToExcel(false);}}
                                 className={`px-4 py-2 ${!exportToExcel ? "color-button" : ""} rounded-l-none text-xs`}
@@ -170,6 +175,7 @@ const ExportDataPage: React.FC = () => {
                                     {categoriesData.categories.map((key: string) =>
                                         <li key={key} className='flex flex-row justify-center my-1'>
                                             <input
+                                                aria-label={`${key}-checkbox`}
                                                 className='m-2 hover:cursor-pointer'
                                                 type="checkbox"
                                                 id={key}
@@ -184,6 +190,7 @@ const ExportDataPage: React.FC = () => {
                                 </ul>
                                 <div className="flex flex-row space-x-2 items-start mb-1">
                                     <button
+                                        aria-label="check-all-categories"
                                         className='flex items-center p-2 text-xs'
                                         type="button"
                                         onClick={handleSelectAll}
@@ -191,6 +198,7 @@ const ExportDataPage: React.FC = () => {
                                         Zaznacz wszystkie
                                     </button>
                                     <button
+                                        aria-label="uncheck-all-categories"
                                         className='flex items-center p-2 text-xs'
                                         type="button"
                                         onClick={handleDeselectAll}
@@ -200,6 +208,7 @@ const ExportDataPage: React.FC = () => {
                                 </div>
                                 <div>
                                     <input className='m-2 hover:cursor-pointer'
+                                        aria-label='include-ids-column'
                                         type="checkbox"
                                         onClick={() => setIncludeIds(!includeIds)}
                                         checked={includeIds}
@@ -213,6 +222,7 @@ const ExportDataPage: React.FC = () => {
                                         Przy procedurze dodawania nowych rekordów poprzez arkusz/plik CSV, komórki w kolumnie _id pozostawiaj puste. Id dla tych rekorów zostanie nadane automatycznie po zaimportowaniu danych.
                                     </p>
                                     <input className='m-2 hover:cursor-pointer'
+                                        aria-label='include-filenames-column'
                                         type="checkbox"
                                         onClick={() => setIncludeFilenames(!includeFilenames)}
                                         checked={includeFilenames}
@@ -227,6 +237,7 @@ const ExportDataPage: React.FC = () => {
                                         Nazwa pliku (bez rozszerzenia):
                                     </label>
                                     <input
+                                        aria-label="spreadsheet/CSV-filename-input"
                                         className="p-1 text-base"
                                         value={filename}
                                         onChange={handleFilenameChange}/>
@@ -237,6 +248,7 @@ const ExportDataPage: React.FC = () => {
                                     </label>
                                     <div>
                                         <button
+                                            aria-label='select-export-as-spreadsheet'
                                             type="button"
                                             onClick={() => setExportAsCSV(false)}
                                             className={`px-4 py-2 ${!exportAsCSV ? "color-button" : ""} rounded-r-none text-xs`}
@@ -244,6 +256,7 @@ const ExportDataPage: React.FC = () => {
                                             Arkusz kalkulacyjny
                                         </button>
                                         <button
+                                            aria-label='select-export-as-csv'
                                             type="button"
                                             onClick={() => setExportAsCSV(true)}
                                             className={`px-4 py-2 ${exportAsCSV ? "color-button" : ""} rounded-l-none text-xs`}
@@ -261,6 +274,7 @@ const ExportDataPage: React.FC = () => {
                                         Nazwa archiwum (bez rozszerzenia):
                                     </label>
                                     <input
+                                        aria-label='archive-filename-input'
                                         className="p-1 text-base"
                                         value={archiveFilename}
                                         onChange={handleArchiveFilenameChange}/>
@@ -278,6 +292,7 @@ const ExportDataPage: React.FC = () => {
                                     Powrót do strony utworów kolekcji
                                 </button>
                                 <button
+                                    aria-label='export-data'
                                     type="submit"
                                     className="px-4 py-2 color-button"
                                 >
