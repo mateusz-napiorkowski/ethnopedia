@@ -23,7 +23,7 @@ export const getXlsxWithArtworksData = async (
                 selectedArtworks: Object.keys(selectedArtworksIds),
                 exportExtent: exportExtent.toString(),
                 collectionIds: collectionIds,
-                searchParams,
+                ...Object.fromEntries(searchParams.entries()),
                 includeIds,
                 includeFilenames,
                 exportAsCSV

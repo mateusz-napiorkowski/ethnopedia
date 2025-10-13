@@ -1,4 +1,3 @@
-// src/pages/artwork/ArtworksListPage.tsx
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { getArtworksForPage, deleteArtworks } from "../../api/artworks";
 import { getCollection } from "../../api/collections";
@@ -220,7 +219,17 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                             <button
                                 className="flex items-center justify-center dark:text-white hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium px-4 py-2 dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
                                 type="button"
-                                onClick={() => {navigate(`/collections/${collectionId}/export-data`)}}
+                                onClick={() => {navigate(
+                                    `/collections/${collectionId}/export-data`,
+                                    {
+                                        state: {
+                                            initialFilename: collectionData.name,
+                                            initialArchiveFilename: collectionData.name,
+                                            selectedArtworks: selectedArtworks,
+                                            searchParams: searchParams.toString()
+                                        }
+                                    }
+                                )}}
                             >
                                 <span className="text-white dark:text-gray-400">
                                     <FileExportIcon/>

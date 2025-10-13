@@ -9,7 +9,6 @@ import { getAllCategories } from '../../api/categories';
 import { getArtworksFilesArchive, getXlsxWithArtworksData } from '../../api/dataExport';
 
 const ExportDataPage: React.FC = () => {
-    
     const navigate = useNavigate();
     const location = useLocation();
     const params = useParams();
@@ -20,12 +19,13 @@ const ExportDataPage: React.FC = () => {
     const [exportAsCSV, setExportAsCSV] = useState(false)
     const [archiveFilename, setArchiveFilename] = useState(location.state && location.state.initialArchiveFilename ? location.state.initialArchiveFilename : "archiwum")
     const collectionIds = location.state && location.state.collectionIds ? location.state.collectionIds : [params.collection]
-    const selectedArtworks = location.state && location.state.selectedArtworks ? location.state.selectedArtworks : []
-    const searchParams = location.state && location.state.searchParams ? location.state.searchParams : {}
+    const selectedArtworks = location.state && location.state.selectedArtworks ? location.state.selectedArtworks : {}
+    const searchParams = location.state && location.state.searchParams ? new URLSearchParams(location.state.searchParams) : new URLSearchParams()
+
     const [includeIds, setIncludeIds] = useState(true)
     const [includeFilenames, setIncludeFilenames] = useState(true)
     const [excelMenuScrollPosition, setExcelMenuScrollPosition] = useState(0)
-    
+
     const { data: categoriesData } = useQuery({
         queryKey: ["allCategories"],
         queryFn: () => getAllCategories(collectionIds),
@@ -97,7 +97,7 @@ const ExportDataPage: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screeni flex flex-col overflow-y-auto" data-testid="create-artwork-page-container">
+        <div className="min-h-screeni flex flex-col overflow-y-auto" data-testid="export-data-page-container">
             <Navbar />
             <div className="container px-8 mt-6 max-w-3xl mx-auto">
                 <Navigation />
@@ -273,6 +273,7 @@ const ExportDataPage: React.FC = () => {
                                     type="button"
                                     onClick={() => navigate(-1)}
                                     className="px-4 py-2 mr-2"
+                                    aria-label="go-back-to-collection-page"
                                 >
                                     Powrót do strony utworów kolekcji
                                 </button>
