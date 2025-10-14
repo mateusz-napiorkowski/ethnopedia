@@ -6,8 +6,6 @@ import { useEffect, useState } from "react";
 import Navbar from "../../components/navbar/Navbar";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import SearchComponent from "../../components/search/SearchComponent";
-import ImportOptions from "../../components/ImportOptions";
-import ExportOptions from "../../components/ExportOptions";
 import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg";
 import { ReactComponent as FileImportIcon } from "../../assets/icons/fileImport.svg";
 import { ReactComponent as FileExportIcon } from "../../assets/icons/fileExport.svg";
@@ -23,8 +21,6 @@ import ArtworksList from '../../components/artwork/ArtworksList';
 
 const ArtworksListPage = ({ pageSize = 10 }) => {
     const [selectedArtworks, setSelectedArtworks] = useState<{ [key: string]: boolean }>({});
-    // const [showImportOptions, setShowImportOptions] = useState<boolean>(false);
-    // const [showExportOptions, setShowExportOptions] = useState<boolean>(false);
     const [showDeleteRecordsWarning, setShowDeleteRecordsWarning] = useState(false);
     const [sortCategory, setSortCategory] = useState<string>("");
     const [sortDirection, setSortDirection] = useState<string>("asc");
@@ -284,17 +280,6 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                             </button>
                         </div>
                     </div>
-
-                    {/* {showImportOptions && <ImportOptions onClose={() => setShowImportOptions(false)} collectionData={collectionData}/>}
-
-                    {showExportOptions && (
-                        <ExportOptions
-                            onClose={() => setShowExportOptions(false)}
-                            selectedArtworks={selectedArtworks}
-                            initialFilename={`${collectionData?.name}.xlsx`}
-                            collectionIds={[collectionData?._id]}
-                        />
-                    )} */}
 
                     {/* Kategorie + sortowanie */}
                     <div className="flex w-full md:w-auto pt-4 flex-row items-center text-sm">
