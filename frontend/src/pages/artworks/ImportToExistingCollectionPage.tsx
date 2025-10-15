@@ -118,7 +118,7 @@ const ImportToExistingCollectionPage = () => {
                                 htmlFor="dropzone-file"
                                 className="block text-sm font-bold text-gray-700 dark:text-white my-2"
                             >
-                                Plik arkusza kalkulacyjnego/Plik CSV
+                                Wgraj plik arkusza kalkulacyjnego/CSV
                             </label>
                             <label
                                 aria-label="upload"
@@ -128,6 +128,30 @@ const ImportToExistingCollectionPage = () => {
                                             dark:bg-gray-800 hover:bg-gray-100 dark:border-gray-600
                                             dark:hover:border-gray-500 dark:hover:bg-gray-700"
                             >
+                                {/* Upload button */}
+                                {/* {(currentFiles.length + filesToUpload.length) < 5 && (
+                                    <label
+                                        aria-label="upload"
+                                        htmlFor="dropzone-file"
+                                        className="flex flex-col items-start justify-start p-2 border-2 border-gray-200
+                                                    border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-600
+                                                    dark:bg-gray-800 hover:bg-gray-100 dark:border-gray-600
+                                                    dark:hover:border-gray-500 dark:hover:bg-gray-700"
+                                    >
+                                        <div className="flex flex-row items-center justify-center gap-4">
+                                            <DragAndDrop className="w-12 h-12 text-gray-500 dark:text-gray-400"/>
+                                            <p className="text-sm font-normal text-gray-500 dark:text-gray-400">
+                                                {`Kliknij, aby przesłać ${(currentFiles.length + filesToUpload.length) ? "kolejny" : "pierwszy"} plik`}
+                                            </p>
+                                        </div>
+                                        <input
+                                            id="dropzone-file"
+                                            type="file"
+                                            className="hidden"
+                                            onChange={handleFileUpload}
+                                        />
+                                    </label>
+                                )} */}
                                 {fileLoaded 
                                     ? <div className="flex flex-row items-center justify-center gap-4">
                                         <ExcelIcon className="w-12 h-12"/>
