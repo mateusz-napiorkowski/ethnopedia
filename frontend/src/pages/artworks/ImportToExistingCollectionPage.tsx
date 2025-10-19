@@ -22,7 +22,6 @@ const ImportToExistingCollectionPage = () => {
     const [fileData, setFileData]: any = useState(false)
     const [excelCollectionCategoryPairs, setExcelCollectionCategoryPairs]: any = useState([])
     const [fileNotLoadedError, setFileNotLoadedError] = useState(nbsp)
-    const [circularReferences, setCircularReferences]= useState<Array<string>>([])
     const [serverError, setServerError] = useState(nbsp)
     let dataToSend: string[][] = []
     
@@ -257,7 +256,7 @@ const ImportToExistingCollectionPage = () => {
                                 <button
                                     aria-label="import-data"
                                     type="submit"
-                                    disabled={!fileLoaded || circularReferences.length != 0 ? true : false }
+                                    disabled={!fileLoaded ? true : false }
                                     className="px-4 py-2 color-button"
                                 >
                                     Importuj dane
