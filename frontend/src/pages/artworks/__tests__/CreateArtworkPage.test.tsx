@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import { UserContext } from '../../../providers/UserProvider';
-import {jwtToken, collectionData, artworkIds} from './utils/ArtworksListUtils'
+import {jwtToken, collectionData, artworkIds} from './utils/consts'
 
 const mockGetArtwork = jest.fn();
 const mockCreateArtwork = jest.fn();

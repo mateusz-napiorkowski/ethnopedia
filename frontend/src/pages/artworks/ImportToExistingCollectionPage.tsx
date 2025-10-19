@@ -5,6 +5,7 @@ import Navbar from "../../components/navbar/Navbar"
 import Navigation from "../../components/Navigation";
 import { ReactComponent as DragAndDrop } from "../../assets/icons/dragAndDrop.svg"
 import { ReactComponent as ExcelIcon } from "../../assets/icons/excel.svg"
+import { ReactComponent as Close } from "../../assets/icons/close.svg";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { importData } from "../../api/dataImport";
 import { useUser } from "../../providers/UserProvider";
@@ -34,7 +35,7 @@ const ImportToExistingCollectionPage = () => {
     })
 
     const handleFileUpload = (event: any) => {
-        const file = event.target.files[0]
+        const file = event.target.files?.[0]
         if(!file) return
 
         const reader = new FileReader();
@@ -63,7 +64,16 @@ const ImportToExistingCollectionPage = () => {
             setFileNotLoadedError(nbsp)
         };
         reader.readAsArrayBuffer(file)
+        event.target.value = "";
     }
+
+    const handleFileRemove = (event: any) => {
+        event.preventDefault()
+        setFileLoaded(false)
+        setFileName(false)
+        setFileData(false)
+        setExcelCollectionCategoryPairs([])
+    };
 
     const handleOptionChange = ((event: ChangeEvent<HTMLSelectElement>) => {
         const child = event.target.id.replace(/-collection-equivalent$/, "");
@@ -77,11 +87,13 @@ const ImportToExistingCollectionPage = () => {
 
     const showServerError = ((error: any) => {
         if(error.error == 'Incorrect request body provided')
-            setServerError("Nieprawidłowe dane w treści żądania")
-        else if(error.error == "Invalid data in the spreadsheet file" || error.error == "Invalid categories data")
-            setServerError(error.cause)
+            setServerError("Import kolekcji nie powiódł się z powodu nieprawidłowej treści żądania. Upewnij się, że plik arkusza kalkulacyjnego zawiera przynajmniej jeden rekord oprócz nagłówka.")
+        else if(error.error == "Invalid data in the spreadsheet file")
+            setServerError("Nieprawidłowe dane w pliku arkusza kalkulacyjnego. Upewnij się, że kategorie zostały poprawnie wczytane, i że powyższy formularz został wypełniony prawidłowo.")
+        else if(error.error == `Collection not found`)
+            setServerError("Nie znaleziono kolekcji, do której dane miały zostać wprowadzone.")
         else
-            setServerError("Import kolekcji nie powiódł się")
+            setServerError("Błąd serwera. Import kolekcji nie powiódł się.")
     })
     
     const handleCollectionSubmit = (event: any) => {
@@ -91,14 +103,15 @@ const ImportToExistingCollectionPage = () => {
         dataToSend = [newHeader, ...fileData.slice(1)]
         importDataMutation.mutate()
     }
+
     const importDataMutation = useMutation(() => importData(dataToSend, jwtToken, collectionId!), {
-            onSuccess: () => {
-                queryClient.invalidateQueries("collection")
-                navigate(`/collections/${collectionId}/artworks`)
-            },
-            onError: (error: any) => {
-                showServerError(error.response.data)
-            }
+        onSuccess: () => {
+            queryClient.invalidateQueries("collection")
+            navigate(`/collections/${collectionId}/artworks`)
+        },
+        onError: (error: any) => {
+            showServerError(error.response.data)
+        }
     })
 
     return (
@@ -128,37 +141,24 @@ const ImportToExistingCollectionPage = () => {
                                             dark:bg-gray-800 hover:bg-gray-100 dark:border-gray-600
                                             dark:hover:border-gray-500 dark:hover:bg-gray-700"
                             >
-                                {/* Upload button */}
-                                {/* {(currentFiles.length + filesToUpload.length) < 5 && (
-                                    <label
-                                        aria-label="upload"
-                                        htmlFor="dropzone-file"
-                                        className="flex flex-col items-start justify-start p-2 border-2 border-gray-200
-                                                    border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-600
-                                                    dark:bg-gray-800 hover:bg-gray-100 dark:border-gray-600
-                                                    dark:hover:border-gray-500 dark:hover:bg-gray-700"
-                                    >
-                                        <div className="flex flex-row items-center justify-center gap-4">
-                                            <DragAndDrop className="w-12 h-12 text-gray-500 dark:text-gray-400"/>
-                                            <p className="text-sm font-normal text-gray-500 dark:text-gray-400">
-                                                {`Kliknij, aby przesłać ${(currentFiles.length + filesToUpload.length) ? "kolejny" : "pierwszy"} plik`}
-                                            </p>
-                                        </div>
-                                        <input
-                                            id="dropzone-file"
-                                            type="file"
-                                            className="hidden"
-                                            onChange={handleFileUpload}
-                                        />
-                                    </label>
-                                )} */}
                                 {fileLoaded 
-                                    ? <div className="flex flex-row items-center justify-center gap-4">
-                                        <ExcelIcon className="w-12 h-12"/>
-                                        <p className="text-sm font-bold text-gray-500 dark:text-gray-400">
-                                            {fileName}
-                                        </p>
-                                    </div>
+                                    ? <div className="flex flex-row items-center justify-between w-full">
+                                        <div className="flex flex-row items-center justify-center gap-4">
+                                            <ExcelIcon className="w-12 h-12"/>
+                                            <p className="text-sm font-bold text-gray-500 dark:text-gray-400">
+                                                {fileName}
+                                            </p>          
+                                        </div>
+                                            <button
+                                                aria-label="remove-file-to-load"
+                                                type="button"
+                                                className="text-gray-400 hover:bg-gray-200 hover:text-gray-900 text-sm
+                                                        dark:hover:bg-gray-600 dark:hover:text-white p-2 rounded-lg cursor-pointer"
+                                                onClick={handleFileRemove}
+                                            >
+                                                <Close />
+                                            </button>
+                                      </div>
                                     : <div className="flex flex-row items-center justify-center gap-4">
                                         <DragAndDrop className="w-12 h-12 text-gray-500 dark:text-gray-400"/>
                                         <p className="text-sm font-normal text-gray-500 dark:text-gray-400">
@@ -176,6 +176,11 @@ const ImportToExistingCollectionPage = () => {
                             <p
                                 className={`block text-sm ${fileNotLoadedError != nbsp ? "text-red-500 font-normal": "font-semibold text-gray-700 dark:text-white"} my-2`}
                             >
+                                {fileLoaded && (
+                                    <span>
+                                        Liczba rekordów: <span className="font-normal">{fileData.length - 1}</span>
+                                    </span>
+                                )}
                             </p>
 
                             <hr />
@@ -190,7 +195,7 @@ const ImportToExistingCollectionPage = () => {
                                         <span className="block w-1/2 text-sm font-semibold text-gray-700 dark:text-white my-2">Kategorie w kolekcji:</span>
                                     </div>
                                     {excelCollectionCategoryPairs
-                                        .filter((pair: string) => pair[0] !== "_id" && pair[0] !== "nazwy_plików")
+                                        .filter((pair: string) => pair[0] !== "_id" && pair[0] !== "nazwy plików")
                                         .map((pair: any) => {
                                             const headerCategoryName = pair[0]
                                             const collectionCategoryName = pair[1]
@@ -223,6 +228,12 @@ const ImportToExistingCollectionPage = () => {
                                     }
                                 </div>
                             </>)}
+                            <div 
+                                aria-label="server-error"
+                                className="text-red-500 text-sm"
+                            >
+                                {serverError}
+                            </div>
                             <div className="flex justify-end mt-6">
                                 <button
                                     type="button"
@@ -232,6 +243,7 @@ const ImportToExistingCollectionPage = () => {
                                     Anuluj
                                 </button>
                                 <button
+                                    aria-label="import-data"
                                     type="submit"
                                     disabled={!fileLoaded || circularReferences.length != 0 ? true : false }
                                     className="px-4 py-2 color-button"

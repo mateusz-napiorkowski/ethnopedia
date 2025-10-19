@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import { UserContext } from '../../../providers/UserProvider';
-import {jwtToken, loggedInUserContextProps, collectionData, artworkIds, artworkTitles, artworksData, artworksDataSecondPage} from './utils/ArtworksListUtils'
+import {jwtToken, loggedInUserContextProps, collectionData, artworkIds, artworkTitles, artworksData, artworksDataSecondPage} from './utils/consts'
 
 const mockUseNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({

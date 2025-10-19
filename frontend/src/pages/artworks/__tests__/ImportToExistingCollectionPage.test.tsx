@@ -1,11 +1,23 @@
 import '@testing-library/jest-dom';
-import { render } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import ImportToExistingCollectionPage from "../ImportToExistingCollectionPage"
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "react-query";
-// import { Collection } from "../../@types/Collection"
-// import { UserContext } from '../../providers/UserProvider';
+import * as XLSX from 'xlsx';
+import { UserContext } from '../../../providers/UserProvider';
+import { loggedInUserContextProps, jwtToken, fileData, newFileData, fileDataWithIdsAndFilenames, collectionData2 as collectionData} from './utils/consts';
+
+const mockUseNavigate = jest.fn();
+jest.mock('react-router-dom', () => ({
+   ...jest.requireActual('react-router-dom') as any,
+  useNavigate: () => mockUseNavigate
+}));
+
+const mockGetAllCategories = jest.fn()
+jest.mock('../../../api/categories', () => ({
+    getAllCategories: (collectionIds: string[]) => mockGetAllCategories(collectionIds),
+}))
 
 const mockImportData = jest.fn()
 jest.mock('../../../api/dataImport', () => ({
@@ -19,26 +31,32 @@ jest.mock('../../../api/dataImport', () => ({
 const queryClient = new QueryClient();
 const user = userEvent.setup()
 
-const exampleCollectionData = {
-    _id: '662e928b11674920c8cc0aaa',
-    name: 'example collection',
-    description: 'example collection description'
+const createXlsxFile = (xlsxData: Array<Array<string>>, fileName: string) => {
+    const worksheet = XLSX.utils.aoa_to_sheet(xlsxData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+    const wbout = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+    const blob = new Blob([wbout], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    const file = new File([blob], fileName, { type: blob.type });
+    return file
 }
-const jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXN"
-    + "lcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaecc"
-    + "N-rDSjRS3kApqlA"
 
-const exampleCollectionId = "67f84d80d2ac8e9a1e67cca4"
-const renderComponent = (collectionId = exampleCollectionId) => {
+const renderComponent = (
+    collectionId = collectionData._id,
+    userContextProps: any = loggedInUserContextProps
+) => { 
     return render(
-        <QueryClientProvider client={queryClient}>
-            <MemoryRouter initialEntries={[`/collections/${collectionId}/import-data/`]}>
-                <Routes>
-                    <Route path="/collections/:collection/import-data" element={<ImportToExistingCollectionPage />}/>
-                </Routes>  
-            </MemoryRouter>
-        </QueryClientProvider>
-        
+        <UserContext.Provider value={ userContextProps }>
+            <QueryClientProvider client={queryClient}>
+                <MemoryRouter initialEntries={[`/collections/${collectionId}/import-data/`]}>
+                    <Routes>
+                        <Route path="/collections/:collection/import-data" element={<ImportToExistingCollectionPage />}/>
+                    </Routes>  
+                </MemoryRouter>
+            </QueryClientProvider>
+        </UserContext.Provider>
     );
 };
 
@@ -49,179 +67,171 @@ describe("ImportToExistingCollectionPage tests", () => {
     });
 
     it("should render initial state", () => {           
-        const {container} = renderComponent()
+        const {container, getByLabelText} = renderComponent()
+
+        expect(container).toMatchSnapshot()
+        expect(getByLabelText("import-data")).toBeDisabled()
+    })
+
+    it("should navigate to previous page after cancel button is clicked", async () => {           
+        const {getByText} = renderComponent()
+        const cancelButton = getByText(/anuluj/i)
+
+        await user.click(cancelButton)
+
+        expect(mockUseNavigate).toHaveBeenCalledWith(-1)
+    })
+
+    it("should load file data after file is loaded and render categories configuration menu with correct initial category structure", async () => {           
+        mockGetAllCategories.mockReturnValue({categories: ['Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Artists']})
+        const {getByLabelText, getByText, container} = renderComponent()
+        const uploadField = getByLabelText("upload")
+        const file = createXlsxFile(fileData, "example.xlsx")
+
+        await user.upload(uploadField, file)
+        await waitFor(() =>
+            expect(getByText("example.xlsx")).toBeInTheDocument()
+        );
+        
+        expect(container).toMatchSnapshot()
+    })
+
+    it("should unload file data after remove file to upload button is clicked and hide categories configuration menu", async () => {           
+        mockGetAllCategories.mockReturnValue({categories: ['Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Artists']})
+        const {getByLabelText, getByText, container} = renderComponent()
+        const uploadField = getByLabelText("upload")
+        const file = createXlsxFile(fileData, "example.xlsx")
+         
+        await user.upload(uploadField, file)
+        await waitFor(() =>
+            expect(getByText("example.xlsx")).toBeInTheDocument()
+        );
+        await user.click(getByLabelText("remove-file-to-load"))
+        
+        expect(container).toMatchSnapshot()
+    })
+
+    it("should reload file data after file is loaded then removed and loaded again", async () => {           
+        mockGetAllCategories.mockReturnValue({categories: ['Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Artists']})
+        const {getByLabelText, getByText, container} = renderComponent()
+        const uploadField = getByLabelText("upload")
+        const file = createXlsxFile(fileData, "example.xlsx")
+
+        await user.upload(uploadField, file)
+        await waitFor(() =>
+            expect(getByText("example.xlsx")).toBeInTheDocument()
+        );
+        await user.click(getByLabelText("remove-file-to-load"))
+        await user.upload(uploadField, file)
+        await waitFor(() =>
+            expect(getByText("example.xlsx")).toBeInTheDocument()
+        );
 
         expect(container).toMatchSnapshot()
     })
 
-    // it("should render menu for importing data to existing collection, import metadata button should be disabled", () => {           
-    //     const {getByText} = renderComponent("/collections/example collection/artworks", exampleCollectionData)
-    //     const importMetadataButton = getByText(/importuj metadane/i)
+    it("should load file data of new file after some file is loaded then removed and then the new file is loaded", async () => {           
+        mockGetAllCategories.mockReturnValue({categories: ['Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Artists']})
+        const {getByLabelText, getByText, container} = renderComponent()
+        const uploadField = getByLabelText("upload")
+        const file = createXlsxFile(fileData, "example.xlsx")
+        const newFile = createXlsxFile(newFileData, "new_example.xlsx")
 
-    //     expect(getByText(/kliknij, aby przesłać/i)).toBeInTheDocument()
-    //     expect(importMetadataButton).toBeDisabled()
-    // })
-
-    // it("should call onClose when exit button is clicked", async () => {           
-    //     const { getByLabelText } = renderComponent("/collections/example collection/artworks", exampleCollectionData)
-    //     const exitButton = getByLabelText("exit")
-
-    //     await user.click(exitButton)
-
-    //     expect(mockOnClose).toHaveBeenCalled()
-    // })
-
-    // it("should upload file, file name should be shown and next button should be enabled", async () => {           
-    //     const {getByText, getByLabelText} = renderComponent()
-    //     const nextButton = getByText(/dalej/i)
-    //     const file = new File(['example'], 'example.xlsx', {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})
-    //     const input = getByLabelText("upload")
-
-    //     await user.upload(input, file)
-
-    //     expect(getByText("example.xlsx")).toBeInTheDocument()
-    //     expect(nextButton).toBeEnabled()
-    // })
-
-    // it("should go to collection details menu", async () => {           
-    //     const {getByText, getByLabelText} = renderComponent()
-    //     const nextButton = getByText("Dalej")
+        await user.upload(uploadField, file)
+        await waitFor(() =>
+            expect(getByText("example.xlsx")).toBeInTheDocument()
+        );
+        await user.click(getByLabelText("remove-file-to-load"))
+        await user.upload(uploadField, newFile)
+        await waitFor(() =>
+            expect(getByText("new_example.xlsx")).toBeInTheDocument()
+        );
         
-    //     const file = new File(['example'], 'example.xlsx', {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})
-    //     const input = getByLabelText("upload")
+        expect(container).toMatchSnapshot()
+    })
 
-    //     await user.upload(input, file)
-    //     await user.click(nextButton)
+    it("should call importData with correct parameters and go to collection page after import data button is clicked and data import is successful", async () => {           
+        mockGetAllCategories.mockReturnValue({categories: ['Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Artists']})
+        const {getByLabelText, getByText} = renderComponent()
+        const uploadField = getByLabelText("upload")
+        const file = createXlsxFile(fileData, "example.xlsx")
 
-    //     expect(getByText(/nazwa kolekcji/i)).toBeInTheDocument()
-    //     expect(getByText(/opis kolekcji/i)).toBeInTheDocument()        
-    // })
+        await user.upload(uploadField, file)
+        await waitFor(() =>
+            expect(getByText("example.xlsx")).toBeInTheDocument()
+        );
+        await user.click(getByLabelText("import-data"))
+        expect(mockImportData).toHaveBeenCalledWith(fileData, jwtToken, collectionData._id)
+        expect(mockUseNavigate).toHaveBeenCalledWith(`/collections/${collectionData._id}/artworks`)
+    })
 
-    // it.each([
-    //     {
-    //         case: "disabled when nothing was typed in",
-    //         actions: [],
-    //         enabled: false
-    //     },
-    //     {
-    //         case: "disabled when only collection name is typed in",
-    //         actions: [
-    //             {
-    //                 textAreaLabelText: "name",
-    //                 textToTypeIn: "example collection name"
-    //             }
-    //         ],
-    //         enabled: false
-    //     },
-    //     {
-    //         case: "disabled when only collection description is typed in",
-    //         actions: [
-    //             {
-    //                 textAreaLabelText: "description",
-    //                 textToTypeIn: "example description name"
-    //             }
-    //         ],
-    //         enabled: false
-    //     },
-    //     {
-    //         case: "enabled when both collection name and description are typed in",
-    //         actions: [
-    //             {
-    //                 textAreaLabelText: "name",
-    //                 textToTypeIn: "example collection name"
-    //             },
-    //             {
-    //                 textAreaLabelText: "description",
-    //                 textToTypeIn: "example description name"
-    //             }
-    //         ],
-    //         enabled: true
-    //     },
-    // ])('should have import metadata button $case in collection details menu', async ({actions, enabled}) => {
-    //     const {getByText, getByLabelText} = renderComponent()
-    //     const nextButton = getByText(/dalej/i)
-    //     const file = new File(['example'], 'example.xlsx', {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})
-    //     const input = getByLabelText("upload")
-    //     await user.upload(input, file)
-    //     await user.click(nextButton)
-    //     const importMetadataButton = getByText(/importuj metadane/i)
+    it("should render categories configuration menu with correct initial category structure and call importData with correct parameters when id and filename columns are included in spreadsheet file ", async () => {           
+        mockGetAllCategories.mockReturnValue({categories: ['Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Artists']})
+        const {getByLabelText, getByText, container} = renderComponent()
+        const uploadField = getByLabelText("upload")
+        const file = createXlsxFile(fileDataWithIdsAndFilenames, "example.xlsx")
 
-    //     for(const {textAreaLabelText, textToTypeIn} of actions) {
-    //         const textArea = getByLabelText(textAreaLabelText)
-    //         if(textToTypeIn) {
-    //             await user.type(textArea, textToTypeIn)
-    //         } else {
-    //             await user.clear(textArea)
-    //         }
-    //     }
+        await user.upload(uploadField, file)
+        await waitFor(() =>
+            expect(getByText("example.xlsx")).toBeInTheDocument()
+        );
+
+        expect(container).toMatchSnapshot()
+
+        await user.click(getByLabelText("import-data")
+    )
+        expect(mockImportData).toHaveBeenCalledWith(fileDataWithIdsAndFilenames, jwtToken, collectionData._id)
         
-    //     if(enabled) {
-    //         expect(importMetadataButton).toBeEnabled()
-    //     } else {
-    //         expect(importMetadataButton).toBeDisabled()
-    //     }
-    // })
+    })
 
-    // it("should go to back to file upload menu when back button is clicked, switching between upload/collection menus should not reset their state", async () => {           
-    //     const {getByText, getByLabelText, queryByText} = renderComponent()
-    //     const nextButton = getByText(/dalej/i)
-    //     const file = new File(['example'], 'example.xlsx', {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})
-    //     const input = getByLabelText("upload")
+    it("should throw invalid data in the spreadsheet file error when categories configuration menu is set incorrectly when import data button is clicked", async () => {           
+        mockGetAllCategories.mockReturnValue({categories: ['Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Artists']})
+        mockImportData.mockImplementation(() => {
+            throw {response: {data: {error: "Invalid data in the spreadsheet file"}}};
+        });
+        const {getByLabelText, getByText, container} = renderComponent()
+        const uploadField = getByLabelText("upload")
+        const file = createXlsxFile(fileData, "example.xlsx")
 
-    //     await user.upload(input, file)
-    //     await user.click(nextButton)
-    //     const backButton = getByText(/wstecz/i)
-    //     const importMetadataButton = getByText(/importuj metadane/i)
-    //     const nameTextArea = getByLabelText("name")
-    //     const descriptionTextArea = getByLabelText("description")
+        await user.upload(uploadField, file)
+        await waitFor(() =>
+            expect(getByText("example.xlsx")).toBeInTheDocument()
+        );
+        const titleSelect = getByLabelText(`Title-collection-equivalent-select`)
 
-    //     await user.type(nameTextArea, "example collection")
-    //     await user.type(descriptionTextArea, "example collection description")
+        await user.selectOptions(titleSelect, "Artists")
 
-    //     await user.click(backButton)
-    //     expect(queryByText("example.xlsx")).toBeInTheDocument()
-    //     expect(queryByText("example collection")).not.toBeInTheDocument()
-    //     expect(queryByText("example collection description")).not.toBeInTheDocument()
+        expect(titleSelect).toHaveValue("Artists")
+        await user.click(getByLabelText("import-data"))
+        expect(mockImportData).toHaveBeenCalledWith([
+            ["Artists", "Title.Subtitle", "Title.Subtitle.Subsubtitle", "Artists"],
+            ["title 1", "subtitle 1", "subsubtitle 1", "artist 1"]
+        ], jwtToken, collectionData._id)
+        
+        expect(getByLabelText("server-error")).toMatchSnapshot()
+    })
 
-    //     await user.click(getByText("Dalej"))
-    //     expect(queryByText("example.xlsx")).not.toBeInTheDocument()
-    //     expect(queryByText("example collection")).toBeInTheDocument()
-    //     expect(queryByText("example collection description")).toBeInTheDocument()
+    it.each([
+        {axiosError: {response: {data: {error: "Incorrect request body provided"}}}},
+        {axiosError: {response: {data: {error: "Collection not found"}}}},
+        {axiosError: {response: {data: {error: "Database unavailable"}}}}
+    ])("should show appropriate error message when importData rejects with error - $axiosError.response.data.error",
+		async ({axiosError}) => {
+            mockGetAllCategories.mockReturnValue({categories: ['Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Artists']})
+            mockImportData.mockImplementation(() => {
+                throw axiosError;
+            });
+            const {getByLabelText, getByText} = renderComponent()
+            const uploadField = getByLabelText("upload")
+            const file = createXlsxFile(fileData, "example.xlsx")
 
-    //     expect(importMetadataButton).toBeEnabled()
-    // })
-
-    // it("should call mockImportData with correct args after file is uploaded and then import metadata button is clicked", async () => {
-    //     const fileBits = ['example']
-    //     const {getByText, getByLabelText, queryByText} = renderComponent("/collections/example collection/artworks", exampleCollectionData)
-    //     const file = new File(fileBits, 'example.xlsx', {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})
-    //     const input = getByLabelText("upload")
-    //     const importMetadataButton = getByText(/importuj metadane/i)
-
-    //     await user.upload(input, file)
-    //     await user.click(importMetadataButton)
-
-    //     expect(mockImportData).toHaveBeenCalledWith([fileBits], jwtToken, exampleCollectionData._id)
-    // })
-
-    // it("should call mockImportDataAsCollection with correct parameters after file, name, and description are provided by user and import metadata button is clicked", async () => {
-    //     const {getByText, getByLabelText, queryByText, container} = renderComponent()
-    //     const nextButton = getByText(/dalej/i)
-    //     const fileBits = ['example']
-    //     const file = new File(fileBits, 'example.xlsx', {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})
-    //     const input = getByLabelText("upload")
-
-    //     await user.upload(input, file)
-    //     await user.click(nextButton)
-
-    //     const importMetadataButton = getByText(/importuj metadane/i)
-    //     const nameTextArea = getByLabelText("name")
-    //     const descriptionTextArea = getByLabelText("description")
-
-    //     await user.type(nameTextArea, "example collection")
-    //     await user.type(descriptionTextArea, "example collection description")
-    //     await user.click(importMetadataButton)
-
-    //     expect(mockImportDataAsCollection).toHaveBeenCalledWith([fileBits], "example collection", "example collection description", jwtToken)
-    // })
+            await user.upload(uploadField, file)
+            await waitFor(() =>
+                expect(getByText("example.xlsx")).toBeInTheDocument()
+            );
+            await user.click(getByLabelText("import-data"))
+            
+            expect(getByLabelText("server-error")).toMatchSnapshot()	
+		}
+	)
 })
