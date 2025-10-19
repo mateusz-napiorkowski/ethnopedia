@@ -5,7 +5,9 @@ import Navbar from "../../components/navbar/Navbar"
 import Navigation from "../../components/Navigation";
 import { ReactComponent as DragAndDrop } from "../../assets/icons/dragAndDrop.svg"
 import { ReactComponent as ExcelIcon } from "../../assets/icons/excel.svg"
+import { ReactComponent as CSVIcon } from "../../assets/icons/csv.svg"
 import { ReactComponent as Close } from "../../assets/icons/close.svg";
+import { ReactComponent as UnknownFile } from "../../assets/icons/unknown-file.svg";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { importData } from "../../api/dataImport";
 import { useUser } from "../../providers/UserProvider";
@@ -16,7 +18,7 @@ const ImportToExistingCollectionPage = () => {
     const collectionId = params.collection
     const nbsp = "\u00A0"
     const [fileLoaded, setFileLoaded] = useState(false)
-    const [fileName, setFileName]: any = useState(false)
+    const [fileName, setFileName] = useState<string>("")
     const [fileData, setFileData]: any = useState(false)
     const [excelCollectionCategoryPairs, setExcelCollectionCategoryPairs]: any = useState([])
     const [fileNotLoadedError, setFileNotLoadedError] = useState(nbsp)
@@ -70,7 +72,7 @@ const ImportToExistingCollectionPage = () => {
     const handleFileRemove = (event: any) => {
         event.preventDefault()
         setFileLoaded(false)
-        setFileName(false)
+        setFileName("")
         setFileData(false)
         setExcelCollectionCategoryPairs([])
     };
@@ -114,6 +116,15 @@ const ImportToExistingCollectionPage = () => {
         }
     })
 
+    const FileExtensionIcon: React.FC<{name: string;}> = ({name}) => {
+        if((/\.(csv|tsv|txt)$/i.test(name)))
+            return (<CSVIcon className="w-12 h-12"/>)
+        else if((/\.(xlsx|xls|xlsm|xlsb|ods|xltx|xltm)$/i.test(name)))
+            return (<ExcelIcon className="w-12 h-12"/>)
+        else
+            return (<UnknownFile className="w-12 h-12"/>)
+    }
+
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
             <Navbar />
@@ -144,7 +155,7 @@ const ImportToExistingCollectionPage = () => {
                                 {fileLoaded 
                                     ? <div className="flex flex-row items-center justify-between w-full">
                                         <div className="flex flex-row items-center justify-center gap-4">
-                                            <ExcelIcon className="w-12 h-12"/>
+                                            <FileExtensionIcon name={fileName} />
                                             <p className="text-sm font-bold text-gray-500 dark:text-gray-400">
                                                 {fileName}
                                             </p>          
@@ -168,6 +179,7 @@ const ImportToExistingCollectionPage = () => {
                                 }
                                 <input
                                     id="dropzone-file"
+                                    accept=".xlsx,.xls,.xlsm,.xlsb,.ods,.csv,.tsv,.txt,.xltx,.xltm"
                                     type="file"
                                     className="hidden"
                                     onChange={handleFileUpload}
@@ -176,7 +188,7 @@ const ImportToExistingCollectionPage = () => {
                             <p
                                 className={`block text-sm ${fileNotLoadedError != nbsp ? "text-red-500 font-normal": "font-semibold text-gray-700 dark:text-white"} my-2`}
                             >
-                                {fileLoaded && (
+                                {fileLoaded && (/\.(csv|tsv|txt|xlsx|xls|xlsm|xlsb|ods|xltx|xltm)$/i.test(fileName)) && (
                                     <span>
                                         Liczba rekordów: <span className="font-normal">{fileData.length - 1}</span>
                                     </span>

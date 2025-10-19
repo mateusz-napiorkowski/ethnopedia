@@ -167,6 +167,7 @@ exports[`ImportToExistingCollectionPage tests should load file data after file i
                 </button>
               </div>
               <input
+                accept=".xlsx,.xls,.xlsm,.xlsb,.ods,.csv,.tsv,.txt,.xltx,.xltm"
                 class="hidden"
                 id="dropzone-file"
                 type="file"
@@ -553,6 +554,7 @@ exports[`ImportToExistingCollectionPage tests should load file data of new file 
                 </button>
               </div>
               <input
+                accept=".xlsx,.xls,.xlsm,.xlsb,.ods,.csv,.tsv,.txt,.xltx,.xltm"
                 class="hidden"
                 id="dropzone-file"
                 type="file"
@@ -939,6 +941,7 @@ exports[`ImportToExistingCollectionPage tests should reload file data after file
                 </button>
               </div>
               <input
+                accept=".xlsx,.xls,.xlsm,.xlsb,.ods,.csv,.tsv,.txt,.xltx,.xltm"
                 class="hidden"
                 id="dropzone-file"
                 type="file"
@@ -1325,6 +1328,7 @@ exports[`ImportToExistingCollectionPage tests should render categories configura
                 </button>
               </div>
               <input
+                accept=".xlsx,.xls,.xlsm,.xlsb,.ods,.csv,.tsv,.txt,.xltx,.xltm"
                 class="hidden"
                 id="dropzone-file"
                 type="file"
@@ -1699,6 +1703,7 @@ exports[`ImportToExistingCollectionPage tests should render initial state 1`] = 
                 </p>
               </div>
               <input
+                accept=".xlsx,.xls,.xlsm,.xlsb,.ods,.csv,.tsv,.txt,.xltx,.xltm"
                 class="hidden"
                 id="dropzone-file"
                 type="file"
@@ -1931,6 +1936,7 @@ exports[`ImportToExistingCollectionPage tests should unload file data after remo
                 </p>
               </div>
               <input
+                accept=".xlsx,.xls,.xlsm,.xlsb,.ods,.csv,.tsv,.txt,.xltx,.xltm"
                 class="hidden"
                 id="dropzone-file"
                 type="file"
