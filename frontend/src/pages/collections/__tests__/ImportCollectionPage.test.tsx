@@ -23,7 +23,8 @@ jest.mock('../../../api/dataImport', () => ({
         collectionName: string | undefined,
         description: string,
         jwtToken: string,
-    ) => mockImportDataAsCollection(importData, collectionName, description, jwtToken)
+        archiveFile: File | undefined,
+    ) => mockImportDataAsCollection(importData, collectionName, description, jwtToken, archiveFile)
 }));
 
 const exampleCollectionData = {
@@ -173,6 +174,76 @@ describe("ImportCollectionPage tests", () => {
         expect(container).toMatchSnapshot()
     })
 
+    it("should load zipfile", async () => {           
+        const {getByLabelText, getByText, container} = renderComponent()
+        const uploadField = getByLabelText("upload-zip") 
+        const zipContent = new Blob(["fake zip data"], { type: "application/zip" });
+        const zipFile = new File([zipContent], "archive.zip", { type: "application/zip" });    
+
+        await user.upload(uploadField, zipFile)
+        await waitFor(() =>
+            expect(getByText("archive.zip")).toBeInTheDocument()
+        );
+
+        expect(container).toMatchSnapshot()
+    })
+
+    it("should unload zipfile after remove archive file to upload button is clicked", async () => {           
+        const {getByLabelText, getByText, container} = renderComponent()
+        const uploadField = getByLabelText("upload-zip") 
+        const zipContent = new Blob(["fake zip data"], { type: "application/zip" });
+        const zipFile = new File([zipContent], "archive.zip", { type: "application/zip" });    
+
+        await user.upload(uploadField, zipFile)
+        await waitFor(() =>
+            expect(getByText("archive.zip")).toBeInTheDocument()
+        );
+
+        await user.click(getByLabelText("remove-archive-file-to-load"))
+        
+        expect(container).toMatchSnapshot()
+    })
+
+    it("should reload archive file data after archive file is loaded then removed and loaded again", async () => {
+        const {getByLabelText, getByText, container} = renderComponent()
+        const uploadField = getByLabelText("upload-zip") 
+        const zipContent = new Blob(["fake zip data"], { type: "application/zip" });
+        const zipFile = new File([zipContent], "archive.zip", { type: "application/zip" });    
+
+        await user.upload(uploadField, zipFile)
+        await waitFor(() =>
+            expect(getByText("archive.zip")).toBeInTheDocument()
+        );
+        await user.click(getByLabelText("remove-archive-file-to-load"))
+        await user.upload(uploadField, zipFile)
+        await waitFor(() =>
+            expect(getByText("archive.zip")).toBeInTheDocument()
+        );
+
+        expect(container).toMatchSnapshot()
+    })
+
+    it("should load archive file data of new archive file after some archive file is loaded then removed and then the new archive file is loaded", async () => {
+        const {getByLabelText, getByText, container} = renderComponent()
+        const uploadField = getByLabelText("upload-zip") 
+        const zipContent = new Blob(["fake zip data"], { type: "application/zip" });
+        const zipFile = new File([zipContent], "archive.zip", { type: "application/zip" });
+        const newZipContent = new Blob(["new fake zip data"], { type: "application/zip" });
+        const newZipFile = new File([zipContent], "new_archive.zip", { type: "application/zip" });
+
+        await user.upload(uploadField, zipFile)
+        await waitFor(() =>
+            expect(getByText("archive.zip")).toBeInTheDocument()
+        );
+        await user.click(getByLabelText("remove-archive-file-to-load"))
+        await user.upload(uploadField, newZipFile)
+        await waitFor(() =>
+            expect(getByText("new_archive.zip")).toBeInTheDocument()
+        );
+        
+        expect(container).toMatchSnapshot()
+    })
+
     it("should have import collection button disabled if file was not loaded", async () => {           
         const {getByLabelText, queryByText} = renderComponent()
         const importCollectionButton = getByLabelText("import-data")
@@ -224,6 +295,9 @@ describe("ImportCollectionPage tests", () => {
         const {getByText, getByLabelText} = renderComponent()
         const file = createXlsxFile(fileData, "example.xlsx")      
         const uploadField = getByLabelText("upload")
+        const zipUploadField = getByLabelText("upload-zip") 
+        const zipContent = new Blob(["fake zip data"], { type: "application/zip" });
+        const zipFile = new File([zipContent], "archive.zip", { type: "application/zip" });    
         const nameInputField = getByLabelText("name")
         const descriptionInputField = getByLabelText("description")
         const importCollectionButton = getByLabelText("import-data")
@@ -234,13 +308,18 @@ describe("ImportCollectionPage tests", () => {
         );
         await user.type(nameInputField, exampleCollectionData.name)
         await user.type(descriptionInputField, exampleCollectionData.description)
+        await user.upload(zipUploadField, zipFile)
+        await waitFor(() =>
+            expect(getByText("archive.zip")).toBeInTheDocument()
+        );
         await user.click(importCollectionButton)
 
         expect(mockImportDataAsCollection).toHaveBeenCalledWith(
             fileData,
             exampleCollectionData.name,
             exampleCollectionData.description,
-            jwtToken
+            jwtToken,
+            zipFile
         )
     })
 
@@ -266,7 +345,8 @@ describe("ImportCollectionPage tests", () => {
             fileDataWithIdsAndFilenames,
             exampleCollectionData.name,
             exampleCollectionData.description,
-            jwtToken
+            jwtToken,
+            undefined
         )
     })
 
@@ -289,7 +369,7 @@ describe("ImportCollectionPage tests", () => {
         expect(artistsParentSelect).toHaveValue("Subsubtitle")
         await user.click(importCollectionButton)
         
-        expect(mockImportDataAsCollection).toHaveBeenCalledWith(fileDataModified, "", "", jwtToken)
+        expect(mockImportDataAsCollection).toHaveBeenCalledWith(fileDataModified, "", "", jwtToken, undefined)
     })
 
     it("should show circular references error when options selected by users cause them", async () => {           

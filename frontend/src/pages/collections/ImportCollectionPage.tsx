@@ -172,6 +172,13 @@ const ImportCollectionPage = () => {
         setChildParentPairs([])
     };
 
+    const handleArchiveFileRemove = (event: any) => {
+        event.preventDefault()
+        setArchiveLoaded(false)
+        setArchiveFilename("")
+        setArchiveFile(undefined)
+    };
+
     const handleCollectionSubmit = (event: any) => {
         event.preventDefault()
         setCollectionNameError(collectionName ? nbsp : "Nazwa kolekcji jest wymagana")
@@ -190,7 +197,9 @@ const ImportCollectionPage = () => {
             }
     })
 
-    const FileExtensionIcon: React.FC<{name: string;}> = ({name}) => {
+    const FileExtensionIcon: React.FC<{name: string; isArchive: boolean}> = ({name, isArchive}) => {
+        if(isArchive && (/\.(zip)$/i.test(name)))
+            return <ArchiveIcon className="w-12 h-12"/>
         if((/\.(csv|tsv|txt)$/i.test(name)))
             return (<CSVIcon className="w-12 h-12"/>)
         else if((/\.(xlsx|xls|xlsm|xlsb|ods|xltx|xltm)$/i.test(name)))
@@ -227,7 +236,7 @@ const ImportCollectionPage = () => {
                                     dark:hover:border-gray-500 dark:hover:bg-gray-700">
                     {fileLoaded ? <div className="flex flex-row items-center justify-between w-full">
                         <div className="flex flex-row items-center justify-center gap-4">
-                            <FileExtensionIcon name={fileName}/>
+                            <FileExtensionIcon name={fileName} isArchive={false}/>
                             <p className="text-sm font-bold text-gray-500 dark:text-gray-400">
                                 {fileName}
                             </p>
@@ -388,11 +397,22 @@ const ImportCollectionPage = () => {
                                             dark:hover:border-gray-500 dark:hover:bg-gray-700"
                             >
                                 {archiveLoaded 
-                                    ? <div className="flex flex-row items-center justify-center gap-4">
-                                        <ArchiveIcon className="w-12 h-12"/>
-                                        <p className="text-sm font-bold text-gray-500 dark:text-gray-400">
-                                            {archiveFilename}
-                                        </p>
+                                    ? <div className="flex flex-row items-center justify-between w-full">
+                                        <div className="flex flex-row items-center justify-center gap-4">
+                                            <FileExtensionIcon name={archiveFilename} isArchive={true}/>
+                                            <p className="text-sm font-bold text-gray-500 dark:text-gray-400">
+                                                {archiveFilename}
+                                            </p>
+                                        </div>
+                                        <button
+                                            aria-label="remove-archive-file-to-load"
+                                            type="button"
+                                            className="text-gray-400 hover:bg-gray-200 hover:text-gray-900 text-sm
+                                                    dark:hover:bg-gray-600 dark:hover:text-white p-2 rounded-lg cursor-pointer"
+                                            onClick={handleArchiveFileRemove}
+                                        >
+                                            <Close />
+                                        </button>
                                     </div> 
                                     : <div className="flex flex-row items-center justify-center gap-4">
                                         <DragAndDrop className="w-12 h-12 text-gray-500 dark:text-gray-400"/>
