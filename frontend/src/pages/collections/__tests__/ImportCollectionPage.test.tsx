@@ -291,37 +291,72 @@ describe("ImportCollectionPage tests", () => {
         expect(queryByText(/nazwa kolekcji jest wymagana/i)).not.toBeInTheDocument()
     })
 
-    it("should call importDataAsCollection with correct arguments when import collection button is clicked", async () => {           
-        const {getByText, getByLabelText} = renderComponent()
-        const file = createXlsxFile(fileData, "example.xlsx")      
-        const uploadField = getByLabelText("upload")
-        const zipUploadField = getByLabelText("upload-zip") 
-        const zipContent = new Blob(["fake zip data"], { type: "application/zip" });
-        const zipFile = new File([zipContent], "archive.zip", { type: "application/zip" });    
-        const nameInputField = getByLabelText("name")
-        const descriptionInputField = getByLabelText("description")
-        const importCollectionButton = getByLabelText("import-data")
+    it.each([
+        {
+            loadedFileData: fileData,
+            case: "standard excel data"
+        },
+        {
+            loadedFileData: [
+                ['Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Artists', ''],
+                ['title 1', 'subtitle 1', 'subsubtitle 1', "artist 1", '']
+            ],
+            case: "last column of excel data with empty strings"
+        },
+        {
+            loadedFileData: [
+                ['Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Artists', ''],
+                ['title 1', 'subtitle 1', 'subsubtitle 1', "artist 1"],
+            ],
+            case: "header has additional empty string at the end"
+        },
+        {
+            loadedFileData: [
+                ['Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Artists'],
+                ['title 1', 'subtitle 1', 'subsubtitle 1', "artist 1", ''],
+            ],
+            case: "row has additional empty string at the end"
+        },
+        {
+            loadedFileData: [
+                ['Title', 'Title.Subtitle', '', 'Title.Subtitle.Subsubtitle', 'Artists', '', ''],
+                ['title 1', 'subtitle 1', '', 'subsubtitle 1', "artist 1", ''],
+            ],
+            case: "empty column between non empty columns and some empty strings at the end of each row"
+        },
+    ])(`should call importDataAsCollection with correct arguments when import collection button is clicked: $case`,
+        async ({loadedFileData}) => {
+            const {getByText, getByLabelText} = renderComponent()
+            const file = createXlsxFile(loadedFileData, "example.xlsx")      
+            const uploadField = getByLabelText("upload")
+            const zipUploadField = getByLabelText("upload-zip") 
+            const zipContent = new Blob(["fake zip data"], { type: "application/zip" });
+            const zipFile = new File([zipContent], "archive.zip", { type: "application/zip" });    
+            const nameInputField = getByLabelText("name")
+            const descriptionInputField = getByLabelText("description")
+            const importCollectionButton = getByLabelText("import-data")
 
-        await user.upload(uploadField, file)
-        await waitFor(() =>
-            expect(getByText("example.xlsx")).toBeInTheDocument()
-        );
-        await user.type(nameInputField, exampleCollectionData.name)
-        await user.type(descriptionInputField, exampleCollectionData.description)
-        await user.upload(zipUploadField, zipFile)
-        await waitFor(() =>
-            expect(getByText("archive.zip")).toBeInTheDocument()
-        );
-        await user.click(importCollectionButton)
+            await user.upload(uploadField, file)
+            await waitFor(() =>
+                expect(getByText("example.xlsx")).toBeInTheDocument()
+            );
+            await user.type(nameInputField, exampleCollectionData.name)
+            await user.type(descriptionInputField, exampleCollectionData.description)
+            await user.upload(zipUploadField, zipFile)
+            await waitFor(() =>
+                expect(getByText("archive.zip")).toBeInTheDocument()
+            );
+            await user.click(importCollectionButton)
 
-        expect(mockImportDataAsCollection).toHaveBeenCalledWith(
-            fileData,
-            exampleCollectionData.name,
-            exampleCollectionData.description,
-            jwtToken,
-            zipFile
-        )
-    })
+            expect(mockImportDataAsCollection).toHaveBeenCalledWith(
+                fileData,
+                exampleCollectionData.name,
+                exampleCollectionData.description,
+                jwtToken,
+                zipFile
+            )	
+        }
+    )
 
     it("should call importData with correct parameters when id and filename columns are included in spreadsheet file", async () => {           
         const {getByLabelText, getByText, container} = renderComponent()

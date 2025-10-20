@@ -54,6 +54,20 @@ const ImportCollectionPage = () => {
         handleFileDataHeaderUpdate()
     }, [childParentPairs]);
 
+    const removeEmptyColumns = (data: string[][]): string[][] => {
+        if (data.length === 0) return data;
+
+        const maxColumns = Math.max(...data.map(row => row.length));
+
+        const columnsToKeep = Array.from({ length: maxColumns }, (_, i) =>
+            data.some(row => row[i] !== undefined && row[i] !== "")
+        );
+
+        return data.map(row =>
+            row.filter((_, i) => columnsToKeep[i])
+        );
+    };
+
     const handleFileUpload = (event: any) => {
         const file = event.target.files[0]
         if(!file) return
@@ -70,7 +84,7 @@ const ImportCollectionPage = () => {
 
             setFileLoaded(true)
             setFileName(file.name)
-            setFileData(parsedData)
+            setFileData(removeEmptyColumns(parsedData))
             setChildParentPairs(parsedData[0].map((header: string) => {
                 const parts = header.split(".");
                 const last = parts[parts.length - 1];
