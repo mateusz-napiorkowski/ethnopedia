@@ -77,11 +77,11 @@ const ImportToExistingCollectionPage = () => {
     };
 
     const handleOptionChange = ((event: ChangeEvent<HTMLSelectElement>) => {
-        const child = event.target.id.replace(/-collection-equivalent$/, "");
-        const parent = event.target.value
+        const fileCategory = event.target.id.replace(/-collection-equivalent$/, "");
+        const collectionCategory = event.target.value
         setExcelCollectionCategoryPairs((prevPairs: Array<Array<string>>) =>
-            prevPairs.map(([prevChild, prevParent]) =>
-                prevChild === child ? [prevChild, parent] : [prevChild, prevParent]
+            prevPairs.map(([prevFileCategory, prevCollectionCategory]) =>
+                prevFileCategory === fileCategory ? [prevFileCategory, collectionCategory] : [prevFileCategory, prevCollectionCategory]
             )
         );
     })
@@ -159,15 +159,15 @@ const ImportToExistingCollectionPage = () => {
                                                 {fileName}
                                             </p>          
                                         </div>
-                                            <button
-                                                aria-label="remove-file-to-load"
-                                                type="button"
-                                                className="text-gray-400 hover:bg-gray-200 hover:text-gray-900 text-sm
-                                                        dark:hover:bg-gray-600 dark:hover:text-white p-2 rounded-lg cursor-pointer"
-                                                onClick={handleFileRemove}
-                                            >
-                                                <Close />
-                                            </button>
+                                        <button
+                                            aria-label="remove-file-to-load"
+                                            type="button"
+                                            className="text-gray-400 hover:bg-gray-200 hover:text-gray-900 text-sm
+                                                    dark:hover:bg-gray-600 dark:hover:text-white p-2 rounded-lg cursor-pointer"
+                                            onClick={handleFileRemove}
+                                        >
+                                            <Close />
+                                        </button>
                                       </div>
                                     : <div className="flex flex-row items-center justify-center gap-4">
                                         <DragAndDrop className="w-12 h-12 text-gray-500 dark:text-gray-400"/>
