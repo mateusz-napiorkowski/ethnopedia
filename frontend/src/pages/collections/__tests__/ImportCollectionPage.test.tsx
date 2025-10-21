@@ -38,8 +38,7 @@ const jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd
 
 const fileData = [
     ['Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Artists'],
-    ['title 1', 'subtitle 1',
-    'subsubtitle 1', "artist 1"],
+    ['title 1', 'subtitle 1', 'subsubtitle 1', "artist 1"],
 ]
 
 const newFileData = [

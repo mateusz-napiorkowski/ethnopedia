@@ -160,7 +160,7 @@ exports[`ImportToExistingCollectionPage tests should load file data after file i
                 <button
                   aria-label="remove-file-to-load"
                   class="text-gray-400 hover:bg-gray-200 hover:text-gray-900 text-sm
-                                                        dark:hover:bg-gray-600 dark:hover:text-white p-2 rounded-lg cursor-pointer"
+                                                    dark:hover:bg-gray-600 dark:hover:text-white p-2 rounded-lg cursor-pointer"
                   type="button"
                 >
                   <svg />
@@ -547,7 +547,7 @@ exports[`ImportToExistingCollectionPage tests should load file data of new file 
                 <button
                   aria-label="remove-file-to-load"
                   class="text-gray-400 hover:bg-gray-200 hover:text-gray-900 text-sm
-                                                        dark:hover:bg-gray-600 dark:hover:text-white p-2 rounded-lg cursor-pointer"
+                                                    dark:hover:bg-gray-600 dark:hover:text-white p-2 rounded-lg cursor-pointer"
                   type="button"
                 >
                   <svg />
@@ -934,7 +934,7 @@ exports[`ImportToExistingCollectionPage tests should reload file data after file
                 <button
                   aria-label="remove-file-to-load"
                   class="text-gray-400 hover:bg-gray-200 hover:text-gray-900 text-sm
-                                                        dark:hover:bg-gray-600 dark:hover:text-white p-2 rounded-lg cursor-pointer"
+                                                    dark:hover:bg-gray-600 dark:hover:text-white p-2 rounded-lg cursor-pointer"
                   type="button"
                 >
                   <svg />
@@ -1321,7 +1321,7 @@ exports[`ImportToExistingCollectionPage tests should render categories configura
                 <button
                   aria-label="remove-file-to-load"
                   class="text-gray-400 hover:bg-gray-200 hover:text-gray-900 text-sm
-                                                        dark:hover:bg-gray-600 dark:hover:text-white p-2 rounded-lg cursor-pointer"
+                                                    dark:hover:bg-gray-600 dark:hover:text-white p-2 rounded-lg cursor-pointer"
                   type="button"
                 >
                   <svg />

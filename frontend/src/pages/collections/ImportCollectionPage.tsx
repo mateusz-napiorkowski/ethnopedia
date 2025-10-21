@@ -80,11 +80,13 @@ const ImportCollectionPage = () => {
             const worksheetName = workbook.SheetNames[0];
             const worksheet = workbook.Sheets[worksheetName];
 
-            const parsedData: Array<Array<string>> = XLSX.utils.sheet_to_json(worksheet, {header:1, defval: "", raw: false});
+            const parsedData: Array<Array<string>> = removeEmptyColumns(
+                XLSX.utils.sheet_to_json(worksheet, {header:1, defval: "", raw: false})
+            );
 
             setFileLoaded(true)
             setFileName(file.name)
-            setFileData(removeEmptyColumns(parsedData))
+            setFileData(parsedData)
             setChildParentPairs(parsedData[0].map((header: string) => {
                 const parts = header.split(".");
                 const last = parts[parts.length - 1];

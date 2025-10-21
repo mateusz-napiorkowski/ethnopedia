@@ -35,6 +35,20 @@ const ImportToExistingCollectionPage = () => {
         enabled: !!collectionId,
     })
 
+    const removeEmptyColumns = (data: string[][]): string[][] => {
+        if (data.length === 0) return data;
+
+        const maxColumns = Math.max(...data.map(row => row.length));
+
+        const columnsToKeep = Array.from({ length: maxColumns }, (_, i) =>
+            data.some(row => row[i] !== undefined && row[i] !== "")
+        );
+
+        return data.map(row =>
+            row.filter((_, i) => columnsToKeep[i])
+        );
+    };
+
     const handleFileUpload = (event: any) => {
         const file = event.target.files?.[0]
         if(!file) return
@@ -47,7 +61,9 @@ const ImportToExistingCollectionPage = () => {
             const worksheetName = workbook.SheetNames[0];
             const worksheet = workbook.Sheets[worksheetName];
 
-            const parsedData: Array<Array<string>> = XLSX.utils.sheet_to_json(worksheet, {header:1, defval: "", raw: false});
+            const parsedData: Array<Array<string>> = removeEmptyColumns(
+                XLSX.utils.sheet_to_json(worksheet, {header:1, defval: "", raw: false})
+            );
 
             setFileLoaded(true)
             setFileName(file.name)

@@ -150,20 +150,55 @@ describe("ImportToExistingCollectionPage tests", () => {
         expect(container).toMatchSnapshot()
     })
 
-    it("should call importData with correct parameters and go to collection page after import data button is clicked and data import is successful", async () => {           
-        mockGetAllCategories.mockReturnValue({categories: ['Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Artists']})
-        const {getByLabelText, getByText} = renderComponent()
-        const uploadField = getByLabelText("upload")
-        const file = createXlsxFile(fileData, "example.xlsx")
+    it.each([
+        {
+            loadedFileData: fileData,
+            case: "standard excel data"
+        },
+        {
+            loadedFileData: [
+                ['Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Artists', ''],
+                ['title 1', 'subtitle 1', 'subsubtitle 1', "artist 1", '']
+            ],
+            case: "last column of excel data with empty strings"
+        },
+        {
+            loadedFileData: [
+                ['Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Artists', ''],
+                ['title 1', 'subtitle 1', 'subsubtitle 1', "artist 1"],
+            ],
+            case: "header has additional empty string at the end"
+        },
+        {
+            loadedFileData: [
+                ['Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Artists'],
+                ['title 1', 'subtitle 1', 'subsubtitle 1', "artist 1", ''],
+            ],
+            case: "row has additional empty string at the end"
+        },
+        {
+            loadedFileData: [
+                ['Title', 'Title.Subtitle', '', 'Title.Subtitle.Subsubtitle', 'Artists', '', ''],
+                ['title 1', 'subtitle 1', '', 'subsubtitle 1', "artist 1", ''],
+            ],
+            case: "empty column between non empty columns and some empty strings at the end of each row"
+        }
+    ])("should call importData with correct parameters and go to collection page after import data button is clicked and data import is successful - $case",
+		async ({loadedFileData}) => {
+            mockGetAllCategories.mockReturnValue({categories: ['Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Artists']})
+            const {getByLabelText, getByText} = renderComponent()
+            const uploadField = getByLabelText("upload")
+            const file = createXlsxFile(loadedFileData, "example.xlsx")
 
-        await user.upload(uploadField, file)
-        await waitFor(() =>
-            expect(getByText("example.xlsx")).toBeInTheDocument()
-        );
-        await user.click(getByLabelText("import-data"))
-        expect(mockImportData).toHaveBeenCalledWith(fileData, jwtToken, collectionData._id)
-        expect(mockUseNavigate).toHaveBeenCalledWith(`/collections/${collectionData._id}/artworks`)
-    })
+            await user.upload(uploadField, file)
+            await waitFor(() =>
+                expect(getByText("example.xlsx")).toBeInTheDocument()
+            );
+            await user.click(getByLabelText("import-data"))
+            expect(mockImportData).toHaveBeenCalledWith(fileData, jwtToken, collectionData._id)
+            expect(mockUseNavigate).toHaveBeenCalledWith(`/collections/${collectionData._id}/artworks`)	
+		}
+	)
 
     it("should render categories configuration menu with correct initial category structure and call importData with correct parameters when id and filename columns are included in spreadsheet file ", async () => {           
         mockGetAllCategories.mockReturnValue({categories: ['Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Artists']})
@@ -189,7 +224,7 @@ describe("ImportToExistingCollectionPage tests", () => {
         mockImportData.mockImplementation(() => {
             throw {response: {data: {error: "Invalid data in the spreadsheet file"}}};
         });
-        const {getByLabelText, getByText, container} = renderComponent()
+        const {getByLabelText, getByText} = renderComponent()
         const uploadField = getByLabelText("upload")
         const file = createXlsxFile(fileData, "example.xlsx")
 
