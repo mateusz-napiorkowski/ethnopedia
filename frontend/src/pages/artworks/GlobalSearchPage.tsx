@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import Navbar from "../../components/navbar/Navbar";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import SearchComponent from "../../components/search/SearchComponent";
-import ExportOptions from "../../components/ExportOptions";
+// import ExportOptions from "../../components/ExportOptions";
 import { ReactComponent as FileExportIcon } from "../../assets/icons/fileExport.svg";
 import WarningPopup from "../WarningPopup";
 import SortOptions from "../../components/SortOptions";
@@ -340,14 +340,14 @@ const GlobalSearchPage = ({ pageSize = 10 }) => {
                                     </div>
                                 </div>
 
-                                {showExportOptions && (
+                                {/* {showExportOptions && (
                                     <ExportOptions
                                         onClose={() => setShowExportOptions(false)}
                                         selectedArtworks={selectedArtworks}
                                         collectionIds={selectedCollectionIds}
                                         initialFilename={`Export.xlsx`}
                                     />
-                                )}
+                                )} */}
 
                                 {categoryOptions.length > 0 && (
                                     <div className="flex w-full md:w-auto pt-4 flex-row items-center text-sm">

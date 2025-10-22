@@ -121,7 +121,8 @@ const artworkData = {
                 ]
             }
         ],
-        "collectionName": "example collection"
+        "collectionName": "example collection",
+        files: []
     }
 }
 
@@ -133,7 +134,8 @@ const artworkDataWithoutCategories = {
         "__v": 0,
         "categories": [
         ],
-        "collectionName": "example collection"
+        "collectionName": "example collection",
+        files: []
     }
 }
 
@@ -181,7 +183,7 @@ describe("ArtworkPage tests", () => {
         }))
 
         expect(mockUseNavigate).toHaveBeenCalledWith(
-            "edit-artwork", 
+            `/collections/${exampleCollectionId}/artworks/${artworkId}/edit-artwork`, 
             {state: {categories: artworkData.artwork.categories}}
         )
     })

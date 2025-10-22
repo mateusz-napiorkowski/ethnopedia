@@ -2,7 +2,7 @@ import '@testing-library/jest-dom';
 import {importData, importDataAsCollection} from '../dataImport';
 import axios from "axios"
 import 'dotenv/config'
-import { collectionId, collectionName, axiosError, collectionDescription, jwtToken, dataToImport, importDataMockReturnValue, importDataAsCollectionMockReturnData } from './utils/consts';
+import { collectionId, collectionName, axiosError, collectionDescription, jwtToken, dataToImport, importDataMockReturnValue, importDataAsCollectionMockReturnData, zipFile } from './utils/consts';
 
 jest.mock("axios");
 const mockAxios = axios as jest.Mocked<typeof axios>;
@@ -48,25 +48,35 @@ describe("dataImport tests", () => {
                 dataToImport,
                 collectionName,
                 collectionDescription,
-                jwtToken
+                jwtToken,
+                zipFile
             );
 
             expect(mockAxios.post).toHaveBeenCalledWith(
-                `${process.env.REACT_APP_API_URL}v1/dataImport/${collectionName}`,
-                {
-                    importData: dataToImport,
-                    collectionName: collectionName,
-                    description: collectionDescription
-                },
+                `${process.env.REACT_APP_API_URL}v1/dataImport/newCollection`,
+                expect.any(FormData),
                 {headers: {Authorization: `Bearer ${jwtToken}`}}
             )
+
+            const formData = mockAxios.post.mock.calls[0][1] as FormData;
+            const entries: Record<string, any> = {};
+                formData.forEach((value, key) => {
+                entries[key] = value;
+            });
+            expect(entries).toEqual({
+                importData: JSON.stringify(dataToImport),
+                collectionName,
+                description: collectionDescription,
+                file: expect.any(File)
+            })
+
             expect(result).toEqual(importDataAsCollectionMockReturnData);
         });
 
         it("should throw error if API call fails", async () => {
             mockAxios.post.mockRejectedValueOnce(new Error("Network Error"));
 
-            await expect(importDataAsCollection(dataToImport, collectionName, collectionDescription, jwtToken)).rejects.toThrow(axiosError);
+            await expect(importDataAsCollection(dataToImport, collectionName, collectionDescription, jwtToken, undefined)).rejects.toThrow(axiosError);
         });
     })
 })

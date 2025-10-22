@@ -140,7 +140,7 @@ export const prepRecordsAndFiles = async (
             .map(categoryName => categoryName.trim().replace(/\s*\.\s*/g, '.'))
         const recordsData = data.slice(1)
 
-        validateExcelData(header, recordsData, asNewCollection, collectionId)
+        await validateExcelData(header, recordsData, asNewCollection, collectionId)
 
         const {collectionUploadsDir, archiveBuffer} = await prepUploadsDirAndArchiveBuffer(zipFile, collectionId)
 

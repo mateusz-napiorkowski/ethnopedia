@@ -2,7 +2,7 @@ import '@testing-library/jest-dom';
 import { createArtwork, editArtwork, getArtwork, getArtworksForPage, deleteArtworks } from '../artworks';
 import axios from "axios"
 import 'dotenv/config'
-import { artworkId, collectionId, axiosError, getArtworkMockReturnValue, getArtworkForPageMockReturnValue, jwtToken, artworkPayload, createArtworkMockReturnValue, editArtworkReturnValue, deleteArtworksReturnValue } from './utils/consts';
+import {artworkId, collectionId, axiosError, getArtworkMockReturnValue, getArtworkForPageMockReturnValue, jwtToken, categories, filesToUpload, createArtworkMockReturnValue, editArtworkReturnValue, deleteArtworksReturnValue } from './utils/consts';
 
 jest.mock("axios");
 const mockAxios = axios as jest.Mocked<typeof axios>;
@@ -33,8 +33,8 @@ describe("artworks tests", () => {
         it.each([
             {case: "no search", search: false, searchText: null, searchRules: {}},
             {case: "quick search", search: true, searchText: "testowy", searchRules: {}},
-            {case: "advanced search", search: true, searchText: null, searchRules: {"Tytuł": "testowy"}},
-        ])('should call axios.get with correct parameters and return correct data if API call succeeds - $case', async ({search, searchText, searchRules: searchRules}) => {
+            {case: "d search", search: true, searchText: null, searchRules: {"Tytuł": "testowy"}},
+        ])('should call axios.get with correct parameters and return correct data if API call succeeds - $case', async ({search, searchText, searchRules}) => {
 
             mockAxios.get.mockResolvedValueOnce({ data: getArtworkForPageMockReturnValue });
             const queryParams = {
@@ -75,14 +75,25 @@ describe("artworks tests", () => {
         it("should call axios.post with correct parameters and return correct data if API call succeeds", async () => {
             mockAxios.post.mockResolvedValueOnce({ data: createArtworkMockReturnValue });
 
-            const files: File[] = []; // brakujące pliki w teście
-            const result = await createArtwork(collectionId, artworkPayload, files, jwtToken);
+            const result = await createArtwork(collectionId, categories, filesToUpload, jwtToken);
 
             expect(mockAxios.post).toHaveBeenCalledWith(
                 `${process.env.REACT_APP_API_URL}v1/artworks/create`,
                 expect.any(FormData),
                 { headers: { Authorization: `Bearer ${jwtToken}` } }
             );
+
+            const formData = mockAxios.post.mock.calls[0][1] as FormData;
+            const entries: Record<string, any> = {};
+                formData.forEach((value, key) => {
+                entries[key] = value;
+            });
+            expect(entries).toEqual({
+                collectionId,
+                categories: JSON.stringify(categories),
+                files: expect.any(File)
+            })
+
             expect(result).toEqual(createArtworkMockReturnValue);
         });
 
@@ -90,7 +101,7 @@ describe("artworks tests", () => {
             mockAxios.post.mockRejectedValueOnce(new Error("Network Error"));
 
             await expect(
-                createArtwork(collectionId, artworkPayload, [], jwtToken)
+                createArtwork(collectionId, categories, [], jwtToken)
             ).rejects.toThrow(axiosError);
         });
     });
@@ -102,9 +113,9 @@ describe("artworks tests", () => {
             const result = await editArtwork(
                 artworkId,
                 collectionId,
-                artworkPayload,
-                [],       // filesToUpload
-                [],       // filesToDelete
+                categories,
+                filesToUpload,
+                [],
                 jwtToken
             );
 
@@ -113,6 +124,19 @@ describe("artworks tests", () => {
                 expect.any(FormData),
                 { headers: { Authorization: `Bearer ${jwtToken}` } }
             );
+
+            const formData = mockAxios.put.mock.calls[0][1] as FormData;
+            const entries: Record<string, any> = {};
+                formData.forEach((value, key) => {
+                entries[key] = value;
+            });
+            expect(entries).toEqual({
+                collectionId,
+                categories: JSON.stringify(categories),
+                files: expect.any(File),
+                filesToDelete: JSON.stringify([]),
+            })
+
             expect(result).toEqual(editArtworkReturnValue);
         });
 
@@ -120,7 +144,7 @@ describe("artworks tests", () => {
             mockAxios.put.mockRejectedValueOnce(new Error("Network Error"));
 
             await expect(
-                editArtwork(artworkId, collectionId, artworkPayload, [], [], jwtToken)
+                editArtwork(artworkId, collectionId, categories, [], [], jwtToken)
             ).rejects.toThrow(axiosError);
         });
     });

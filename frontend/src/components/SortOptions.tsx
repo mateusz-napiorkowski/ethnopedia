@@ -80,6 +80,7 @@ const SortOptions: React.FC<SortOptionsProps> = ({
             {/* PRZYCISK KATEGORII */}
             <div className="relative" ref={dropdownRef}>
                 <div
+                    aria-label="sortby-category-dropdown"
                     ref={buttonRef}
                     onClick={() => setOpen((prev) => !prev)}
                     className="cursor-pointer py-2 px-4 border bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-sm rounded-lg flex items-center justify-between overflow-hidden"
@@ -116,6 +117,7 @@ const SortOptions: React.FC<SortOptionsProps> = ({
                                 key={option.value}
                                 onClick={() => handleSelectCategory(option.value)}
                                 className="cursor-pointer py-2 px-4 hover:bg-gray-200 dark:hover:bg-gray-700 truncate"
+                                aria-label={option.label}
                                 title={option.label}
                             >
                                 {option.label}
@@ -127,6 +129,7 @@ const SortOptions: React.FC<SortOptionsProps> = ({
 
             {/* PRZYCISK ZMIANY KIERUNKU SORTOWANIA */}
             <button
+                aria-label="toggle-sort-direction"
                 onClick={toggleSortDirection}
                 className="p-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-center"
                 title={sortDirection === "asc" ? "Sortowanie rosnące (A → Z)" : "Sortowanie malejące (Z → A)"}

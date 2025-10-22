@@ -22,6 +22,17 @@ export const collectionData = {
     "__v": 0
 }
 
+export const collectionData2 = {
+    _id: '662e928b11674920c8cc0aaa',
+    name: 'example collection',
+    description: 'example collection description',
+    "categories": [
+        {name: 'Title', subcategories: [{name: "Subtitle", subcategories: [{name: "Subsubtitle", subcategories: []}]}]},
+        {name: 'Artists', subcategories: []}
+    ],
+    "__v": 0
+}
+
 export const artworkIds = ["6752ddca46e3ca48231024dc", "6752ddca46e3ca48231024aa", "6752ddca46e3ca48231024bb"]
 export const artworkTitles = ["Jakym jechoł koło dworu", "Ojcze, ojcze, kup mi kónia", "Piękna jagoda"]
 export const artworkSubTitles = [
@@ -254,3 +265,18 @@ export const artworksDataSecondPage = {
     "currentPage": 1,
     "pageSize": 3
 }
+
+export const fileData = [
+    ['Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Artists'],
+    ['title 1', 'subtitle 1', 'subsubtitle 1', "artist 1"],
+]
+
+export const newFileData = [
+    ['Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Artists'],
+    ['new file title 1', 'new file subtitle 1', 'new file subsubtitle 1', "new file artist 1"],
+]
+
+export const fileDataWithIdsAndFilenames = [
+    ['_id', 'nazwy plików', 'Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Artists'],
+    ['1234aaaa46e5db48231024ef', '0:filename.mid', 'title 1', 'subtitle 1', 'subsubtitle 1', "artist 1"],
+]

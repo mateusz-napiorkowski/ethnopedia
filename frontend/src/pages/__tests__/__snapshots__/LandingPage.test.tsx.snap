@@ -325,6 +325,7 @@ exports[`LandingPage tests renders page when collection data is fetched from API
                 class="relative"
               >
                 <div
+                  aria-label="sortby-category-dropdown"
                   class="cursor-pointer py-2 px-4 border bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-sm rounded-lg flex items-center justify-between overflow-hidden"
                   style="width: 60px;"
                 >
@@ -350,6 +351,7 @@ exports[`LandingPage tests renders page when collection data is fetched from API
                 </div>
               </div>
               <button
+                aria-label="toggle-sort-direction"
                 class="p-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-center"
                 title="Sortowanie rosnące (A → Z)"
               >
@@ -377,15 +379,15 @@ exports[`LandingPage tests renders page when collection data is fetched from API
               class="relative group px-4 py-3 bg-white dark:bg-gray-800 shadow-md rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             >
               <div
-                class="flex flex-col h-full"
+                class="flex flex-col h-full pr-2"
               >
                 <h2
-                  class="text-lg font-semibold mb-2"
+                  class="text-lg font-semibold mb-2 break-words"
                 >
                   Kolekcja A
                 </h2>
                 <p
-                  class="text-gray-600 dark:text-gray-300 flex-grow"
+                  class="text-gray-600 dark:text-gray-300 flex-grow break-words"
                 >
                   Opis A
                 </p>
@@ -406,15 +408,15 @@ exports[`LandingPage tests renders page when collection data is fetched from API
               class="relative group px-4 py-3 bg-white dark:bg-gray-800 shadow-md rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             >
               <div
-                class="flex flex-col h-full"
+                class="flex flex-col h-full pr-2"
               >
                 <h2
-                  class="text-lg font-semibold mb-2"
+                  class="text-lg font-semibold mb-2 break-words"
                 >
                   Kolekcja B
                 </h2>
                 <p
-                  class="text-gray-600 dark:text-gray-300 flex-grow"
+                  class="text-gray-600 dark:text-gray-300 flex-grow break-words"
                 >
                   Opis B
                 </p>
@@ -435,15 +437,15 @@ exports[`LandingPage tests renders page when collection data is fetched from API
               class="relative group px-4 py-3 bg-white dark:bg-gray-800 shadow-md rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             >
               <div
-                class="flex flex-col h-full"
+                class="flex flex-col h-full pr-2"
               >
                 <h2
-                  class="text-lg font-semibold mb-2"
+                  class="text-lg font-semibold mb-2 break-words"
                 >
                   Kolekcja C
                 </h2>
                 <p
-                  class="text-gray-600 dark:text-gray-300 flex-grow"
+                  class="text-gray-600 dark:text-gray-300 flex-grow break-words"
                 >
                   Opis C
                 </p>
@@ -500,6 +502,7 @@ exports[`LandingPage tests renders page when collection data is fetched from API
                 >
                   <svg
                     aria-hidden="true"
+                    aria-label="previous-page"
                     fill="currentColor"
                     height="18"
                     stroke="currentColor"
@@ -535,6 +538,7 @@ exports[`LandingPage tests renders page when collection data is fetched from API
                 >
                   <svg
                     aria-hidden="true"
+                    aria-label="next-page"
                     fill="currentColor"
                     height="18"
                     stroke="currentColor"

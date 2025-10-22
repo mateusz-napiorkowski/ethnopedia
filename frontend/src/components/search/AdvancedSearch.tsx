@@ -50,10 +50,6 @@ const AdvancedSearch: React.FC<SearchComponentProps> = ({ collectionIds, mode })
         enabled: !!collectionIds,
     });
 
-    useEffect(() => {
-        console.log("AdvancedSearch collectionIds:", collectionIds);
-    }, [collectionIds]);
-
     const options: { label: string; value: string }[] = React.useMemo(() => {
         if (!categoriesData?.categories) return [];
 

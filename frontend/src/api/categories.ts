@@ -10,5 +10,5 @@ export const getAllCategories = async (collectionIds: Array<string>) => {
             },
             params: new URLSearchParams(collectionIds.map(id => ['collectionIds', id]))
         }
-    ).then((res) => res.data)
+    ).then((res) => res.data);
 }
