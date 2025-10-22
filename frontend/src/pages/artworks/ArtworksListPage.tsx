@@ -128,7 +128,11 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
         }
     );
 
-    if (!artworkData || !collectionData) return <LoadingPage />;
+    if (!artworkData || !collectionData) return (
+        <div data-testid="loading-page-container">
+            <LoadingPage />
+        </div>
+    );
 
     return (
         <div data-testid="loaded-artwork-page-container">
@@ -145,7 +149,10 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                 <div className="flex flex-col max-w-screen-xl w-full lg:px-6">
                     <Navigation />
                     {/* Nazwa + opis */}
-                    <div className="flex flex-row mb-4 mt-2 items-start w-full">
+                    <div 
+                        data-testid="collection-name-and-description-container"
+                        className="flex flex-row mb-4 mt-2 items-start w-full"
+                    >
                         <div className="flex-1 min-w-0 pr-4">
                             <h2 className="text-4xl font-bold text-gray-800 dark:text-white mb-1 break-words leading-tight">
                                 {collectionData?.name}
@@ -282,7 +289,9 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                     </div>
 
                     {/* Kategorie + sortowanie */}
-                    <div className="flex w-full md:w-auto pt-4 flex-row items-center text-sm">
+                    <div 
+                        className="flex w-full md:w-auto pt-4 flex-row items-center text-sm"
+                    >
                         <p className="pr-2">Wyświetlane kategorie:</p>
                         <MultiselectDropdown
                             selectedValues={selectedDisplayCategories}
@@ -305,7 +314,10 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
             </div>
 
             <div className="flex flex-row w-full justify-center">
-                <div className="w-full max-w-screen-xl lg:px-6">
+                <div 
+                    data-testid="artworks-listed"
+                    className="w-full max-w-screen-xl lg:px-6"
+                >
                     <ArtworksList
                         artworksData={artworkData}
                         isLoading={isLoadingArtworks}

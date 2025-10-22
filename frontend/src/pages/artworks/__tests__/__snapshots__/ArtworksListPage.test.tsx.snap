@@ -1,30 +1,431 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`ArtworksListPage tests should refetch artworks list when artwork page is changed: page 1 1`] = `
+<div
+  class="w-full max-w-screen-xl lg:px-6"
+  data-testid="artworks-listed"
+>
+  <div
+    class="px-4 max-w-screen-xl py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4 border border-gray-300 dark:border-gray-600 cursor-pointer"
+    data-testid="6752ddca46e3ca48231024dc"
+  >
+    <div
+      class="flex flex-row"
+    >
+      <span
+        class="mr-4 flex items-center"
+      >
+        <input
+          data-testid="6752ddca46e3ca48231024dc-checkbox"
+          type="checkbox"
+        />
+      </span>
+      <div
+        class="flex-1 min-w-0"
+      >
+        <div
+          class="text-lg text-gray-800 dark:text-white w-full break-words"
+          title="Jakym jechoł koło dworu"
+        >
+          <span
+            class="text-gray-400"
+          >
+            Tytuł
+            : 
+          </span>
+          <span>
+            Jakym jechoł koło dworu
+          </span>
+        </div>
+        <div
+          class="text-lg text-gray-800 dark:text-white w-full break-words"
+          title="Tradycyjna pieśń ludowa o młodzieńcu przejeżdżającym obok dworu."
+        >
+          <span
+            class="text-gray-400"
+          >
+            Podtytuł
+            : 
+          </span>
+          <span>
+            Tradycyjna pieśń ludowa o młodzieńcu przejeżdżającym obok dworu.
+          </span>
+        </div>
+        <div
+          class="text-lg text-gray-800 dark:text-white w-full break-words"
+          title="Józefa Piaskowska"
+        >
+          <span
+            class="text-gray-400"
+          >
+            Artyści
+            : 
+          </span>
+          <span>
+            Józefa Piaskowska
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="px-4 max-w-screen-xl py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4 border border-gray-300 dark:border-gray-600 cursor-pointer"
+    data-testid="6752ddca46e3ca48231024aa"
+  >
+    <div
+      class="flex flex-row"
+    >
+      <span
+        class="mr-4 flex items-center"
+      >
+        <input
+          data-testid="6752ddca46e3ca48231024aa-checkbox"
+          type="checkbox"
+        />
+      </span>
+      <div
+        class="flex-1 min-w-0"
+      >
+        <div
+          class="text-lg text-gray-800 dark:text-white w-full break-words"
+          title="Ojcze, ojcze, kup mi kónia"
+        >
+          <span
+            class="text-gray-400"
+          >
+            Tytuł
+            : 
+          </span>
+          <span>
+            Ojcze, ojcze, kup mi kónia
+          </span>
+        </div>
+        <div
+          class="text-lg text-gray-800 dark:text-white w-full break-words"
+          title="Serdeczna prośba dziecka do ojca o konia."
+        >
+          <span
+            class="text-gray-400"
+          >
+            Podtytuł
+            : 
+          </span>
+          <span>
+            Serdeczna prośba dziecka do ojca o konia.
+          </span>
+        </div>
+        <div
+          class="text-lg text-gray-800 dark:text-white w-full break-words"
+          title="Magdalena Figlak"
+        >
+          <span
+            class="text-gray-400"
+          >
+            Artyści
+            : 
+          </span>
+          <span>
+            Magdalena Figlak
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="px-4 max-w-screen-xl py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4 border border-gray-300 dark:border-gray-600 cursor-pointer"
+    data-testid="6752ddca46e3ca48231024bb"
+  >
+    <div
+      class="flex flex-row"
+    >
+      <span
+        class="mr-4 flex items-center"
+      >
+        <input
+          data-testid="6752ddca46e3ca48231024bb-checkbox"
+          type="checkbox"
+        />
+      </span>
+      <div
+        class="flex-1 min-w-0"
+      >
+        <div
+          class="text-lg text-gray-800 dark:text-white w-full break-words"
+          title="Piękna jagoda"
+        >
+          <span
+            class="text-gray-400"
+          >
+            Tytuł
+            : 
+          </span>
+          <span>
+            Piękna jagoda
+          </span>
+        </div>
+        <div
+          class="text-lg text-gray-800 dark:text-white w-full break-words"
+          title="Tradycyjna pieśń ludowa o młodzieńcu przejeżdżającym obok dworu."
+        >
+          <span
+            class="text-gray-400"
+          >
+            Podtytuł
+            : 
+          </span>
+          <span>
+            Tradycyjna pieśń ludowa o młodzieńcu przejeżdżającym obok dworu.
+          </span>
+        </div>
+        <div
+          class="text-lg text-gray-800 dark:text-white w-full break-words"
+          title="Zespół Mazowsze"
+        >
+          <span
+            class="text-gray-400"
+          >
+            Artyści
+            : 
+          </span>
+          <span>
+            Zespół Mazowsze
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ArtworksListPage tests should refetch artworks list when artwork page is changed: page 2 1`] = `
+<div
+  class="w-full max-w-screen-xl lg:px-6"
+  data-testid="artworks-listed"
+>
+  <div
+    class="px-4 max-w-screen-xl py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4 border border-gray-300 dark:border-gray-600 cursor-pointer"
+    data-testid="6752aaaa46e3ca48231024dc"
+  >
+    <div
+      class="flex flex-row"
+    >
+      <span
+        class="mr-4 flex items-center"
+      >
+        <input
+          data-testid="6752aaaa46e3ca48231024dc-checkbox"
+          type="checkbox"
+        />
+      </span>
+      <div
+        class="flex-1 min-w-0"
+      >
+        <div
+          class="text-lg text-gray-800 dark:text-white w-full break-words"
+          title="W górach, nad rzeką"
+        >
+          <span
+            class="text-gray-400"
+          >
+            Tytuł
+            : 
+          </span>
+          <span>
+            W górach, nad rzeką
+          </span>
+        </div>
+        <div
+          class="text-lg text-gray-800 dark:text-white w-full break-words"
+          title="Opowieść o życiu w sercu natury"
+        >
+          <span
+            class="text-gray-400"
+          >
+            Podtytuł
+            : 
+          </span>
+          <span>
+            Opowieść o życiu w sercu natury
+          </span>
+        </div>
+        <div
+          class="text-lg text-gray-800 dark:text-white w-full break-words"
+          title="Józefa Piaskowska"
+        >
+          <span
+            class="text-gray-400"
+          >
+            Artyści
+            : 
+          </span>
+          <span>
+            Józefa Piaskowska
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="px-4 max-w-screen-xl py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4 border border-gray-300 dark:border-gray-600 cursor-pointer"
+    data-testid="6752aaaa46e5db48231024dc"
+  >
+    <div
+      class="flex flex-row"
+    >
+      <span
+        class="mr-4 flex items-center"
+      >
+        <input
+          data-testid="6752aaaa46e5db48231024dc-checkbox"
+          type="checkbox"
+        />
+      </span>
+      <div
+        class="flex-1 min-w-0"
+      >
+        <div
+          class="text-lg text-gray-800 dark:text-white w-full break-words"
+          title="Skrzypce na polu"
+        >
+          <span
+            class="text-gray-400"
+          >
+            Tytuł
+            : 
+          </span>
+          <span>
+            Skrzypce na polu
+          </span>
+        </div>
+        <div
+          class="text-lg text-gray-800 dark:text-white w-full break-words"
+          title="Pieśń zagrana wśród zbóż"
+        >
+          <span
+            class="text-gray-400"
+          >
+            Podtytuł
+            : 
+          </span>
+          <span>
+            Pieśń zagrana wśród zbóż
+          </span>
+        </div>
+        <div
+          class="text-lg text-gray-800 dark:text-white w-full break-words"
+          title="Magdalena Figlak"
+        >
+          <span
+            class="text-gray-400"
+          >
+            Artyści
+            : 
+          </span>
+          <span>
+            Magdalena Figlak
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="px-4 max-w-screen-xl py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4 border border-gray-300 dark:border-gray-600 cursor-pointer"
+    data-testid="1234aaca46e3ca48231024bb"
+  >
+    <div
+      class="flex flex-row"
+    >
+      <span
+        class="mr-4 flex items-center"
+      >
+        <input
+          data-testid="1234aaca46e3ca48231024bb-checkbox"
+          type="checkbox"
+        />
+      </span>
+      <div
+        class="flex-1 min-w-0"
+      >
+        <div
+          class="text-lg text-gray-800 dark:text-white w-full break-words"
+          title="Pragnom uoczka, pragnom"
+        >
+          <span
+            class="text-gray-400"
+          >
+            Tytuł
+            : 
+          </span>
+          <span>
+            Pragnom uoczka, pragnom
+          </span>
+        </div>
+        <div
+          class="text-lg text-gray-800 dark:text-white w-full break-words"
+          title="Tęsknota zapisana w spojrzeniu"
+        >
+          <span
+            class="text-gray-400"
+          >
+            Podtytuł
+            : 
+          </span>
+          <span>
+            Tęsknota zapisana w spojrzeniu
+          </span>
+        </div>
+        <div
+          class="text-lg text-gray-800 dark:text-white w-full break-words"
+          title="Zespół Mazowsze"
+        >
+          <span
+            class="text-gray-400"
+          >
+            Artyści
+            : 
+          </span>
+          <span>
+            Zespół Mazowsze
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
 exports[`ArtworksListPage tests should render artworks list component after data is fetched from API, collection name and description should be displayed 1`] = `
 <div
-  class="flex flex-row mb-4 mt-2"
+  class="flex flex-row mb-4 mt-2 items-start w-full"
   data-testid="collection-name-and-description-container"
 >
   <div
-    class="flex flex-col w-full"
+    class="flex-1 min-w-0 pr-4"
   >
     <h2
-      class="text-4xl font-bold text-gray-800 dark:text-white mb-1"
+      class="text-4xl font-bold text-gray-800 dark:text-white mb-1 break-words leading-tight"
     >
       example collection
     </h2>
-    <p
-      class="text-xl text-gray-600 dark:text-gray-300"
+    <div
+      class="description-container"
     >
-      example collection description
-    </p>
+      <p
+        class="text-xl text-gray-600 dark:text-gray-300 whitespace-pre-wrap break-words leading-relaxed"
+      >
+        example collection description
+      </p>
+    </div>
   </div>
-  <div>
+  <div
+    class="flex-shrink-0"
+  >
     <button
-      class="text-sm font-semibold h-fit mr-4 bg-gray-100 hover:bg-gray-100 flex items-center"
+      class="text-sm font-semibold h-fit ml-4 flex items-center bg-gray-100 hover:bg-gray-100"
       disabled=""
     >
       <svg />
+       
       <p
         class="ml-1"
       >

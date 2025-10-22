@@ -118,6 +118,7 @@ const MultiselectDropdown: React.FC<MultiselectDropdownProps> = ({
     return (
         <div className="relative" ref={dropdownRef}>
             <div
+                aria-label="open/close-display-categories-select"
                 onClick={() => setOpen(!open)}
                 className="cursor-pointer py-2 px-4 border gap-3 bg-white dark:bg-gray-800 border-gray-300 rounded-lg text-sm flex items-center justify-between w-full max-w-xs"
             >
@@ -142,6 +143,7 @@ const MultiselectDropdown: React.FC<MultiselectDropdownProps> = ({
 
                     <div
                         className="sticky top-0 bg-white dark:bg-gray-800 px-4 py-2 border-b border-gray-300 z-10"
+                        data-testid="DisplayCategoriesSelectExpanded"
                     >
                         <input
                             type="text"
