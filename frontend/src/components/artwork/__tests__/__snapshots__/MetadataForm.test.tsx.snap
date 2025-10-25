@@ -285,6 +285,7 @@ exports[`EmptyCollectionMessage should render component correctly when in create
           Tytuł
         </label>
         <input
+          aria-label="Tytuł-input"
           autocomplete="off"
           class="block w-full rounded-none border border-gray-300 bg-white px-3 pt-7 pb-2 text-sm
                placeholder-transparent focus:border-blue-400 focus:outline-none
@@ -321,6 +322,7 @@ exports[`EmptyCollectionMessage should render component correctly when in create
               Podtytuł
             </label>
             <input
+              aria-label="Podtytuł-input"
               autocomplete="off"
               class="block w-full rounded-none border border-gray-300 bg-white px-3 pt-7 pb-2 text-sm
                placeholder-transparent focus:border-blue-400 focus:outline-none
@@ -350,6 +352,7 @@ exports[`EmptyCollectionMessage should render component correctly when in create
           Artyści
         </label>
         <input
+          aria-label="Artyści-input"
           autocomplete="off"
           class="block w-full rounded-none border border-gray-300 bg-white px-3 pt-7 pb-2 text-sm
                placeholder-transparent focus:border-blue-400 focus:outline-none
@@ -377,6 +380,7 @@ exports[`EmptyCollectionMessage should render component correctly when in create
           Rok
         </label>
         <input
+          aria-label="Rok-input"
           autocomplete="off"
           class="block w-full rounded-none border border-gray-300 bg-white px-3 pt-7 pb-2 text-sm
                placeholder-transparent focus:border-blue-400 focus:outline-none
@@ -462,6 +466,7 @@ exports[`EmptyCollectionMessage should render component correctly when in edit m
           Tytuł
         </label>
         <input
+          aria-label="Tytuł-input"
           autocomplete="off"
           class="block w-full rounded-none border border-gray-300 bg-white px-3 pt-7 pb-2 text-sm
                placeholder-transparent focus:border-blue-400 focus:outline-none
@@ -498,6 +503,7 @@ exports[`EmptyCollectionMessage should render component correctly when in edit m
               Podtytuł
             </label>
             <input
+              aria-label="Podtytuł-input"
               autocomplete="off"
               class="block w-full rounded-none border border-gray-300 bg-white px-3 pt-7 pb-2 text-sm
                placeholder-transparent focus:border-blue-400 focus:outline-none
@@ -527,6 +533,7 @@ exports[`EmptyCollectionMessage should render component correctly when in edit m
           Artyści
         </label>
         <input
+          aria-label="Artyści-input"
           autocomplete="off"
           class="block w-full rounded-none border border-gray-300 bg-white px-3 pt-7 pb-2 text-sm
                placeholder-transparent focus:border-blue-400 focus:outline-none
@@ -554,6 +561,7 @@ exports[`EmptyCollectionMessage should render component correctly when in edit m
           Rok
         </label>
         <input
+          aria-label="Rok-input"
           autocomplete="off"
           class="block w-full rounded-none border border-gray-300 bg-white px-3 pt-7 pb-2 text-sm
                placeholder-transparent focus:border-blue-400 focus:outline-none

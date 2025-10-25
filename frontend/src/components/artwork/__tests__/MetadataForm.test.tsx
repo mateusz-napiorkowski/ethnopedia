@@ -115,7 +115,7 @@ describe("EmptyCollectionMessage", () => {
         const subtitleInputField = getByLabelText("Podtytuł-input")
         const artistsInputField = getByLabelText("Artyści-input")
         const yearInputField = getByLabelText("Rok-input")
-        console.log(artistsInputField)
+        
         await user.type(subtitleInputField, "an artwork subtitle")
         await user.type(titleInputField, "an artwork title")
         await user.type(artistsInputField, "artist name")
