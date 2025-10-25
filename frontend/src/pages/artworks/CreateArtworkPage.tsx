@@ -240,7 +240,11 @@ const CreateArtworkPage: React.FC = () => {
         !isInitialized ||
         !artworksData?.artworks
     ) {
-        return <LoadingPage />;
+        return (
+            <div data-testid="loading-page-container">
+                <LoadingPage />
+            </div>
+        )
     }
 
     return (

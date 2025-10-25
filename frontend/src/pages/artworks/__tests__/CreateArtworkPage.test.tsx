@@ -8,14 +8,16 @@ import { UserContext } from '../../../providers/UserProvider';
 import {jwtToken, collectionData, artworkIds} from './utils/consts'
 
 const mockGetArtwork = jest.fn();
+const mockGetArtworksForPage = jest.fn()
 const mockCreateArtwork = jest.fn();
 const mockEditArtwork = jest.fn();
 
 jest.mock('../../../api/artworks', () => ({
   __esModule: true,
   getArtwork: () => mockGetArtwork(),
-  createArtwork: (payload: any, jwtToken: string) => mockCreateArtwork(payload, jwtToken),
-  editArtwork: () => mockEditArtwork(),
+  getArtworksForPage: () => mockGetArtworksForPage(),
+  createArtwork: (collectionId: string, payload: any, filesToUpload: File[], jwtToken: string) => mockCreateArtwork(collectionId, payload, filesToUpload, jwtToken),
+  editArtwork: () => mockEditArtwork()
 }));
 
 const mockUseNavigate = jest.fn();
@@ -84,6 +86,7 @@ describe("CreateArtworkPage tests", () => {
     it("should render component after data is fetched from API and render category tree correctly", async () => {
         mockGetCollection.mockReturnValue(collectionData)
         mockGetAllCategories.mockReturnValue({categories: ["Tytuł", "Tytuł.Podtytuł", "Artyści", "Rok"]})
+        mockGetArtworksForPage.mockReturnValue({artworks: [], total: 0, currentPage: 1, pageSize: 1000})
         const {getByTestId, queryByTestId} = renderPage()
         await waitFor(() => getByTestId('create-artwork-page-container'))
 
@@ -95,6 +98,7 @@ describe("CreateArtworkPage tests", () => {
     it("should show error message when trying to create artwork with none of the category input fields filled in", async () => {
         mockGetCollection.mockReturnValue(collectionData)
         mockGetAllCategories.mockReturnValue({categories: ["Tytuł", "Tytuł.Podtytuł", "Artyści", "Rok"]})
+        mockGetArtworksForPage.mockReturnValue({artworks: [], total: 0, currentPage: 1, pageSize: 1000})
         const {getByTestId, getByText} = renderPage()
         await waitFor(() => getByTestId('create-artwork-page-container'))
         const createArtworkButton = getByText(/utwórz/i)
@@ -106,6 +110,43 @@ describe("CreateArtworkPage tests", () => {
     it("should call createArtwork when create artwork is clicked and data provided in the form is correct", async () => {
         mockGetCollection.mockReturnValue(collectionData)
         mockGetAllCategories.mockReturnValue({categories: ["Tytuł", "Tytuł.Podtytuł", "Artyści", "Rok"]})
+        mockGetArtworksForPage.mockReturnValue({artworks: [], total: 0, currentPage: 1, pageSize: 1000})
+        mockCreateArtwork.mockReturnValue({
+            "artwork": {
+                "collectionName": collectionData.name,
+                "categories": [
+                    {
+                        "name": "Tytuł",
+                        "value": "an artwork title",
+                        "subcategories": [
+                            {
+                                "name": "Podtytuł",
+                                "value": "",
+                                "subcategories": []
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Artyści",
+                        "value": "",
+                        "subcategories": []
+                    },
+                    {
+                        "name": "Rok",
+                        "value": "",
+                        "subcategories": []
+                    }
+                ],
+                "_id": "68fd30ad0db5373b10dd000d",
+                "files": [],
+                "createdAt": "2025-10-25T20:18:53.913Z",
+                "updatedAt": "2025-10-25T20:18:53.913Z",
+                "__v": 0
+            },
+            "uploadedFilesCount": 0,
+            "failedUploadsCount": 0,
+            "failedUploadsCauses": []
+        })
         const {getByTestId, getByText, getByLabelText} = renderPage()
         await waitFor(() => getByTestId('create-artwork-page-container'))
         const createArtworkButton = getByText(/utwórz/i)
@@ -115,28 +156,31 @@ describe("CreateArtworkPage tests", () => {
         await user.click(createArtworkButton)
 
         expect(mockCreateArtwork).toHaveBeenCalledWith(
-            {
-                "categories": [
-                    {
-                        "name": "Tytuł",
-                        "subcategories": [
-                            {"name": "Podtytuł", "subcategories": [], "value": ""}
-                        ],
-                        "value": "an artwork title"
-                    },
-                    {
-                        "name": "Artyści",
-                        "subcategories": [],
-                        "value": ""
-                    },
-                    {
-                        "name": "Rok",
-                        "subcategories": [],
-                        "value": ""
-                    }
-                ],
-                "collectionName": "example collection"
-            },
+            collectionData._id,
+            [
+                {
+                    "name": "Tytuł",
+                    "value": "an artwork title",
+                    "subcategories": [
+                        {
+                            "name": "Podtytuł",
+                            "value": "",
+                            "subcategories": []
+                        }
+                    ]
+                },
+                {
+                    "name": "Artyści",
+                    "value": "",
+                    "subcategories": []
+                },
+                {
+                    "name": "Rok",
+                    "value": "",
+                    "subcategories": []
+                }
+            ],
+            [],
             UserContextProps.jwtToken
         )
         expect(mockUseNavigate).toHaveBeenCalledWith(-1)
@@ -145,6 +189,7 @@ describe("CreateArtworkPage tests", () => {
     it("should call useNavigate(-1) when cancel button is clicked", async () => {
         mockGetCollection.mockReturnValue(collectionData)
         mockGetAllCategories.mockReturnValue({categories: ["Tytuł", "Tytuł.Podtytuł", "Artyści", "Rok"]})
+        mockGetArtworksForPage.mockReturnValue({artworks: [], total: 0, currentPage: 1, pageSize: 1000})
         const {getByTestId, getByText} = renderPage()
         await waitFor(() => getByTestId('create-artwork-page-container'))
         const cancelButton = getByText(/anuluj/i)
