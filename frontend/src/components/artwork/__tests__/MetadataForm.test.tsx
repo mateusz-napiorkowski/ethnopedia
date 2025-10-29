@@ -93,7 +93,7 @@ const renderComponent = (edit = false) => {
 };
 
 
-describe("EmptyCollectionMessage", () => {
+describe("MetadataForm tests", () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });

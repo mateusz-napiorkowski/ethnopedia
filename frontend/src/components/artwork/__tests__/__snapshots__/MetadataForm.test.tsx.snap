@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`EmptyCollectionMessage should render component correctly when in create mode 1`] = `
+exports[`MetadataForm tests should render component correctly when in create mode 1`] = `
 <div>
   <div
     data-testid="category-tree"
@@ -181,7 +181,7 @@ exports[`EmptyCollectionMessage should render component correctly when in create
 </div>
 `;
 
-exports[`EmptyCollectionMessage should render component correctly when in edit mode 1`] = `
+exports[`MetadataForm tests should render component correctly when in edit mode 1`] = `
 <div>
   <div
     data-testid="category-tree"

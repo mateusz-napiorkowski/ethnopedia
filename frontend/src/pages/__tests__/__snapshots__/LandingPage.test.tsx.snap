@@ -327,7 +327,7 @@ exports[`LandingPage tests renders page when collection data is fetched from API
                 <div
                   aria-label="sortby-category-dropdown"
                   class="cursor-pointer py-2 px-4 border bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-sm rounded-lg flex items-center justify-between overflow-hidden"
-                  style="width: 60px;"
+                  style="width: auto;"
                 >
                   <span
                     class="truncate"
