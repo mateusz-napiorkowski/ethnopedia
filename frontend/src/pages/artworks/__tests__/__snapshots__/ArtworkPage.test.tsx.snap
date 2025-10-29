@@ -121,13 +121,13 @@ exports[`ArtworkPage tests should render artwork page component correctly after 
       class="text-sm text-gray-500 dark:text-gray-300"
     >
       Data utworzenia rekordu: 
-      5.11.2024, 21:14:22
+      1.01.1970, 01:00:00
     </p>
     <p
       class="text-sm text-gray-500 dark:text-gray-300"
     >
       Data ostatniej modyfikacji: 
-      5.11.2024, 21:14:22
+      1.01.1970, 01:00:00
     </p>
   </div>
   <div
