@@ -3,7 +3,7 @@ import { getArtworksForPage, deleteArtworks } from "../../api/artworks";
 import LoadingPage from "../LoadingPage";
 import { useEffect, useState } from "react";
 import Navbar from "../../components/navbar/Navbar";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import SearchComponent from "../../components/search/SearchComponent";
 // import ExportOptions from "../../components/ExportOptions";
 import WarningPopup from "../WarningPopup";

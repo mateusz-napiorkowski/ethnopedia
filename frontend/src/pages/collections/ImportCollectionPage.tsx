@@ -119,10 +119,10 @@ const ImportCollectionPage = () => {
     })
 
     const showServerError = ((error: any) => {
-        if(error.error == 'Incorrect request body provided')
+        if(error.error === 'Incorrect request body provided')
             setServerError(`Import kolekcji nie powiódł się z powodu nieprawidłowej treści żądania. Upewnij się, że pola "Nazwa kolekcji" i "Opis kolekcji" są wypełnione, oraz że plik arkusza kalkulacyjnego zawiera przynajmniej jeden rekord oprócz nagłówka.`)
-        else if(error.error == "Invalid data in the spreadsheet file" || error.error == "Invalid categories data") {
-            const errCause = error.error == "Invalid categories data" ? error.cause : error.cause.substring(7)
+        else if(error.error === "Invalid data in the spreadsheet file" || error.error === "Invalid categories data") {
+            const errCause = error.error === "Invalid categories data" ? error.cause : error.cause.substring(7)
             setServerError(`Nieprawidłowe dane w pliku arkusza kalkulacyjnego. ${translations[errCause.split(":")[0] as ErrorCause] ? 
                 `${translations[errCause.split(":")[0] as ErrorCause]}${errCause.split(":")[1] ? `:${errCause.split(":")[1]}` : ""}` :
                 errCause}
@@ -281,7 +281,7 @@ const ImportCollectionPage = () => {
                     
                 </label>
                             <p
-                                className={`block text-sm ${fileNotLoadedError != nbsp ? "text-red-500 font-normal": "font-semibold text-gray-700 dark:text-white"}`}
+                                className={`block text-sm ${fileNotLoadedError !== nbsp ? "text-red-500 font-normal": "font-semibold text-gray-700 dark:text-white"}`}
                             >
                                 {fileLoaded ? (
                                     <span>
@@ -368,7 +368,7 @@ const ImportCollectionPage = () => {
                                                     onChange={handleOptionChange}   
                                                 >
                                                     <option
-                                                        selected={categoryParentShortName == "-" ? true : false}
+                                                        selected={categoryParentShortName === "-" ? true : false}
                                                         value="-" 
                                                     >
                                                         -
@@ -377,7 +377,7 @@ const ImportCollectionPage = () => {
                                                         const optionValue = a[0]
                                                         if(optionValue != categoryShortName) {
                                                             return (<option
-                                                                selected={optionValue == categoryParentShortName ? true : false}
+                                                                selected={optionValue === categoryParentShortName ? true : false}
                                                                 value={optionValue}
                                                                 >
                                                                     {optionValue}
@@ -467,7 +467,7 @@ const ImportCollectionPage = () => {
                                 <button
                                     aria-label="import-data"
                                     type="submit"
-                                    disabled={!fileLoaded || circularReferences.length != 0 ? true : false }
+                                    disabled={!fileLoaded || circularReferences.length !== 0 ? true : false }
                                     className="px-4 py-2 color-button"
                                 >
                                     Importuj kolekcję
