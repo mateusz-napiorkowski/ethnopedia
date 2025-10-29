@@ -41,7 +41,7 @@ const AdvancedSearch: React.FC<SearchComponentProps> = ({ collectionIds, mode })
         }
     }, [location])
 
-    const { data: categoriesData, isLoading } = useQuery({
+    const { data: categoriesData } = useQuery({
         queryKey: ["allCategories", mode, collectionIds],
         queryFn: () =>
             Array.isArray(collectionIds)

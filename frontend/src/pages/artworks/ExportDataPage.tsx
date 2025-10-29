@@ -34,7 +34,7 @@ const ExportDataPage: React.FC = () => {
 
     useEffect(() => {
         window.scroll(0, excelMenuScrollPosition)
-    }, [exportToExcel])
+    }, [exportToExcel, excelMenuScrollPosition])
 
     const handleExportExtentRadioInputChange = (event: ChangeEvent<HTMLInputElement>) => {
         if((event.target.value) === "onlyChecked") {

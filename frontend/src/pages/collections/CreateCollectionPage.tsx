@@ -35,8 +35,7 @@ const CreateCollectionPage = () => {
         undo: handleUndo,
         redo: handleRedo,
         canUndo,
-        canRedo,
-        initializeState
+        canRedo
     } = useUndoRedoFormState<FormValues>({
         name: location.state?.name || "",
         description: location.state?.description || "",
@@ -266,9 +265,9 @@ const CreateCollectionPage = () => {
 
         // Check if there are any errors
         if (Object.keys(errors).some(key =>
-            key === 'name' && errors.name ||
-            key === 'description' && errors.description ||
-            key === 'categories' && errors.categories && Object.keys(errors.categories).length > 0
+            (key === 'name' && errors.name) ||
+            (key === 'description' && errors.description) ||
+            (key === 'categories' && errors.categories && Object.keys(errors.categories).length > 0)
         )) {
             return;
         }

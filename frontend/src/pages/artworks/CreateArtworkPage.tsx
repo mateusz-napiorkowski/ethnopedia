@@ -58,10 +58,6 @@ const CreateArtworkPage: React.FC = () => {
         { enabled: !!collectionId }
     );
 
-    const [initialCategoryPaths, setInitialCategoryPaths] = useState<string[]>([]);
-    const [initialMetadataTree, setInitialMetadataTree] = useState<Metadata[] | undefined>(
-        undefined
-    );
     const [isInitialized, setIsInitialized] = useState(false);
 
     // File upload state from main branch
@@ -136,13 +132,11 @@ const CreateArtworkPage: React.FC = () => {
                     filesToUpload: [],
                     filesToDelete: []
                 };
-                setInitialMetadataTree(res.artwork.categories);
                 setCurrentFiles(res.artwork.files || []);
                 initializeState(initialData);
                 setIsInitialized(true);
             });
         } else if (catData?.categories) {
-            setInitialCategoryPaths(catData.categories);
             // Build hierarchy from category paths
             const hierarchy = buildHierarchyFromPaths(catData.categories);
             const initialData = {
@@ -150,7 +144,6 @@ const CreateArtworkPage: React.FC = () => {
                 filesToUpload: [],
                 filesToDelete: []
             };
-            setInitialMetadataTree(hierarchy);
             initializeState(initialData);
             setIsInitialized(true);
         }

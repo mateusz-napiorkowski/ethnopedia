@@ -103,11 +103,11 @@ const ImportToExistingCollectionPage = () => {
     })
 
     const showServerError = ((error: any) => {
-        if(error.error == 'Incorrect request body provided')
+        if(error.error === 'Incorrect request body provided')
             setServerError("Import kolekcji nie powiódł się z powodu nieprawidłowej treści żądania. Upewnij się, że plik arkusza kalkulacyjnego zawiera przynajmniej jeden rekord oprócz nagłówka.")
-        else if(error.error == "Invalid data in the spreadsheet file")
+        else if(error.error === "Invalid data in the spreadsheet file")
             setServerError("Nieprawidłowe dane w pliku arkusza kalkulacyjnego. Upewnij się, że kategorie zostały poprawnie wczytane, i że powyższy formularz został wypełniony prawidłowo.")
-        else if(error.error == `Collection not found`)
+        else if(error.error === `Collection not found`)
             setServerError("Nie znaleziono kolekcji, do której dane miały zostać wprowadzone.")
         else
             setServerError("Błąd serwera. Import kolekcji nie powiódł się.")
@@ -201,7 +201,7 @@ const ImportToExistingCollectionPage = () => {
                                 />
                             </label>
                             <p
-                                className={`block text-sm ${fileNotLoadedError != nbsp ? "text-red-500 font-normal": "font-semibold text-gray-700 dark:text-white"} my-2`}
+                                className={`block text-sm ${fileNotLoadedError !== nbsp ? "text-red-500 font-normal": "font-semibold text-gray-700 dark:text-white"} my-2`}
                             >
                                 {fileLoaded && (/\.(csv|tsv|txt|xlsx|xls|xlsm|xlsb|ods|xltx|xltm)$/i.test(fileName)) && (
                                     <span>
@@ -242,7 +242,7 @@ const ImportToExistingCollectionPage = () => {
                                                     >
                                                         {categoriesData.categories.map((optionValue: any) => {
                                                             return (<option
-                                                                selected={optionValue == collectionCategoryName ? true : false}
+                                                                selected={optionValue === collectionCategoryName ? true : false}
                                                                 value={optionValue}
                                                                 >
                                                                     {optionValue}
