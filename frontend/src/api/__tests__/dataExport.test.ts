@@ -25,7 +25,7 @@ describe("dataExport tests", () => {
                 ["Tytuł"],
                 ExportExtent.all,
                 {},
-                new URLSearchParams(),
+                new URLSearchParams("foo=1&bar=2"),
                 "test.xlsx",
                 false,
                 false,
@@ -45,7 +45,8 @@ describe("dataExport tests", () => {
                         exportAsCSV: false,
                         includeFilenames: false,
                         includeIds: false,
-                        searchParams: expect.any(URLSearchParams)
+                        foo: "1",
+                        bar: "2"
                     },
                     
                 }
