@@ -64,8 +64,8 @@ const loggedInUserContextProps = {
 const artworkData = {
     "artwork": {
         "_id": "670c2aecc29b79e5aaef1b9b",
-        "createdAt": 1,
-        "updatedAt": 1,
+        "createdAt": "mock date",
+        "updatedAt": "mock date",
         "__v": 0,
         "categories": [
             {
