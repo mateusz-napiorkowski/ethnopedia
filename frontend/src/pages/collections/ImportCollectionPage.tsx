@@ -50,6 +50,7 @@ const ImportCollectionPage = () => {
     const queryClient = useQueryClient()
     const { jwtToken } = useUser();
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         handleFileDataHeaderUpdate()
     }, [childParentPairs]);
@@ -383,6 +384,7 @@ const ImportCollectionPage = () => {
                                                                     {optionValue}
                                                                 </option>)
                                                         }
+                                                        return <></>
                                                     })}                                                            
                                                 </select>
                                             </div>
