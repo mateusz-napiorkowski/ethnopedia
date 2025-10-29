@@ -50,9 +50,9 @@ const ImportCollectionPage = () => {
     const queryClient = useQueryClient()
     const { jwtToken } = useUser();
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         handleFileDataHeaderUpdate()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [childParentPairs]);
 
     const removeEmptyColumns = (data: string[][]): string[][] => {
@@ -376,7 +376,7 @@ const ImportCollectionPage = () => {
                                                     </option>
                                                     {childParentPairs.filter((pair: any) => pair[0] !== "_id" && pair[0] !== "nazwy plików").map((a: any) => {
                                                         const optionValue = a[0]
-                                                        if(optionValue != categoryShortName) {
+                                                        if(optionValue !== categoryShortName) {
                                                             return (<option
                                                                 selected={optionValue === categoryParentShortName ? true : false}
                                                                 value={optionValue}
