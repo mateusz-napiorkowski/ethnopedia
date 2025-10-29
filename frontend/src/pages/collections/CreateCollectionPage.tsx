@@ -35,8 +35,7 @@ const CreateCollectionPage = () => {
         undo: handleUndo,
         redo: handleRedo,
         canUndo,
-        canRedo,
-        initializeState
+        canRedo
     } = useUndoRedoFormState<FormValues>({
         name: location.state?.name || "",
         description: location.state?.description || "",
@@ -102,8 +101,6 @@ const CreateCollectionPage = () => {
             if (isSubmitValidation) {
                 errors.name = "Nazwa jest wymagana";
             }
-        } else if (forbiddenChars.test(values.name)) {
-            errors.name = "Nazwa nie może zawierać znaku: .";
         }
 
         // Description validation
@@ -268,9 +265,9 @@ const CreateCollectionPage = () => {
 
         // Check if there are any errors
         if (Object.keys(errors).some(key =>
-            key === 'name' && errors.name ||
-            key === 'description' && errors.description ||
-            key === 'categories' && errors.categories && Object.keys(errors.categories).length > 0
+            (key === 'name' && errors.name) ||
+            (key === 'description' && errors.description) ||
+            (key === 'categories' && errors.categories && Object.keys(errors.categories).length > 0)
         )) {
             return;
         }
@@ -331,6 +328,7 @@ const CreateCollectionPage = () => {
                     <label className="block text-sm text-gray-700 dark:text-white my-2 mt-4">Nazwa</label>
                     <input
                         type="text"
+                        aria-label="name"
                         value={formValues.name}
                         onChange={handleNameChange}
                         maxLength={100}
@@ -344,6 +342,7 @@ const CreateCollectionPage = () => {
 
                     <label className="block text-sm text-gray-700 dark:text-white my-2 mt-4">Opis</label>
                     <textarea
+                        aria-label="description"
                         value={formValues.description}
                         onChange={handleDescriptionChange}
                         maxLength={1000}

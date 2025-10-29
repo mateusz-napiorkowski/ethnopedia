@@ -5,6 +5,9 @@ import Navbar from "../../components/navbar/Navbar"
 import Navigation from "../../components/Navigation";
 import { ReactComponent as DragAndDrop } from "../../assets/icons/dragAndDrop.svg"
 import { ReactComponent as ExcelIcon } from "../../assets/icons/excel.svg"
+import { ReactComponent as CSVIcon } from "../../assets/icons/csv.svg"
+import { ReactComponent as Close } from "../../assets/icons/close.svg";
+import { ReactComponent as UnknownFile } from "../../assets/icons/unknown-file.svg";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { importData } from "../../api/dataImport";
 import { useUser } from "../../providers/UserProvider";
@@ -15,11 +18,10 @@ const ImportToExistingCollectionPage = () => {
     const collectionId = params.collection
     const nbsp = "\u00A0"
     const [fileLoaded, setFileLoaded] = useState(false)
-    const [fileName, setFileName]: any = useState(false)
+    const [fileName, setFileName] = useState<string>("")
     const [fileData, setFileData]: any = useState(false)
     const [excelCollectionCategoryPairs, setExcelCollectionCategoryPairs]: any = useState([])
     const [fileNotLoadedError, setFileNotLoadedError] = useState(nbsp)
-    const [circularReferences, setCircularReferences]= useState<Array<string>>([])
     const [serverError, setServerError] = useState(nbsp)
     let dataToSend: string[][] = []
     
@@ -33,8 +35,22 @@ const ImportToExistingCollectionPage = () => {
         enabled: !!collectionId,
     })
 
+    const removeEmptyColumns = (data: string[][]): string[][] => {
+        if (data.length === 0) return data;
+
+        const maxColumns = Math.max(...data.map(row => row.length));
+
+        const columnsToKeep = Array.from({ length: maxColumns }, (_, i) =>
+            data.some(row => row[i] !== undefined && row[i] !== "")
+        );
+
+        return data.map(row =>
+            row.filter((_, i) => columnsToKeep[i])
+        );
+    };
+
     const handleFileUpload = (event: any) => {
-        const file = event.target.files[0]
+        const file = event.target.files?.[0]
         if(!file) return
 
         const reader = new FileReader();
@@ -45,7 +61,9 @@ const ImportToExistingCollectionPage = () => {
             const worksheetName = workbook.SheetNames[0];
             const worksheet = workbook.Sheets[worksheetName];
 
-            const parsedData: Array<Array<string>> = XLSX.utils.sheet_to_json(worksheet, {header:1, defval: "", raw: false});
+            const parsedData: Array<Array<string>> = removeEmptyColumns(
+                XLSX.utils.sheet_to_json(worksheet, {header:1, defval: "", raw: false})
+            );
 
             setFileLoaded(true)
             setFileName(file.name)
@@ -63,25 +81,36 @@ const ImportToExistingCollectionPage = () => {
             setFileNotLoadedError(nbsp)
         };
         reader.readAsArrayBuffer(file)
+        event.target.value = "";
     }
 
+    const handleFileRemove = (event: any) => {
+        event.preventDefault()
+        setFileLoaded(false)
+        setFileName("")
+        setFileData(false)
+        setExcelCollectionCategoryPairs([])
+    };
+
     const handleOptionChange = ((event: ChangeEvent<HTMLSelectElement>) => {
-        const child = event.target.id.replace(/-collection-equivalent$/, "");
-        const parent = event.target.value
+        const fileCategory = event.target.id.replace(/-collection-equivalent$/, "");
+        const collectionCategory = event.target.value
         setExcelCollectionCategoryPairs((prevPairs: Array<Array<string>>) =>
-            prevPairs.map(([prevChild, prevParent]) =>
-                prevChild === child ? [prevChild, parent] : [prevChild, prevParent]
+            prevPairs.map(([prevFileCategory, prevCollectionCategory]) =>
+                prevFileCategory === fileCategory ? [prevFileCategory, collectionCategory] : [prevFileCategory, prevCollectionCategory]
             )
         );
     })
 
     const showServerError = ((error: any) => {
-        if(error.error == 'Incorrect request body provided')
-            setServerError("Nieprawidłowe dane w treści żądania")
-        else if(error.error == "Invalid data in the spreadsheet file" || error.error == "Invalid categories data")
-            setServerError(error.cause)
+        if(error.error === 'Incorrect request body provided')
+            setServerError("Import kolekcji nie powiódł się z powodu nieprawidłowej treści żądania. Upewnij się, że plik arkusza kalkulacyjnego zawiera przynajmniej jeden rekord oprócz nagłówka.")
+        else if(error.error === "Invalid data in the spreadsheet file")
+            setServerError("Nieprawidłowe dane w pliku arkusza kalkulacyjnego. Upewnij się, że kategorie zostały poprawnie wczytane, i że powyższy formularz został wypełniony prawidłowo.")
+        else if(error.error === `Collection not found`)
+            setServerError("Nie znaleziono kolekcji, do której dane miały zostać wprowadzone.")
         else
-            setServerError("Import kolekcji nie powiódł się")
+            setServerError("Błąd serwera. Import kolekcji nie powiódł się.")
     })
     
     const handleCollectionSubmit = (event: any) => {
@@ -91,15 +120,25 @@ const ImportToExistingCollectionPage = () => {
         dataToSend = [newHeader, ...fileData.slice(1)]
         importDataMutation.mutate()
     }
-    const importDataMutation = useMutation(() => importData(dataToSend, jwtToken, collectionId), {
-            onSuccess: () => {
-                queryClient.invalidateQueries("collection")
-                navigate(`/collections/${collectionId}/artworks`)
-            },
-            onError: (error: any) => {
-                showServerError(error.response.data)
-            }
+
+    const importDataMutation = useMutation(() => importData(dataToSend, jwtToken, collectionId!), {
+        onSuccess: () => {
+            queryClient.invalidateQueries("collection")
+            navigate(`/collections/${collectionId}/artworks`)
+        },
+        onError: (error: any) => {
+            showServerError(error.response.data)
+        }
     })
+
+    const FileExtensionIcon: React.FC<{name: string;}> = ({name}) => {
+        if((/\.(csv|tsv|txt)$/i.test(name)))
+            return (<CSVIcon className="w-12 h-12"/>)
+        else if((/\.(xlsx|xls|xlsm|xlsb|ods|xltx|xltm)$/i.test(name)))
+            return (<ExcelIcon className="w-12 h-12"/>)
+        else
+            return (<UnknownFile className="w-12 h-12"/>)
+    }
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
@@ -118,7 +157,7 @@ const ImportToExistingCollectionPage = () => {
                                 htmlFor="dropzone-file"
                                 className="block text-sm font-bold text-gray-700 dark:text-white my-2"
                             >
-                                Plik arkusza kalkulacyjnego/Plik CSV
+                                Wgraj plik arkusza kalkulacyjnego/CSV
                             </label>
                             <label
                                 aria-label="upload"
@@ -129,12 +168,23 @@ const ImportToExistingCollectionPage = () => {
                                             dark:hover:border-gray-500 dark:hover:bg-gray-700"
                             >
                                 {fileLoaded 
-                                    ? <div className="flex flex-row items-center justify-center gap-4">
-                                        <ExcelIcon className="w-12 h-12"/>
-                                        <p className="text-sm font-bold text-gray-500 dark:text-gray-400">
-                                            {fileName}
-                                        </p>
-                                    </div>
+                                    ? <div className="flex flex-row items-center justify-between w-full">
+                                        <div className="flex flex-row items-center justify-center gap-4">
+                                            <FileExtensionIcon name={fileName} />
+                                            <p className="text-sm font-bold text-gray-500 dark:text-gray-400">
+                                                {fileName}
+                                            </p>          
+                                        </div>
+                                        <button
+                                            aria-label="remove-file-to-load"
+                                            type="button"
+                                            className="text-gray-400 hover:bg-gray-200 hover:text-gray-900 text-sm
+                                                    dark:hover:bg-gray-600 dark:hover:text-white p-2 rounded-lg cursor-pointer"
+                                            onClick={handleFileRemove}
+                                        >
+                                            <Close />
+                                        </button>
+                                      </div>
                                     : <div className="flex flex-row items-center justify-center gap-4">
                                         <DragAndDrop className="w-12 h-12 text-gray-500 dark:text-gray-400"/>
                                         <p className="text-sm font-normal text-gray-500 dark:text-gray-400">
@@ -144,14 +194,20 @@ const ImportToExistingCollectionPage = () => {
                                 }
                                 <input
                                     id="dropzone-file"
+                                    accept=".xlsx,.xls,.xlsm,.xlsb,.ods,.csv,.tsv,.txt,.xltx,.xltm"
                                     type="file"
                                     className="hidden"
                                     onChange={handleFileUpload}
                                 />
                             </label>
                             <p
-                                className={`block text-sm ${fileNotLoadedError != nbsp ? "text-red-500 font-normal": "font-semibold text-gray-700 dark:text-white"} my-2`}
+                                className={`block text-sm ${fileNotLoadedError !== nbsp ? "text-red-500 font-normal": "font-semibold text-gray-700 dark:text-white"} my-2`}
                             >
+                                {fileLoaded && (/\.(csv|tsv|txt|xlsx|xls|xlsm|xlsb|ods|xltx|xltm)$/i.test(fileName)) && (
+                                    <span>
+                                        Liczba rekordów: <span className="font-normal">{fileData.length - 1}</span>
+                                    </span>
+                                )}
                             </p>
 
                             <hr />
@@ -166,7 +222,7 @@ const ImportToExistingCollectionPage = () => {
                                         <span className="block w-1/2 text-sm font-semibold text-gray-700 dark:text-white my-2">Kategorie w kolekcji:</span>
                                     </div>
                                     {excelCollectionCategoryPairs
-                                        .filter((pair: string) => pair[0] !== "_id" && pair[0] !== "nazwy_plików")
+                                        .filter((pair: string) => pair[0] !== "_id" && pair[0] !== "nazwy plików")
                                         .map((pair: any) => {
                                             const headerCategoryName = pair[0]
                                             const collectionCategoryName = pair[1]
@@ -186,7 +242,7 @@ const ImportToExistingCollectionPage = () => {
                                                     >
                                                         {categoriesData.categories.map((optionValue: any) => {
                                                             return (<option
-                                                                selected={optionValue == collectionCategoryName ? true : false}
+                                                                selected={optionValue === collectionCategoryName ? true : false}
                                                                 value={optionValue}
                                                                 >
                                                                     {optionValue}
@@ -199,6 +255,12 @@ const ImportToExistingCollectionPage = () => {
                                     }
                                 </div>
                             </>)}
+                            <div 
+                                aria-label="server-error"
+                                className="text-red-500 text-sm"
+                            >
+                                {serverError}
+                            </div>
                             <div className="flex justify-end mt-6">
                                 <button
                                     type="button"
@@ -208,8 +270,9 @@ const ImportToExistingCollectionPage = () => {
                                     Anuluj
                                 </button>
                                 <button
+                                    aria-label="import-data"
                                     type="submit"
-                                    disabled={!fileLoaded || circularReferences.length != 0 ? true : false }
+                                    disabled={!fileLoaded ? true : false }
                                     className="px-4 py-2 color-button"
                                 >
                                     Importuj dane

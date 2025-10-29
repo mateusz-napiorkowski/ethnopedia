@@ -1,4 +1,3 @@
-// src/pages/artwork/ArtworksListPage.tsx
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { getArtworksForPage, deleteArtworks } from "../../api/artworks";
 import { getCollection } from "../../api/collections";
@@ -7,8 +6,6 @@ import { useEffect, useState } from "react";
 import Navbar from "../../components/navbar/Navbar";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import SearchComponent from "../../components/search/SearchComponent";
-import ImportOptions from "../../components/ImportOptions";
-import ExportOptions from "../../components/ExportOptions";
 import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg";
 import { ReactComponent as FileImportIcon } from "../../assets/icons/fileImport.svg";
 import { ReactComponent as FileExportIcon } from "../../assets/icons/fileExport.svg";
@@ -24,8 +21,6 @@ import ArtworksList from '../../components/artwork/ArtworksList';
 
 const ArtworksListPage = ({ pageSize = 10 }) => {
     const [selectedArtworks, setSelectedArtworks] = useState<{ [key: string]: boolean }>({});
-    // const [showImportOptions, setShowImportOptions] = useState<boolean>(false);
-    // const [showExportOptions, setShowExportOptions] = useState<boolean>(false);
     const [showDeleteRecordsWarning, setShowDeleteRecordsWarning] = useState(false);
     const [sortCategory, setSortCategory] = useState<string>("");
     const [sortDirection, setSortDirection] = useState<string>("asc");
@@ -133,7 +128,11 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
         }
     );
 
-    if (!artworkData || !collectionData) return <LoadingPage />;
+    if (!artworkData || !collectionData) return (
+        <div data-testid="loading-page-container">
+            <LoadingPage />
+        </div>
+    );
 
     return (
         <div data-testid="loaded-artwork-page-container">
@@ -150,7 +149,10 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                 <div className="flex flex-col max-w-screen-xl w-full lg:px-6">
                     <Navigation />
                     {/* Nazwa + opis */}
-                    <div className="flex flex-row mb-4 mt-2 items-start w-full">
+                    <div 
+                        data-testid="collection-name-and-description-container"
+                        className="flex flex-row mb-4 mt-2 items-start w-full"
+                    >
                         <div className="flex-1 min-w-0 pr-4">
                             <h2 className="text-4xl font-bold text-gray-800 dark:text-white mb-1 break-words leading-tight">
                                 {collectionData?.name}
@@ -220,7 +222,17 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                             <button
                                 className="flex items-center justify-center dark:text-white hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium px-4 py-2 dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
                                 type="button"
-                                onClick={() => {navigate(`/collections/${collectionId}/export-data`)}}
+                                onClick={() => {navigate(
+                                    `/collections/${collectionId}/export-data`,
+                                    {
+                                        state: {
+                                            initialFilename: collectionData.name,
+                                            initialArchiveFilename: collectionData.name,
+                                            selectedArtworks: selectedArtworks,
+                                            searchParams: searchParams.toString()
+                                        }
+                                    }
+                                )}}
                             >
                                 <span className="text-white dark:text-gray-400">
                                     <FileExportIcon/>
@@ -276,19 +288,10 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                         </div>
                     </div>
 
-                    {/* {showImportOptions && <ImportOptions onClose={() => setShowImportOptions(false)} collectionData={collectionData}/>}
-
-                    {showExportOptions && (
-                        <ExportOptions
-                            onClose={() => setShowExportOptions(false)}
-                            selectedArtworks={selectedArtworks}
-                            initialFilename={`${collectionData?.name}.xlsx`}
-                            collectionIds={[collectionData?._id]}
-                        />
-                    )} */}
-
                     {/* Kategorie + sortowanie */}
-                    <div className="flex w-full md:w-auto pt-4 flex-row items-center text-sm">
+                    <div 
+                        className="flex w-full md:w-auto pt-4 flex-row items-center text-sm"
+                    >
                         <p className="pr-2">Wyświetlane kategorie:</p>
                         <MultiselectDropdown
                             selectedValues={selectedDisplayCategories}
@@ -311,7 +314,10 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
             </div>
 
             <div className="flex flex-row w-full justify-center">
-                <div className="w-full max-w-screen-xl lg:px-6">
+                <div 
+                    data-testid="artworks-listed"
+                    className="w-full max-w-screen-xl lg:px-6"
+                >
                     <ArtworksList
                         artworksData={artworkData}
                         isLoading={isLoadingArtworks}

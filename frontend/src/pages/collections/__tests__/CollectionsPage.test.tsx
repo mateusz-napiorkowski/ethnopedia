@@ -1,7 +1,7 @@
 import { render, waitFor } from "@testing-library/react"
 import CollectionsPage from "../CollectionsPage";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { MemoryRouter, Route, Routes, useNavigate } from "react-router-dom";
 import { UserContext } from "../../../providers/UserProvider";
 import userEvent from "@testing-library/user-event";
 
@@ -179,7 +179,7 @@ describe("CollectionsPage tests", () => {
         expect(mockUseNavigate).toHaveBeenCalledWith("/create-collection")
     });
 
-    it("should open import collection modal after import collection button is clicked, should close it after 'X' button is clicked", async () => {
+    it("should navigate to import collection page after import collection button is clicked", async () => {
         mockGetAllCollections.mockReturnValue(mockCollections)
         const {getByText, getByRole, getByLabelText, queryByText} = renderPage(loggedInUserContextProps)
         await waitFor(() => getByText(`Witaj ${firstName}!`))
@@ -187,10 +187,7 @@ describe("CollectionsPage tests", () => {
 
         await user.click(importCollectionButton);
 
-        expect(await getByText(/ustawienia importu metadanych z pliku .xlsx/i)).toBeInTheDocument();
-
-        await user.click(getByLabelText("exit"))
-        expect(await queryByText(/ustawienia importu metadanych z pliku .xlsx/i)).not.toBeInTheDocument();
+        expect(mockUseNavigate).toHaveBeenCalledWith("/import-collection")
     });
 
     it("should show error message when export collections button is clicked and no collections are selected", async () => {

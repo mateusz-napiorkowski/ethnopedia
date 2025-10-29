@@ -250,7 +250,7 @@ describe('data-import controller', () => {
             )
             
             const res = await request(app)
-                .post(`/${payload.collectionName}`)
+                .post(`/newCollection`)
                 .set('Authorization', `Bearer ${jwtToken}`)
                 .set('Accept', 'application/json')
                 .field("importData", payload.importData)
@@ -435,7 +435,7 @@ describe('data-import controller', () => {
             mockInsertMany.mockImplementation(insertMany)
 
             let req = request(app)
-                .post(`/${payload.collectionName}`)
+                .post(`/newCollection`)
                 .set('Authorization', `Bearer ${jwtToken}`)
                 .set('Accept', 'application/json')
             if(payload.importData)

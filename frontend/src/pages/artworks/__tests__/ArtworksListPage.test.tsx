@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import { UserContext } from '../../../providers/UserProvider';
-import {jwtToken, loggedInUserContextProps, collectionData, artworkIds, artworkTitles, artworksData, artworksDataSecondPage} from './utils/ArtworksListUtils'
+import {jwtToken, loggedInUserContextProps, collectionData, artworkIds, artworkTitles, artworksData, artworksDataSecondPage} from './utils/consts'
 
 const mockUseNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
@@ -92,7 +92,7 @@ describe("ArtworksListPage tests", () => {
         await waitFor(() => getByTestId('loaded-artwork-page-container'))
         const editCollectionButton = getByRole("button", {name: /edytuj/i})
         const addNewRecordButton = getByRole("button", {name: /nowy rekord/i})
-        const importFileButton = getByRole("button", {name: /importuj plik/i})
+        const importFileButton = getByRole("button", {name: /importuj dane/i})
         const deleteSelectedButton = getByRole("button", {name: /usuń zaznaczone/i})
 
         expect(editCollectionButton).toBeDisabled()
@@ -109,7 +109,7 @@ describe("ArtworksListPage tests", () => {
         await waitFor(() => getByTestId('loaded-artwork-page-container'))
         const editCollectionButton = getByRole("button", {name: /edytuj/i})
         const addNewRecordButton = getByRole("button", {name: /nowy rekord/i})
-        const importFileButton = getByRole("button", {name: /importuj plik/i})
+        const importFileButton = getByRole("button", {name: /importuj dane/i})
         const deleteSelectedButton = getByRole("button", {name: /usuń zaznaczone/i})
 
         expect(editCollectionButton).not.toBeDisabled()
@@ -151,41 +151,47 @@ describe("ArtworksListPage tests", () => {
         expect(mockUseNavigate).toHaveBeenCalledWith(`/collections/${collectionData._id}/create-artwork`)
     })
 
-    it("should open upload file window when enabled import file button is clicked", async () => {
+    it("should navigate to import to existing collection page when enabled import data button is clicked", async () => {
         mockGetArtworksForPage.mockReturnValue(artworksData)
         mockGetCollection.mockReturnValue(collectionData)
         const {getByRole, getByTestId, getByText} = renderPage(queryClient, loggedInUserContextProps)
 
         await waitFor(() => getByTestId('loaded-artwork-page-container'))
-        const importFileButton = getByRole("button", {name: /importuj plik/i})
+        const importFileButton = getByRole("button", {name: /importuj dane/i})
         await user.click(importFileButton)
 
-        expect(getByText(/ustawienia importu metadanych z pliku .xlsx/i)).toBeInTheDocument()
+        expect(mockUseNavigate).toHaveBeenCalledWith(`/collections/${collectionData._id}/import-data`)
     })
 
-    it("should open export options window when export file button is clicked", async () => {
+    it("should navigate to export data page and pass correct state when export file button is clicked", async () => {
         mockGetArtworksForPage.mockReturnValue(artworksData)
         mockGetCollection.mockReturnValue(collectionData)
-        mockGetAllCategories.mockReturnValue({categories: ["Tytuł", "Tytuł.Podtytuł", "Artyści", "Rok"]})
-        const {getByRole, getByTestId, getByText, container} = renderPage(queryClient, loggedInUserContextProps)
+        const {getByRole, getByTestId} = renderPage(queryClient, loggedInUserContextProps)
         await waitFor(() => getByTestId('loaded-artwork-page-container'))
-
-        const exportFileButton = getByRole("button", {name: /eksportuj plik/i})
+        
+        const exportFileButton = getByRole("button", {name: /eksportuj dane/i})
         
         await user.click(exportFileButton)
-        await waitFor(() => getByTestId("export-options-container"))
-        
-        expect(getByText(/ustawienia eksportu metadanych do pliku .xlsx/i)).toBeInTheDocument()
+        expect(mockUseNavigate).toHaveBeenCalledWith(
+            `/collections/${collectionData._id}/export-data`,
+            {
+                state: {
+                    "initialArchiveFilename": collectionData.name,
+                    "initialFilename": collectionData.name,
+                    "searchParams": "",
+                    "selectedArtworks": {}
+                }
+            }
+        )
        
     })
 
     it("should expand display categories select menu when it is clicked", async () => {
         mockGetArtworksForPage.mockReturnValue(artworksData)
         mockGetCollection.mockReturnValue(collectionData)
-        mockGetAllCategories.mockReturnValue({categories: ["Tytuł", "Tytuł.Podtytuł", "Artyści", "Rok"]})
         const {getByRole, getByTestId, getByLabelText} = renderPage(queryClient, loggedInUserContextProps)
         await waitFor(() => getByTestId('loaded-artwork-page-container'))
-
+        
         const expandDisplayCategoriesSelectElement = getByLabelText("open/close-display-categories-select")
 
         await user.click(expandDisplayCategoriesSelectElement)
@@ -220,6 +226,7 @@ describe("ArtworksListPage tests", () => {
     it("should refetch artworks list when artwork page is changed", async () => {
         mockGetArtworksForPage.mockReturnValue(artworksData)
         mockGetCollection.mockReturnValue(collectionData)
+        mockGetAllCategories.mockReturnValueOnce({categories: ["Tytuł", "Tytuł.Podtytuł", "Artyści", "Rok"]})
         const {getByTestId} = renderPage(queryClient)
         await waitFor(() => getByTestId('loaded-artwork-page-container'))
 
@@ -240,7 +247,7 @@ describe("ArtworksListPage tests", () => {
             {
                 clickSequence: [artworkIds[1], artworkIds[2], artworkIds[0], artworkIds[2], artworkIds[1], artworkIds[2]],
                 clickSequenceWithTitles: [artworkTitles[1], artworkTitles[2], artworkTitles[0], artworkTitles[2], artworkTitles[1], artworkTitles[2]],
-                expectedChecked: [artworkIds[0], artworkIds[2]]
+                expectedChecked: [artworkIds[2], artworkIds[0]]
             },
             {
                 clickSequence: [artworkIds[1], artworkIds[0], artworkIds[2], artworkIds[0], "Odznacz wszystkie"],

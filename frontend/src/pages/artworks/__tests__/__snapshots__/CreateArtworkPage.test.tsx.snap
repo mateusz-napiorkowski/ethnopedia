@@ -11,26 +11,28 @@ exports[`CreateArtworkPage tests should render component after data is fetched f
       class="relative w-full mb-2"
     >
       <label
-        class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800"
+        class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800 max-w-[calc(100%-16px)] truncate"
         for="field-0"
+        title="Tytuł"
       >
         Tytuł
       </label>
       <input
         aria-label="Tytuł-input"
+        autocomplete="off"
         class="block w-full rounded-none border border-gray-300 bg-white px-3 pt-7 pb-2 text-sm
                placeholder-transparent focus:border-blue-400 focus:outline-none
                focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]
                dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500
                dark:focus:border-blue-400 dark:focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]"
         id="field-0"
-        maxlength="100"
+        maxlength="250"
         type="text"
         value=""
       />
     </div>
     <div
-      class="ml-4"
+      class="ml-4 relative"
     >
       <div
         class="relative pl-6"
@@ -46,27 +48,26 @@ exports[`CreateArtworkPage tests should render component after data is fetched f
           class="relative w-full mb-2"
         >
           <label
-            class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800"
+            class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800 max-w-[calc(100%-16px)] truncate"
             for="field-0-0"
+            title="Podtytuł"
           >
             Podtytuł
           </label>
           <input
             aria-label="Podtytuł-input"
+            autocomplete="off"
             class="block w-full rounded-none border border-gray-300 bg-white px-3 pt-7 pb-2 text-sm
                placeholder-transparent focus:border-blue-400 focus:outline-none
                focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]
                dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500
                dark:focus:border-blue-400 dark:focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]"
             id="field-0-0"
-            maxlength="100"
+            maxlength="250"
             type="text"
             value=""
           />
         </div>
-        <div
-          class="ml-4"
-        />
       </div>
     </div>
   </div>
@@ -77,27 +78,26 @@ exports[`CreateArtworkPage tests should render component after data is fetched f
       class="relative w-full mb-2"
     >
       <label
-        class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800"
+        class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800 max-w-[calc(100%-16px)] truncate"
         for="field-1"
+        title="Artyści"
       >
         Artyści
       </label>
       <input
         aria-label="Artyści-input"
+        autocomplete="off"
         class="block w-full rounded-none border border-gray-300 bg-white px-3 pt-7 pb-2 text-sm
                placeholder-transparent focus:border-blue-400 focus:outline-none
                focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]
                dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500
                dark:focus:border-blue-400 dark:focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]"
         id="field-1"
-        maxlength="100"
+        maxlength="250"
         type="text"
         value=""
       />
     </div>
-    <div
-      class="ml-4"
-    />
   </div>
   <div
     class="relative "
@@ -106,27 +106,26 @@ exports[`CreateArtworkPage tests should render component after data is fetched f
       class="relative w-full mb-2"
     >
       <label
-        class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800"
+        class="absolute left-2 top-2 text-xs text-gray-500 dark:text-gray-400 bg-white px-1 z-10 dark:bg-gray-800 max-w-[calc(100%-16px)] truncate"
         for="field-2"
+        title="Rok"
       >
         Rok
       </label>
       <input
         aria-label="Rok-input"
+        autocomplete="off"
         class="block w-full rounded-none border border-gray-300 bg-white px-3 pt-7 pb-2 text-sm
                placeholder-transparent focus:border-blue-400 focus:outline-none
                focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]
                dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500
                dark:focus:border-blue-400 dark:focus:shadow-[inset_0_0_3px_rgba(59,130,246,0.3)]"
         id="field-2"
-        maxlength="100"
+        maxlength="250"
         type="text"
         value=""
       />
     </div>
-    <div
-      class="ml-4"
-    />
   </div>
 </div>
 `;

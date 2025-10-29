@@ -4,6 +4,7 @@ import FormField from './FormField';
 import { ReactComponent as File } from "../../assets/icons/file.svg";
 import { ReactComponent as DragAndDrop } from "../../assets/icons/dragAndDrop.svg";
 import { ReactComponent as Close } from "../../assets/icons/close.svg";
+import { UploadedFileData } from '../../@types/Files';
 
 interface MetadataFormProps {
     categories: Metadata[];
@@ -15,12 +16,12 @@ interface MetadataFormProps {
     ) => void;
     suggestionsByCategory?: Record<string, string[]>;
     // File upload props from main branch
-    filesToUpload: any[];
-    setFilesToUpload: (files: any) => void;
+    filesToUpload: File[];
+    setFilesToUpload: (files: File[]) => void;
     currentFiles: any[];
     setCurrentFiles: (files: any) => void;
-    filesToDelete: any[];
-    setFilesToDelete: (files: any) => void;
+    filesToDelete: UploadedFileData[];
+    setFilesToDelete: (files: UploadedFileData[]) => void;
     onFileFieldChange: (field: string, value: any) => void;
 }
 

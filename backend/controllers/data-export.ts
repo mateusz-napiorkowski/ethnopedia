@@ -77,7 +77,7 @@ export const getXlsxWithArtworksData = async (req: Request, res: Response) => {
               ]
 
         const exportExtent = req.query.exportExtent
-        if(!columnNames || !exportExtent || !collectionIds)
+        if(!columnNames || columnNames.length === 0 || !exportExtent || !collectionIds)
             throw new Error("Request is missing query params")
 
         const collections = await CollectionCollection.find({_id: {$in: collectionIds}}).exec()

@@ -41,7 +41,7 @@ const AdvancedSearch: React.FC<SearchComponentProps> = ({ collectionIds, mode })
         }
     }, [location])
 
-    const { data: categoriesData, isLoading } = useQuery({
+    const { data: categoriesData } = useQuery({
         queryKey: ["allCategories", mode, collectionIds],
         queryFn: () =>
             Array.isArray(collectionIds)
@@ -49,10 +49,6 @@ const AdvancedSearch: React.FC<SearchComponentProps> = ({ collectionIds, mode })
                 : getAllCategories([collectionIds]),
         enabled: !!collectionIds,
     });
-
-    useEffect(() => {
-        console.log("AdvancedSearch collectionIds:", collectionIds);
-    }, [collectionIds]);
 
     const options: { label: string; value: string }[] = React.useMemo(() => {
         if (!categoriesData?.categories) return [];

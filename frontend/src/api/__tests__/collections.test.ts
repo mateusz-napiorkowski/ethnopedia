@@ -2,7 +2,7 @@ import '@testing-library/jest-dom';
 import {getAllCollections, getCollection, createCollection, updateCollection, deleteCollections} from '../collections';
 import axios from "axios"
 import 'dotenv/config'
-import { collectionId, collectionId2, collectionName, axiosError, getAllCategoriesMockReturnValue, getAllCollectionsMockReturnValue, getCollectionMockReturnValue, createCollectionMockReturnValue, collectionDescription, jwtToken, collectionCategories, updateCollectionMockReturnValue, deleteCollectionsMockReturnValue } from './utils/consts';
+import { collectionId, collectionId2, collectionName, axiosError, getAllCollectionsMockReturnValue, getCollectionMockReturnValue, createCollectionMockReturnValue, collectionDescription, jwtToken, collectionCategories, updateCollectionMockReturnValue, deleteCollectionsMockReturnValue } from './utils/consts';
 
 jest.mock("axios");
 const mockAxios = axios as jest.Mocked<typeof axios>;

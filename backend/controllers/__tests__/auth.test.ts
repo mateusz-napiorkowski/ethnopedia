@@ -114,8 +114,8 @@ describe('auth controller', () =>{
 
         test("loginUser should respond with status 200 and correct body", async () => {
             mockFindOne.mockReturnValue(existingUser)
-            bcrypt.compare.mockImplementationOnce((data: string, encrypted: string, callback: any) => {
-                callback(undefined, true)
+            bcrypt.compare.mockImplementationOnce(() => {
+                return true
             })
             mockSign.mockReturnValue(jwtToken)
             const payload = { username: 'user', password: 'hasl1242o2' }
@@ -131,23 +131,24 @@ describe('auth controller', () =>{
 
         test.each([
             {payload: { }, statusCode: 400, error: "Incorrect request body provided",
-                findOne: undefined, callbackError: undefined, passwordCorrect: undefined},
+                findOne: undefined, compareError: false, passwordCorrect: undefined},
             {payload: { username: 'user' }, statusCode: 400, error: "Incorrect request body provided",
-                findOne: undefined, callbackError: undefined, passwordCorrect: undefined},
+                findOne: undefined, compareError: false, passwordCorrect: undefined},
             {payload: { password: 'hasl1242o2' }, statusCode: 400, error: "Incorrect request body provided",
-                findOne: undefined, callbackError: undefined, passwordCorrect: undefined},
-            {payload: { username: 'user', password: 'hasl1242o2' }, statusCode: 503, error: "Database unavailable",
-                findOne: { exec: () => { throw new Error() } }, callbackError: undefined, passwordCorrect: undefined},
+                findOne: undefined, compareError: false, passwordCorrect: undefined},
             {payload: { username: 'user', password: 'hasl1242o2' }, statusCode: 500, error: "Internal server error",
-                findOne: existingUser, callbackError: Error(), passwordCorrect: true},
+                findOne: { exec: () => { throw new Error() } }, compareError: false, passwordCorrect: undefined},
+            {payload: { username: 'user', password: 'hasl1242o2' }, statusCode: 500, error: "Internal server error",
+                findOne: existingUser, compareError: true, passwordCorrect: true},
             {payload: { username: 'user', password: 'hasl1242o2' }, statusCode: 404, error: "Invalid username or password",
-                findOne: { exec: () => {return Promise.resolve(null)}}, callbackError: undefined, passwordCorrect: undefined},
+                findOne: { exec: () => {return Promise.resolve(null)}}, compareError: false, passwordCorrect: undefined},
             {payload: { username: 'user', password: 'hasl1242o2' }, statusCode: 404, error: "Invalid username or password",
-                findOne: existingUser, callbackError: undefined, passwordCorrect: false}
-        ])('loginUser should respond with status $statusCode and correct error message', async ({payload, statusCode, error, findOne, callbackError, passwordCorrect}) => {
+                findOne: existingUser, compareError: false, passwordCorrect: false}
+        ])('loginUser should respond with status $statusCode and correct error message', async ({payload, statusCode, error, findOne, compareError: compareError, passwordCorrect}) => {
             mockFindOne.mockReturnValue(findOne)
-            bcrypt.compare.mockImplementationOnce((data: string, encrypted: string, callback: any) => {
-                callback(callbackError, passwordCorrect)
+            bcrypt.compare.mockImplementationOnce(() => {
+                if(compareError)
+                    throw Error()
             })
             const res = await request(app.use(AuthRouter))
             .post('/login')

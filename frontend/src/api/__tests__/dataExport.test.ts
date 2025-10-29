@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import {getXlsxWithArtworksData, getXlsxWithCollectionData} from '../dataExport';
+import {getArtworksFilesArchive, getXlsxWithArtworksData, getXlsxWithCollectionData} from '../dataExport';
 import axios from "axios"
 import 'dotenv/config'
 import { collectionId, axiosError } from './utils/consts';
@@ -25,8 +25,9 @@ describe("dataExport tests", () => {
                 ["Tytuł"],
                 ExportExtent.all,
                 {},
-                new URLSearchParams(),
+                new URLSearchParams("foo=1&bar=2"),
                 "test.xlsx",
+                false,
                 false,
                 false
             );
@@ -40,7 +41,12 @@ describe("dataExport tests", () => {
                         collectionIds: [collectionId],
                         columnNames: ["Tytuł"],
                         exportExtent: "all",  
-                        selectedArtworks: []
+                        selectedArtworks: [],
+                        exportAsCSV: false,
+                        includeFilenames: false,
+                        includeIds: false,
+                        foo: "1",
+                        bar: "2"
                     },
                     
                 }
@@ -57,6 +63,7 @@ describe("dataExport tests", () => {
                 {},
                 new URLSearchParams(),
                 "test.xlsx",
+                false,
                 false,
                 false
             )).rejects.toThrow(axiosError);
@@ -81,6 +88,33 @@ describe("dataExport tests", () => {
             mockAxios.get.mockRejectedValueOnce(new Error("Network Error"));
 
             await expect(getXlsxWithCollectionData(collectionId)).rejects.toThrow(axiosError);
+        });
+    })
+
+    describe("getArtworksFilesArchive tests", () => {
+        it("should call axios.get with correct parameters", async () => {
+            mockAxios.get.mockResolvedValueOnce({  });
+
+            const result = await getArtworksFilesArchive([collectionId], ExportExtent.all, {}, new URLSearchParams(), "archive.zip");
+
+            expect(mockAxios.get).toHaveBeenCalledWith(
+                `${process.env.REACT_APP_API_URL}v1/dataExport/files`,
+                {
+                    responseType: "blob",
+                    params: {
+                        collectionIds: [collectionId],
+                        exportExtent: "all",
+                        searchParams: expect.any(URLSearchParams),
+                        selectedArtworks: []                    
+                    }
+                }
+            )
+        });
+
+        it("should throw error if API call fails", async () => {
+            mockAxios.get.mockRejectedValueOnce(new Error("Network Error"));
+
+            await expect(getArtworksFilesArchive([collectionId], ExportExtent.all, {}, new URLSearchParams(), "archive.zip")).rejects.toThrow(axiosError);
         });
     })
 })

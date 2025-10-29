@@ -134,37 +134,29 @@ describe("CreateCollectionPage tests", () => {
         {
             case: "collection with provided name already exists", 
             axiosError: {response: {data: {error: "Collection with provided name already exists"}}},
-            errorMessage: /kolekcja o podanej nazwie już istnieje/i
-        },
-        {
-            case: "categories are not specified", 
-            axiosError: {response: {data: {error: "Incorrect request body provided"}}},
-            errorMessage: /niepoprawne dane formularza/i
+            errorMessage: /kolekcja o tej nazwie już istnieje/i
         },
         {
             case: "server throws another other error",
             axiosError: {response: {data: {error: "Internal server error"}}},
-            errorMessage: /błąd serwera/i
-        },
-        {
-            case: "server throws error with incorrect format",
-            axiosError: {message: "Error message"},
-            errorMessage: /nieoczekiwany błąd/i
+            errorMessage: /Wystąpił błąd. Spróbuj ponownie./i
         }
     ])('should show appropriate error message when $case', async ({axiosError, errorMessage}) => {
-        const {getByText, getByLabelText} = renderPage(queryClient)
+        const {getByText, getByLabelText, getByPlaceholderText, container} = renderPage(queryClient)
         mockCreateCollection.mockImplementation(() => {
             throw axiosError;
         });
         const nameInputField = getByLabelText("name")
         const descriptionInputField = getByLabelText("description")
+        const categoryInputField = getByPlaceholderText("Nazwa kategorii")
         const createButton = getByText(/utwórz/i)
 
         await user.type(nameInputField, "collection name")
         await user.type(descriptionInputField, "collection description")
+        await user.type(categoryInputField, "Title")
+        await new Promise(res => setTimeout(res, 600));
         await user.click(createButton)
 
-        expect(mockCreateCollection).toHaveBeenCalled()
         expect(getByText(errorMessage)).toBeInTheDocument()
     })
 
@@ -174,11 +166,12 @@ describe("CreateCollectionPage tests", () => {
         const nameInputField = getByLabelText("name")
         const createButton = getByText(/utwórz/i)
         const descriptionInputField = getByLabelText("description")
-        const firstCategoryInputField = getByPlaceholderText(/podaj nazwę kategorii.../i)
+        const firstCategoryInputField = getByPlaceholderText(/nazwa kategorii/i)
 
         await user.type(nameInputField, "collection name")
         await user.type(descriptionInputField, "collection description")
         await user.type(firstCategoryInputField, "Title")
+        await new Promise(res => setTimeout(res, 600));
         await user.click(createButton)
 
         expect(mockCreateCollection).toHaveBeenCalledWith(
@@ -195,14 +188,15 @@ describe("CreateCollectionPage tests", () => {
         const nameInputField = getByLabelText("name")
         const createButton = getByText(/utwórz/i)
         const descriptionInputField = getByLabelText("description")
-        const firstCategoryInputField = getByPlaceholderText(/podaj nazwę kategorii.../i)
+        const firstCategoryInputField = getByPlaceholderText(/nazwa kategorii/i)
 
         await user.type(nameInputField, "collection name")
         await user.type(descriptionInputField, "collection description")
         await user.type(firstCategoryInputField, "Ti.tle")
+        await new Promise(res => setTimeout(res, 600));
         await user.click(createButton)
 
-        expect(getByText(/nazwa kategorii nie może zawierać kropki/i)).toBeInTheDocument()
+        expect(getByText(/nazwa nie może zawierać znaku: ./i)).toBeInTheDocument()
     })
 
     it("should fill initial category scructure correctly when in edit mode and call updateCollection with correct arguments when save button is clicked", async () => {

@@ -88,7 +88,7 @@ export const importDataAsCollection = authAsyncWrapper(async (req: Request, res:
         if (err.message === `Incorrect request body provided` || err.message === `Invalid file extension`)
             res.status(400).json({ error: err.message })
         else if (err.message === "Invalid data in the spreadsheet file" || err.message === "Invalid categories data"){
-            res.status(400).json({ error: err.message, cause: err.cause })}
+            res.status(400).json({ error: err.message, cause: err.cause?.toString() })}
         else
             res.status(503).json({ error: `Database unavailable` })
     }

@@ -5,11 +5,29 @@ import Navbar from "../../components/navbar/Navbar"
 import Navigation from "../../components/Navigation";
 import { ReactComponent as DragAndDrop } from "../../assets/icons/dragAndDrop.svg"
 import { ReactComponent as ExcelIcon } from "../../assets/icons/excel.svg"
+import { ReactComponent as CSVIcon } from "../../assets/icons/csv.svg"
+import { ReactComponent as Close } from "../../assets/icons/close.svg";
+import { ReactComponent as UnknownFile } from "../../assets/icons/unknown-file.svg";
 import { ReactComponent as ArchiveIcon } from "../../assets/icons/archive_icon.svg"
 import { useMutation, useQueryClient } from "react-query";
 import { importDataAsCollection } from "../../api/dataImport";
 import { useUser } from "../../providers/UserProvider";
 import CategoryStructureExcelExample from '../../assets/images/Struktura_excel.png';
+
+type ErrorCause = 
+    "Header has duplicate values" |
+    "Row contains more columns than the header" |
+    "Header has empty fields" |
+    "No subcategory name after the dot symbol in header field" |
+    "Missing parent category";
+
+const translations = {
+    "Header has duplicate values": "Nagłówek zawiera zduplikowane wartości",
+    "Row contains more columns than the header": "Wiersz zawiera więcej kolumn niż nagłówek",
+    "Header has empty fields": "Nagłówek ma puste pola",
+    "No subcategory name after the dot symbol in header field": "Brak nazwy subkategorii po symbolu kropki w polu nagłówka",
+    "Missing parent category": "Brakujące kategorie nadrzędne",
+}
 
 const ImportCollectionPage = () => {
     const nbsp = "\u00A0"
@@ -18,7 +36,7 @@ const ImportCollectionPage = () => {
     const [fileData, setFileData]: any = useState(false)
     const [archiveLoaded, setArchiveLoaded] = useState(false)
     const [archiveFilename, setArchiveFilename]: any = useState(false)
-    const [archiveFile, setArchiveFile]: any = useState(false)
+    const [archiveFile, setArchiveFile] = useState<File | undefined>(undefined)
     const [collectionName, setCollectionName] = useState("")
     const [collectionDescription, setCollectionDescription] = useState("")
     const [childParentPairs, setChildParentPairs]: any = useState([])
@@ -34,7 +52,22 @@ const ImportCollectionPage = () => {
 
     useEffect(() => {
         handleFileDataHeaderUpdate()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [childParentPairs]);
+
+    const removeEmptyColumns = (data: string[][]): string[][] => {
+        if (data.length === 0) return data;
+
+        const maxColumns = Math.max(...data.map(row => row.length));
+
+        const columnsToKeep = Array.from({ length: maxColumns }, (_, i) =>
+            data.some(row => row[i] !== undefined && row[i] !== "")
+        );
+
+        return data.map(row =>
+            row.filter((_, i) => columnsToKeep[i])
+        );
+    };
 
     const handleFileUpload = (event: any) => {
         const file = event.target.files[0]
@@ -48,7 +81,9 @@ const ImportCollectionPage = () => {
             const worksheetName = workbook.SheetNames[0];
             const worksheet = workbook.Sheets[worksheetName];
 
-            const parsedData: Array<Array<string>> = XLSX.utils.sheet_to_json(worksheet, {header:1, defval: "", raw: false});
+            const parsedData: Array<Array<string>> = removeEmptyColumns(
+                XLSX.utils.sheet_to_json(worksheet, {header:1, defval: "", raw: false})
+            );
 
             setFileLoaded(true)
             setFileName(file.name)
@@ -62,6 +97,7 @@ const ImportCollectionPage = () => {
             setFileNotLoadedError(nbsp)
         };
         reader.readAsArrayBuffer(file)
+        event.target.value = "";
     }
 
     const handleArchiveFileUpload = (event: any) => {
@@ -70,6 +106,7 @@ const ImportCollectionPage = () => {
         setArchiveLoaded(true)
         setArchiveFilename(file.name)
         setArchiveFile(file)
+        event.target.value = "";
     }
 
     const handleOptionChange = ((event: ChangeEvent<HTMLSelectElement>) => {
@@ -83,12 +120,16 @@ const ImportCollectionPage = () => {
     })
 
     const showServerError = ((error: any) => {
-        if(error.error == 'Incorrect request body provided')
-            setServerError("Nieprawidłowe dane w treści żądania")
-        else if(error.error == "Invalid data in the spreadsheet file" || error.error == "Invalid categories data")
-            setServerError(error.cause)
-        else
-            setServerError("Import kolekcji nie powiódł się")
+        if(error.error === 'Incorrect request body provided')
+            setServerError(`Import kolekcji nie powiódł się z powodu nieprawidłowej treści żądania. Upewnij się, że pola "Nazwa kolekcji" i "Opis kolekcji" są wypełnione, oraz że plik arkusza kalkulacyjnego zawiera przynajmniej jeden rekord oprócz nagłówka.`)
+        else if(error.error === "Invalid data in the spreadsheet file" || error.error === "Invalid categories data") {
+            const errCause = error.error === "Invalid categories data" ? error.cause : error.cause.substring(7)
+            setServerError(`Nieprawidłowe dane w pliku arkusza kalkulacyjnego. ${translations[errCause.split(":")[0] as ErrorCause] ? 
+                `${translations[errCause.split(":")[0] as ErrorCause]}${errCause.split(":")[1] ? `:${errCause.split(":")[1]}` : ""}` :
+                errCause}
+            `)
+        } else
+            setServerError("Błąd serwera. Import kolekcji nie powiódł się.")
     })
 
     const handleCollectionNameChange = ((event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -140,6 +181,21 @@ const ImportCollectionPage = () => {
         }
     }
     
+    const handleFileRemove = (event: any) => {
+        event.preventDefault()
+        setFileLoaded(false)
+        setFileName("")
+        setFileData(false)
+        setChildParentPairs([])
+    };
+
+    const handleArchiveFileRemove = (event: any) => {
+        event.preventDefault()
+        setArchiveLoaded(false)
+        setArchiveFilename("")
+        setArchiveFile(undefined)
+    };
+
     const handleCollectionSubmit = (event: any) => {
         event.preventDefault()
         setCollectionNameError(collectionName ? nbsp : "Nazwa kolekcji jest wymagana")
@@ -157,6 +213,17 @@ const ImportCollectionPage = () => {
                 showServerError(error.response.data)
             }
     })
+
+    const FileExtensionIcon: React.FC<{name: string; isArchive: boolean}> = ({name, isArchive}) => {
+        if(isArchive && (/\.(zip)$/i.test(name)))
+            return <ArchiveIcon className="w-12 h-12"/>
+        if((/\.(csv|tsv|txt)$/i.test(name)))
+            return (<CSVIcon className="w-12 h-12"/>)
+        else if((/\.(xlsx|xls|xlsm|xlsb|ods|xltx|xltm)$/i.test(name)))
+            return (<ExcelIcon className="w-12 h-12"/>)
+        else
+            return (<UnknownFile className="w-12 h-12"/>)
+    }
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
@@ -184,11 +251,22 @@ const ImportCollectionPage = () => {
                                     border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-600
                                     dark:bg-gray-800 hover:bg-gray-100 dark:border-gray-600
                                     dark:hover:border-gray-500 dark:hover:bg-gray-700">
-                    {fileLoaded ? <div className="flex flex-row items-center justify-center gap-4">
-                        <ExcelIcon className="w-12 h-12"/>
-                        <p className="text-sm font-bold text-gray-500 dark:text-gray-400">
-                            {fileName}
-                        </p>
+                    {fileLoaded ? <div className="flex flex-row items-center justify-between w-full">
+                        <div className="flex flex-row items-center justify-center gap-4">
+                            <FileExtensionIcon name={fileName} isArchive={false}/>
+                            <p className="text-sm font-bold text-gray-500 dark:text-gray-400">
+                                {fileName}
+                            </p>
+                        </div>
+                        <button
+                            aria-label="remove-file-to-load"
+                            type="button"
+                            className="text-gray-400 hover:bg-gray-200 hover:text-gray-900 text-sm
+                                    dark:hover:bg-gray-600 dark:hover:text-white p-2 rounded-lg cursor-pointer"
+                            onClick={handleFileRemove}
+                        >
+                            <Close />
+                        </button>
                     </div> : <div className="flex flex-row items-center justify-center gap-4">
                         <DragAndDrop className="w-12 h-12 text-gray-500 dark:text-gray-400"/>
                         <p className="text-sm font-normal text-gray-500 dark:text-gray-400">
@@ -204,7 +282,7 @@ const ImportCollectionPage = () => {
                     
                 </label>
                             <p
-                                className={`block text-sm ${fileNotLoadedError != nbsp ? "text-red-500 font-normal": "font-semibold text-gray-700 dark:text-white"}`}
+                                className={`block text-sm ${fileNotLoadedError !== nbsp ? "text-red-500 font-normal": "font-semibold text-gray-700 dark:text-white"}`}
                             >
                                 {fileLoaded ? (
                                     <span>
@@ -291,21 +369,22 @@ const ImportCollectionPage = () => {
                                                     onChange={handleOptionChange}   
                                                 >
                                                     <option
-                                                        selected={categoryParentShortName == "-" ? true : false}
+                                                        selected={categoryParentShortName === "-" ? true : false}
                                                         value="-" 
                                                     >
                                                         -
                                                     </option>
                                                     {childParentPairs.filter((pair: any) => pair[0] !== "_id" && pair[0] !== "nazwy plików").map((a: any) => {
                                                         const optionValue = a[0]
-                                                        if(optionValue != categoryShortName) {
+                                                        if(optionValue !== categoryShortName) {
                                                             return (<option
-                                                                selected={optionValue == categoryParentShortName ? true : false}
+                                                                selected={optionValue === categoryParentShortName ? true : false}
                                                                 value={optionValue}
                                                                 >
                                                                     {optionValue}
                                                                 </option>)
                                                         }
+                                                        return <></>
                                                     })}                                                            
                                                 </select>
                                             </div>
@@ -336,11 +415,22 @@ const ImportCollectionPage = () => {
                                             dark:hover:border-gray-500 dark:hover:bg-gray-700"
                             >
                                 {archiveLoaded 
-                                    ? <div className="flex flex-row items-center justify-center gap-4">
-                                        <ArchiveIcon className="w-12 h-12"/>
-                                        <p className="text-sm font-bold text-gray-500 dark:text-gray-400">
-                                            {archiveFilename}
-                                        </p>
+                                    ? <div className="flex flex-row items-center justify-between w-full">
+                                        <div className="flex flex-row items-center justify-center gap-4">
+                                            <FileExtensionIcon name={archiveFilename} isArchive={true}/>
+                                            <p className="text-sm font-bold text-gray-500 dark:text-gray-400">
+                                                {archiveFilename}
+                                            </p>
+                                        </div>
+                                        <button
+                                            aria-label="remove-archive-file-to-load"
+                                            type="button"
+                                            className="text-gray-400 hover:bg-gray-200 hover:text-gray-900 text-sm
+                                                    dark:hover:bg-gray-600 dark:hover:text-white p-2 rounded-lg cursor-pointer"
+                                            onClick={handleArchiveFileRemove}
+                                        >
+                                            <Close />
+                                        </button>
                                     </div> 
                                     : <div className="flex flex-row items-center justify-center gap-4">
                                         <DragAndDrop className="w-12 h-12 text-gray-500 dark:text-gray-400"/>
@@ -362,7 +452,10 @@ const ImportCollectionPage = () => {
                                 to tutaj możesz wgrać wyeksportowany plik archiwum. Jeśli w archiwum znajdują się dodatkowe, nieprawidłowe pliki,
                                 to zostaną one pominięte.
                             </p>
-                            <div className="text-red-500 text-sm">
+                            <div 
+                                aria-label="server-error"
+                                className="text-red-500 text-sm"
+                            >
                                 {serverError}
                             </div>
                             <div className="flex justify-end mt-6">
@@ -374,8 +467,9 @@ const ImportCollectionPage = () => {
                                     Anuluj
                                 </button>
                                 <button
+                                    aria-label="import-data"
                                     type="submit"
-                                    disabled={!fileLoaded || circularReferences.length != 0 ? true : false }
+                                    disabled={!fileLoaded || circularReferences.length !== 0 ? true : false }
                                     className="px-4 py-2 color-button"
                                 >
                                     Importuj kolekcję
