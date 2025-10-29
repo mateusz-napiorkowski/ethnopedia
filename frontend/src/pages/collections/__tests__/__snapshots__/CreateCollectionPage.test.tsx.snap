@@ -563,7 +563,7 @@ exports[`CreateCollectionPage tests should fill initial category scructure corre
           </span>
         </button>
         <div
-          id="DndDescribedBy-10"
+          id="DndDescribedBy-8"
           style="display: none;"
         >
           
@@ -575,7 +575,7 @@ exports[`CreateCollectionPage tests should fill initial category scructure corre
         <div
           aria-atomic="true"
           aria-live="assertive"
-          id="DndLiveRegion-10"
+          id="DndLiveRegion-8"
           role="status"
           style="position: fixed; top: 0px; left: 0px; width: 1px; height: 1px; margin: -1px; border: 0px; padding: 0px; overflow: hidden; clip-path: inset(100%); white-space: nowrap;"
         />
