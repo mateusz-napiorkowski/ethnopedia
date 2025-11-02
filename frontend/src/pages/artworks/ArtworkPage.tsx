@@ -64,6 +64,7 @@ const ArtworkPage = () => {
                     <Navigation />
                     <ArtworkDetails
                         collectionName={artworkData.collectionName}
+                        collectionId={artworkData.collectionId}
                         detailsToShow={artworkData}
                         handleEditClick={() => {
                             // Keep the more specific navigation from search-all-frontend

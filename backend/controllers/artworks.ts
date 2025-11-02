@@ -283,19 +283,23 @@ export const deleteArtworks = authAsyncWrapper(async (req: Request, res: Respons
     }  
 })
 
-export const addCollectionIdtoArtworks = authAsyncWrapper(async (req: Request, res: Response) => {
+export const addCollectionIdtoArtworks = async (req: Request, res: Response) => {
     console.log("Adding CollectionId to Artworks...");
-    
+
     const collections = await CollectionCollection.find({}, { name: 1 });
     const collectionMap = new Map(collections.map(c => [c.name, c._id]));
 
-
+    const artworksCount = await Artwork.countDocuments()
+    let artworksMatched = 0
     for (const [name, id] of collectionMap.entries()) {
-    await Artwork.updateMany(
-        { collectionName: name },
-        { $set: { collectionId: id } }
-    );
+        const updateResult = await Artwork.updateMany(
+            { collectionName: name },
+            { $set: { collectionId: id } }
+        );
+        artworksMatched += updateResult.matchedCount
     }
 
     console.log("Finished adding CollectionId to Artworks");
-})
+    console.log(`All artworks found: ${artworksCount}, artworks mateched: ${artworksMatched}`)
+    res.status(200).json({artworksCount: artworksCount, artworksMatched: artworksMatched})
+}

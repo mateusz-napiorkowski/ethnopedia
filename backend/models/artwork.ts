@@ -3,6 +3,7 @@ import mongoose, { Schema, SchemaType } from "mongoose"
 
 const artworkSchema = new mongoose.Schema({
     collectionName: {type: String},
+    collectionId: {type: String},
     categories: {type: Schema.Types.Mixed},
     files: [
     {
