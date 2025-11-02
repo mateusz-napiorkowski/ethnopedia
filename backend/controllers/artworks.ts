@@ -282,3 +282,20 @@ export const deleteArtworks = authAsyncWrapper(async (req: Request, res: Respons
             res.status(503).json( { error: "Database unavailable" })    
     }  
 })
+
+export const addCollectionIdtoArtworks = authAsyncWrapper(async (req: Request, res: Response) => {
+    console.log("Adding CollectionId to Artworks...");
+    
+    const collections = await CollectionCollection.find({}, { name: 1 });
+    const collectionMap = new Map(collections.map(c => [c.name, c._id]));
+
+
+    for (const [name, id] of collectionMap.entries()) {
+    await Artwork.updateMany(
+        { collectionName: name },
+        { $set: { collectionId: id } }
+    );
+    }
+
+    console.log("Finished adding CollectionId to Artworks");
+})
