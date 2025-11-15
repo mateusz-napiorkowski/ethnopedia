@@ -51,8 +51,8 @@ const CollectionsPage = () => {
     }, [newCollection]);
 
     const { data: fetchedData, refetch } = useQuery({
-            queryKey: ["collection", currentPage, pageSize, newCollection, sortDirection],
-            queryFn: () => getAllCollections(currentPage, pageSize, sortDirection),
+            queryKey: ["collection", currentPage, pageSize, newCollection, sortDirection, jwtToken],
+            queryFn: () => getAllCollections(currentPage, pageSize, sortDirection, jwtToken),
             keepPreviousData: true
         }
     );
@@ -264,16 +264,20 @@ const CollectionsPage = () => {
                                             <p className="text-gray-600 dark:text-gray-300 flex-grow break-words">
                                                 {description}
                                             </p>
-                                            <div className="mt-2 text-md flex items-center">
-          <span className="font-bold mr-1">
-            {collection.artworksCount ?? 0}
-          </span>
-                                                {(collection.artworksCount ?? 0) === 1
-                                                    ? "rekord"
-                                                    : (collection.artworksCount ?? 0) > 1 &&
-                                                    (collection.artworksCount ?? 0) < 5
-                                                        ? "rekordy"
-                                                        : "rekordów"}
+                                            <div className="mt-2 text-md flex items-center justify-between">
+                                                <span>
+                                                    <span className="font-bold mr-1">{collection.artworksCount ?? 0}</span>
+                                                    {(collection.artworksCount ?? 0) === 1
+                                                        ? "rekord"
+                                                        : (collection.artworksCount ?? 0) > 1 &&
+                                                        (collection.artworksCount ?? 0) < 5
+                                                            ? "rekordy"
+                                                            : "rekordów"}
+                                                </span>
+                                                {
+                                                    collection.isPrivate && <span className="font-normal text-md">Kolekcja prywatna</span>
+                                                }
+                                                
                                             </div>
                                         </div>
                                     </div>

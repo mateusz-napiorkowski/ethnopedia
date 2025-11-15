@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express"
 import jwt from "jsonwebtoken";
 
 export const authAsyncWrapper = (
-    handler: (req: Request, res: Response, next: NextFunction) => any,
+    handler: (req: Request, res: Response, user: any) => any,
 ) => {
     return async (req: Request, res: Response, next: NextFunction) => {
         try {
@@ -12,8 +12,8 @@ export const authAsyncWrapper = (
                 res.status(400).json({ error: err.message })
                 return next(err)
             }
-            jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string)
-            await handler(req, res, next)
+            const user = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string)
+            await handler(req, res, user)
         } catch {
             const err = new Error('Access denied')
             res.status(401).json({ error: err.message })

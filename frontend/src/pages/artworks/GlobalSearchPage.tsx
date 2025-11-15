@@ -64,7 +64,7 @@ const GlobalSearchPage = ({ pageSize = 10 }) => {
     useEffect(() => {
         const fetchCollections = async () => {
             try {
-                const data = await getAllCollections(1, 1000, "asc");
+                const data = await getAllCollections(1, 1000, "asc", jwtToken);
                 console.log("Pobrane kolekcje:", data);
                 const ids = data.collections.map((col: any) => col.id);
                 // setAllCollectionIds(ids);

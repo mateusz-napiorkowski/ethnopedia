@@ -1,5 +1,6 @@
 import { Request, Response } from "express"
 import mongoose, { ClientSession, SortOrder } from "mongoose"
+import jwt from "jsonwebtoken";
 import { authAsyncWrapper } from "../middleware/auth"
 import Artwork from "../models/artwork";
 import CollectionCollection from "../models/collection";
@@ -15,13 +16,18 @@ export const getAllCollections = async (req: Request, res: Response) => {
         if(!page || !pageSize || !sortOrder)
             throw new Error("Request is missing query params")
 
-        const collections = await CollectionCollection.find()
+        const token = req.headers.authorization?.split(" ")[1]
+        const user = token ? jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string) : undefined
+
+        const collectionFindFilter = user ? {} : {isPrivate: false}
+
+        const collections = await CollectionCollection.find(collectionFindFilter)
             .collation({ locale: 'en', strength: 1 })
             .sort({name: sortOrder as SortOrder})
             .skip((page - 1) * pageSize)
             .limit(pageSize)
             .exec()
-        
+
         const totalCollections = await CollectionCollection.countDocuments()
         
         const pipeline = [
@@ -41,7 +47,9 @@ export const getAllCollections = async (req: Request, res: Response) => {
             id: collection._id,
             name: collection.name,
             description: collection.description,
-            artworksCount: artworkCounts.find((element) => element._id == collection.name)?.count ?? 0
+            artworksCount: artworkCounts.find((element) => element._id == collection.name)?.count ?? 0,
+            isPrivate: collection.isPrivate,
+            owner: collection.owner
         }))
 
         res.status(200).json({
@@ -78,9 +86,10 @@ export const getCollection = async (req: Request, res: Response) => {
     }
 }
 
-export const createCollection = authAsyncWrapper(async (req: Request, res: Response) => {
+export const createCollection = authAsyncWrapper(async (req: Request, res: Response, user: any) => {
     const collectionName = req.body.name
     const collectionDescription = req.body.description
+    const isCollectionPrivate = req.body.isCollectionPrivate
     try {
         if(!collectionName || !collectionDescription || !req.body.categories || !hasValidCategoryFormat(req.body.categories))
             throw new Error("Incorrect request body provided")
@@ -94,7 +103,9 @@ export const createCollection = authAsyncWrapper(async (req: Request, res: Respo
                 [{
                     name: req.body.name.trim(),
                     description: req.body.description.trim(),
-                    categories: categories
+                    categories: categories,
+                    isPrivate: isCollectionPrivate ? isCollectionPrivate : false,
+                    owner: user.userId
                 }],
                 { session }
             );

@@ -45,6 +45,7 @@ const CreateCollectionPage = () => {
     const [formErrors, setFormErrors] = useState<FormErrors>({});
     const [submitError, setSubmitError] = useState<string | null>(null);
     const [hasSubmitted, setHasSubmitted] = useState(false);
+    const [isCollectionPrivate, setIsCollectionPrivate] = useState(true)
 
     const removeIsNewFlag = (categories: Category[]): Category[] => {
         return categories.map(({ isNew, subcategories, ...rest }) => ({
@@ -279,7 +280,7 @@ const CreateCollectionPage = () => {
                 await updateCollection(collectionId, formValues.name, formValues.description, cleaned, jwtToken);
                 navigate(`/collections/${collectionId}/artworks`);
             } else {
-                await createCollection(formValues.name, formValues.description, formValues.categories, jwtToken);
+                await createCollection(formValues.name, formValues.description, formValues.categories, jwtToken, isCollectionPrivate);
                 navigate("/");
             }
 
@@ -376,6 +377,36 @@ const CreateCollectionPage = () => {
                             currentState: formValues
                         }}
                     />
+                    
+                    {!isEditMode && <>
+                        <label className="block text-sm font-bold text-gray-700 dark:text-white my-2 mt-4">
+                            Dostępność kolekcji
+                        </label>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                            Ustal dla kogo ma być widoczna kolekcja.
+                            Kolekcja prywatna jest widoczna tylko dla użytkowników zalogowanych.
+                            Kolekcja publiczna jest widoczna również dla użytkowników niezalogowanych.
+                        </p>
+                        <div>
+                            <button
+                                aria-label='select-export-as-spreadsheet'
+                                type="button"
+                                onClick={() => setIsCollectionPrivate(false)}
+                                className={`px-4 py-2 ${!isCollectionPrivate ? "color-button" : ""} rounded-r-none text-xs`}
+                            >
+                                Kolekcja publiczna
+                            </button>
+                            <button
+                                aria-label='select-export-as-csv'
+                                type="button"
+                                onClick={() => setIsCollectionPrivate(true)}
+                                className={`px-4 py-2 ${isCollectionPrivate ? "color-button" : ""} rounded-l-none text-xs`}
+                            >
+                                Kolekcja prywatna
+                            </button>  
+                        </div>
+                        </>
+                    }
 
                     {submitError && (
                         <div className="text-red-500 text-sm my-2">{submitError}</div>
