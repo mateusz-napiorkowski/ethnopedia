@@ -126,7 +126,7 @@ const CreateArtworkPage: React.FC = () => {
         if (isInitialized) return;
 
         if (artworkId) {
-            getArtwork(artworkId).then((res) => {
+            getArtwork(artworkId, jwtToken).then((res) => {
                 const initialData = {
                     categories: res.artwork.categories || [],
                     filesToUpload: [],

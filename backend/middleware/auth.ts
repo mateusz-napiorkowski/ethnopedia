@@ -9,7 +9,7 @@ export const authAsyncWrapper = (
             const token = req.headers.authorization?.split(" ")[1]
             if (!token) {
                 const err = new Error("No token provided")
-                res.status(400).json({ error: err.message })
+                res.status(401).json({ error: err.message })
                 return next(err)
             }
             const user = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string)

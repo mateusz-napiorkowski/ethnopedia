@@ -1,6 +1,7 @@
-import { Request, Response, Express } from "express"
+import { Request, Response } from "express"
 import mongoose, { ClientSession, SortOrder } from "mongoose"
 import { authAsyncWrapper } from "../middleware/auth"
+import { verifyToken } from "../utils/auth"
 import Artwork from "../models/artwork";
 import CollectionCollection from "../models/collection"
 import { constructQuickSearchFilter, constructAdvSearchFilter, sortRecordsByCategory, constructTopmostCategorySearchTextFilter, handleFileUploads, handleFileDeletions } from "../utils/artworks"
@@ -21,12 +22,20 @@ export const getArtwork = async (req: Request, res: Response) => {
         const artwork = await Artwork.findById(artworkId).exec()
         if (!artwork)
             throw new Error('Artwork not found')
+        const collection = await CollectionCollection.findById(artwork.collectionId).exec()
+        if (!collection)
+            throw new Error(`Collection not found`)
+        if(collection.isPrivate) {
+            verifyToken(req.headers.authorization)
+        }
         res.status(200).json({ artwork })
     } catch (error) {
         const err = error as Error
         console.error(error)
         if (err.message === 'Invalid artwork id')
             res.status(400).json({ error: err.message })
+        else if(err.message === "No token provided" || err.message === 'Access denied')
+            res.status(401).json({ error: err.message })
         else if(err.message === 'Artwork not found')
             res.status(404).json({ error: err.message })
         else
@@ -138,7 +147,7 @@ export const createArtwork = authAsyncWrapper((async (req: Request, res: Respons
             if(!artworkCategoriesHaveValidFormat(categories, collection.categories))
                 throw new Error(`Incorrect request body provided`)
 
-            const artwork = new Artwork({ categories: categories, collectionName: collection.name });
+            const artwork = new Artwork({ categories: categories, collectionName: collection.name, collectionId: collection._id });
             await artwork.save({ session });
 
             const {
