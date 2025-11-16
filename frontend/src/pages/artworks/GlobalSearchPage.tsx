@@ -103,7 +103,8 @@ const GlobalSearchPage = ({ pageSize = 10 }) => {
                 sortCategory || "createdAt", // domyślna kategoria sortowania
                 sortDirection || "asc",      // domyślny kierunek
                 new URLSearchParams(location.search).get("searchText"),
-                Object.fromEntries(new URLSearchParams(location.search).entries())
+                Object.fromEntries(new URLSearchParams(location.search).entries()),
+                jwtToken
             ),
         enabled: selectedCollectionIds.length > 0,
         keepPreviousData: false,

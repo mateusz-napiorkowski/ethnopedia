@@ -53,7 +53,8 @@ const CreateArtworkPage: React.FC = () => {
                 'createdAt',
                 'desc',
                 '',
-                {}
+                {},
+                jwtToken
             ),
         { enabled: !!collectionId }
     );

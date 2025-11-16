@@ -61,7 +61,8 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                 sortCategory || "createdAt", // sortBy
                 sortDirection || "asc",      // sortOrder
                 new URLSearchParams(location.search).get("searchText"),
-                Object.fromEntries(new URLSearchParams(location.search).entries())
+                Object.fromEntries(new URLSearchParams(location.search).entries()),
+                jwtToken
             ),
         enabled: !!collectionId,
         keepPreviousData: false,

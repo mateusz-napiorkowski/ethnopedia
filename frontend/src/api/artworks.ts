@@ -19,6 +19,7 @@ export const getArtworksForPage = async (
     sortOrder: string,
     searchText: string | null,
     searchRules: Record<string, any>,
+    jwtToken: string | undefined = undefined
 ) => {
     return await axios
         .get(`${API_URL}v1/artworks/`, {
@@ -32,6 +33,7 @@ export const getArtworksForPage = async (
                 collectionIds: collectionIds,
                 ...searchRules,
             },
+            headers: jwtToken ? { Authorization: `Bearer ${jwtToken}` } : {}
         })
         .then(res => res.data);
 };
