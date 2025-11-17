@@ -36,7 +36,7 @@ export const getArtwork = async (req: Request, res: Response) => {
             res.status(400).json({ error: err.message })
         else if(err.message === "No token provided" || err.message === 'Access denied')
             res.status(401).json({ error: err.message })
-        else if(err.message === 'Artwork not found')
+        else if(err.message === 'Artwork not found' || err.message === 'Collection not found')
             res.status(404).json({ error: err.message })
         else
             res.status(503).json({ error: 'Database unavailable' })

@@ -16,7 +16,9 @@ export const oneCollectionData = {
     categories: [
         {name: 'Tytuł', subcategories: []}
     ],
-    __v: 0
+    __v: 0,
+    isPrivate: true,
+    owner: "12345678d6303ed5ac5a4321"
 }
 
 export const getArtworkFindByIdReturnValue = {
