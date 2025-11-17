@@ -54,8 +54,9 @@ jest.mock("../../utils/artworks", () => ({
     updateArtworkCategories: () => mockUpdateArtworkCategories()
 }))
 
+const mockJwtVerify = jest.fn()
 jest.mock("jsonwebtoken", () => ({
-	verify: jest.fn()
+	verify: () => mockJwtVerify()
 }))
 
 describe('collections controller', () =>{
@@ -230,12 +231,20 @@ describe('collections controller', () =>{
             categories: correctCategories,
             __v: 0
         })
+        const user = {
+            username: 'example user',
+            firstName: 'example user',
+            userId: '675ddf3b1e6d01766fbc5b17',
+            iat: 1763262553,
+            exp: 1764262553
+        }
         test("createCollection should respond with status 201 and correct body", async () => {
             mockHasValidCategoryFormat.mockReturnValue(true)
             mockStartSession.mockImplementation(() => startSessionDefaultReturnValue)
             mockCollectionFindOne.mockReturnValue({ exec: () => Promise.resolve(null) })
             mockCollectionCreate.mockReturnValue(collectionPromise)
             mockTrimCategoryNames.mockReturnValue(correctCategories)
+            mockJwtVerify.mockReturnValue(user)
             
             const payload = {
                 name: collectionName,

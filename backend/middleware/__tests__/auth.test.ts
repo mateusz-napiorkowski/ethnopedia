@@ -26,14 +26,14 @@ describe('auth middleware', () => {
         jest.resetAllMocks()
     })
 
-    test("endpoint should respond with status 400 and correct error message", async () => {
+    test("endpoint should respond with status 401 and correct error message", async () => {
         const res = await request(app)
             .post('/')
             .set('Authorization', `Bearer `)
             .set('Content-Type', 'application/json')
             .set('Accept', 'application/json')
 
-        expect(res.status).toBe(400)
+        expect(res.status).toBe(401)
         expect(res.body.error).toBe("No token provided")
     })
 
