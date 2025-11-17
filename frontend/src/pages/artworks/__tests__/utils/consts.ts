@@ -2,14 +2,6 @@ export const jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6In
     + "lcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaecc"
     + "N-rDSjRS3kApqlA"
 
-export const loggedInUserContextProps = {
-    isUserLoggedIn: true,
-    firstName: "123",
-    userId: "66b6506fbb64df165e8a9ce6",
-    jwtToken: jwtToken,
-    setUserData: jest.fn()
-};
-
 export const collectionData = {
     "_id": "675ddf8c1e6d01766fbc5b2e",
     "name": "example collection",

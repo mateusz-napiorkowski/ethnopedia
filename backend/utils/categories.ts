@@ -1,4 +1,5 @@
 import CollectionCollection from "../models/collection";
+import { verifyToken } from "./auth";
 import { collectionCategory, artworkCategory } from "./interfaces"
 
 export const hasValidCategoryFormat = (categories: Array<collectionCategory>, isRootArray = true): boolean => {
@@ -56,9 +57,15 @@ export const trimCategoryNames = (categories: collectionCategory[]): collectionC
     }))
 }
 
-export const getAllCategories = async (collectionIds: Array<string>) => {
+export const getAllCategories = async (collectionIds: Array<string>, authHeader: string | undefined = undefined) => {
     try {
-        const collections = await CollectionCollection.find({_id: { $in: collectionIds }}).exec()
+        let collectionFilter: any = {_id: {$in: collectionIds}}
+        try {
+            verifyToken(authHeader)
+        } catch {
+            collectionFilter = {_id: {$in: collectionIds}, isPrivate: false}
+        }
+        const collections = await CollectionCollection.find(collectionFilter).exec()
         if(collections.length !== collectionIds.length)
             throw new Error("Collection not found")
         const allCategories: Array<string> = []

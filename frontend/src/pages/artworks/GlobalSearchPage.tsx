@@ -112,7 +112,7 @@ const GlobalSearchPage = ({ pageSize = 10 }) => {
 
     const { data: categoriesData } = useQuery({
         queryKey: ["selectedCategories", selectedCollectionIds],
-        queryFn: () => getAllCategories(selectedCollectionIds),
+        queryFn: () => getAllCategories(selectedCollectionIds, jwtToken),
         enabled: selectedCollectionIds.length > 0,
     });
 

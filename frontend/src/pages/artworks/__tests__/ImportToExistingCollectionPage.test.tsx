@@ -6,7 +6,7 @@ import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "react-query";
 import * as XLSX from 'xlsx';
 import { UserContext } from '../../../providers/UserProvider';
-import { loggedInUserContextProps, jwtToken, fileData, newFileData, fileDataWithIdsAndFilenames, collectionData2 as collectionData} from './utils/consts';
+import { jwtToken, fileData, newFileData, fileDataWithIdsAndFilenames, collectionData2 as collectionData} from './utils/consts';
 
 const mockUseNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
@@ -30,6 +30,14 @@ jest.mock('../../../api/dataImport', () => ({
 
 const queryClient = new QueryClient();
 const user = userEvent.setup()
+
+export const loggedInUserContextProps = {
+    isUserLoggedIn: true,
+    firstName: "123",
+    userId: "66b6506fbb64df165e8a9ce6",
+    jwtToken: jwtToken,
+    setUserData: jest.fn()
+};
 
 const createXlsxFile = (xlsxData: Array<Array<string>>, fileName: string) => {
     const worksheet = XLSX.utils.aoa_to_sheet(xlsxData);

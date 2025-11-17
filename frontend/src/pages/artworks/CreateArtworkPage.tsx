@@ -33,7 +33,7 @@ const CreateArtworkPage: React.FC = () => {
 
     const { data: catData, isLoading: catsLoading } = useQuery(
         ['categories', collectionId],
-        () => getAllCategories([collectionId as string]),
+        () => getAllCategories([collectionId as string], jwtToken),
         { enabled: !!collectionId }
     );
 

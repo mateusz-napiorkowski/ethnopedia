@@ -31,7 +31,7 @@ const ImportToExistingCollectionPage = () => {
     
     const { data: categoriesData } = useQuery({
         queryKey: ["allCategories"],
-        queryFn: () => getAllCategories([collectionId!]),
+        queryFn: () => getAllCategories([collectionId!], jwtToken),
         enabled: !!collectionId,
     })
 

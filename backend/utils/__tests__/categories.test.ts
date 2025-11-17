@@ -3,7 +3,7 @@ import { getAllCategories, hasValidCategoryFormat, artworkCategoriesHaveValidFor
 
 const mockCollectionFind = jest.fn()
 jest.mock('../../models/collection', () => ({
-		find: () => mockCollectionFind()
+	find: () => mockCollectionFind()
 }))
 
 const firstCollectionCategories = [
