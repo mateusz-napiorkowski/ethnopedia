@@ -40,6 +40,11 @@ jest.mock("../../models/artwork", () => ({
     find: () => mockArtworkFind()
 }))
 
+const mockVerifyToken = jest.fn() 
+jest.mock('../../utils/auth', () => ({
+    verifyToken: () => mockVerifyToken()
+}))
+
 const mockHasValidCategoryFormat = jest.fn()
 const mockIsValidCollectionCategoryStructureForCollectionUpdate = jest.fn()
 const mockTrimCategoryNames = jest.fn()
@@ -206,10 +211,33 @@ describe('collections controller', () =>{
         })
 
         test.each([
-            {statusCode: 503, error: 'Database unavailable', findOne: { exec: () => {throw Error()} }},
-            {statusCode: 404, error: 'Collection not found', findOne: { exec: () => Promise.resolve(null) }}
-        ])('getCollection should respond with status $statusCode and correct error message', async ({statusCode, error, findOne}) => {
+            {statusCode: 503, error: 'Database unavailable', findOne: { exec: () => {throw Error()} }, verifyToken: () => {}},
+            {statusCode: 404, error: 'Collection not found', findOne: { exec: () => Promise.resolve(null) }, verifyToken: () => {}},
+            {statusCode: 401, error: 'Access denied',
+                findOne: { exec: () => Promise.resolve({
+                    _id: collectionId,
+                    name: collectionName,
+                    description: collectionDescription,
+                    __v: 0,
+                    isPrivate: true,
+                    owner: "12345678d6303ed5ac5a4321"
+                }) },
+                verifyToken: () => {throw Error("Access denied")}
+            },
+            {statusCode: 401, error: 'No token provided',
+                findOne: { exec: () => Promise.resolve({
+                    _id: collectionId,
+                    name: collectionName,
+                    description: collectionDescription,
+                    __v: 0,
+                    isPrivate: true,
+                    owner: "12345678d6303ed5ac5a4321"
+                }) },
+                verifyToken: () => {throw Error("No token provided")}
+            },
+        ])('getCollection should respond with status $statusCode and correct error message', async ({statusCode, error, findOne, verifyToken}) => {
             mockCollectionFindOne.mockReturnValue(findOne)
+            mockVerifyToken.mockImplementation(verifyToken)
 
             const res = await request(app.use(CollectionsRouter))
             .get(`/${collectionId}`);

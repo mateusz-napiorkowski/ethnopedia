@@ -39,7 +39,7 @@ const CreateArtworkPage: React.FC = () => {
 
     const { data: collData } = useQuery(
         ['collection', collectionId],
-        () => getCollection(collectionId!),
+        () => getCollection(collectionId!, jwtToken),
         { enabled: !!collectionId }
     );
 

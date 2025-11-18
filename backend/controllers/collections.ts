@@ -6,6 +6,7 @@ import Artwork from "../models/artwork";
 import CollectionCollection from "../models/collection";
 import { updateArtworkCategories } from "../utils/artworks";
 import { hasValidCategoryFormat, isValidCollectionCategoryStructureForCollectionUpdate, trimCategoryNames } from "../utils/categories";
+import { verifyToken } from "../utils/auth";
 
 export const getAllCollections = async (req: Request, res: Response) => {
     try {
@@ -75,12 +76,18 @@ export const getCollection = async (req: Request, res: Response) => {
         const collection = await CollectionCollection.findOne({ _id: collectionId }).exec()
         if (collection == null)
             throw new Error("Collection not found")
+        console.log(collection)
+        if(collection.isPrivate) {
+            verifyToken(req.headers.authorization)
+        }
         res.status(200).json(collection) 
     } catch (error) {
         const err = error as Error
         console.error(error)
         if (err.message === 'Collection not found')
             res.status(404).json({ error: err.message })
+        else if(err.message === "No token provided" || err.message === 'Access denied')
+            res.status(401).json({ error: err.message })
         else
             res.status(503).json({ error: 'Database unavailable' })
     }

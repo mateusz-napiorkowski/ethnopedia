@@ -71,7 +71,7 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
     const { data: collectionData } = useQuery({
         queryKey: [collectionId],
         enabled: !!collectionId,
-        queryFn: () => getCollection(collectionId as string),
+        queryFn: () => getCollection(collectionId as string, jwtToken),
     });
 
     const { data: categoriesData } = useQuery({

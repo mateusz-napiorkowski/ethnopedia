@@ -23,12 +23,13 @@ export const getAllCollections = async (page: number = 1, pageSize: number = 10,
         .then(res => res.data);
 }
 
-export const getCollection = async (id: string) => {
+export const getCollection = async (id: string, jwtToken: string | undefined = undefined) => {
     return await axios
         .get(
             `${API_URL}v1/collection/${id}`,
             {headers: {
-                'Content-Type': 'application/json; charset=UTF-8'
+                'Content-Type': 'application/json; charset=UTF-8',
+                Authorization: jwtToken ? `Bearer ${jwtToken}`: undefined
             }}
         )
         .then(res => res.data);
