@@ -66,7 +66,7 @@ export const getAllCategories = async (collectionIds: Array<string>, authHeader:
             collectionFilter = {_id: {$in: collectionIds}, isPrivate: false}
         }
         const collections = await CollectionCollection.find(collectionFilter).exec()
-        if(collections.length !== collectionIds.length)
+        if(collections.length === 0)
             throw new Error("Collection not found")
         const allCategories: Array<string> = []
         for(const collection of collections) {

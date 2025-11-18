@@ -3,7 +3,12 @@ import { getAllCategories, hasValidCategoryFormat, artworkCategoriesHaveValidFor
 
 const mockCollectionFind = jest.fn()
 jest.mock('../../models/collection', () => ({
-	find: () => mockCollectionFind()
+	find: (filter: any) => mockCollectionFind(filter)
+}))
+
+const mockVerifyToken = jest.fn() 
+jest.mock('../../utils/auth', () => ({
+	verifyToken: () => mockVerifyToken()
 }))
 
 const firstCollectionCategories = [
@@ -336,7 +341,9 @@ describe('categories util functions tests', () => {
 								__v: 0
 						}
 					])}},
-					collectionIds: ["6717d46c666e8575d873ee57"]
+					collectionIds: ["6717d46c666e8575d873ee57"],
+					verifyToken: () => {},
+					collectionFilter: {_id: {$in: ["6717d46c666e8575d873ee57"]}}
 				},
 				{
 					testName: 'getAllCategories test - get categories from many collections',
@@ -357,24 +364,11 @@ describe('categories util functions tests', () => {
 					}
 					])}},
 					collectionIds: ["6717d46c666e8575d873ee57", "1234d46c666e8575d873ee12"],
-				}
-		])(`$testName`,
-				async ({collectionFind, collectionIds}) => {
-						mockCollectionFind.mockImplementation(collectionFind)
-		
-						expect(await getAllCategories(collectionIds)).toMatchSnapshot();
-				}
-		)
-
-		test.each([
-				{
-						testName: 'getAllCategories test - throw error when no collection was found',
-						collectionFind: () => {return {exec: () => Promise.resolve([])}},
-						collectionIds: ["6717d46c666e8575d873ee57"],
-						error: "Collection not found"
+					verifyToken: () => {},
+					collectionFilter: {_id: {$in: ["6717d46c666e8575d873ee57", "1234d46c666e8575d873ee12"]}}
 				},
 				{
-					testName: 'getAllCategories test - throw error when not all collections were found',
+					testName: 'getAllCategories test - no token, get categories only from public collections',
 					collectionFind: () => {return {exec: () => Promise.resolve([
 						{
 								_id: "6717d46c666e8575d873ee57",
@@ -385,7 +379,25 @@ describe('categories util functions tests', () => {
 						}
 					])}},
 					collectionIds: ["6717d46c666e8575d873ee57", "1234d46c666e8575d873ee12"],
-					error: "Collection not found"
+					verifyToken: () => {throw Error("Access denied")},
+					collectionFilter: {_id: {$in: ["6717d46c666e8575d873ee57", "1234d46c666e8575d873ee12"]}, isPrivate: false}
+				}
+		])(`$testName`,
+				async ({collectionFind, collectionIds, verifyToken, collectionFilter}) => {
+						mockCollectionFind.mockImplementation(collectionFind)
+						mockVerifyToken.mockImplementation(verifyToken)
+
+						expect(await getAllCategories(collectionIds)).toMatchSnapshot();
+						expect(mockCollectionFind).toBeCalledWith(collectionFilter)
+				}
+		)
+
+		test.each([
+				{
+						testName: 'getAllCategories test - throw error when no collection was found',
+						collectionFind: () => {return {exec: () => Promise.resolve([])}},
+						collectionIds: ["6717d46c666e8575d873ee57"],
+						error: "Collection not found"
 				},
 				{
 						testName: 'getAllCategories test - Collection.find() throws error',
