@@ -86,7 +86,8 @@ const ExportDataPage: React.FC = () => {
                 exportExtent,
                 selectedArtworks,
                 searchParams,      
-                archiveFilename
+                archiveFilename,
+                jwtToken
             );
         }
     }

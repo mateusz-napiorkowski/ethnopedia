@@ -177,7 +177,13 @@ export const getArtworksFilesArchive = async (req: Request, res: Response) => {
         if(!exportExtent || !collectionIds)
             throw new Error("Request is missing query params")
 
-        const collections = await CollectionCollection.find({_id: {$in: collectionIds}}).exec()
+        let collectionFilter: any = {_id: {$in: collectionIds}}
+        try {
+            verifyToken(req.headers.authorization)
+        } catch {
+            collectionFilter = {_id: {$in: collectionIds}, isPrivate: false}
+        }
+        const collections = await CollectionCollection.find(collectionFilter).exec()
         if (collections.length === 0)
             throw new Error(`Collection not found`)
         const collectionNames = collections.map(collection => collection.name as string);

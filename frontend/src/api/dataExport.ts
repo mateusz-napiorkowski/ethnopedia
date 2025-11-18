@@ -75,7 +75,8 @@ export const getArtworksFilesArchive = async (
     exportExtent: ExportExtent,
     selectedArtworksIds: { [key: string]: boolean },
     searchParams: URLSearchParams,
-    archiveFilename: string
+    archiveFilename: string,
+    jwtToken: string | undefined = undefined
 ) => {
     return await axios
         .get(
@@ -87,7 +88,8 @@ export const getArtworksFilesArchive = async (
                     exportExtent: exportExtent.toString(),
                     collectionIds: collectionIds,
                     searchParams
-                }
+                },
+                headers: jwtToken ? { Authorization: `Bearer ${jwtToken}` } : {}
             }
         )
         .then((response) => {
