@@ -3,7 +3,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import request from "supertest";
 import DataExportRouter from "../../routes/dataExport";
-import { jwtToken } from "./utils/consts";
+import { collectionId2, jwtToken } from "./utils/consts";
 
 const app = express()
 app.use(bodyParser.json());
@@ -40,7 +40,7 @@ const mockCollectionFindOne = jest.fn()
 const mockCollectionFind = jest.fn()
 jest.mock("../../models/collection", () => ({
     findOne: () => mockCollectionFindOne(),
-    find: () => mockCollectionFind()
+    find: (filter: any) => mockCollectionFind(filter)
 }))
 
 const collectionId = "66f2194a6123d7f50558cd8f"
@@ -175,7 +175,9 @@ describe('data-export controller', () => {
                         createdAt: '2024-09-25T03:25:16.376Z',
                         updatedAt: '2024-09-25T03:25:16.376Z'
                         }
-                    ])}}
+                    ])}},
+                    verifyToken: () => {},
+                    collectionFilter: {_id: {$in: collectionId}}
             },
             {
                 testName: "export selected artworks from collection",
@@ -204,7 +206,9 @@ describe('data-export controller', () => {
                         createdAt: '2024-09-25T03:25:16.376Z',
                         updatedAt: '2024-09-25T03:25:16.376Z'
                     },
-                    ])}}
+                    ])}},
+                    verifyToken: () => {},
+                    collectionFilter: {_id: {$in: collectionId}}
             },
             {
                 testName: "export artworks quicksearch result from collection",
@@ -233,7 +237,9 @@ describe('data-export controller', () => {
                         createdAt: '2024-09-25T03:25:16.376Z',
                         updatedAt: '2024-09-25T03:25:16.376Z'
                     },
-                    ])}}
+                    ])}},
+                    verifyToken: () => {},
+                    collectionFilter: {_id: {$in: collectionId}}
             },
             {
                 testName: "export artworks advanced search result from collection",
@@ -262,7 +268,9 @@ describe('data-export controller', () => {
                         createdAt: '2024-09-25T03:25:16.376Z',
                         updatedAt: '2024-09-25T03:25:16.376Z'
                     },
-                    ])}}
+                    ])}},
+                    verifyToken: () => {},
+                    collectionFilter: {_id: {$in: collectionId}}
             },
             {
                 testName: "req.query.columnNames is of type string (not Array<string>)",
@@ -291,7 +299,9 @@ describe('data-export controller', () => {
                         createdAt: '2024-09-25T03:25:16.376Z',
                         updatedAt: '2024-09-25T03:25:16.376Z'
                     },
-                    ])}}
+                    ])}},
+                    verifyToken: () => {},
+                    collectionFilter: {_id: {$in: collectionId}}
             },
             {
                 testName: "req.query.collectionIds is of type string (not Array<string>)",
@@ -320,13 +330,51 @@ describe('data-export controller', () => {
                         createdAt: '2024-09-25T03:25:16.376Z',
                         updatedAt: '2024-09-25T03:25:16.376Z'
                     },
-                    ])}}
+                    ])}},
+                    verifyToken: () => {},
+                    collectionFilter: {_id: {$in: collectionId}}
+            },
+            {
+                testName: "no token, export all artworks only from public collection",
+                columnNamesQuery: '&columnNames=Title&columnNames=Year',
+                selectedArtworksQuery: undefined,
+                exportExtentQuery: '&exportExtent=all',
+                collectionIds: [collectionId, collectionId2],
+                searchQuery: undefined,
+                quickSearchCalls: 0, advSearchCalls: 0,
+                find: () => {return {exec: () => Promise.resolve([
+                {
+                    _id: "66f3829cfaa77054d286dbe8",
+                    categories: [ { name: 'Title', value: 'An artwork title', subcategories: [] },
+                        { name: 'Year', value: '1410', subcategories: [] } ],
+                    collectionName: collectionName,
+                    __v: 0,
+                    createdAt: '2024-09-25T03:25:16.376Z',
+                    updatedAt: '2024-09-25T03:25:16.376Z',
+                    isPrivate: false,
+                    owner:"12345678d6303ed5ac5a4321" 
+                },
+                {
+                    _id: "66f3829cfaa77054d286dbe8",
+                    categories: [ { name: 'Title', value: 'An artwork title', subcategories: [] },
+                        { name: 'Year', value: '1410', subcategories: [] } ],
+                    collectionName: collectionName,
+                    __v: 0,
+                    createdAt: '2024-09-25T03:25:16.376Z',
+                    updatedAt: '2024-09-25T03:25:16.376Z',
+                    isPrivate: true,
+                    owner:"12345678d6303ed5ac5a4321" 
+                },
+                ])}},
+                verifyToken: () => {throw Error("Access denied")},
+                collectionFilter: {_id: {$in: [collectionId, collectionId2]}, isPrivate: false}
             },
         ])(`getXlsxWithArtworksData should respond with status 200 and correct body - $testName`,
-                async ({ columnNamesQuery, selectedArtworksQuery, exportExtentQuery, collectionIds, searchQuery, quickSearchCalls, advSearchCalls, find}) => {
+                async ({ columnNamesQuery, selectedArtworksQuery, exportExtentQuery, collectionIds, searchQuery, quickSearchCalls, advSearchCalls, find, verifyToken, collectionFilter}) => {
                     mockCollectionFind.mockReturnValue(collectionFindReturnValue)
                     mockArtworkFind.mockImplementation(find)
                     mockFillRow.mockImplementation(() => {})
+                    mockVerifyToken.mockImplementation(verifyToken)
                     
                     let queryString = '/?'
                     if (columnNamesQuery) queryString += columnNamesQuery
@@ -334,9 +382,12 @@ describe('data-export controller', () => {
                     if (exportExtentQuery) queryString += exportExtentQuery
                     if (searchQuery) queryString += searchQuery
                     if (collectionIds) {
-                        for(const id of collectionIds) {
-                            queryString += `&collectionIds=${id}`
-                        }
+                        if(typeof collectionIds !== "string")
+                            for(const id of collectionIds) {
+                                queryString += `&collectionIds=${id}`
+                            }
+                        else
+                            queryString += `&collectionIds=${collectionIds}`
                     }
                     const res = await request(app)
                     .get(queryString)
@@ -344,6 +395,7 @@ describe('data-export controller', () => {
 
                     expect(res.status).toBe(200)
                     expect(res.body).toMatchSnapshot()
+                    expect(mockCollectionFind).toHaveBeenCalledWith(collectionFilter)
                     expect(mockConstructQuickSearchFilter).toHaveBeenCalledTimes(quickSearchCalls)
                     expect(mockConstructAdvSearchFilter).toHaveBeenCalledTimes(advSearchCalls)
                 }

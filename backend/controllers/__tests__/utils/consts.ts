@@ -6,6 +6,7 @@ export const jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6In
 	+ "lcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaecc"
 	+ "N-rDSjRS3kApqlA"
 export const collectionId = "66c4e516d6303ed5ac5a8e55"
+export const collectionId2 = "1234e516d6303ed5ac5a5678"
 export const collectionName = "collection"
 export const collectionDescription = "collection description"
 
