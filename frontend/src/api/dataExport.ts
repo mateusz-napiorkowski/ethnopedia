@@ -11,7 +11,8 @@ export const getXlsxWithArtworksData = async (
     filename: string,
     includeIds: boolean,
     includeFilenames: boolean,
-    exportAsCSV: boolean
+    exportAsCSV: boolean,
+    jwtToken: string | undefined = undefined
 ) => {
     return await axios
     .get(
@@ -27,7 +28,8 @@ export const getXlsxWithArtworksData = async (
                 includeIds,
                 includeFilenames,
                 exportAsCSV
-            }
+            },
+            headers: jwtToken ? { Authorization: `Bearer ${jwtToken}` } : {}
         }
     )
     .then((response) => {
@@ -47,10 +49,10 @@ export const getXlsxWithArtworksData = async (
     });
 }
 
-export const getXlsxWithCollectionData = async (collectionId: string) => {
+export const getXlsxWithCollectionData = async (collectionId: string, jwtToken: string | undefined = undefined) => {
     return await axios.get(
         `${API_URL}v1/dataExport/collection/${collectionId}`,
-        { responseType: 'blob' }
+        { responseType: 'blob', headers: jwtToken ? { Authorization: `Bearer ${jwtToken}` } : {} }
     ).then((response) => {
         // create file link in browser's memory
         const href = URL.createObjectURL(response.data);

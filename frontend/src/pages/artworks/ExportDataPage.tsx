@@ -77,7 +77,8 @@ const ExportDataPage: React.FC = () => {
                 filename,
                 includeIds,
                 includeFilenames,
-                exportAsCSV
+                exportAsCSV,
+                jwtToken
             );
         } else {
             getArtworksFilesArchive(

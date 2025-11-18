@@ -7,6 +7,7 @@ import { constructAdvSearchFilter, constructQuickSearchFilter } from "../utils/a
 import CollectionCollection from "../models/collection";
 import archiver from "archiver";
 import path from "path";
+import { verifyToken } from "../utils/auth";
 
 export const getXlsxWithCollectionData = async (req: Request, res: Response) => {
     try {
@@ -14,13 +15,15 @@ export const getXlsxWithCollectionData = async (req: Request, res: Response) => 
         const collection = await CollectionCollection.findOne({_id: collectionId}).exec()
         if (collection == null)
             throw new Error(`Collection not found`)
+        if(collection.isPrivate)
+            verifyToken(req.headers.authorization)
         const collectionName = collection?.name as string
 
         const workbook = new excelJS.Workbook()
         const worksheetName = collectionName.slice(0, 31)
         const sheet = workbook.addWorksheet(worksheetName)
 
-        const columnNames = await getAllCategories([collectionId])
+        const columnNames = await getAllCategories([collectionId], req.headers.authorization)
         sheet.columns = columnNames.map((name :string) => {return {header: name, key: name}})
         
         const records = await Artwork.find({collectionName: collectionName}).exec()
@@ -49,6 +52,8 @@ export const getXlsxWithCollectionData = async (req: Request, res: Response) => 
         console.error(error)
         if (err.message === `Collection not found`)
             res.status(404).json({ error: err.message })
+        else if(err.message === "No token provided" || err.message === 'Access denied')
+            res.status(401).json({ error: err.message })
         else
             res.status(503).json({ error: `Database unavailable` })
     }

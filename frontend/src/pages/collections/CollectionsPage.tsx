@@ -167,7 +167,7 @@ const CollectionsPage = () => {
                                                 return collection!.id;
                                             });
                                         for (const collectionId of checkedCollectionsIds) {
-                                            getXlsxWithCollectionData(collectionId!);
+                                            getXlsxWithCollectionData(collectionId!, jwtToken);
                                         }
                                         setExportErrorMessage("");
                                     }}

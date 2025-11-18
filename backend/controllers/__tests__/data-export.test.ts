@@ -3,10 +3,16 @@ import express from "express";
 import bodyParser from "body-parser";
 import request from "supertest";
 import DataExportRouter from "../../routes/dataExport";
+import { jwtToken } from "./utils/consts";
 
 const app = express()
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
+
+const mockVerifyToken = jest.fn() 
+jest.mock('../../utils/auth', () => ({
+    verifyToken: () => mockVerifyToken()
+}))
 
 const mockGetAllCategories = jest.fn()
 jest.mock("../../utils/categories", () => ({
@@ -46,7 +52,9 @@ const collectionData = {
     categories: [
         {name: 'Tytuł', subcategories: []}
     ],
-    __v: 0
+    __v: 0,
+    isPrivate: true,
+    owner:"12345678d6303ed5ac5a4321"
 }
 const collectionFindReturnValue = ({exec: () => Promise.resolve([collectionData])})
 const collectionFindOneReturnValue = ({exec: () => Promise.resolve((collectionData))})
@@ -85,42 +93,63 @@ describe('data-export controller', () => {
                 statusCode: 503, error: 'Database unavailable',
                 collectionFindOne: () => {throw Error()},
                 getAllCategories: () => {},
-                artworkFind: () => {}
+                artworkFind: () => {},
+                verifyToken: () => {}
             },
             {
                 statusCode: 404, error: 'Collection not found',
                 collectionFindOne: () => ({exec: () => Promise.resolve(null)}),
                 getAllCategories: () => {},
-                artworkFind: () => {}
+                artworkFind: () => {},
+                verifyToken: () => {}
             },
             {
                 statusCode: 404, error: 'Collection not found',
                 collectionFindOne: () => collectionFindOneReturnValue,
                 getAllCategories: () => {throw new Error("Collection not found")},
-                artworkFind: () => {}
+                artworkFind: () => {},
+                verifyToken: () => {}
             },
             {
                 statusCode: 503, error: 'Database unavailable',
                 collectionFindOne: () => collectionFindOneReturnValue,
                 getAllCategories: () => {throw new Error("Database unavailable")},
-                artworkFind: () => {}
+                artworkFind: () => {},
+                verifyToken: () => {}
             },
             {
                 statusCode: 503, error: 'Database unavailable',
                 collectionFindOne: () => collectionFindOneReturnValue,
                 getAllCategories: () => [ 'Title' ],
-                artworkFind: () => {throw new Error()}
+                artworkFind: () => {throw new Error()},
+                verifyToken: () => {}
+            },
+            {
+                statusCode: 401, error: 'No token provided',
+                collectionFindOne: () => collectionFindOneReturnValue,
+                getAllCategories: () => [ 'Title' ],
+                artworkFind: () => {},
+                verifyToken: () => {throw Error("No token provided")}
+            },
+            {
+                statusCode: 401, error: 'Access denied',
+                collectionFindOne: () => collectionFindOneReturnValue,
+                getAllCategories: () => [ 'Title' ],
+                artworkFind: () => {},
+                verifyToken: () => {throw Error("Access denied")}
             },
         ])(`getXlsxWithCollectionData should respond with status $statusCode and correct error message`,
-                async ({ statusCode, error, collectionFindOne, getAllCategories, artworkFind}) => {
+                async ({ statusCode, error, collectionFindOne, getAllCategories, artworkFind, verifyToken}) => {
                     mockCollectionFindOne.mockImplementation(collectionFindOne)
                     mockGetAllCategories.mockImplementation(getAllCategories)
                     mockArtworkFind.mockImplementation(artworkFind)
                     mockFillRow.mockReturnValue({ 'Title': 'An artwork title' })
+                    mockVerifyToken.mockImplementation(verifyToken)
 
                     const res = await request(app)
                     .get(`/collection/${collectionId}`)
                     .set('Accept', 'application/json')
+                    .set('Authorization', `Bearer ${jwtToken}`)
     
                     expect(res.status).toBe(statusCode)
                     expect(res.body.error).toBe(error)
