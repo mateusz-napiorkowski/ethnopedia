@@ -51,12 +51,13 @@ export const updateCollection = async (
     name: string,
     description: string,
     categories: Category[],
+    isCollectionPrivate: boolean,
     jwtToken: string
 ) => {
     return await axios
         .put(
             `${API_URL}v1/collection/edit/${id}`,
-            { name, description, categories },
+            { name, description, categories, isCollectionPrivate },
             { headers: { Authorization: `Bearer ${jwtToken}` } }
         )
         .then(res => res.data);

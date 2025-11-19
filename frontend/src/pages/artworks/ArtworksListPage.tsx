@@ -188,12 +188,13 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                                     </div>
                                 );
                             })()}
+                            <p className="text-l text-gray-800 dark:text-white break-words leading-relaxed font-medium mt-1">{collectionData?.isPrivate ? "Kolekcja prywatna": "Kolekcja publiczna"}</p>
                         </div>
                         <div className="flex-shrink-0">
                             <button
                                 disabled={!jwtToken}
                                 className={`text-sm font-semibold h-fit ml-4 flex items-center ${jwtToken ? "" : "bg-gray-100 hover:bg-gray-100"}`}
-                                onClick={() => navigate(`/collections/${collectionId}/edit`, { state: { collectionId, mode: "edit", name: collectionData?.name, description: collectionData?.description, categories: collectionData?.categories } })}
+                                onClick={() => navigate(`/collections/${collectionId}/edit`, { state: { collectionId, mode: "edit", name: collectionData?.name, description: collectionData?.description, categories: collectionData?.categories, isCollectionPrivate: collectionData?.isPrivate, owner: collectionData?.owner } })}
                             >
                                 <EditIcon /> <p className="ml-1">Edytuj</p>
                             </button>

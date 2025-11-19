@@ -76,7 +76,6 @@ export const getCollection = async (req: Request, res: Response) => {
         const collection = await CollectionCollection.findOne({ _id: collectionId }).exec()
         if (collection == null)
             throw new Error("Collection not found")
-        console.log(collection)
         if(collection.isPrivate) {
             verifyToken(req.headers.authorization)
         }
@@ -171,8 +170,9 @@ export const updateCollection = authAsyncWrapper(async (req: Request, res: Respo
     const collectionId = req.params.id;
     const name = req.body.name
     const description = req.body.description
+    const isCollectionPrivate = req.body.isCollectionPrivate
     try {
-        if (!name || !description || !req.body.categories || !hasValidCategoryFormat(req.body.categories))
+        if (!name || !description || !req.body.categories || isCollectionPrivate === undefined || !hasValidCategoryFormat(req.body.categories))
             throw new Error("Incorrect request body provided");
         const categories = trimCategoryNames(req.body.categories)
         const session = await mongoose.startSession();
@@ -192,6 +192,8 @@ export const updateCollection = authAsyncWrapper(async (req: Request, res: Respo
             collection.name = name;
             collection.description = description;
             collection.categories = categories;
+            collection.isPrivate = isCollectionPrivate
+
             await collection.save({ session });
 
             res.status(200).json(collection);

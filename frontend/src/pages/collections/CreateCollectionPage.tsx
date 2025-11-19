@@ -13,6 +13,8 @@ interface FormValues {
     name: string;
     description: string;
     categories: Category[];
+    isCollectionPrivate: boolean,
+    owner: string
 }
 
 interface FormErrors {
@@ -22,7 +24,7 @@ interface FormErrors {
 }
 
 const CreateCollectionPage = () => {
-    const { jwtToken } = useUser();
+    const { jwtToken, userId } = useUser();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -40,12 +42,13 @@ const CreateCollectionPage = () => {
         name: location.state?.name || "",
         description: location.state?.description || "",
         categories: location.state?.categories || [{ name: "", subcategories: [] }],
+        isCollectionPrivate: location.state?.isCollectionPrivate,
+        owner: location.state?.owner || undefined
     });
 
     const [formErrors, setFormErrors] = useState<FormErrors>({});
     const [submitError, setSubmitError] = useState<string | null>(null);
     const [hasSubmitted, setHasSubmitted] = useState(false);
-    const [isCollectionPrivate, setIsCollectionPrivate] = useState(true)
 
     const removeIsNewFlag = (categories: Category[]): Category[] => {
         return categories.map(({ isNew, subcategories, ...rest }) => ({
@@ -180,6 +183,14 @@ const CreateCollectionPage = () => {
         }
     };
 
+    const handleCollectionPrivateChange = (isPrivate: boolean) => {
+        setFormValues({ ...formValues, isCollectionPrivate: isPrivate }, {
+            shouldDebounce: true,
+            fieldKey: 'isCollectionPrivate',
+            debounceMs: 500
+        });
+    };
+
     // Function to update category errors with real-time validation
     const updateCategoryErrors = (categories: Category[]) => {
         const currentErrors = formErrors.categories || {};
@@ -277,10 +288,10 @@ const CreateCollectionPage = () => {
             if (isEditMode) {
                 const cleaned = removeIsNewFlag(formValues.categories);
                 console.log("Kategorie do zapisania:", JSON.stringify(cleaned, null, 2));
-                await updateCollection(collectionId, formValues.name, formValues.description, cleaned, jwtToken);
+                await updateCollection(collectionId, formValues.name, formValues.description, cleaned, formValues.isCollectionPrivate, jwtToken);
                 navigate(`/collections/${collectionId}/artworks`);
             } else {
-                await createCollection(formValues.name, formValues.description, formValues.categories, jwtToken, isCollectionPrivate);
+                await createCollection(formValues.name, formValues.description, formValues.categories, jwtToken, formValues.isCollectionPrivate);
                 navigate("/");
             }
 
@@ -378,7 +389,7 @@ const CreateCollectionPage = () => {
                         }}
                     />
                     
-                    {!isEditMode && <>
+                    {(!isEditMode || formValues.owner === userId ) && <>
                         <label className="block text-sm font-bold text-gray-700 dark:text-white my-2 mt-4">
                             Dostępność kolekcji
                         </label>
@@ -391,16 +402,16 @@ const CreateCollectionPage = () => {
                             <button
                                 aria-label='select-export-as-spreadsheet'
                                 type="button"
-                                onClick={() => setIsCollectionPrivate(false)}
-                                className={`px-4 py-2 ${!isCollectionPrivate ? "color-button" : ""} rounded-r-none text-xs`}
+                                onClick={() => handleCollectionPrivateChange(false)}
+                                className={`px-4 py-2 ${!formValues.isCollectionPrivate ? "color-button" : ""} rounded-r-none text-xs`}
                             >
                                 Kolekcja publiczna
                             </button>
                             <button
                                 aria-label='select-export-as-csv'
                                 type="button"
-                                onClick={() => setIsCollectionPrivate(true)}
-                                className={`px-4 py-2 ${isCollectionPrivate ? "color-button" : ""} rounded-l-none text-xs`}
+                                onClick={() => handleCollectionPrivateChange(true)}
+                                className={`px-4 py-2 ${formValues.isCollectionPrivate ? "color-button" : ""} rounded-l-none text-xs`}
                             >
                                 Kolekcja prywatna
                             </button>  
