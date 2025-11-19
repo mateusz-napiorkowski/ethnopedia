@@ -16,7 +16,7 @@ describe("collections tests", () => {
             it("should call axios.get with correct parameters and return correct artwork data if API call succeeds", async () => {
                 mockAxios.get.mockResolvedValueOnce({ data: getAllCollectionsMockReturnValue });
     
-                const result = await getAllCollections(1, 10, "asc");
+                const result = await getAllCollections(1, 10, "asc", jwtToken);
     
     
                 expect(mockAxios.get).toHaveBeenCalledWith(
@@ -26,7 +26,8 @@ describe("collections tests", () => {
                             page: 1,
                             pageSize: 10,
                             sortOrder: 'asc'
-                        }
+                        },
+                        headers: {Authorization: `Bearer ${jwtToken}`}
                     }
                 )
                 expect(result).toEqual(getAllCollectionsMockReturnValue);
@@ -71,7 +72,8 @@ describe("collections tests", () => {
                 collectionName, 
                 collectionDescription,
                 collectionCategories,
-                jwtToken
+                jwtToken,
+                false
             );
 
             expect(mockAxios.post).toHaveBeenCalledWith(
@@ -79,7 +81,8 @@ describe("collections tests", () => {
                 {
                     name: collectionName,
                     description: collectionDescription,
-                    categories: collectionCategories
+                    categories: collectionCategories,
+                    isCollectionPrivate: false
                 },
                 {headers: {Authorization: `Bearer ${jwtToken}`}}
             )
@@ -93,7 +96,8 @@ describe("collections tests", () => {
                 collectionName, 
                 collectionDescription,
                 collectionCategories,
-                jwtToken
+                jwtToken,
+                false
             )).rejects.toThrow(axiosError);
         });
     })
@@ -107,6 +111,7 @@ describe("collections tests", () => {
                 collectionName, 
                 collectionDescription,
                 collectionCategories,
+                false,
                 jwtToken
             );
 
@@ -115,7 +120,8 @@ describe("collections tests", () => {
                 {
                     name: collectionName,
                     description: collectionDescription,
-                    categories: collectionCategories
+                    categories: collectionCategories,
+                    isCollectionPrivate: false
                 },
                 {headers: {Authorization: `Bearer ${jwtToken}`}}
             )
@@ -130,6 +136,7 @@ describe("collections tests", () => {
                 collectionName, 
                 collectionDescription,
                 collectionCategories,
+                false,
                 jwtToken
             )).rejects.toThrow(axiosError);
         });

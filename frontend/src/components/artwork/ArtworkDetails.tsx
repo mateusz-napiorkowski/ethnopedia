@@ -93,9 +93,6 @@ const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
                 <p className="text-lg text-gray-500 dark:text-gray-300 break-words">
                     Kolekcja: {collectionName}
                 </p>
-                <p className="text-lg text-gray-500 dark:text-gray-300 break-words">
-                    Id kolekcji: {collectionId}
-                </p>
             </div>
 
             {/* Drzewo kategorii */}

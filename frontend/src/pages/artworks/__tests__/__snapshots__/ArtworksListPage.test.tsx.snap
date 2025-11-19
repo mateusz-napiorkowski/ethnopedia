@@ -416,6 +416,11 @@ exports[`ArtworksListPage tests should render artworks list component after data
         example collection description
       </p>
     </div>
+    <p
+      class="text-l text-gray-800 dark:text-white break-words leading-relaxed font-medium mt-1"
+    >
+      Kolekcja publiczna
+    </p>
   </div>
   <div
     class="flex-shrink-0"

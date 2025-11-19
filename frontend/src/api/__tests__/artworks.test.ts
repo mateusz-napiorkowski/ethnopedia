@@ -16,9 +16,9 @@ describe("artworks tests", () => {
         it("should call axios.get with correct parameters and return correct artwork data if API call succeeds", async () => {
             mockAxios.get.mockResolvedValueOnce({ data: getArtworkMockReturnValue });
 
-            const result = await getArtwork(artworkId);
+            const result = await getArtwork(artworkId, jwtToken);
 
-            expect(mockAxios.get).toHaveBeenCalledWith(`${process.env.REACT_APP_API_URL}v1/artworks/${artworkId}`)
+            expect(mockAxios.get).toHaveBeenCalledWith(`${process.env.REACT_APP_API_URL}v1/artworks/${artworkId}`, {"headers": {"Authorization" : `Bearer ${jwtToken}`}})
             expect(result).toEqual(getArtworkMockReturnValue);
         });
 
@@ -47,7 +47,8 @@ describe("artworks tests", () => {
                     "sortBy": "Tytuł",
                     "sortOrder": "Tytuł-asc",
                     ...searchRules
-                }
+                },
+                headers: {Authorization: `Bearer ${jwtToken}`}
             }
 
             const result = await getArtworksForPage(
@@ -57,7 +58,8 @@ describe("artworks tests", () => {
                 queryParams.params.sortBy,
                 queryParams.params.sortOrder,
                 queryParams.params.searchText,
-                searchRules
+                searchRules,
+                jwtToken
             );
 
             expect(mockAxios.get).toHaveBeenCalledWith(`${process.env.REACT_APP_API_URL}v1/artworks/`, queryParams)

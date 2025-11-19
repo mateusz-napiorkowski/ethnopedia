@@ -49,7 +49,8 @@ describe("dataImport tests", () => {
                 collectionName,
                 collectionDescription,
                 jwtToken,
-                zipFile
+                zipFile,
+                false
             );
 
             expect(mockAxios.post).toHaveBeenCalledWith(
@@ -67,7 +68,8 @@ describe("dataImport tests", () => {
                 importData: JSON.stringify(dataToImport),
                 collectionName,
                 description: collectionDescription,
-                file: expect.any(File)
+                file: expect.any(File),
+                isCollectionPrivate: "false"
             })
 
             expect(result).toEqual(importDataAsCollectionMockReturnData);
@@ -76,7 +78,7 @@ describe("dataImport tests", () => {
         it("should throw error if API call fails", async () => {
             mockAxios.post.mockRejectedValueOnce(new Error("Network Error"));
 
-            await expect(importDataAsCollection(dataToImport, collectionName, collectionDescription, jwtToken, undefined)).rejects.toThrow(axiosError);
+            await expect(importDataAsCollection(dataToImport, collectionName, collectionDescription, jwtToken, undefined, false)).rejects.toThrow(axiosError);
         });
     })
 })
