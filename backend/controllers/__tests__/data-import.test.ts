@@ -41,8 +41,9 @@ jest.mock("../../models/artwork", () => ({
     bulkWrite: () => mockBulkWrite()
 }))
 
+const mockJwtVerify = jest.fn()
 jest.mock("jsonwebtoken", () => ({
-    verify: jest.fn()
+	verify: () => mockJwtVerify()
 }))
 
 const jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd3kiLCJmaXJzdE5hbWUiOiJ0ZXN0b3d5IiwidXN"
@@ -65,6 +66,13 @@ describe('data-import controller', () => {
             }),
             endSession: jest.fn()      
         })
+        const user = {
+            username: 'example user',
+            firstName: 'example user',
+            userId: '675ddf3b1e6d01766fbc5b17',
+            iat: 1763262553,
+            exp: 1764262553
+        }
 
         
         test("importData should respond with status 201 and correct body", async () => {
@@ -219,7 +227,8 @@ describe('data-import controller', () => {
             const payload = {
                 importData: `[["Title", "Title.subtitle"], ["An artwork title", "An artwork subtitle"]]`,
                 collectionName: 'collection',
-                description: "collection-description"
+                description: "collection-description",
+                isCollectionPrivate: "false"
             }
             mockStartSession.mockImplementation(() => startSessionDefaultReturnValue)
             mockFindMissingParentCategories.mockImplementation(() => [])
@@ -248,6 +257,7 @@ describe('data-import controller', () => {
                     }
                 ] 
             )
+            mockJwtVerify.mockReturnValue(user)
             
             const res = await request(app)
                 .post(`/newCollection`)
@@ -256,6 +266,7 @@ describe('data-import controller', () => {
                 .field("importData", payload.importData)
                 .field("collectionName", payload.collectionName)
                 .field("description", payload.description)
+                .field("isCollectionPrivate", payload.isCollectionPrivate)
 
             expect(res.status).toBe(201)
             expect(res.body).toMatchSnapshot()
@@ -265,7 +276,8 @@ describe('data-import controller', () => {
             {
                 payload: {
                     collectionName: 'collection',
-                    description: "collection-description"
+                    description: "collection-description",
+                    isCollectionPrivate: "false"
                 },
                 archivePath: undefined,
                 startSession: () => startSessionDefaultReturnValue,
@@ -280,7 +292,8 @@ describe('data-import controller', () => {
                 payload: {
                     importData: `[["Title"]]`,
                     collectionName: 'collection',
-                    description: "collection-description"
+                    description: "collection-description",
+                    isCollectionPrivate: "false"
                 },
                 archivePath: undefined,
                 startSession: () => startSessionDefaultReturnValue,
@@ -294,7 +307,8 @@ describe('data-import controller', () => {
             {
                 payload: {
                     importData: `[["Title"], ["An artwork title"]]`,
-                    description: "collection-description"
+                    description: "collection-description",
+                    isCollectionPrivate: "false"
                 },
                 archivePath: undefined,
                 startSession: () => startSessionDefaultReturnValue,
@@ -309,6 +323,7 @@ describe('data-import controller', () => {
                 payload: {
                     importData: `[["Title"], ["An artwork title"]]`,
                     collectionName: 'collection',
+                    isCollectionPrivate: "false"
                 },
                 archivePath: undefined,
                 startSession: () => startSessionDefaultReturnValue,
@@ -323,7 +338,8 @@ describe('data-import controller', () => {
                 payload: {
                     importData: `unparsable import data`,
                     collectionName: 'collection',
-                    description: "collection-description"
+                    description: "collection-description",
+                    isCollectionPrivate: "false"
                 },
                 archivePath: undefined,
                 startSession: () => {throw Error()},
@@ -338,7 +354,39 @@ describe('data-import controller', () => {
                 payload: {
                     importData: `[["Title"], ["An artwork title"]]`,
                     collectionName: 'collection',
-                    description: "collection-description"
+                    description: "collection-description",
+                },
+                archivePath: undefined,
+                startSession: () => startSessionDefaultReturnValue,
+                findMissingParentCategories: () => [],
+                transformCategoriesArrayToCategoriesObject: () => {},
+                create: () => {},
+                prepRecords: () => {},
+                insertMany: () => {},
+                statusCode: 400, error: "Incorrect request body provided"
+            },
+            {
+                payload: {
+                    importData: `[["Title"], ["An artwork title"]]`,
+                    collectionName: 'collection',
+                    description: "collection-description",
+                    isCollectionPrivate: "not a boolean"
+                },
+                archivePath: undefined,
+                startSession: () => startSessionDefaultReturnValue,
+                findMissingParentCategories: () => [],
+                transformCategoriesArrayToCategoriesObject: () => {},
+                create: () => {},
+                prepRecords: () => {},
+                insertMany: () => {},
+                statusCode: 400, error: "Incorrect request body provided"
+            },
+            {
+                payload: {
+                    importData: `[["Title"], ["An artwork title"]]`,
+                    collectionName: 'collection',
+                    description: "collection-description",
+                    isCollectionPrivate: "false"
                 },
                 archivePath: undefined,
                 startSession: () => {throw Error()},
@@ -353,7 +401,8 @@ describe('data-import controller', () => {
                 payload: {
                     importData: `[["Title", "Title.subtitle.subsubtitle"], ["An artwork title", "An artwork subsubtitle"]]`,
                     collectionName: 'collection',
-                    description: "collection-description"
+                    description: "collection-description",
+                    isCollectionPrivate: "false"
                 },
                 archivePath: undefined,
                 startSession: () => startSessionDefaultReturnValue,
@@ -368,7 +417,8 @@ describe('data-import controller', () => {
                 payload: {
                     importData: `[["Title", "Title.subtitle"], ["An artwork title", "An artwork subtitle"]]`,
                     collectionName: 'collection',
-                    description: "collection-description"
+                    description: "collection-description",
+                    isCollectionPrivate: "false"
                 },
                 archivePath: undefined,
                 startSession: () => startSessionDefaultReturnValue,
@@ -383,7 +433,8 @@ describe('data-import controller', () => {
                 payload: {
                     importData: `[["Title", "Title.subtitle"], ["An artwork title", "An artwork subtitle"]]`,
                     collectionName: 'collection',
-                    description: "collection-description"
+                    description: "collection-description",
+                    isCollectionPrivate: "false"
                 },
                 archivePath: undefined,
                 startSession: () => startSessionDefaultReturnValue,
@@ -398,7 +449,8 @@ describe('data-import controller', () => {
                 payload: {
                     importData: `[["Title", "Title.subtitle"], ["An artwork title", "An artwork subtitle"]]`,
                     collectionName: 'collection',
-                    description: "collection-description"
+                    description: "collection-description",
+                    isCollectionPrivate: "false"
                 },
                 archivePath: undefined,
                 startSession: () => startSessionDefaultReturnValue,
@@ -414,6 +466,7 @@ describe('data-import controller', () => {
                     importData: `[["Title", "Title.subtitle"], ["An artwork title", "An artwork subtitle"]]`,
                     collectionName: 'collection',
                     description: "collection-description",
+                    isCollectionPrivate: "false"
                 },
                 archivePath: `utils/files-for-upload/FileForUpload.mid`,
                 startSession: () => startSessionDefaultReturnValue,
@@ -433,6 +486,7 @@ describe('data-import controller', () => {
             mockCollectionCreate.mockImplementation(create)
             mockPrepRecordsAndFiles.mockImplementation(prepRecords)
             mockInsertMany.mockImplementation(insertMany)
+            mockJwtVerify.mockReturnValue(user)
 
             let req = request(app)
                 .post(`/newCollection`)
@@ -444,9 +498,10 @@ describe('data-import controller', () => {
                 req = req.field("collectionName", payload.collectionName)
             if(payload.description)
                 req = req.field("description", payload.description)
-            if(archivePath){
+            if(archivePath)
                 req = req.attach("file", path.resolve(__dirname, archivePath))
-            }
+            if(payload.isCollectionPrivate)
+                req = req.field("isCollectionPrivate", payload.isCollectionPrivate)
 
             const res = await req
 

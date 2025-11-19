@@ -20,7 +20,8 @@ export const importDataAsCollection = async (
     collectionName: string,
     description: string,
     jwtToken: string,
-    archiveFile: File | undefined
+    archiveFile: File | undefined,
+    isCollectionPrivate: boolean
 ) => {
     const formData = new FormData();
     formData.append("importData", JSON.stringify(importData));
@@ -28,6 +29,7 @@ export const importDataAsCollection = async (
     formData.append("description", description);
     if(archiveFile)
         formData.append("file", archiveFile);
+    formData.append("isCollectionPrivate", JSON.stringify(isCollectionPrivate));
 
     return await axios
         .post(
