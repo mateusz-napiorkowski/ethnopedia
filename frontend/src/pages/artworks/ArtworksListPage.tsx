@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { getArtworksForPage, deleteArtworks } from "../../api/artworks";
 import { getCollection } from "../../api/collections";
+import { getUserById } from "../../api/auth";
 import LoadingPage from "../LoadingPage";
 import { useEffect, useState } from "react";
 import Navbar from "../../components/navbar/Navbar";
@@ -78,6 +79,12 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
         queryKey: ["allCategories", collectionId],
         queryFn: () => getAllCategories([collectionId as string], jwtToken),
         enabled: !!collectionId,
+    });
+
+    const { data: collectionOwnerData } = useQuery({
+        queryKey: ["user", collectionId],
+        queryFn: () => getUserById(collectionData.owner),
+        enabled: !!collectionData?.owner,
     });
 
     type Option = { value: string; label: string };
@@ -188,7 +195,9 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                                     </div>
                                 );
                             })()}
-                            <p className="text-l text-gray-800 dark:text-white break-words leading-relaxed font-medium mt-1">{collectionData?.isPrivate ? "Kolekcja prywatna": "Kolekcja publiczna"}</p>
+                            <p className="text-l text-gray-800 dark:text-white break-words leading-relaxed font-normal mt-1">
+                                {collectionData?.isPrivate ? "Kolekcja prywatna": "Kolekcja publiczna"} użytkownika <span className="font-medium">{`${collectionOwnerData.firstName}`}</span>
+                            </p>
                         </div>
                         <div className="flex-shrink-0">
                             <button
