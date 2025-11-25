@@ -166,7 +166,7 @@ export const deleteCollections = authAsyncWrapper(async (req: Request, res: Resp
     }   
 })
 
-export const updateCollection = authAsyncWrapper(async (req: Request, res: Response) => {
+export const updateCollection = authAsyncWrapper(async (req: Request, res: Response, user: any) => {
     const collectionId = req.params.id;
     const name = req.body.name
     const description = req.body.description
@@ -192,6 +192,8 @@ export const updateCollection = authAsyncWrapper(async (req: Request, res: Respo
             collection.name = name;
             collection.description = description;
             collection.categories = categories;
+            if(user.userId !== collection.owner)
+                throw Error("Access denied")
             collection.isPrivate = isCollectionPrivate
 
             await collection.save({ session });
@@ -203,13 +205,14 @@ export const updateCollection = authAsyncWrapper(async (req: Request, res: Respo
     } catch (error) {
         const err = error as Error;
         console.error(error);
-        if (err.message === "Incorrect request body provided") {
+        if (err.message === "Incorrect request body provided")
             res.status(400).json({ error: err.message });
-        } else if (err.message === "Collection not found") {
+        else if(err.message === 'Access denied')
+            res.status(401).json({ error: err.message })
+        else if (err.message === "Collection not found")
             res.status(404).json({ error: err.message });
-        } else {
+        else
             res.status(503).json({ error: "Database unavailable" });
-        }
     }
 });
 

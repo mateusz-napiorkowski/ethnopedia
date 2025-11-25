@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { getArtworksForPage, deleteArtworks } from "../../api/artworks";
-import { getCollection } from "../../api/collections";
+import { getCollection, updateCollection } from "../../api/collections";
 import { getUserById } from "../../api/auth";
 import LoadingPage from "../LoadingPage";
 import { useEffect, useState } from "react";
@@ -18,6 +18,8 @@ import { useUser } from "../../providers/UserProvider";
 import { getAllCategories } from "../../api/categories";
 import MultiselectDropdown from "../../components/MultiselectDropdown";
 import { ReactComponent as EditIcon } from "../../assets/icons/edit.svg"
+import { ReactComponent as MakePublicIcon } from "../../assets/icons/make-public.svg";
+import { ReactComponent as MakePrivateIcon } from "../../assets/icons/make-private.svg";
 import ArtworksList from '../../components/artwork/ArtworksList';
 
 const ArtworksListPage = ({ pageSize = 10 }) => {
@@ -26,7 +28,7 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
     const [sortCategory, setSortCategory] = useState<string>("");
     const [sortDirection, setSortDirection] = useState<string>("asc");
     const [selectedDisplayCategories, setSelectedDisplayCategories] = useState<string[]>([]);
-    const { jwtToken } = useUser();
+    const { jwtToken, userId } = useUser();
     const location = useLocation();
     const [currentPage, setCurrentPage] = useState(1);
     const { collectionId } = useParams();
@@ -136,6 +138,22 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
         }
     );
 
+    const updateCollectionMutation = useMutation(
+        () => updateCollection(
+            collectionData._id,
+            collectionData.name,
+            collectionData.description,
+            collectionData.categories,
+            !collectionData.isPrivate,
+            jwtToken
+        ),
+        {
+            onSuccess: () => {
+                queryClient.invalidateQueries([collectionId])
+            }
+        }
+    )
+
     if (!artworkData || !collectionData) return (
         <div data-testid="loading-page-container">
             <LoadingPage />
@@ -196,17 +214,29 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                                 );
                             })()}
                             <p className="text-l text-gray-800 dark:text-white break-words leading-relaxed font-normal mt-1">
-                                {collectionData?.isPrivate ? "Kolekcja prywatna": "Kolekcja publiczna"} użytkownika <span className="font-medium">{`${collectionOwnerData.firstName}`}</span>
+                                {collectionData?.isPrivate ? "Kolekcja prywatna": "Kolekcja publiczna"} użytkownika <span className="font-medium">{`${collectionOwnerData?.firstName ? collectionOwnerData?.firstName : ""}`}</span>
                             </p>
                         </div>
-                        <div className="flex-shrink-0">
-                            <button
+                        <div className="flex flex-col">
+                            <div className="ml-auto mr-0">
+                                <button
+                                    disabled={!jwtToken}
+                                    className={`text-sm font-semibold h-fit ml-4 flex items-center ${jwtToken ? "" : "bg-gray-100 hover:bg-gray-100"}`}
+                                    onClick={() => navigate(`/collections/${collectionId}/edit`, { state: { collectionId, mode: "edit", name: collectionData?.name, description: collectionData?.description, categories: collectionData?.categories, isCollectionPrivate: collectionData?.isPrivate, owner: collectionData?.owner } })}
+                                >
+                                    <EditIcon className="h-4 w-5"/> <p className="ml-1">Edytuj</p>
+                                </button>
+                            </div>
+                            {collectionData?.owner === userId && <button
                                 disabled={!jwtToken}
-                                className={`text-sm font-semibold h-fit ml-4 flex items-center ${jwtToken ? "" : "bg-gray-100 hover:bg-gray-100"}`}
-                                onClick={() => navigate(`/collections/${collectionId}/edit`, { state: { collectionId, mode: "edit", name: collectionData?.name, description: collectionData?.description, categories: collectionData?.categories, isCollectionPrivate: collectionData?.isPrivate, owner: collectionData?.owner } })}
+                                className={`text-sm font-semibold h-fit ml-4 mt-7 flex items-center ${jwtToken ? "" : "bg-gray-100 hover:bg-gray-100"}`}
+                                onClick={() => updateCollectionMutation.mutate()}
                             >
-                                <EditIcon /> <p className="ml-1">Edytuj</p>
-                            </button>
+                                {
+                                    collectionData.isPrivate ? 
+                                        <MakePublicIcon className="h-5 w-5"/> : <MakePrivateIcon className="h-5 w-5"/>}
+                                        <p className="ml-1">{`${collectionData.isPrivate ? "Upublicznij" : "Uprywatnij"}`} kolekcję</p>
+                            </button>}
                         </div>
                     </div>
 
