@@ -13,6 +13,8 @@ interface FormValues {
     name: string;
     description: string;
     categories: Category[];
+    isCollectionPrivate: boolean,
+    owner: string
 }
 
 interface FormErrors {
@@ -22,7 +24,7 @@ interface FormErrors {
 }
 
 const CreateCollectionPage = () => {
-    const { jwtToken } = useUser();
+    const { jwtToken, userId } = useUser();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -40,6 +42,8 @@ const CreateCollectionPage = () => {
         name: location.state?.name || "",
         description: location.state?.description || "",
         categories: location.state?.categories || [{ name: "", subcategories: [] }],
+        isCollectionPrivate: location.state?.isCollectionPrivate,
+        owner: location.state?.owner || undefined
     });
 
     const [formErrors, setFormErrors] = useState<FormErrors>({});
@@ -179,6 +183,14 @@ const CreateCollectionPage = () => {
         }
     };
 
+    const handleCollectionPrivateChange = (isPrivate: boolean) => {
+        setFormValues({ ...formValues, isCollectionPrivate: isPrivate }, {
+            shouldDebounce: true,
+            fieldKey: 'isCollectionPrivate',
+            debounceMs: 500
+        });
+    };
+
     // Function to update category errors with real-time validation
     const updateCategoryErrors = (categories: Category[]) => {
         const currentErrors = formErrors.categories || {};
@@ -276,10 +288,10 @@ const CreateCollectionPage = () => {
             if (isEditMode) {
                 const cleaned = removeIsNewFlag(formValues.categories);
                 console.log("Kategorie do zapisania:", JSON.stringify(cleaned, null, 2));
-                await updateCollection(collectionId, formValues.name, formValues.description, cleaned, jwtToken);
+                await updateCollection(collectionId, formValues.name, formValues.description, cleaned, formValues.isCollectionPrivate, jwtToken);
                 navigate(`/collections/${collectionId}/artworks`);
             } else {
-                await createCollection(formValues.name, formValues.description, formValues.categories, jwtToken);
+                await createCollection(formValues.name, formValues.description, formValues.categories, jwtToken, formValues.isCollectionPrivate);
                 navigate("/");
             }
 
@@ -376,6 +388,36 @@ const CreateCollectionPage = () => {
                             currentState: formValues
                         }}
                     />
+                    
+                    {(!isEditMode || formValues.owner === userId ) && <>
+                        <label className="block text-sm font-bold text-gray-700 dark:text-white my-2 mt-4">
+                            Dostępność kolekcji
+                        </label>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                            Ustal dla kogo ma być widoczna kolekcja.
+                            Kolekcja prywatna jest widoczna tylko dla użytkowników zalogowanych.
+                            Kolekcja publiczna jest widoczna również dla użytkowników niezalogowanych.
+                        </p>
+                        <div>
+                            <button
+                                aria-label='select-export-as-spreadsheet'
+                                type="button"
+                                onClick={() => handleCollectionPrivateChange(false)}
+                                className={`px-4 py-2 ${!formValues.isCollectionPrivate ? "color-button" : ""} rounded-r-none text-xs`}
+                            >
+                                Kolekcja publiczna
+                            </button>
+                            <button
+                                aria-label='select-export-as-csv'
+                                type="button"
+                                onClick={() => handleCollectionPrivateChange(true)}
+                                className={`px-4 py-2 ${formValues.isCollectionPrivate ? "color-button" : ""} rounded-l-none text-xs`}
+                            >
+                                Kolekcja prywatna
+                            </button>  
+                        </div>
+                        </>
+                    }
 
                     {submitError && (
                         <div className="text-red-500 text-sm my-2">{submitError}</div>

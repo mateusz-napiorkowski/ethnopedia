@@ -21,7 +21,7 @@ const mockCreateCollection = jest.fn();
 const mockUpdateCollection = jest.fn()
 jest.mock('../../../api/collections', () => ({
    createCollection: (name: string, description: string, categories: any, jwtToken: string) => mockCreateCollection(name, description, categories, jwtToken),
-   updateCollection: (collectionId: string, name: string, description: string, updatedCategories: any, jwtToken: string) => mockUpdateCollection(collectionId, name, description, updatedCategories, jwtToken)
+   updateCollection: (collectionId: string, name: string, description: string, updatedCategories: any, isCollectionPrivate: boolean, jwtToken: string) => mockUpdateCollection(collectionId, name, description, updatedCategories, isCollectionPrivate, jwtToken)
 
 }));
 
@@ -80,7 +80,8 @@ const editModeUseLocationReturnValue =  {
                 "name": "rok wydania",
                 "subcategories": []
             }
-        ]
+        ],
+        "isCollectionPrivate": false
     }
 }
 
@@ -212,6 +213,7 @@ describe("CreateCollectionPage tests", () => {
             editModeUseLocationReturnValue.state.name,
             editModeUseLocationReturnValue.state.description,
             editModeUseLocationReturnValue.state.categories,
+            editModeUseLocationReturnValue.state.isCollectionPrivate,
             jwtToken
         )
     })

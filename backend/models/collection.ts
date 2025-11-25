@@ -10,6 +10,12 @@ const CollectionSchema = new mongoose.Schema({
     },
     categories: {
         type: Array<any>
+    },
+    isPrivate: {
+        type: Boolean
+    },
+    owner: {
+        type: String,
     }
 })
 

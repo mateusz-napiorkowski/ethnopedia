@@ -10,6 +10,7 @@ export interface record {
     _id?: mongoose.Types.ObjectId,
     categories: Array<artworkCategory>,
     collectionName: string,
+    collectionId: string,
     files?: Array<any>
 }
 

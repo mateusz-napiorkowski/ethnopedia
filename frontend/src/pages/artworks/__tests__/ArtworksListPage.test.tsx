@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import { UserContext } from '../../../providers/UserProvider';
-import {jwtToken, loggedInUserContextProps, collectionData, artworkIds, artworkTitles, artworksData, artworksDataSecondPage} from './utils/consts'
+import {jwtToken, collectionData, artworkIds, artworkTitles, artworksData, artworksDataSecondPage} from './utils/consts'
 
 const mockUseNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
@@ -32,6 +32,14 @@ jest.mock('../../../api/categories', () => ({
 
 const queryClient = new QueryClient();
 const user = userEvent.setup()
+
+export const loggedInUserContextProps = {
+    isUserLoggedIn: true,
+    firstName: "123",
+    userId: "66b6506fbb64df165e8a9ce6",
+    jwtToken: jwtToken,
+    setUserData: jest.fn()
+};
 
 const renderPage = (
     queryClient: QueryClient, 

@@ -64,7 +64,7 @@ const GlobalSearchPage = ({ pageSize = 10 }) => {
     useEffect(() => {
         const fetchCollections = async () => {
             try {
-                const data = await getAllCollections(1, 1000, "asc");
+                const data = await getAllCollections(1, 1000, "asc", jwtToken);
                 console.log("Pobrane kolekcje:", data);
                 const ids = data.collections.map((col: any) => col.id);
                 // setAllCollectionIds(ids);
@@ -80,6 +80,7 @@ const GlobalSearchPage = ({ pageSize = 10 }) => {
             }
         };
         fetchCollections();
+        // eslint-disable-next-line
     }, []);
 
     const {
@@ -103,7 +104,8 @@ const GlobalSearchPage = ({ pageSize = 10 }) => {
                 sortCategory || "createdAt", // domyślna kategoria sortowania
                 sortDirection || "asc",      // domyślny kierunek
                 new URLSearchParams(location.search).get("searchText"),
-                Object.fromEntries(new URLSearchParams(location.search).entries())
+                Object.fromEntries(new URLSearchParams(location.search).entries()),
+                jwtToken
             ),
         enabled: selectedCollectionIds.length > 0,
         keepPreviousData: false,
@@ -111,7 +113,7 @@ const GlobalSearchPage = ({ pageSize = 10 }) => {
 
     const { data: categoriesData } = useQuery({
         queryKey: ["selectedCategories", selectedCollectionIds],
-        queryFn: () => getAllCategories(selectedCollectionIds),
+        queryFn: () => getAllCategories(selectedCollectionIds, jwtToken),
         enabled: selectedCollectionIds.length > 0,
     });
 

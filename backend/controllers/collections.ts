@@ -1,10 +1,12 @@
 import { Request, Response } from "express"
 import mongoose, { ClientSession, SortOrder } from "mongoose"
+import jwt from "jsonwebtoken";
 import { authAsyncWrapper } from "../middleware/auth"
 import Artwork from "../models/artwork";
 import CollectionCollection from "../models/collection";
 import { updateArtworkCategories } from "../utils/artworks";
 import { hasValidCategoryFormat, isValidCollectionCategoryStructureForCollectionUpdate, trimCategoryNames } from "../utils/categories";
+import { verifyToken } from "../utils/auth";
 
 export const getAllCollections = async (req: Request, res: Response) => {
     try {
@@ -15,13 +17,18 @@ export const getAllCollections = async (req: Request, res: Response) => {
         if(!page || !pageSize || !sortOrder)
             throw new Error("Request is missing query params")
 
-        const collections = await CollectionCollection.find()
+        const token = req.headers.authorization?.split(" ")[1]
+        const user = token ? jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string) : undefined
+
+        const collectionFindFilter = user ? {} : {isPrivate: false}
+
+        const collections = await CollectionCollection.find(collectionFindFilter)
             .collation({ locale: 'en', strength: 1 })
             .sort({name: sortOrder as SortOrder})
             .skip((page - 1) * pageSize)
             .limit(pageSize)
             .exec()
-        
+
         const totalCollections = await CollectionCollection.countDocuments()
         
         const pipeline = [
@@ -41,7 +48,9 @@ export const getAllCollections = async (req: Request, res: Response) => {
             id: collection._id,
             name: collection.name,
             description: collection.description,
-            artworksCount: artworkCounts.find((element) => element._id == collection.name)?.count ?? 0
+            artworksCount: artworkCounts.find((element) => element._id == collection.name)?.count ?? 0,
+            isPrivate: collection.isPrivate,
+            owner: collection.owner
         }))
 
         res.status(200).json({
@@ -67,20 +76,26 @@ export const getCollection = async (req: Request, res: Response) => {
         const collection = await CollectionCollection.findOne({ _id: collectionId }).exec()
         if (collection == null)
             throw new Error("Collection not found")
+        if(collection.isPrivate) {
+            verifyToken(req.headers.authorization)
+        }
         res.status(200).json(collection) 
     } catch (error) {
         const err = error as Error
         console.error(error)
         if (err.message === 'Collection not found')
             res.status(404).json({ error: err.message })
+        else if(err.message === "No token provided" || err.message === 'Access denied')
+            res.status(401).json({ error: err.message })
         else
             res.status(503).json({ error: 'Database unavailable' })
     }
 }
 
-export const createCollection = authAsyncWrapper(async (req: Request, res: Response) => {
+export const createCollection = authAsyncWrapper(async (req: Request, res: Response, user: any) => {
     const collectionName = req.body.name
     const collectionDescription = req.body.description
+    const isCollectionPrivate = req.body.isCollectionPrivate
     try {
         if(!collectionName || !collectionDescription || !req.body.categories || !hasValidCategoryFormat(req.body.categories))
             throw new Error("Incorrect request body provided")
@@ -94,7 +109,9 @@ export const createCollection = authAsyncWrapper(async (req: Request, res: Respo
                 [{
                     name: req.body.name.trim(),
                     description: req.body.description.trim(),
-                    categories: categories
+                    categories: categories,
+                    isPrivate: isCollectionPrivate ? isCollectionPrivate : false,
+                    owner: user.userId
                 }],
                 { session }
             );
@@ -149,12 +166,13 @@ export const deleteCollections = authAsyncWrapper(async (req: Request, res: Resp
     }   
 })
 
-export const updateCollection = authAsyncWrapper(async (req: Request, res: Response) => {
+export const updateCollection = authAsyncWrapper(async (req: Request, res: Response, user: any) => {
     const collectionId = req.params.id;
     const name = req.body.name
     const description = req.body.description
+    const isCollectionPrivate = req.body.isCollectionPrivate
     try {
-        if (!name || !description || !req.body.categories || !hasValidCategoryFormat(req.body.categories))
+        if (!name || !description || !req.body.categories || isCollectionPrivate === undefined || !hasValidCategoryFormat(req.body.categories))
             throw new Error("Incorrect request body provided");
         const categories = trimCategoryNames(req.body.categories)
         const session = await mongoose.startSession();
@@ -174,6 +192,10 @@ export const updateCollection = authAsyncWrapper(async (req: Request, res: Respo
             collection.name = name;
             collection.description = description;
             collection.categories = categories;
+            if(user.userId !== collection.owner)
+                throw Error("Access denied")
+            collection.isPrivate = isCollectionPrivate
+
             await collection.save({ session });
 
             res.status(200).json(collection);
@@ -183,13 +205,14 @@ export const updateCollection = authAsyncWrapper(async (req: Request, res: Respo
     } catch (error) {
         const err = error as Error;
         console.error(error);
-        if (err.message === "Incorrect request body provided") {
+        if (err.message === "Incorrect request body provided")
             res.status(400).json({ error: err.message });
-        } else if (err.message === "Collection not found") {
+        else if(err.message === 'Access denied')
+            res.status(401).json({ error: err.message })
+        else if (err.message === "Collection not found")
             res.status(404).json({ error: err.message });
-        } else {
+        else
             res.status(503).json({ error: "Database unavailable" });
-        }
     }
 });
 

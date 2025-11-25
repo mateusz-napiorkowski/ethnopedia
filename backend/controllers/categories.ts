@@ -6,7 +6,7 @@ export const getCategories = async (req: Request, res: Response) => {
         const collectionIds = typeof req.query.collectionIds === "string" ? Array(req.query.collectionIds) : req.query.collectionIds as Array<string>
         if(!collectionIds)
             throw new Error("Request is missing query params")
-        const categories = await getAllCategories(collectionIds)
+        const categories = await getAllCategories(collectionIds, req.headers.authorization)
         res.status(200).json({categories: categories})
     } catch (error) {
         const err = error as Error

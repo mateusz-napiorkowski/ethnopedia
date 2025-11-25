@@ -2,7 +2,7 @@ import '@testing-library/jest-dom';
 import {getArtworksFilesArchive, getXlsxWithArtworksData, getXlsxWithCollectionData} from '../dataExport';
 import axios from "axios"
 import 'dotenv/config'
-import { collectionId, axiosError } from './utils/consts';
+import { collectionId, axiosError, jwtToken } from './utils/consts';
 import {ExportExtent} from "../../@types/DataExport"
 
 jest.mock("axios");
@@ -29,7 +29,8 @@ describe("dataExport tests", () => {
                 "test.xlsx",
                 false,
                 false,
-                false
+                false,
+                jwtToken
             );
 
 
@@ -48,6 +49,7 @@ describe("dataExport tests", () => {
                         foo: "1",
                         bar: "2"
                     },
+                    headers: {Authorization: `Bearer ${jwtToken}`}
                     
                 }
             )
@@ -74,12 +76,13 @@ describe("dataExport tests", () => {
         it("should call axios.get with correct parameters", async () => {
             mockAxios.get.mockResolvedValueOnce({  });
 
-            const result = await getXlsxWithCollectionData(collectionId);
+            const result = await getXlsxWithCollectionData(collectionId, jwtToken);
 
             expect(mockAxios.get).toHaveBeenCalledWith(
                 `${process.env.REACT_APP_API_URL}v1/dataExport/collection/${collectionId}`,
                 {
-                    responseType: "blob",                    
+                    responseType: "blob",
+                    headers: {Authorization: `Bearer ${jwtToken}`}                  
                 }
             )
         });
@@ -95,7 +98,7 @@ describe("dataExport tests", () => {
         it("should call axios.get with correct parameters", async () => {
             mockAxios.get.mockResolvedValueOnce({  });
 
-            const result = await getArtworksFilesArchive([collectionId], ExportExtent.all, {}, new URLSearchParams(), "archive.zip");
+            const result = await getArtworksFilesArchive([collectionId], ExportExtent.all, {}, new URLSearchParams(), "archive.zip", jwtToken);
 
             expect(mockAxios.get).toHaveBeenCalledWith(
                 `${process.env.REACT_APP_API_URL}v1/dataExport/files`,
@@ -106,7 +109,8 @@ describe("dataExport tests", () => {
                         exportExtent: "all",
                         searchParams: expect.any(URLSearchParams),
                         selectedArtworks: []                    
-                    }
+                    },
+                    headers: {Authorization: `Bearer ${jwtToken}`}
                 }
             )
         });

@@ -31,6 +31,11 @@ jest.mock('../../utils/artworks', () => ({
     handleFileDeletions: (artwork: any, filesToDelete: any, session: any) => mockHandleFileDeletions(artwork, filesToDelete, session)
 }))
 
+const mockVerifyToken = jest.fn() 
+jest.mock('../../utils/auth', () => ({
+    verifyToken: () => mockVerifyToken()
+}))
+
 const mockArtworkCategoriesHaveValidFormat = jest.fn() 
 jest.mock('../../utils/categories', () => ({
     artworkCategoriesHaveValidFormat: () => mockArtworkCategoriesHaveValidFormat()
@@ -59,9 +64,11 @@ jest.mock("../../models/artwork", () => {
 
 const mockCollectionFind = jest.fn()
 const mockCollectionFindOne = jest.fn()
+const mockCollectionFindById = jest.fn()
 jest.mock("../../models/collection", () => ({
-    find: () => mockCollectionFind(),
-    findOne: () => mockCollectionFindOne()
+    find: (filter: any) => mockCollectionFind(filter),
+    findOne: () => mockCollectionFindOne(),
+    findById: () => mockCollectionFindById()
 }))
 
 jest.mock("jsonwebtoken", () => ({
@@ -79,6 +86,8 @@ describe('artworks controller', () => {
         test("getArtwork should respond with status 200 and correct body", async () => {
             mockIsValidObjectId.mockReturnValue(true)
             mockFindById.mockReturnValue(getArtworkFindByIdReturnValue)
+            mockCollectionFindById.mockReturnValue({exec: () => (oneCollectionData)})
+            mockVerifyToken.mockImplementation(()=>{})
 
             const res = await request(app)
                 .get(`/${artworkId}`)
@@ -91,23 +100,53 @@ describe('artworks controller', () => {
         test.each([
             {
                 isValidObjectId: false, findById: undefined, artworkId: artworkId,
+                collectionFindById: {exec: () => (oneCollectionData)}, verifyToken: () => {},
                 statusCode: 400, error: 'Invalid artwork id'
             },
             {
                 isValidObjectId: true,
                 findById: {exec: () => Promise.resolve(null)},
                 artworkId: artworkId,
+                collectionFindById: {exec: () => (oneCollectionData)},
+                verifyToken: () => {},
                 statusCode: 404,
                 error: "Artwork not found"
             },
             {
+                isValidObjectId: true,
+                findById: {exec: () => Promise.resolve(artworkFindHappyPath)},
+                artworkId: artworkId,
+                collectionFindById: {exec: () => Promise.resolve(null)},
+                verifyToken: () => {},
+                statusCode: 404,
+                error: "Collection not found"
+            },
+            {
+                isValidObjectId: true, findById: {exec: () => Promise.resolve(artworkFindHappyPath)}, artworkId: artworkId,
+                collectionFindById: {exec: () => Promise.resolve(oneCollectionData)}, verifyToken: () => {throw Error("No token provided")},
+                statusCode: 401, error: "No token provided",
+            },
+            {
+                isValidObjectId: true, findById: {exec: () => Promise.resolve(artworkFindHappyPath)}, artworkId: artworkId,
+                collectionFindById: {exec: () => Promise.resolve(oneCollectionData)}, verifyToken: () => {throw Error("Access denied")},
+                statusCode: 401, error: "Access denied",
+            },
+            {
                 isValidObjectId: true, findById: {exec: () => {throw Error()}}, artworkId: artworkId,
+                collectionFindById: {exec: () => (oneCollectionData)}, verifyToken: () => {},
+                statusCode: 503, error: "Database unavailable"
+            },
+            {
+                isValidObjectId: true, findById: {exec: () => Promise.resolve(artworkFindHappyPath)}, artworkId: artworkId,
+                collectionFindById: {exec: () => {throw Error()}}, verifyToken: () => {},
                 statusCode: 503, error: "Database unavailable"
             },
         ])(`getArtwork should respond with status $statusCode and correct error message`,
-            async ({isValidObjectId, findById, artworkId, statusCode, error}) => {
+            async ({isValidObjectId, findById, artworkId, collectionFindById, verifyToken, statusCode, error}) => {
                 mockIsValidObjectId.mockReturnValue(isValidObjectId)
                 mockFindById.mockReturnValue(findById)
+                mockCollectionFindById.mockReturnValue(collectionFindById)
+                mockVerifyToken.mockImplementation(verifyToken)
 
                 const res = await request(app)
                     .get(`/${artworkId}`)
@@ -127,6 +166,8 @@ describe('artworks controller', () => {
                 quickSearchCalls: 0, advSearchCalls: 0,
                 artworkFind: () => getArtworksForPageFindReturnValue,
                 sortRecordsByCategory: () => getArtworksForPageRecords,
+                verifyToken: () => {},
+                collectionFindFilter: {_id: {$in: collectionId}},
                 statusCode: 200
             },
             {
@@ -137,6 +178,8 @@ describe('artworks controller', () => {
                 quickSearchCalls: 1, advSearchCalls: 0,
                 artworkFind: () => getArtworksForPageFindReturnValue,
                 sortRecordsByCategory: () => getArtworksForPageRecords,
+                verifyToken: () => {},
+                collectionFindFilter: {_id: {$in: collectionId}},
                 statusCode: 200
             },
             {
@@ -147,14 +190,29 @@ describe('artworks controller', () => {
                 quickSearchCalls: 0, advSearchCalls: 1,
                 artworkFind: () => getArtworksForPageFindReturnValue,
                 sortRecordsByCategory: () => getArtworksForPageRecords,
+                verifyToken: () => {},
+                collectionFindFilter: {_id: {$in: collectionId}},
+                statusCode: 200
+            },
+            {
+                case: "token not verified",
+                page: "page=1&", pageSize: "pageSize=10&", sortBy: "sortBy=Tytuł&", sortOrder: "sortOrder=asc&",
+                collectionIds: [collectionId],
+                search: "search=false&", searchText: undefined,
+                quickSearchCalls: 0, advSearchCalls: 0,
+                artworkFind: () => getArtworksForPageFindReturnValue,
+                sortRecordsByCategory: () => getArtworksForPageRecords,
+                verifyToken: () => {throw Error("Access denied")},
+                collectionFindFilter: {_id: {$in: collectionId}, isPrivate: false},
                 statusCode: 200
             },
         ])(`getArtworksForPage should respond with status 200 and correct body - $case`,
-            async ({page, pageSize, sortBy, sortOrder, collectionIds, search, searchText, quickSearchCalls, advSearchCalls, artworkFind, sortRecordsByCategory, statusCode}) => {
+            async ({page, pageSize, sortBy, sortOrder, collectionIds, search, searchText, quickSearchCalls, advSearchCalls, artworkFind, sortRecordsByCategory, verifyToken, collectionFindFilter, statusCode}) => {
                 mockCollectionFind.mockReturnValue({exec: () => ([oneCollectionData])}     
                 )
                 mockArtworkFind.mockImplementation(artworkFind)
                 mockSortRecordsByCategory.mockImplementation(sortRecordsByCategory)
+                mockVerifyToken.mockImplementation(verifyToken)
 
                 let queryString = `/?`
                 if (page) queryString += page
@@ -176,6 +234,7 @@ describe('artworks controller', () => {
                 expect(res.status).toBe(statusCode)
                 expect(constructQuickSearchFilter).toHaveBeenCalledTimes(quickSearchCalls)
                 expect(constructAdvSearchFilter).toHaveBeenCalledTimes(advSearchCalls)
+                expect(mockCollectionFind).toBeCalledWith(collectionFindFilter)
                 expect(res.body).toMatchSnapshot()
             }
         )

@@ -28,3 +28,16 @@ exports[`categories util functions tests getAllCategories test - get categories 
   "Rok.Miesiąc.Dzień",
 ]
 `;
+
+exports[`categories util functions tests getAllCategories test - no token, get categories only from public collections 1`] = `
+[
+  "Tytuł",
+  "Tytuł.Podtytuł",
+  "Tytuł.Podtytuł.Podpodtytuł",
+  "Tytuł.Podtytuł alternatywny",
+  "Artyści",
+  "Rok",
+  "Rok.Miesiąc",
+  "Rok.Miesiąc.Dzień",
+]
+`;

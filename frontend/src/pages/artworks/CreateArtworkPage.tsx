@@ -33,13 +33,13 @@ const CreateArtworkPage: React.FC = () => {
 
     const { data: catData, isLoading: catsLoading } = useQuery(
         ['categories', collectionId],
-        () => getAllCategories([collectionId as string]),
+        () => getAllCategories([collectionId as string], jwtToken),
         { enabled: !!collectionId }
     );
 
     const { data: collData } = useQuery(
         ['collection', collectionId],
-        () => getCollection(collectionId!),
+        () => getCollection(collectionId!, jwtToken),
         { enabled: !!collectionId }
     );
 
@@ -53,7 +53,8 @@ const CreateArtworkPage: React.FC = () => {
                 'createdAt',
                 'desc',
                 '',
-                {}
+                {},
+                jwtToken
             ),
         { enabled: !!collectionId }
     );
@@ -126,7 +127,7 @@ const CreateArtworkPage: React.FC = () => {
         if (isInitialized) return;
 
         if (artworkId) {
-            getArtwork(artworkId).then((res) => {
+            getArtwork(artworkId, jwtToken).then((res) => {
                 const initialData = {
                     categories: res.artwork.categories || [],
                     filesToUpload: [],
@@ -147,6 +148,7 @@ const CreateArtworkPage: React.FC = () => {
             initializeState(initialData);
             setIsInitialized(true);
         }
+        // eslint-disable-next-line
     }, [artworkId, catData, isInitialized, initializeState]);
 
     const [isSubmitting, setIsSubmitting] = useState(false);

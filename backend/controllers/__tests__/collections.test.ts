@@ -40,6 +40,11 @@ jest.mock("../../models/artwork", () => ({
     find: () => mockArtworkFind()
 }))
 
+const mockVerifyToken = jest.fn() 
+jest.mock('../../utils/auth', () => ({
+    verifyToken: () => mockVerifyToken()
+}))
+
 const mockHasValidCategoryFormat = jest.fn()
 const mockIsValidCollectionCategoryStructureForCollectionUpdate = jest.fn()
 const mockTrimCategoryNames = jest.fn()
@@ -54,9 +59,18 @@ jest.mock("../../utils/artworks", () => ({
     updateArtworkCategories: () => mockUpdateArtworkCategories()
 }))
 
+const mockJwtVerify = jest.fn()
 jest.mock("jsonwebtoken", () => ({
-	verify: jest.fn()
+	verify: () => mockJwtVerify()
 }))
+
+const user = {
+    username: 'example user',
+    firstName: 'example user',
+    userId: '675ddf3b1e6d01766fbc5b17',
+    iat: 1763262553,
+    exp: 1764262553
+}
 
 describe('collections controller', () =>{
     beforeEach(() => {
@@ -205,10 +219,33 @@ describe('collections controller', () =>{
         })
 
         test.each([
-            {statusCode: 503, error: 'Database unavailable', findOne: { exec: () => {throw Error()} }},
-            {statusCode: 404, error: 'Collection not found', findOne: { exec: () => Promise.resolve(null) }}
-        ])('getCollection should respond with status $statusCode and correct error message', async ({statusCode, error, findOne}) => {
+            {statusCode: 503, error: 'Database unavailable', findOne: { exec: () => {throw Error()} }, verifyToken: () => {}},
+            {statusCode: 404, error: 'Collection not found', findOne: { exec: () => Promise.resolve(null) }, verifyToken: () => {}},
+            {statusCode: 401, error: 'Access denied',
+                findOne: { exec: () => Promise.resolve({
+                    _id: collectionId,
+                    name: collectionName,
+                    description: collectionDescription,
+                    __v: 0,
+                    isPrivate: true,
+                    owner: "12345678d6303ed5ac5a4321"
+                }) },
+                verifyToken: () => {throw Error("Access denied")}
+            },
+            {statusCode: 401, error: 'No token provided',
+                findOne: { exec: () => Promise.resolve({
+                    _id: collectionId,
+                    name: collectionName,
+                    description: collectionDescription,
+                    __v: 0,
+                    isPrivate: true,
+                    owner: "12345678d6303ed5ac5a4321"
+                }) },
+                verifyToken: () => {throw Error("No token provided")}
+            },
+        ])('getCollection should respond with status $statusCode and correct error message', async ({statusCode, error, findOne, verifyToken}) => {
             mockCollectionFindOne.mockReturnValue(findOne)
+            mockVerifyToken.mockImplementation(verifyToken)
 
             const res = await request(app.use(CollectionsRouter))
             .get(`/${collectionId}`);
@@ -236,6 +273,7 @@ describe('collections controller', () =>{
             mockCollectionFindOne.mockReturnValue({ exec: () => Promise.resolve(null) })
             mockCollectionCreate.mockReturnValue(collectionPromise)
             mockTrimCategoryNames.mockReturnValue(correctCategories)
+            mockJwtVerify.mockReturnValue(user)
             
             const payload = {
                 name: collectionName,
@@ -437,9 +475,11 @@ describe('collections controller', () =>{
             mockUpdateArtworkCategories.mockReturnValue(artworkWithUpdatedcategories)
             const payload = { name: "nowa nazwa kolekcji", description: "nowy opis kolekcji", categories: [
                 { name: 'Tytuł', subcategories: []}, 
-                { name: 'Wykonawca', subcategories: []},]
+                { name: 'Wykonawca', subcategories: []},],
+                isCollectionPrivate: false
             }
             mockTrimCategoryNames.mockReturnValue(payload.categories)
+            mockJwtVerify.mockReturnValue(user)
 
             const res = await request(app.use(CollectionsRouter))
             .put(`/edit/${collectionId}`)
@@ -456,7 +496,7 @@ describe('collections controller', () =>{
             {
                 payload: {description: "nowy opis", categories: [
                     { name: 'Tytuł', subcategories: []}, 
-                    { name: 'Wykonawca', subcategories: []},]},
+                    { name: 'Wykonawca', subcategories: []},], isCollectionPrivate: false},
                 statusCode: 400,
                 error: "Incorrect request body provided",
                 startSession: () => startSessionDefaultReturnValue,
@@ -468,7 +508,7 @@ describe('collections controller', () =>{
             {
                 payload: {name: "nowa", categories: [
                     { name: 'Tytuł', subcategories: []}, 
-                    { name: 'Wykonawca', subcategories: []},]},
+                    { name: 'Wykonawca', subcategories: []},], isCollectionPrivate: false},
                 statusCode: 400,
                 error: "Incorrect request body provided",
                 startSession: () => startSessionDefaultReturnValue,
@@ -478,7 +518,7 @@ describe('collections controller', () =>{
                 isValidCollectionCategoryStructureForCollectionUpdate: true
             },
             {
-                payload: {name: "nowa", description: "nowy opis" },
+                payload: {name: "nowa", description: "nowy opis", isCollectionPrivate: false },
                 statusCode: 400,
                 error: "Incorrect request body provided",
                 startSession: () => startSessionDefaultReturnValue,
@@ -490,7 +530,7 @@ describe('collections controller', () =>{
             {
                 payload: {name: "nowa", description: "nowy opis", categories: [
                     { name: 'Tytuł', subcategories: []}, 
-                    { name: 'Wykonawca', subcategories: []},]},
+                    { name: 'Wykonawca', subcategories: []},], isCollectionPrivate: false},
                 statusCode: 400,
                 error: "Incorrect request body provided",
                 startSession: () => startSessionDefaultReturnValue,
@@ -502,7 +542,7 @@ describe('collections controller', () =>{
             {
                 payload: {name: "nowa", description: "nowy opis", categories: [
                     { name: 'Tytuł', subcategories: []}, 
-                    { name: 'Wykonawca', subcategories: []},]},
+                    { name: 'Wykonawca', subcategories: []},], isCollectionPrivate: false},
                 statusCode: 400,
                 error: "Incorrect request body provided",
                 startSession: () => startSessionDefaultReturnValue,
@@ -515,6 +555,18 @@ describe('collections controller', () =>{
                 payload: {name: "nowa", description: "nowy opis", categories: [
                     { name: 'Tytuł', subcategories: []}, 
                     { name: 'Wykonawca', subcategories: []},]},
+                statusCode: 400,
+                error: "Incorrect request body provided",
+                startSession: () => startSessionDefaultReturnValue,
+                hasValidCategoryFormat: true,
+                collectionFindById: collectionFindByIdHappyPath,
+                artworkFind: artworkFindHappyPath,
+                isValidCollectionCategoryStructureForCollectionUpdate: true
+            },
+            {
+                payload: {name: "nowa", description: "nowy opis", categories: [
+                    { name: 'Tytuł', subcategories: []}, 
+                    { name: 'Wykonawca', subcategories: []},], isCollectionPrivate: false},
                 statusCode: 503,
                 error: "Database unavailable",
                 startSession: () => {throw Error()},
@@ -526,7 +578,7 @@ describe('collections controller', () =>{
             {
                 payload: {name: "nowa", description: "nowy opis", categories: [
                     { name: 'Tytuł', subcategories: []}, 
-                    { name: 'Wykonawca', subcategories: []},]},
+                    { name: 'Wykonawca', subcategories: []},], isCollectionPrivate: false},
                 statusCode: 503,
                 error: "Database unavailable",
                 startSession: () => startSessionDefaultReturnValue,
@@ -538,7 +590,7 @@ describe('collections controller', () =>{
             {
                 payload: {name: "nowa", description: "nowy opis", categories: [
                     { name: 'Tytuł', subcategories: []}, 
-                    { name: 'Wykonawca', subcategories: []},]},
+                    { name: 'Wykonawca', subcategories: []},], isCollectionPrivate: false},
                 statusCode: 503,
                 error: "Database unavailable",
                 startSession: () => startSessionDefaultReturnValue,
@@ -550,7 +602,7 @@ describe('collections controller', () =>{
             {
                 payload: {name: "nowa", description: "nowy opis", categories: [
                     { name: 'Tytuł', subcategories: []}, 
-                    { name: 'Wykonawca', subcategories: []},]},
+                    { name: 'Wykonawca', subcategories: []},], isCollectionPrivate: false},
                 statusCode: 503,
                 error: "Database unavailable",
                 startSession: () => startSessionDefaultReturnValue,
@@ -562,7 +614,7 @@ describe('collections controller', () =>{
             {
                 payload: {name: "nowa", description: "nowy opis", categories: [
                     { name: 'Tytuł', subcategories: []}, 
-                    { name: 'Wykonawca', subcategories: []},]},
+                    { name: 'Wykonawca', subcategories: []},], isCollectionPrivate: false},
                 statusCode: 503,
                 error: "Database unavailable",
                 startSession: () => startSessionDefaultReturnValue,
@@ -574,7 +626,7 @@ describe('collections controller', () =>{
             {
                 payload: {name: "nowa", description: "nowy opis", categories: [
                     { name: 'Tytuł', subcategories: []}, 
-                    { name: 'Wykonawca', subcategories: []},]},
+                    { name: 'Wykonawca', subcategories: []},], isCollectionPrivate: false},
                 statusCode: 404,
                 error: "Collection not found",
                 startSession: () => startSessionDefaultReturnValue,
@@ -583,7 +635,7 @@ describe('collections controller', () =>{
                 artworkFind: artworkFindHappyPath,
                 isValidCollectionCategoryStructureForCollectionUpdate: true
             },
-        ])('deleteCollections should respond with status $statusCode and correct error message', async ({payload, statusCode, error, startSession, hasValidCategoryFormat, collectionFindById, artworkFind, isValidCollectionCategoryStructureForCollectionUpdate}) => {
+        ])('updateCollections should respond with status $statusCode and correct error message', async ({payload, statusCode, error, startSession, hasValidCategoryFormat, collectionFindById, artworkFind, isValidCollectionCategoryStructureForCollectionUpdate}) => {
             mockHasValidCategoryFormat.mockReturnValue(hasValidCategoryFormat)
             mockStartSession.mockImplementation(startSession)
             mockCollectionFindById.mockImplementation(collectionFindById)

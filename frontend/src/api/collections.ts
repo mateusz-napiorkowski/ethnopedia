@@ -10,7 +10,7 @@ interface CollectionsResponse {
     pageSize: number;
 }
 
-export const getAllCollections = async (page: number = 1, pageSize: number = 10, sortOrder: string): Promise<CollectionsResponse> => {
+export const getAllCollections = async (page: number = 1, pageSize: number = 10, sortOrder: string, jwtToken: string | undefined = undefined): Promise<CollectionsResponse> => {  
     return axios
         .get(`${API_URL}v1/collection`, {
             params: {
@@ -18,29 +18,31 @@ export const getAllCollections = async (page: number = 1, pageSize: number = 10,
                 pageSize: pageSize,
                 sortOrder: sortOrder
             },
+            headers: jwtToken ? { Authorization: `Bearer ${jwtToken}` } : {}
         })
         .then(res => res.data);
 }
 
-export const getCollection = async (id: string) => {
+export const getCollection = async (id: string, jwtToken: string | undefined = undefined) => {
     return await axios
         .get(
             `${API_URL}v1/collection/${id}`,
             {headers: {
-                'Content-Type': 'application/json; charset=UTF-8'
+                'Content-Type': 'application/json; charset=UTF-8',
+                Authorization: jwtToken ? `Bearer ${jwtToken}`: undefined
             }}
         )
         .then(res => res.data);
 };
 
 
-export const createCollection = async (name: string, description: string, categories: Category[], jwtToken: string) => {
+export const createCollection = async (name: string, description: string, categories: Category[], jwtToken: string, isCollectionPrivate: boolean) => {
     const config = {
         headers: { Authorization: `Bearer ${jwtToken}` }
     };
 
     return await axios
-        .post(`${API_URL}v1/collection/create`, {name, description, categories}, config)
+        .post(`${API_URL}v1/collection/create`, {name, description, categories, isCollectionPrivate}, config)
         .then(res => res.data);
 };
 
@@ -49,12 +51,13 @@ export const updateCollection = async (
     name: string,
     description: string,
     categories: Category[],
+    isCollectionPrivate: boolean,
     jwtToken: string
 ) => {
     return await axios
         .put(
             `${API_URL}v1/collection/edit/${id}`,
-            { name, description, categories },
+            { name, description, categories, isCollectionPrivate },
             { headers: { Authorization: `Bearer ${jwtToken}` } }
         )
         .then(res => res.data);

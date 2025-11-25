@@ -45,6 +45,7 @@ const ImportCollectionPage = () => {
     const [collectionDescriptionError, setCollectionDescriptionError] = useState(nbsp)
     const [circularReferences, setCircularReferences]= useState<Array<string>>([])
     const [serverError, setServerError] = useState(nbsp)
+    const [isCollectionPrivate, setIsCollectionPrivate] = useState(true)
     
     const navigate = useNavigate();
     const queryClient = useQueryClient()
@@ -204,7 +205,7 @@ const ImportCollectionPage = () => {
         importCollectionMutation.mutate()
     }
 
-    const importCollectionMutation = useMutation(() => importDataAsCollection(fileData, collectionName, collectionDescription, jwtToken, archiveFile), {
+    const importCollectionMutation = useMutation(() => importDataAsCollection(fileData, collectionName, collectionDescription, jwtToken, archiveFile, isCollectionPrivate), {
             onSuccess: () => {
                 queryClient.invalidateQueries("collection")
                 navigate("/")
@@ -452,6 +453,32 @@ const ImportCollectionPage = () => {
                                 to tutaj możesz wgrać wyeksportowany plik archiwum. Jeśli w archiwum znajdują się dodatkowe, nieprawidłowe pliki,
                                 to zostaną one pominięte.
                             </p>
+                            <label className="block text-sm font-bold text-gray-700 dark:text-white my-2 mt-4">
+                                Dostępność kolekcji
+                            </label>
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                                Ustal dla kogo ma być widoczna kolekcja.
+                                Kolekcja prywatna jest widoczna tylko dla użytkowników zalogowanych.
+                                Kolekcja publiczna jest widoczna również dla użytkowników niezalogowanych.
+                            </p>
+                            <div>
+                                <button
+                                    aria-label='select-export-as-spreadsheet'
+                                    type="button"
+                                    onClick={() => setIsCollectionPrivate(false)}
+                                    className={`px-4 py-2 ${!isCollectionPrivate ? "color-button" : ""} rounded-r-none text-xs`}
+                                >
+                                    Kolekcja publiczna
+                                </button>
+                                <button
+                                    aria-label='select-export-as-csv'
+                                    type="button"
+                                    onClick={() => setIsCollectionPrivate(true)}
+                                    className={`px-4 py-2 ${isCollectionPrivate ? "color-button" : ""} rounded-l-none text-xs`}
+                                >
+                                    Kolekcja prywatna
+                                </button>  
+                            </div>
                             <div 
                                 aria-label="server-error"
                                 className="text-red-500 text-sm"

@@ -8,6 +8,24 @@ const bcrypt = require("bcrypt")
 import User from "../models/user";
 require("dotenv").config()
 
+export const getUserById = async (req: Request, res: Response) => {
+    try {
+        const userId = req.params.userId
+        const user = await User.findById(userId).exec()
+        if(!user)
+            throw new Error("User not found")
+        return res.status(200).json({_id: user._id, username: user.username, firstName: user.firstName})
+    } catch (error) {
+        const err = error as Error
+        console.error(error)
+        if (err.message === `User not found`)
+            res.status(404).json({ error: err.message })
+        else
+            res.status(503).json({ error: `Database unavailable` })       
+    }  
+    
+}
+
 export const registerUser = async (req: Request, res: Response) => {
     const newUsername = req.body.username
     const newFirstName = req.body.firstName

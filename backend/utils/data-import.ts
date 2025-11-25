@@ -155,7 +155,7 @@ export const prepRecordsAndFiles = async (
             const newRecordId = !oldRecordId || asNewCollection 
                 ? new mongoose.Types.ObjectId()
                 : new mongoose.Types.ObjectId(oldRecordId)
-            const newRecord: record = {_id: newRecordId, categories: [], collectionName: collectionName, files: []}
+            const newRecord: record = {_id: newRecordId, categories: [], collectionId: collectionId, collectionName: collectionName, files: []}
 
             const {uploadedFilesCount, uploadedFilenames, failedUploadsCauses} = processArchiveFiles(
                 newRecord,

@@ -468,6 +468,32 @@ exports[`ImportCollectionPage tests should call importData with correct paramete
             >
               Jeśli eksportowałeś wcześniej dane z innej kolekcji do pliku arkusza/CSV wraz z archiwum .zip ze skojarzonymi z tymi danymi plikami i masz intencje zaimportowania tych danych do nowej kolekcji, to tutaj możesz wgrać wyeksportowany plik archiwum. Jeśli w archiwum znajdują się dodatkowe, nieprawidłowe pliki, to zostaną one pominięte.
             </p>
+            <label
+              class="block text-sm font-bold text-gray-700 dark:text-white my-2 mt-4"
+            >
+              Dostępność kolekcji
+            </label>
+            <p
+              class="text-sm text-gray-600 dark:text-gray-400 mb-4"
+            >
+              Ustal dla kogo ma być widoczna kolekcja. Kolekcja prywatna jest widoczna tylko dla użytkowników zalogowanych. Kolekcja publiczna jest widoczna również dla użytkowników niezalogowanych.
+            </p>
+            <div>
+              <button
+                aria-label="select-export-as-spreadsheet"
+                class="px-4 py-2  rounded-r-none text-xs"
+                type="button"
+              >
+                Kolekcja publiczna
+              </button>
+              <button
+                aria-label="select-export-as-csv"
+                class="px-4 py-2 color-button rounded-l-none text-xs"
+                type="button"
+              >
+                Kolekcja prywatna
+              </button>
+            </div>
             <div
               aria-label="server-error"
               class="text-red-500 text-sm"
@@ -776,6 +802,32 @@ exports[`ImportCollectionPage tests should load archive file data of new archive
             >
               Jeśli eksportowałeś wcześniej dane z innej kolekcji do pliku arkusza/CSV wraz z archiwum .zip ze skojarzonymi z tymi danymi plikami i masz intencje zaimportowania tych danych do nowej kolekcji, to tutaj możesz wgrać wyeksportowany plik archiwum. Jeśli w archiwum znajdują się dodatkowe, nieprawidłowe pliki, to zostaną one pominięte.
             </p>
+            <label
+              class="block text-sm font-bold text-gray-700 dark:text-white my-2 mt-4"
+            >
+              Dostępność kolekcji
+            </label>
+            <p
+              class="text-sm text-gray-600 dark:text-gray-400 mb-4"
+            >
+              Ustal dla kogo ma być widoczna kolekcja. Kolekcja prywatna jest widoczna tylko dla użytkowników zalogowanych. Kolekcja publiczna jest widoczna również dla użytkowników niezalogowanych.
+            </p>
+            <div>
+              <button
+                aria-label="select-export-as-spreadsheet"
+                class="px-4 py-2  rounded-r-none text-xs"
+                type="button"
+              >
+                Kolekcja publiczna
+              </button>
+              <button
+                aria-label="select-export-as-csv"
+                class="px-4 py-2 color-button rounded-l-none text-xs"
+                type="button"
+              >
+                Kolekcja prywatna
+              </button>
+            </div>
             <div
               aria-label="server-error"
               class="text-red-500 text-sm"
@@ -1272,6 +1324,32 @@ exports[`ImportCollectionPage tests should load file data of new file after some
             >
               Jeśli eksportowałeś wcześniej dane z innej kolekcji do pliku arkusza/CSV wraz z archiwum .zip ze skojarzonymi z tymi danymi plikami i masz intencje zaimportowania tych danych do nowej kolekcji, to tutaj możesz wgrać wyeksportowany plik archiwum. Jeśli w archiwum znajdują się dodatkowe, nieprawidłowe pliki, to zostaną one pominięte.
             </p>
+            <label
+              class="block text-sm font-bold text-gray-700 dark:text-white my-2 mt-4"
+            >
+              Dostępność kolekcji
+            </label>
+            <p
+              class="text-sm text-gray-600 dark:text-gray-400 mb-4"
+            >
+              Ustal dla kogo ma być widoczna kolekcja. Kolekcja prywatna jest widoczna tylko dla użytkowników zalogowanych. Kolekcja publiczna jest widoczna również dla użytkowników niezalogowanych.
+            </p>
+            <div>
+              <button
+                aria-label="select-export-as-spreadsheet"
+                class="px-4 py-2  rounded-r-none text-xs"
+                type="button"
+              >
+                Kolekcja publiczna
+              </button>
+              <button
+                aria-label="select-export-as-csv"
+                class="px-4 py-2 color-button rounded-l-none text-xs"
+                type="button"
+              >
+                Kolekcja prywatna
+              </button>
+            </div>
             <div
               aria-label="server-error"
               class="text-red-500 text-sm"
@@ -1580,6 +1658,32 @@ exports[`ImportCollectionPage tests should load zipfile 1`] = `
             >
               Jeśli eksportowałeś wcześniej dane z innej kolekcji do pliku arkusza/CSV wraz z archiwum .zip ze skojarzonymi z tymi danymi plikami i masz intencje zaimportowania tych danych do nowej kolekcji, to tutaj możesz wgrać wyeksportowany plik archiwum. Jeśli w archiwum znajdują się dodatkowe, nieprawidłowe pliki, to zostaną one pominięte.
             </p>
+            <label
+              class="block text-sm font-bold text-gray-700 dark:text-white my-2 mt-4"
+            >
+              Dostępność kolekcji
+            </label>
+            <p
+              class="text-sm text-gray-600 dark:text-gray-400 mb-4"
+            >
+              Ustal dla kogo ma być widoczna kolekcja. Kolekcja prywatna jest widoczna tylko dla użytkowników zalogowanych. Kolekcja publiczna jest widoczna również dla użytkowników niezalogowanych.
+            </p>
+            <div>
+              <button
+                aria-label="select-export-as-spreadsheet"
+                class="px-4 py-2  rounded-r-none text-xs"
+                type="button"
+              >
+                Kolekcja publiczna
+              </button>
+              <button
+                aria-label="select-export-as-csv"
+                class="px-4 py-2 color-button rounded-l-none text-xs"
+                type="button"
+              >
+                Kolekcja prywatna
+              </button>
+            </div>
             <div
               aria-label="server-error"
               class="text-red-500 text-sm"
@@ -1889,6 +1993,32 @@ exports[`ImportCollectionPage tests should reload archive file data after archiv
             >
               Jeśli eksportowałeś wcześniej dane z innej kolekcji do pliku arkusza/CSV wraz z archiwum .zip ze skojarzonymi z tymi danymi plikami i masz intencje zaimportowania tych danych do nowej kolekcji, to tutaj możesz wgrać wyeksportowany plik archiwum. Jeśli w archiwum znajdują się dodatkowe, nieprawidłowe pliki, to zostaną one pominięte.
             </p>
+            <label
+              class="block text-sm font-bold text-gray-700 dark:text-white my-2 mt-4"
+            >
+              Dostępność kolekcji
+            </label>
+            <p
+              class="text-sm text-gray-600 dark:text-gray-400 mb-4"
+            >
+              Ustal dla kogo ma być widoczna kolekcja. Kolekcja prywatna jest widoczna tylko dla użytkowników zalogowanych. Kolekcja publiczna jest widoczna również dla użytkowników niezalogowanych.
+            </p>
+            <div>
+              <button
+                aria-label="select-export-as-spreadsheet"
+                class="px-4 py-2  rounded-r-none text-xs"
+                type="button"
+              >
+                Kolekcja publiczna
+              </button>
+              <button
+                aria-label="select-export-as-csv"
+                class="px-4 py-2 color-button rounded-l-none text-xs"
+                type="button"
+              >
+                Kolekcja prywatna
+              </button>
+            </div>
             <div
               aria-label="server-error"
               class="text-red-500 text-sm"
@@ -2385,6 +2515,32 @@ exports[`ImportCollectionPage tests should reload file data after file is loaded
             >
               Jeśli eksportowałeś wcześniej dane z innej kolekcji do pliku arkusza/CSV wraz z archiwum .zip ze skojarzonymi z tymi danymi plikami i masz intencje zaimportowania tych danych do nowej kolekcji, to tutaj możesz wgrać wyeksportowany plik archiwum. Jeśli w archiwum znajdują się dodatkowe, nieprawidłowe pliki, to zostaną one pominięte.
             </p>
+            <label
+              class="block text-sm font-bold text-gray-700 dark:text-white my-2 mt-4"
+            >
+              Dostępność kolekcji
+            </label>
+            <p
+              class="text-sm text-gray-600 dark:text-gray-400 mb-4"
+            >
+              Ustal dla kogo ma być widoczna kolekcja. Kolekcja prywatna jest widoczna tylko dla użytkowników zalogowanych. Kolekcja publiczna jest widoczna również dla użytkowników niezalogowanych.
+            </p>
+            <div>
+              <button
+                aria-label="select-export-as-spreadsheet"
+                class="px-4 py-2  rounded-r-none text-xs"
+                type="button"
+              >
+                Kolekcja publiczna
+              </button>
+              <button
+                aria-label="select-export-as-csv"
+                class="px-4 py-2 color-button rounded-l-none text-xs"
+                type="button"
+              >
+                Kolekcja prywatna
+              </button>
+            </div>
             <div
               aria-label="server-error"
               class="text-red-500 text-sm"
@@ -2681,6 +2837,32 @@ exports[`ImportCollectionPage tests should render initial state 1`] = `
             >
               Jeśli eksportowałeś wcześniej dane z innej kolekcji do pliku arkusza/CSV wraz z archiwum .zip ze skojarzonymi z tymi danymi plikami i masz intencje zaimportowania tych danych do nowej kolekcji, to tutaj możesz wgrać wyeksportowany plik archiwum. Jeśli w archiwum znajdują się dodatkowe, nieprawidłowe pliki, to zostaną one pominięte.
             </p>
+            <label
+              class="block text-sm font-bold text-gray-700 dark:text-white my-2 mt-4"
+            >
+              Dostępność kolekcji
+            </label>
+            <p
+              class="text-sm text-gray-600 dark:text-gray-400 mb-4"
+            >
+              Ustal dla kogo ma być widoczna kolekcja. Kolekcja prywatna jest widoczna tylko dla użytkowników zalogowanych. Kolekcja publiczna jest widoczna również dla użytkowników niezalogowanych.
+            </p>
+            <div>
+              <button
+                aria-label="select-export-as-spreadsheet"
+                class="px-4 py-2  rounded-r-none text-xs"
+                type="button"
+              >
+                Kolekcja publiczna
+              </button>
+              <button
+                aria-label="select-export-as-csv"
+                class="px-4 py-2 color-button rounded-l-none text-xs"
+                type="button"
+              >
+                Kolekcja prywatna
+              </button>
+            </div>
             <div
               aria-label="server-error"
               class="text-red-500 text-sm"
@@ -3056,6 +3238,32 @@ exports[`ImportCollectionPage tests should unload file data after remove file to
             >
               Jeśli eksportowałeś wcześniej dane z innej kolekcji do pliku arkusza/CSV wraz z archiwum .zip ze skojarzonymi z tymi danymi plikami i masz intencje zaimportowania tych danych do nowej kolekcji, to tutaj możesz wgrać wyeksportowany plik archiwum. Jeśli w archiwum znajdują się dodatkowe, nieprawidłowe pliki, to zostaną one pominięte.
             </p>
+            <label
+              class="block text-sm font-bold text-gray-700 dark:text-white my-2 mt-4"
+            >
+              Dostępność kolekcji
+            </label>
+            <p
+              class="text-sm text-gray-600 dark:text-gray-400 mb-4"
+            >
+              Ustal dla kogo ma być widoczna kolekcja. Kolekcja prywatna jest widoczna tylko dla użytkowników zalogowanych. Kolekcja publiczna jest widoczna również dla użytkowników niezalogowanych.
+            </p>
+            <div>
+              <button
+                aria-label="select-export-as-spreadsheet"
+                class="px-4 py-2  rounded-r-none text-xs"
+                type="button"
+              >
+                Kolekcja publiczna
+              </button>
+              <button
+                aria-label="select-export-as-csv"
+                class="px-4 py-2 color-button rounded-l-none text-xs"
+                type="button"
+              >
+                Kolekcja prywatna
+              </button>
+            </div>
             <div
               aria-label="server-error"
               class="text-red-500 text-sm"
@@ -3353,6 +3561,32 @@ exports[`ImportCollectionPage tests should unload zipfile after remove archive f
             >
               Jeśli eksportowałeś wcześniej dane z innej kolekcji do pliku arkusza/CSV wraz z archiwum .zip ze skojarzonymi z tymi danymi plikami i masz intencje zaimportowania tych danych do nowej kolekcji, to tutaj możesz wgrać wyeksportowany plik archiwum. Jeśli w archiwum znajdują się dodatkowe, nieprawidłowe pliki, to zostaną one pominięte.
             </p>
+            <label
+              class="block text-sm font-bold text-gray-700 dark:text-white my-2 mt-4"
+            >
+              Dostępność kolekcji
+            </label>
+            <p
+              class="text-sm text-gray-600 dark:text-gray-400 mb-4"
+            >
+              Ustal dla kogo ma być widoczna kolekcja. Kolekcja prywatna jest widoczna tylko dla użytkowników zalogowanych. Kolekcja publiczna jest widoczna również dla użytkowników niezalogowanych.
+            </p>
+            <div>
+              <button
+                aria-label="select-export-as-spreadsheet"
+                class="px-4 py-2  rounded-r-none text-xs"
+                type="button"
+              >
+                Kolekcja publiczna
+              </button>
+              <button
+                aria-label="select-export-as-csv"
+                class="px-4 py-2 color-button rounded-l-none text-xs"
+                type="button"
+              >
+                Kolekcja prywatna
+              </button>
+            </div>
             <div
               aria-label="server-error"
               class="text-red-500 text-sm"
@@ -3849,6 +4083,32 @@ exports[`ImportCollectionPage tests should update upload component and show load
             >
               Jeśli eksportowałeś wcześniej dane z innej kolekcji do pliku arkusza/CSV wraz z archiwum .zip ze skojarzonymi z tymi danymi plikami i masz intencje zaimportowania tych danych do nowej kolekcji, to tutaj możesz wgrać wyeksportowany plik archiwum. Jeśli w archiwum znajdują się dodatkowe, nieprawidłowe pliki, to zostaną one pominięte.
             </p>
+            <label
+              class="block text-sm font-bold text-gray-700 dark:text-white my-2 mt-4"
+            >
+              Dostępność kolekcji
+            </label>
+            <p
+              class="text-sm text-gray-600 dark:text-gray-400 mb-4"
+            >
+              Ustal dla kogo ma być widoczna kolekcja. Kolekcja prywatna jest widoczna tylko dla użytkowników zalogowanych. Kolekcja publiczna jest widoczna również dla użytkowników niezalogowanych.
+            </p>
+            <div>
+              <button
+                aria-label="select-export-as-spreadsheet"
+                class="px-4 py-2  rounded-r-none text-xs"
+                type="button"
+              >
+                Kolekcja publiczna
+              </button>
+              <button
+                aria-label="select-export-as-csv"
+                class="px-4 py-2 color-button rounded-l-none text-xs"
+                type="button"
+              >
+                Kolekcja prywatna
+              </button>
+            </div>
             <div
               aria-label="server-error"
               class="text-red-500 text-sm"

@@ -1,6 +1,7 @@
-import { Request, Response, Express } from "express"
+import { Request, Response } from "express"
 import mongoose, { ClientSession, SortOrder } from "mongoose"
 import { authAsyncWrapper } from "../middleware/auth"
+import { verifyToken } from "../utils/auth"
 import Artwork from "../models/artwork";
 import CollectionCollection from "../models/collection"
 import { constructQuickSearchFilter, constructAdvSearchFilter, sortRecordsByCategory, constructTopmostCategorySearchTextFilter, handleFileUploads, handleFileDeletions } from "../utils/artworks"
@@ -21,13 +22,21 @@ export const getArtwork = async (req: Request, res: Response) => {
         const artwork = await Artwork.findById(artworkId).exec()
         if (!artwork)
             throw new Error('Artwork not found')
+        const collection = await CollectionCollection.findById(artwork.collectionId).exec()
+        if (!collection)
+            throw new Error(`Collection not found`)
+        if(collection.isPrivate) {
+            verifyToken(req.headers.authorization)
+        }
         res.status(200).json({ artwork })
     } catch (error) {
         const err = error as Error
         console.error(error)
         if (err.message === 'Invalid artwork id')
             res.status(400).json({ error: err.message })
-        else if(err.message === 'Artwork not found')
+        else if(err.message === "No token provided" || err.message === 'Access denied')
+            res.status(401).json({ error: err.message })
+        else if(err.message === 'Artwork not found' || err.message === 'Collection not found')
             res.status(404).json({ error: err.message })
         else
             res.status(503).json({ error: 'Database unavailable' })
@@ -45,7 +54,14 @@ export const getArtworksForPage = async (req: Request, res: Response) => {
         if(!page || !pageSize || !sortBy || !sortOrder || ! collectionIds)
             throw new Error("Request is missing query params")
         
-        const collections = await CollectionCollection.find({_id: {$in: collectionIds}}).exec()
+        let collectionFilter: any = {_id: {$in: collectionIds}}
+        try {
+            verifyToken(req.headers.authorization)
+        } catch {
+            collectionFilter = {_id: {$in: collectionIds}, isPrivate: false}
+        }
+
+        const collections = await CollectionCollection.find(collectionFilter).exec()
 
         if (collections.length === 0)
             throw new Error(`Collection not found`)
@@ -138,7 +154,7 @@ export const createArtwork = authAsyncWrapper((async (req: Request, res: Respons
             if(!artworkCategoriesHaveValidFormat(categories, collection.categories))
                 throw new Error(`Incorrect request body provided`)
 
-            const artwork = new Artwork({ categories: categories, collectionName: collection.name });
+            const artwork = new Artwork({ categories: categories, collectionName: collection.name, collectionId: collection._id });
             await artwork.save({ session });
 
             const {
@@ -282,3 +298,24 @@ export const deleteArtworks = authAsyncWrapper(async (req: Request, res: Respons
             res.status(503).json( { error: "Database unavailable" })    
     }  
 })
+
+export const addCollectionIdtoArtworks = async (req: Request, res: Response) => {
+    console.log("Adding CollectionId to Artworks...");
+
+    const collections = await CollectionCollection.find({}, { name: 1 });
+    const collectionMap = new Map(collections.map(c => [c.name, c._id]));
+
+    const artworksCount = await Artwork.countDocuments()
+    let artworksMatched = 0
+    for (const [name, id] of collectionMap.entries()) {
+        const updateResult = await Artwork.updateMany(
+            { collectionName: name },
+            { $set: { collectionId: id } }
+        );
+        artworksMatched += updateResult.matchedCount
+    }
+
+    console.log("Finished adding CollectionId to Artworks");
+    console.log(`All artworks found: ${artworksCount}, artworks mateched: ${artworksMatched}`)
+    res.status(200).json({artworksCount: artworksCount, artworksMatched: artworksMatched})
+}

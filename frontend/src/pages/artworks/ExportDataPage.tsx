@@ -7,11 +7,13 @@ import LoadingPage from '../LoadingPage';
 import {ExportExtent} from "../../@types/DataExport"
 import { getAllCategories } from '../../api/categories';
 import { getArtworksFilesArchive, getXlsxWithArtworksData } from '../../api/dataExport';
+import { useUser } from '../../providers/UserProvider';
 
 const ExportDataPage: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const params = useParams();
+    const { jwtToken } = useUser();
     const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
     const [exportExtent, setExportExtent] = useState<ExportExtent>(ExportExtent.all)
     const [exportToExcel, setExportToExcel] = useState(true)
@@ -28,7 +30,7 @@ const ExportDataPage: React.FC = () => {
 
     const { data: categoriesData } = useQuery({
         queryKey: ["allCategories"],
-        queryFn: () => getAllCategories(collectionIds),
+        queryFn: () => getAllCategories(collectionIds, jwtToken),
         enabled: !!collectionIds,
     })
 
@@ -75,7 +77,8 @@ const ExportDataPage: React.FC = () => {
                 filename,
                 includeIds,
                 includeFilenames,
-                exportAsCSV
+                exportAsCSV,
+                jwtToken
             );
         } else {
             getArtworksFilesArchive(
@@ -83,7 +86,8 @@ const ExportDataPage: React.FC = () => {
                 exportExtent,
                 selectedArtworks,
                 searchParams,      
-                archiveFilename
+                archiveFilename,
+                jwtToken
             );
         }
     }

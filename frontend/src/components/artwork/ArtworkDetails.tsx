@@ -17,6 +17,7 @@ interface Category {
 
 interface ArtworkDetailsProps {
     collectionName: string;
+    collectionId: string;
     detailsToShow: {
         _id: any;
         categories: Category[];
@@ -30,6 +31,7 @@ interface ArtworkDetailsProps {
 
 const ArtworkDetails: React.FC<ArtworkDetailsProps> = ({
                                                            collectionName,
+                                                           collectionId,
                                                            detailsToShow,
                                                            handleEditClick,
                                                            setShowDeleteArtworkWarning,

@@ -3,9 +3,11 @@ import { API_URL } from "../config";
 import { Metadata } from "../@types/Metadata";
 import { UploadedFileData } from "../@types/Files";
 
-export const getArtwork = async (id: string) => {
+export const getArtwork = async (id: string, jwtToken: string | undefined = undefined) => {
     return await axios
-        .get(`${API_URL}v1/artworks/${id}`)
+        .get(`${API_URL}v1/artworks/${id}`,
+            {headers: jwtToken ? { Authorization: `Bearer ${jwtToken}` } : {}}
+        )
         .then(res => res.data);
 };
 
@@ -17,6 +19,7 @@ export const getArtworksForPage = async (
     sortOrder: string,
     searchText: string | null,
     searchRules: Record<string, any>,
+    jwtToken: string | undefined = undefined
 ) => {
     return await axios
         .get(`${API_URL}v1/artworks/`, {
@@ -30,6 +33,7 @@ export const getArtworksForPage = async (
                 collectionIds: collectionIds,
                 ...searchRules,
             },
+            headers: jwtToken ? { Authorization: `Bearer ${jwtToken}` } : {}
         })
         .then(res => res.data);
 };

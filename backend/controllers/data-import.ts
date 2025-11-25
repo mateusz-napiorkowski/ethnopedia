@@ -43,11 +43,13 @@ export const importData = authAsyncWrapper(async (req: Request, res: Response) =
     }
 })
  
-export const importDataAsCollection = authAsyncWrapper(async (req: Request, res: Response) => {
+export const importDataAsCollection = authAsyncWrapper(async (req: Request, res: Response, user: any) => {
     try {
-        let importData;        
+        let importData;
+        let isCollectionPrivate;
         try {
             importData = JSON.parse(req.body.importData);
+            isCollectionPrivate = JSON.parse(req.body.isCollectionPrivate)
         } catch {
             throw new Error(`Incorrect request body provided`);
         }
@@ -69,7 +71,8 @@ export const importDataAsCollection = authAsyncWrapper(async (req: Request, res:
                 )
             const categories = transformCategoriesArrayToCategoriesObject(categoriesArray)
             const newCollection = await CollectionCollection.create([
-                {name: collectionName, description: description, categories: categories}
+                {name: collectionName, description: description, categories: categories,
+                    isPrivate: isCollectionPrivate ? isCollectionPrivate : false, owner: user.userId}
             ], {session})
 
             const {

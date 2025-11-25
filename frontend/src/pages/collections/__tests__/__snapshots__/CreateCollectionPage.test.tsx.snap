@@ -949,6 +949,32 @@ exports[`CreateCollectionPage tests should render loading state 1`] = `
           role="status"
           style="position: fixed; top: 0px; left: 0px; width: 1px; height: 1px; margin: -1px; border: 0px; padding: 0px; overflow: hidden; clip-path: inset(100%); white-space: nowrap;"
         />
+        <label
+          class="block text-sm font-bold text-gray-700 dark:text-white my-2 mt-4"
+        >
+          Dostępność kolekcji
+        </label>
+        <p
+          class="text-sm text-gray-600 dark:text-gray-400 mb-4"
+        >
+          Ustal dla kogo ma być widoczna kolekcja. Kolekcja prywatna jest widoczna tylko dla użytkowników zalogowanych. Kolekcja publiczna jest widoczna również dla użytkowników niezalogowanych.
+        </p>
+        <div>
+          <button
+            aria-label="select-export-as-spreadsheet"
+            class="px-4 py-2 color-button rounded-r-none text-xs"
+            type="button"
+          >
+            Kolekcja publiczna
+          </button>
+          <button
+            aria-label="select-export-as-csv"
+            class="px-4 py-2  rounded-l-none text-xs"
+            type="button"
+          >
+            Kolekcja prywatna
+          </button>
+        </div>
         <div
           class="fixed bottom-0 left-0 w-full bg-white dark:bg-gray-900 border-t border-gray-300 dark:border-gray-500 py-3 px-4 flex justify-between items-center shadow-[0_-2px_4px_rgba(0,0,0,0.05)] z-50"
         >
