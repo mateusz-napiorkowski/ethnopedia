@@ -112,6 +112,8 @@ export const collectionFindByIdHappyPath = () => {return {exec: () => Promise.re
     description: collectionDescription,
     categories: collectionCategoriesBeforeUpdate,
     __v: 0,
+    isPrivate: false,
+    owner: "675ddf3b1e6d01766fbc5b17",
     save: () => {}
 })}}
 

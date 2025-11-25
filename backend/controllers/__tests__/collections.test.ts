@@ -64,6 +64,14 @@ jest.mock("jsonwebtoken", () => ({
 	verify: () => mockJwtVerify()
 }))
 
+const user = {
+    username: 'example user',
+    firstName: 'example user',
+    userId: '675ddf3b1e6d01766fbc5b17',
+    iat: 1763262553,
+    exp: 1764262553
+}
+
 describe('collections controller', () =>{
     beforeEach(() => {
 		jest.resetAllMocks()
@@ -259,13 +267,6 @@ describe('collections controller', () =>{
             categories: correctCategories,
             __v: 0
         })
-        const user = {
-            username: 'example user',
-            firstName: 'example user',
-            userId: '675ddf3b1e6d01766fbc5b17',
-            iat: 1763262553,
-            exp: 1764262553
-        }
         test("createCollection should respond with status 201 and correct body", async () => {
             mockHasValidCategoryFormat.mockReturnValue(true)
             mockStartSession.mockImplementation(() => startSessionDefaultReturnValue)
@@ -478,6 +479,7 @@ describe('collections controller', () =>{
                 isCollectionPrivate: false
             }
             mockTrimCategoryNames.mockReturnValue(payload.categories)
+            mockJwtVerify.mockReturnValue(user)
 
             const res = await request(app.use(CollectionsRouter))
             .put(`/edit/${collectionId}`)
