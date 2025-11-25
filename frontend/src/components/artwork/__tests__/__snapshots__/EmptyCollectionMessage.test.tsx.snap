@@ -3,7 +3,7 @@
 exports[`EmptyCollectionMessage should render EmptyCollectionMessage component with message for logged in user 1`] = `
 <div>
   <div
-    class="px-4 max-w-screen-xl pt-10 pb-10 py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4 border border-gray-300 dark:border-gray-600 cursor-pointer text-center"
+    class="px-4 max-w-screen-xl pt-10 pb-10 py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4 border border-gray-300 dark:border-gray-600 text-center"
   >
     <svg
       aria-hidden="true"
@@ -55,7 +55,7 @@ exports[`EmptyCollectionMessage should render EmptyCollectionMessage component w
 exports[`EmptyCollectionMessage should render EmptyCollectionMessage component with message for not logged in user 1`] = `
 <div>
   <div
-    class="px-4 max-w-screen-xl pt-10 pb-10 py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4 border border-gray-300 dark:border-gray-600 cursor-pointer text-center"
+    class="px-4 max-w-screen-xl pt-10 pb-10 py-4 bg-white dark:bg-gray-800 shadow-md w-full rounded-lg mb-4 border border-gray-300 dark:border-gray-600 text-center"
   >
     <svg
       aria-hidden="true"

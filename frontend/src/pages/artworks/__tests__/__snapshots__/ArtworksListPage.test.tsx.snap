@@ -417,26 +417,36 @@ exports[`ArtworksListPage tests should render artworks list component after data
       </p>
     </div>
     <p
-      class="text-l text-gray-800 dark:text-white break-words leading-relaxed font-medium mt-1"
+      class="text-l text-gray-800 dark:text-white break-words leading-relaxed font-normal mt-1"
     >
       Kolekcja publiczna
+       użytkownika 
+      <span
+        class="font-medium"
+      />
     </p>
   </div>
   <div
-    class="flex-shrink-0"
+    class="flex flex-col"
   >
-    <button
-      class="text-sm font-semibold h-fit ml-4 flex items-center bg-gray-100 hover:bg-gray-100"
-      disabled=""
+    <div
+      class="ml-auto mr-0"
     >
-      <svg />
-       
-      <p
-        class="ml-1"
+      <button
+        class="text-sm font-semibold h-fit ml-4 flex items-center bg-gray-100 hover:bg-gray-100"
+        disabled=""
       >
-        Edytuj
-      </p>
-    </button>
+        <svg
+          class="h-4 w-5"
+        />
+         
+        <p
+          class="ml-1"
+        >
+          Edytuj
+        </p>
+      </button>
+    </div>
   </div>
 </div>
 `;
