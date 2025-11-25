@@ -80,6 +80,7 @@ const GlobalSearchPage = ({ pageSize = 10 }) => {
             }
         };
         fetchCollections();
+        // eslint-disable-next-line
     }, []);
 
     const {

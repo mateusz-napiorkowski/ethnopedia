@@ -148,6 +148,7 @@ const CreateArtworkPage: React.FC = () => {
             initializeState(initialData);
             setIsInitialized(true);
         }
+        // eslint-disable-next-line
     }, [artworkId, catData, isInitialized, initializeState]);
 
     const [isSubmitting, setIsSubmitting] = useState(false);
