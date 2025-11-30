@@ -192,7 +192,7 @@ export const updateCollection = authAsyncWrapper(async (req: Request, res: Respo
             collection.name = name;
             collection.description = description;
             collection.categories = categories;
-            if(user.userId !== collection.owner)
+            if(user.userId !== collection.owner && collection.isPrivate !== isCollectionPrivate)
                 throw Error("Access denied")
             collection.isPrivate = isCollectionPrivate
 
