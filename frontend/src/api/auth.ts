@@ -13,6 +13,13 @@ export const registerUser = async (userData: FormValues) => {
         .post(`${API_URL}v1/auth/register`, userData);
 }
 
+export const editUser = async (userData: FormValues, jwtToken: string) => {
+    return await axios
+        .post(`${API_URL}v1/auth/user-edit`, userData, { headers: {
+                "Authorization": `Bearer ${jwtToken}`
+            }});
+}
+
 export const loginUser = async (userData: LoginValues) => {
     return await axios
         .post(`${API_URL}v1/auth/login`, userData)

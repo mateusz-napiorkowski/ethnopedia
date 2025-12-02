@@ -2,16 +2,16 @@ import { useEffect, useState } from "react"
 import { Formik, Form, Field, ErrorMessage } from "formik"
 import * as Yup from "yup"
 import { useNavigate } from "react-router-dom"
-import { registerUser } from "../api/auth"
+import { editUser } from "../api/auth"
 import { Toast, ToastToggle } from "flowbite-react"
 import { HiExclamation } from "react-icons/hi"
 import { jwtDecode } from "jwt-decode"
 import { JWT, useUser } from "../providers/UserProvider"
 import { useMutation } from "react-query"
 
-const RegisterPage = () => {
+const EditUserPage = () => {
     const [showErrorToast, setShowErrorToast] = useState(false)
-    const { setUserData } = useUser()
+    const { setUserData, firstName, userId, username, jwtToken } = useUser()
 
     const validationSchema = Yup.object().shape({
         firstName: Yup.string()
@@ -20,23 +20,24 @@ const RegisterPage = () => {
         username: Yup.string()
             .required("Nazwa użytkownika jest wymagana"),
 
+        oldPassword: Yup.string()
+            .required("Stare hasło jest wymagane"), 
+
         password: Yup.string()
-            .required("Hasło jest wymagane"),
+            .required("Nowe hasło jest wymagane"),
 
         confirmPassword: Yup.string()
             .oneOf([Yup.ref("password"), ""], "Hasła muszą być takie same")
             .required("Powtórz swoje hasło"),
     })
 
-    const registerUserMutation = useMutation(
-        (data: { username: string; firstName: string; password: string }) => registerUser(data),
+    const editUserMutation = useMutation(
+        (data: { username: string; firstName: string; oldPassword: string, password: string, userId: string, jwtToken: string }) => editUser(data, jwtToken),
         {
             onSuccess: (response) => {
-                const { token } = response.data;
-                localStorage.setItem("token", token);
-        
-                const decodedToken = jwtDecode<JWT>(token);
-                setUserData(true, decodedToken.firstName, token, decodedToken.userId, decodedToken.username);
+                const { newUserData } = response.data;
+                
+                setUserData(true, newUserData.firstName, jwtToken, userId, newUserData.username);
         
                 navigate("/");
             },
@@ -80,14 +81,14 @@ const RegisterPage = () => {
                     dark:border-gray-600 border border-gray-200">
                 <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
                     <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-                        Zarejestruj się
+                        Zmień dane użytkownika
                     </h1>
                     <Formik
-                        initialValues={{ firstName: "", username: "", password: "", confirmPassword: "" }}
+                        initialValues={{ firstName: firstName, username: username, oldPassword: "", password: "", confirmPassword: "" }}
                         validationSchema={validationSchema}
                         onSubmit={(values, { setSubmitting }) => {
-                            const { firstName, username, password } = values
-                            registerUserMutation.mutate({ username, firstName, password }, {
+                            const { firstName, username, oldPassword, password } = values
+                            editUserMutation.mutate({ username, firstName, oldPassword, password, userId, jwtToken }, {
                                 onSettled: () => {
                                     setSubmitting(false);
                                 },
@@ -125,9 +126,25 @@ const RegisterPage = () => {
                                     <ErrorMessage name="username" component="div" className="text-red-600 text-sm" />
                                 </div>
                                 <div>
+                                    <label htmlFor="oldPassword"
+                                           className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                        Stare hasło
+                                    </label>
+                                    <Field type="password" name="oldPassword" id="oldPassword"
+                                           className={`bg-gray-50 border ${errors.password && touched.password ? "border-red-500 bg-red-50" :
+                                               "border-gray-300"}
+                                                                                  text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600
+                                                                                  focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700
+                                                                                  dark:border-gray-600 dark:placeholder-gray-400 dark:text-white
+                                                                                  dark:focus:ring-blue-500 dark:focus:border-blue-500`}
+                                           placeholder="••••••••" />
+                                    <ErrorMessage name="oldPassword" component="div"
+                                                  className="text-red-600 text-sm" />
+                                </div>
+                                <div>
                                     <label htmlFor="password"
                                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                                        Hasło
+                                        Nowe hasło
                                     </label>
                                     <Field type="password" name="password" id="password"
                                            className={`bg-gray-50 border ${errors.password && touched.password ? "border-red-500 bg-red-50" :
@@ -143,7 +160,7 @@ const RegisterPage = () => {
                                 <div>
                                     <label htmlFor="confirmPassword"
                                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                                        Powtórz hasło
+                                        Powtórz nowe hasło
                                     </label>
                                     <Field type="password" name="confirmPassword" id="confirmPassword"
                                            className={`bg-gray-50 border ${errors.confirmPassword && touched.confirmPassword ? "border-red-500 bg-red-50" : "border-gray-300"}
@@ -157,22 +174,15 @@ const RegisterPage = () => {
                                 </div>
                                 <button type="submit"
                                         className="w-full color-button">
-                                    Zarejestruj się
+                                    Zatwierdź
                                 </button>
                             </Form>
                         )}
                     </Formik>
-                    <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                        Masz już konto?{" "}
-                        <span className="ml-1 font-medium text-primary-600 hover:underline dark:text-primary-500
-                             cursor-pointer" onClick={() => navigate("/login")}>
-                                Zaloguj się.
-                            </span>
-                    </p>
                 </div>
             </div>
         </div>
     </section>
 }
 
-export default RegisterPage
+export default EditUserPage

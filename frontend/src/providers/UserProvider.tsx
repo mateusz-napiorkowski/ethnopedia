@@ -13,7 +13,8 @@ interface UserContextProps {
     firstName: string;
     userId: string;
     jwtToken: string;
-    setUserData: (isLoggedIn: boolean, name: string, jwtToken: string, userId: string) => void;
+    username: string;
+    setUserData: (isLoggedIn: boolean, name: string, jwtToken: string, userId: string, username: string) => void;
 }
 
 export const UserContext = createContext<UserContextProps>({
@@ -21,6 +22,7 @@ export const UserContext = createContext<UserContextProps>({
     firstName: "",
     userId: "",
     jwtToken: "",
+    username: "",
     setUserData: () => {
     },
 })
@@ -35,13 +37,15 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     const [isUserLoggedIn, setIsUserLoggedIn] = useState(false)
     const [firstName, setFirstName] = useState("")
     const [userId, setUserId] = useState("")
+    const [username, setUsername] = useState("")
     const [jwtToken, setJwtToken] = useState("")
 
-    const setUserData = (isLoggedIn: boolean, name: string, jwtToken: string, userId: string) => {
+    const setUserData = (isLoggedIn: boolean, name: string, jwtToken: string, userId: string, username: string) => {
         setIsUserLoggedIn(isLoggedIn)
         setFirstName(name)
         setUserId(userId)
         setJwtToken(jwtToken)
+        setUsername(username)
     }
 
     useEffect(() => {
@@ -52,21 +56,21 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
                 const decodedToken = jwtDecode<JWT>(token)
                 const currentTime = Date.now() / 1000
                 if (decodedToken.exp > currentTime) {
-                    setUserData(true, decodedToken.firstName, token, decodedToken.userId)
+                    setUserData(true, decodedToken.firstName, token, decodedToken.userId, decodedToken.username)
                 } else {
                     localStorage.removeItem("token")
-                    setUserData(false, "", "", "")
+                    setUserData(false, "", "", "", "")
                 }
             } catch (error) {
                 console.error("Invalid token:", error)
                 localStorage.removeItem("token")
-                setUserData(false, "", "", "")
+                setUserData(false, "", "", "", "")
             }
         }
     }, [])
 
     return (
-        <UserContext.Provider value={{ isUserLoggedIn, firstName, userId, jwtToken, setUserData }}>
+        <UserContext.Provider value={{ isUserLoggedIn, firstName, userId, jwtToken, username, setUserData }}>
             {children}
         </UserContext.Provider>
     )

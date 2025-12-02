@@ -104,6 +104,51 @@ export const loginUser = async (req: Request, res: Response) => {
     }
 };
 
+export const editUser = authAsyncWrapper(async (req: Request, res: Response) => {
+    const newUsername = req.body.username;
+    const newFirstName = req.body.firstName;
+    const newPassword = req.body.password;
+    const userId = req.body.userId
+    const oldPassword = req.body.oldPassword
+
+    try {
+        if (!newUsername || !newFirstName || !oldPassword || !newPassword || !userId) {
+            return res.status(400).json({ error: "Incorrect request body provided" });
+        }
+
+        const user = await User.findOne({ _id: userId }).exec();
+        if (!user) {
+            return res.status(404).json({ error: "Invalid username or password" });
+        }
+
+        const validPassword = await bcrypt.compare(oldPassword, user.password);
+        if (!validPassword) {
+            return res.status(404).json({ error: "Invalid username or password" });
+        }
+        
+        const saltRounds = 10
+        return bcrypt.hash(newPassword, saltRounds, async (err: Error, hashedPassword: string) => {   
+            if (err) {
+                console.error(err)
+                return res.status(500).json({ error: "Password encryption error" })
+            }            
+            try {
+                user.username = newUsername
+                user.firstName = newFirstName
+                user.password = hashedPassword
+                user.save()
+                return res.status(200).json( {newUserData: {username: user.username, firstName: user.firstName}} );
+            } catch (error) {
+                console.error(error)
+                res.status(503).json({ error: `Database unavailable` })       
+            }
+        })
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+});
+
 export const deleteUser = authAsyncWrapper(async (req: Request, res: Response) => {
     try {
         const userId = req.params.userId

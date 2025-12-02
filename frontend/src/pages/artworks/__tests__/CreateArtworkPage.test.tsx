@@ -44,7 +44,8 @@ const UserContextProps = {
     firstName: "123",
     userId: "66b6506fbb64df165e8a9ce6",
     jwtToken: jwtToken,
-    setUserData: jest.fn()
+    setUserData: jest.fn(),
+    username: "123"
 }
 
 const renderPage = (edit = false) => {

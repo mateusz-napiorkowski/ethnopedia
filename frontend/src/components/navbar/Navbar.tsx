@@ -20,15 +20,8 @@ const Navbar = () => {
         setIsDropdownOpen(false)
         setShowDeleteAccountWarning(false)
         localStorage.removeItem("token")
-        setUserData(false, "", "", "")
+        setUserData(false, "", "", "", "")
 
-        // const lastUrlSegment = decodeURIComponent(location.pathname)
-        //     .split("/")
-        //     .filter(Boolean)
-        //     .pop()
-        // if(lastUrlSegment === "create-artwork" || lastUrlSegment === "edit-artwork") {
-        //     navigate(-1)
-        // }
         navigate("/")
     }
 
@@ -56,6 +49,15 @@ const Navbar = () => {
                 <span className="block text-sm dark:text-white">{firstName}</span>
             </div>
             <ul className="py-2">
+                <li>
+                    <div
+                        onClick={() => navigate("/user-edit")}
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100
+                            dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white cursor-pointer"
+                    >
+                        Zmień dane użytkownika
+                    </div>
+                </li>
                 <li>
                     <div
                         onClick={onDeleteAccount}

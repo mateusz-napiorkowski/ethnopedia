@@ -26,7 +26,7 @@ const LoginPage = () => {
                 const token = response.token;
                 localStorage.setItem("token", token);
                 const decodedToken = jwtDecode<JWT>(token);
-                setUserData(true, decodedToken.firstName, token, decodedToken.userId);
+                setUserData(true, decodedToken.firstName, token, decodedToken.userId, decodedToken.username);
                 navigate("/");
             },
             onError: (error: any) => {

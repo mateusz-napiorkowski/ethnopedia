@@ -6,6 +6,7 @@ import ArtworkPage from "./pages/artworks/ArtworkPage"
 import NotFoundPage from "./pages/NotFoundPage"
 import Artworks from "./pages/artworks/ArtworksListPage"
 import RegisterPage from "./pages/RegisterPage"
+import EditUserPage from "./pages/UserEditPage"
 import { UserProvider } from "./providers/UserProvider"
 import CreateArtworkPage from "./pages/artworks/CreateArtworkPage"
 import CreateCollectionPage from "./pages/collections/CreateCollectionPage";
@@ -40,6 +41,7 @@ const App = () => {
 
                         <Route path="/login" element={<LoginPage />} />
                         <Route path="/register" element={<RegisterPage />} />
+                        <Route path="/user-edit" element={<EditUserPage />} />
 
                         <Route path="*" element={<NotFoundPage />} />
                     </Routes>

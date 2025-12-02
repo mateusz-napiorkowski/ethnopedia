@@ -102,7 +102,7 @@ describe("UserProvider", () => {
         });
 
         act(() => {
-            result.current.setUserData(true, "Alice", "new-jwt-token", "456");
+            result.current.setUserData(true, "Alice", "new-jwt-token", "456", "Alice");
         });
 
         expect(result.current.firstName).toBe("Alice");
@@ -121,7 +121,7 @@ const MockSetUserComponent = () => {
 
     useEffect(() => {
         // Symulacja logowania i ustawienia danych użytkownika
-        setUserData(true, "John", "jwt-token", "12345");
+        setUserData(true, "John", "jwt-token", "12345", "John");
     }, [setUserData]);
 
     return <div>{firstName}</div>;
@@ -133,7 +133,7 @@ const MockLogoutComponent = () => {
     useEffect(() => {
         // Symulacja wylogowania poprzez usunięcie tokenu z localStorage
         localStorage.removeItem("token");
-        setUserData(false, "", "", "");
+        setUserData(false, "", "", "", "");
     }, [setUserData]);
 
     return <div>Logged out</div>;

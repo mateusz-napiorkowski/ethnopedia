@@ -156,7 +156,7 @@ describe("Navbar tests", () => {
 
         await user.click(logoutButton)
 
-        expect(mockSetUserData).toHaveBeenCalledWith(false, "", "", "")
+        expect(mockSetUserData).toHaveBeenCalledWith(false, "", "", "", "")
 
         expect(mockUseNavigate).toHaveBeenCalledWith('/')
     })
