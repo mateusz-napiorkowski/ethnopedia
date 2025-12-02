@@ -5,8 +5,7 @@ import { useNavigate } from "react-router-dom"
 import { editUser } from "../api/auth"
 import { Toast, ToastToggle } from "flowbite-react"
 import { HiExclamation } from "react-icons/hi"
-import { jwtDecode } from "jwt-decode"
-import { JWT, useUser } from "../providers/UserProvider"
+import { useUser } from "../providers/UserProvider"
 import { useMutation } from "react-query"
 
 const EditUserPage = () => {
