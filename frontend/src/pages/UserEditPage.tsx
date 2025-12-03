@@ -23,7 +23,8 @@ const EditUserPage = () => {
             .required("Stare hasło jest wymagane"), 
 
         password: Yup.string()
-            .required("Nowe hasło jest wymagane"),
+            .required("Nowe hasło jest wymagane")
+            .matches(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/ , 'Hasło musi zawierać co najmniej 8 znaków, jedną wielką literę, jedną cyfrę oraz jeden znak specjalny.'),
 
         confirmPassword: Yup.string()
             .oneOf([Yup.ref("password"), ""], "Hasła muszą być takie same")

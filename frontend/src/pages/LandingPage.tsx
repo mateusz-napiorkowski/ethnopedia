@@ -77,11 +77,11 @@ const LandingPage = () => {
                                     >
                                         Zaloguj się
                                     </button>
-                                    <button type="button" onClick={() => navigate("/register")}
+                                    {/* <button type="button" onClick={() => navigate("/register")}
                                             aria-label="landing-page-register"
                                             className="px-16 py-2 bg-white">
                                         Zarejestruj się
-                                    </button>
+                                    </button> */}
                                 </div>
                                 <div className="mt-8">
                                     <button

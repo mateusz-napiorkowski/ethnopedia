@@ -48,15 +48,6 @@ describe("EmptyCollectionMessage", () => {
         expect(mockUseNavigate).toHaveBeenCalledWith("/login")
     })
 
-    it("should call useNavigate(/register) after register button is clicked", async () => {
-        const {getByText} = renderComponent()
-        const registerButton = getByText(/zarejestruj się/i)
-
-        await user.click(registerButton)
-        
-        expect(mockUseNavigate).toHaveBeenCalledWith("/register")
-    })
-
     it("should render EmptyCollectionMessage component with message for logged in user", () => {
         const {container} = renderComponent(jwtToken)
         expect(container).toMatchSnapshot()

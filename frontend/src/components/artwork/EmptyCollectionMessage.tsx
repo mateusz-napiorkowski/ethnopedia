@@ -45,14 +45,15 @@ const EmptyCollectionMessage = ({ setShowImportOptions, jwtToken }: Props) => {
                         >
                             Zaloguj się
                         </button>{" "}
-                        aby móc dodawać rekordy. Nie masz konta?{" "}
+                        aby móc dodawać rekordy. Nie masz konta? Poproś administratora systemu o utworzenie go dla Ciebie.
+                        {/* {" "}
                         <button
                             type="button"
                             className="text-blue-600 cursor-pointer bg-transparent border-0 p-0"
                             onClick={() => navigate("/register")}
                         >
                             Zarejestruj się
-                        </button>
+                        </button> */}
                     </span>
                 )}
             </p>

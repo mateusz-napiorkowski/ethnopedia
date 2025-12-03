@@ -76,12 +76,6 @@ exports[`LandingPage tests renders page when collection data is fetched from API
           >
             Zaloguj się
           </button>
-          <button
-            class="bg-blue-500 hover:bg-blue-400 font-semibold text-white border-none"
-            type="button"
-          >
-            Zarejestruj się
-          </button>
         </div>
       </div>
     </nav>
@@ -119,13 +113,6 @@ exports[`LandingPage tests renders page when collection data is fetched from API
                   type="button"
                 >
                   Zaloguj się
-                </button>
-                <button
-                  aria-label="landing-page-register"
-                  class="px-16 py-2 bg-white"
-                  type="button"
-                >
-                  Zarejestruj się
                 </button>
               </div>
               <div

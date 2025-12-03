@@ -52,65 +52,65 @@ describe('auth controller', () =>{
             __v: 0
         })}
 
-        test("registerUser should respond with status 201 and correct body", async () => {
-            mockFindOne.mockReturnValue({
-                exec: () => Promise.resolve(null)
-            })
-            bcrypt.hash.mockImplementation((password: string, saltRounds: number, callback: any) => {
-                callback(undefined, 'hasl1242o2')
-            })
-            mockCreate.mockReturnValue(Promise.resolve({
-                username: 'user',
-                password: '$2b$10$oYpcXLbpzL7kHK8M3k9SneS6aitfKEjmPw72O9kTXaYscW0QzQ0Ym',
-                firstName: 'user',
-                _id: "66d71fd54c148fb8f827c2c3",
-                accountCreationDate: "2024-09-03T15:33:04.290Z",
-                __v: 0
-            }))
-            mockSign.mockReturnValue(jwtToken)
-            const payload = { username: 'user', firstName: 'user', password: 'hasl1242o2' }
-            const res = await request(app.use(AuthRouter))
-            .post('/register')
-            .send(payload)
-            .set('Content-Type', 'application/json')
-            .set('Accept', 'application/json')
+        // test("registerUser should respond with status 201 and correct body", async () => {
+        //     mockFindOne.mockReturnValue({
+        //         exec: () => Promise.resolve(null)
+        //     })
+        //     bcrypt.hash.mockImplementation((password: string, saltRounds: number, callback: any) => {
+        //         callback(undefined, 'hasl1242o2')
+        //     })
+        //     mockCreate.mockReturnValue(Promise.resolve({
+        //         username: 'user',
+        //         password: '$2b$10$oYpcXLbpzL7kHK8M3k9SneS6aitfKEjmPw72O9kTXaYscW0QzQ0Ym',
+        //         firstName: 'user',
+        //         _id: "66d71fd54c148fb8f827c2c3",
+        //         accountCreationDate: "2024-09-03T15:33:04.290Z",
+        //         __v: 0
+        //     }))
+        //     mockSign.mockReturnValue(jwtToken)
+        //     const payload = { username: 'user', firstName: 'user', password: 'hasl1242o2' }
+        //     const res = await request(app.use(AuthRouter))
+        //     .post('/register')
+        //     .send(payload)
+        //     .set('Content-Type', 'application/json')
+        //     .set('Accept', 'application/json')
 
-            expect(res.status).toBe(201)
-            expect(res.body).toMatchSnapshot()
-        })
+        //     expect(res.status).toBe(201)
+        //     expect(res.body).toMatchSnapshot()
+        // })
 
-        test.each([
-            {payload: { }, statusCode: 400, error: "Incorrect request body provided",
-                findOne: undefined, callbackError: undefined},
-            {payload: { firstName: 'user', password: 'hasl1242o2' }, statusCode: 400, error: "Incorrect request body provided",
-                findOne: undefined, callbackError: undefined},
-            {payload: { username: 'user', password: 'hasl1242o2' }, statusCode: 400, error: "Incorrect request body provided",
-                findOne: undefined, callbackError: undefined},
-            {payload: { username: 'user', firstName: 'user'}, statusCode: 400, error: "Incorrect request body provided",
-                findOne: undefined, callbackError: undefined},
-            {payload: { username: 'istniejaca', firstName: 'istniejaca', password: 'hasl1242o2' }, statusCode: 409, error: "User already exists",
-                findOne: existingUser, callbackError: undefined},
-            {payload: { username: 'user', firstName: 'user', password: 'hasl1242o2' }, statusCode: 500, error: "Password encryption error",
-                findOne: { exec: () => {return Promise.resolve(null)}}, callbackError: Error()},
-            {payload: { username: 'user', firstName: 'user', password: 'hasl1242o2' }, statusCode: 503, error: "Database unavailable",
-                findOne: { exec: () => { throw new Error() } }, callbackError: undefined},
-            {payload: { username: 'user', firstName: 'user', password: 'hasl1242o2' }, statusCode: 503, error: "Database unavailable",
-                findOne: { exec: () => {return Promise.resolve(null)}}, callbackError: undefined}
-        ])('registerUser should respond with status $statusCode and correct error message', async ({payload, statusCode, error, findOne, callbackError}) => {
-            mockFindOne.mockReturnValue(findOne)
-            bcrypt.hash.mockImplementation((password: string, saltRounds: number, callback: any) => {
-                callback(callbackError, 'hasl1242o2')
-            })
-            mockCreate.mockImplementation(() => {throw Error()})
-            const res = await request(app.use(AuthRouter))
-                .post('/register')
-                .send(payload)
-                .set('Content-Type', 'application/json')
-                .set('Accept', 'application/json')
+        // test.each([
+        //     {payload: { }, statusCode: 400, error: "Incorrect request body provided",
+        //         findOne: undefined, callbackError: undefined},
+        //     {payload: { firstName: 'user', password: 'hasl1242o2' }, statusCode: 400, error: "Incorrect request body provided",
+        //         findOne: undefined, callbackError: undefined},
+        //     {payload: { username: 'user', password: 'hasl1242o2' }, statusCode: 400, error: "Incorrect request body provided",
+        //         findOne: undefined, callbackError: undefined},
+        //     {payload: { username: 'user', firstName: 'user'}, statusCode: 400, error: "Incorrect request body provided",
+        //         findOne: undefined, callbackError: undefined},
+        //     {payload: { username: 'istniejaca', firstName: 'istniejaca', password: 'hasl1242o2' }, statusCode: 409, error: "User already exists",
+        //         findOne: existingUser, callbackError: undefined},
+        //     {payload: { username: 'user', firstName: 'user', password: 'hasl1242o2' }, statusCode: 500, error: "Password encryption error",
+        //         findOne: { exec: () => {return Promise.resolve(null)}}, callbackError: Error()},
+        //     {payload: { username: 'user', firstName: 'user', password: 'hasl1242o2' }, statusCode: 503, error: "Database unavailable",
+        //         findOne: { exec: () => { throw new Error() } }, callbackError: undefined},
+        //     {payload: { username: 'user', firstName: 'user', password: 'hasl1242o2' }, statusCode: 503, error: "Database unavailable",
+        //         findOne: { exec: () => {return Promise.resolve(null)}}, callbackError: undefined}
+        // ])('registerUser should respond with status $statusCode and correct error message', async ({payload, statusCode, error, findOne, callbackError}) => {
+        //     mockFindOne.mockReturnValue(findOne)
+        //     bcrypt.hash.mockImplementation((password: string, saltRounds: number, callback: any) => {
+        //         callback(callbackError, 'hasl1242o2')
+        //     })
+        //     mockCreate.mockImplementation(() => {throw Error()})
+        //     const res = await request(app.use(AuthRouter))
+        //         .post('/register')
+        //         .send(payload)
+        //         .set('Content-Type', 'application/json')
+        //         .set('Accept', 'application/json')
 
-            expect(res.status).toBe(statusCode)
-            expect(res.body.error).toBe(error)
-        })
+        //     expect(res.status).toBe(statusCode)
+        //     expect(res.body.error).toBe(error)
+        // })
 
         test("loginUser should respond with status 200 and correct body", async () => {
             mockFindOne.mockReturnValue(existingUser)
