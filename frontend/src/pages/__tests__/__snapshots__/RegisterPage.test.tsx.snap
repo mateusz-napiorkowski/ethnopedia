@@ -19,7 +19,7 @@ exports[`RegisterPage tests should render register page 1`] = `
           <h1
             class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white"
           >
-            Zarejestruj się
+            Zarejestruj użytkownika
           </h1>
           <form
             action="#"
@@ -105,11 +105,31 @@ exports[`RegisterPage tests should render register page 1`] = `
                 value=""
               />
             </div>
+            <div>
+              <label
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                for="secret"
+              >
+                access_token_secret
+              </label>
+              <input
+                class="bg-gray-50 border border-gray-300
+                                                                      text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600
+                                                                      focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700
+                                                                      dark:border-gray-600 dark:placeholder-gray-400 dark:text-white
+                                                                      dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                id="secret"
+                name="secret"
+                placeholder="••••••••"
+                type="password"
+                value=""
+              />
+            </div>
             <button
               class="w-full color-button"
               type="submit"
             >
-              Zarejestruj się
+              Zarejestruj
             </button>
           </form>
           <p

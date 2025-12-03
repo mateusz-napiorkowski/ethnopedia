@@ -30,9 +30,13 @@ export const registerUser = async (req: Request, res: Response) => {
     const newUsername = req.body.username
     const newFirstName = req.body.firstName
     const newPassword = req.body.password
+    const secret = req.body.secret
+
     try {
-        if (!newUsername || !newFirstName || !newPassword)
+        if (!newUsername || !newFirstName || !newPassword || !secret)
             throw new Error('Incorrect request body provided')
+        if (secret !== process.env.ACCESS_TOKEN_SECRET)
+            throw new Error('Invalid ACCESS_TOKEN_SECRET')
         const existingUser = await User.findOne({username: newUsername}).exec()
         if (existingUser)
             throw new Error("User already exists")
@@ -65,6 +69,8 @@ export const registerUser = async (req: Request, res: Response) => {
         console.error(error)
         if (err.message === `Incorrect request body provided`)
             res.status(400).json({ error: err.message })
+        else if(err.message === 'Invalid ACCESS_TOKEN_SECRET')
+            res.status(401).json({ error: err.message })
         else if(err.message === 'User already exists')
             res.status(409).json({ error: err.message })
         else
@@ -125,7 +131,11 @@ export const editUser = authAsyncWrapper(async (req: Request, res: Response) => 
         if (!validPassword) {
             return res.status(404).json({ error: "Invalid username or password" });
         }
-        
+
+        if(!/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/.test(newPassword))
+            return res.status(400).json({ error: "Incorrect request body provided" });
+
+
         const saltRounds = 10
         return bcrypt.hash(newPassword, saltRounds, async (err: Error, hashedPassword: string) => {   
             if (err) {

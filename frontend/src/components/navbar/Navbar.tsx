@@ -58,7 +58,7 @@ const Navbar = () => {
                         Zmień dane użytkownika
                     </div>
                 </li>
-                <li>
+                {/* <li>
                     <div
                         onClick={onDeleteAccount}
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100
@@ -66,7 +66,7 @@ const Navbar = () => {
                     >
                         Usuń konto
                     </div>
-                </li>
+                </li> */}
                 <li>
                     <div
                         onClick={onLogout}
@@ -116,11 +116,11 @@ const Navbar = () => {
                                 onClick={() => navigate("/login")}>
                             Zaloguj się
                         </button>
-                        <button type="button"
+                        {/* <button type="button"
                                 className="bg-blue-500 hover:bg-blue-400 font-semibold text-white border-none"
                                 onClick={() => navigate("/register")}>
                             Zarejestruj się
-                        </button>
+                        </button> */}
                     </>
                 }
             </div>

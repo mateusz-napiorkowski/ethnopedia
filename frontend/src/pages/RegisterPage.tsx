@@ -5,13 +5,10 @@ import { useNavigate } from "react-router-dom"
 import { registerUser } from "../api/auth"
 import { Toast, ToastToggle } from "flowbite-react"
 import { HiExclamation } from "react-icons/hi"
-import { jwtDecode } from "jwt-decode"
-import { JWT, useUser } from "../providers/UserProvider"
 import { useMutation } from "react-query"
 
 const RegisterPage = () => {
     const [showErrorToast, setShowErrorToast] = useState(false)
-    const { setUserData } = useUser()
 
     const validationSchema = Yup.object().shape({
         firstName: Yup.string()
@@ -26,17 +23,20 @@ const RegisterPage = () => {
         confirmPassword: Yup.string()
             .oneOf([Yup.ref("password"), ""], "Hasła muszą być takie same")
             .required("Powtórz swoje hasło"),
+
+        secret: Yup.string()
+            .required("access_token_secret jest wymagany"),
     })
 
     const registerUserMutation = useMutation(
-        (data: { username: string; firstName: string; password: string }) => registerUser(data),
+        (data: { username: string; firstName: string; password: string, secret: string }) => registerUser(data),
         {
             onSuccess: (response) => {
-                const { token } = response.data;
-                localStorage.setItem("token", token);
+                // const { token } = response.data;
+                // localStorage.setItem("token", token);
         
-                const decodedToken = jwtDecode<JWT>(token);
-                setUserData(true, decodedToken.firstName, token, decodedToken.userId, decodedToken.username);
+                // const decodedToken = jwtDecode<JWT>(token);
+                // setUserData(true, decodedToken.firstName, token, decodedToken.userId, decodedToken.username);
         
                 navigate("/");
             },
@@ -80,14 +80,14 @@ const RegisterPage = () => {
                     dark:border-gray-600 border border-gray-200">
                 <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
                     <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-                        Zarejestruj się
+                        Zarejestruj użytkownika
                     </h1>
                     <Formik
-                        initialValues={{ firstName: "", username: "", password: "", confirmPassword: "" }}
+                        initialValues={{ firstName: "", username: "", password: "", confirmPassword: "", secret: "" }}
                         validationSchema={validationSchema}
                         onSubmit={(values, { setSubmitting }) => {
-                            const { firstName, username, password } = values
-                            registerUserMutation.mutate({ username, firstName, password }, {
+                            const { firstName, username, password, secret } = values
+                            registerUserMutation.mutate({ username, firstName, password, secret}, {
                                 onSettled: () => {
                                     setSubmitting(false);
                                 },
@@ -155,9 +155,24 @@ const RegisterPage = () => {
                                     <ErrorMessage name="confirmPassword" component="div"
                                                   className="text-red-600 text-sm" />
                                 </div>
+                                <div>
+                                    <label htmlFor="secret"
+                                           className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                        access_token_secret
+                                    </label>
+                                    <Field type="password" name="secret" id="secret"
+                                           className={`bg-gray-50 border ${errors.confirmPassword && touched.confirmPassword ? "border-red-500 bg-red-50" : "border-gray-300"}
+                                                                      text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600
+                                                                      focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700
+                                                                      dark:border-gray-600 dark:placeholder-gray-400 dark:text-white
+                                                                      dark:focus:ring-blue-500 dark:focus:border-blue-500`}
+                                           placeholder="••••••••" />
+                                    <ErrorMessage name="secret" component="div"
+                                                  className="text-red-600 text-sm" />
+                                </div>
                                 <button type="submit"
                                         className="w-full color-button">
-                                    Zarejestruj się
+                                    Zarejestruj
                                 </button>
                             </Form>
                         )}

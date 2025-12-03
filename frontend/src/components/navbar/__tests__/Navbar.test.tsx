@@ -75,31 +75,23 @@ describe("Navbar tests", () => {
         queryClient.clear();
     });
 
-    it("should render login and register buttons when user is not logged in", () => {           
+    it("should render login button when user is not logged in", () => {           
         const { getByRole } = renderPage(queryClient)
         const loginButton = getByRole("button", {
             name: /zaloguj się/i
         })
-        const registerButton = getByRole("button", {
-            name: /zarejestruj się/i
-        })
 
         expect(loginButton).toBeInTheDocument()
-        expect(registerButton).toBeInTheDocument()
     })
 
-    it("should not render login and register buttons when user is logged in, username should be displayed", () => {           
+    it("should not render login button when user is logged in, username should be displayed", () => {           
         const { queryByRole, queryByText } = renderPage(queryClient, loggedInUserContextProps)
         const loginButton = queryByRole("button", {
             name: /zaloguj się/i
         })
-        const registerButton = queryByRole("button", {
-            name: /zarejestruj się/i
-        })
         const usernameElement = queryByText(firstName)
 
         expect(loginButton).not.toBeInTheDocument()
-        expect(registerButton).not.toBeInTheDocument()
         expect(usernameElement).toBeInTheDocument()
     })
 
@@ -112,17 +104,6 @@ describe("Navbar tests", () => {
         await user.click(loginButton)
 
         expect(mockUseNavigate).toHaveBeenCalledWith("/login")
-    })
-
-    it("should call useNavigate('/register') after login button is clicked", async () => {           
-        const { getByRole } = renderPage(queryClient)
-        const registerButton = getByRole("button", {
-            name: /zarejestruj się/i
-        })
-
-        await user.click(registerButton)
-
-        expect(mockUseNavigate).toHaveBeenCalledWith("/register")
     })
 
     it("should show dropdown menu after user icon button is clicked", async () => {           
@@ -159,58 +140,5 @@ describe("Navbar tests", () => {
         expect(mockSetUserData).toHaveBeenCalledWith(false, "", "", "", "")
 
         expect(mockUseNavigate).toHaveBeenCalledWith('/')
-    })
-
-    it("should show delete account warning popup after delete user button from dropdown menu is clicked", async () => {           
-        const { getByLabelText, getByText } = renderPage(queryClient, loggedInUserContextProps)
-        const userIconButton = getByLabelText("show-dropdown")
-        await user.click(userIconButton)
-        const deleteAccountButton = getByText("Usuń konto")
-
-        await user.click(deleteAccountButton)
-
-        expect(getByText(/czy na pewno chcesz usunąć konto?/i)).toBeInTheDocument()
-    })
-
-    it("should delete account after delete user confirm button in warning popup menu is clicked", async () => {
-        mockDeleteAccount.mockReturnValue(deleteAccountResponseData)          
-        const { getByText, getByLabelText } = renderPage(queryClient, loggedInUserContextProps)
-        const userIconButton = getByLabelText("show-dropdown")
-        await user.click(userIconButton)
-        const deleteAccountButton = getByText("Usuń konto")
-
-        await user.click(deleteAccountButton)
- 
-        await user.click(getByLabelText("confirm"))
-
-        await waitFor(() => expect(mockDeleteAccount).toHaveBeenCalledWith(userId, jwtToken))
-    })
-
-    it("should hide warning popup menu when exit button is clicked", async () => {
-        mockDeleteAccount.mockReturnValue(deleteAccountResponseData)          
-        const { queryByText, getByText, getByLabelText } = renderPage(queryClient, loggedInUserContextProps)
-        const userIconButton = getByLabelText("show-dropdown")
-        await user.click(userIconButton)
-        const deleteAccountButton = getByText("Usuń konto")
-
-        await user.click(deleteAccountButton)
- 
-        await user.click(getByLabelText("exit"))
-
-        expect(queryByText(/czy na pewno chcesz usunąć konto?/i)).not.toBeInTheDocument()
-    })
-
-    it("should hide warning popup menu when cancel button is clicked", async () => {
-        mockDeleteAccount.mockReturnValue(deleteAccountResponseData)          
-        const { queryByText, getByText, getByLabelText } = renderPage(queryClient, loggedInUserContextProps)
-        const userIconButton = getByLabelText("show-dropdown")
-        await user.click(userIconButton)
-        const deleteAccountButton = getByText("Usuń konto")
-
-        await user.click(deleteAccountButton)
- 
-        await user.click(getByText(/anuluj/i))
-
-        expect(queryByText(/czy na pewno chcesz usunąć konto?/i)).not.toBeInTheDocument()
     })
 })

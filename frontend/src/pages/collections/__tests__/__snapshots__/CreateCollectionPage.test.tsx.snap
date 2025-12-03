@@ -65,12 +65,6 @@ exports[`CreateCollectionPage tests should fill initial category scructure corre
           >
             Zaloguj się
           </button>
-          <button
-            class="bg-blue-500 hover:bg-blue-400 font-semibold text-white border-none"
-            type="button"
-          >
-            Zarejestruj się
-          </button>
         </div>
       </div>
     </nav>
@@ -730,12 +724,6 @@ exports[`CreateCollectionPage tests should render loading state 1`] = `
             type="button"
           >
             Zaloguj się
-          </button>
-          <button
-            class="bg-blue-500 hover:bg-blue-400 font-semibold text-white border-none"
-            type="button"
-          >
-            Zarejestruj się
           </button>
         </div>
       </div>

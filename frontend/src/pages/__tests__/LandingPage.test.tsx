@@ -72,17 +72,6 @@ describe("LandingPage tests", () => {
         )
     });
 
-    it("should navigate to register page after register button is clicked", async () => {
-        mockGetAllCollections.mockReturnValue(mockCollections)
-        const {getByText, getByLabelText} = renderPage()
-        await waitFor(() => getByText(/przeglądaj istniejące kolekcje:/i))
-        const registerButton = getByLabelText('landing-page-register')
-
-        await user.click(registerButton)
-
-        expect(mockUseNavigate).toHaveBeenCalledWith('/register')
-    });
-
     it("should navigate to login page after login button is clicked", async () => {
         mockGetAllCollections.mockReturnValue(mockCollections)
         const {getByText, getByLabelText} = renderPage()
