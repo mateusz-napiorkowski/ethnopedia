@@ -3,7 +3,7 @@
 exports[`Navigation tests component renders correctly on artwork page 1`] = `
 <div>
   <nav
-    class="flex"
+    class="flex mb-4"
   >
     <ol
       class="inline-flex items-center space-x-1 md:space-x-2"
@@ -60,7 +60,7 @@ exports[`Navigation tests component renders correctly on artwork page 1`] = `
 exports[`Navigation tests component renders correctly on artworks list page 1`] = `
 <div>
   <nav
-    class="flex"
+    class="flex mb-4"
   >
     <ol
       class="inline-flex items-center space-x-1 md:space-x-2"
@@ -100,7 +100,7 @@ exports[`Navigation tests component renders correctly on artworks list page 1`] 
 exports[`Navigation tests component renders correctly on create artwork page 1`] = `
 <div>
   <nav
-    class="flex"
+    class="flex mb-4"
   >
     <ol
       class="inline-flex items-center space-x-1 md:space-x-2"
@@ -157,7 +157,7 @@ exports[`Navigation tests component renders correctly on create artwork page 1`]
 exports[`Navigation tests component renders correctly on edit artwork page 1`] = `
 <div>
   <nav
-    class="flex"
+    class="flex mb-4"
   >
     <ol
       class="inline-flex items-center space-x-1 md:space-x-2"
@@ -231,7 +231,7 @@ exports[`Navigation tests component renders correctly on edit artwork page 1`] =
 exports[`Navigation tests component renders correctly on export data page 1`] = `
 <div>
   <nav
-    class="flex"
+    class="flex mb-4"
   >
     <ol
       class="inline-flex items-center space-x-1 md:space-x-2"

@@ -204,6 +204,7 @@ const LandingPage = () => {
                                 )}
                             )}
                         </div>
+
                     </section>
 
 
@@ -218,7 +219,7 @@ const LandingPage = () => {
                     </div>
                 </div>
 
-                <Footer />
+                <Footer/>
 
             </section>
         </div>

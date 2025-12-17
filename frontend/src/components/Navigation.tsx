@@ -25,9 +25,14 @@ const Navigation = () => {
     const isSearch = pathSegments[0] === "global-search";
 
     return (
-        <nav className="flex">
+        <nav className="flex mb-4">
             <ol className="inline-flex items-center space-x-1 md:space-x-2">
                 {renderNavItem("Strona główna", `/`, false)}
+
+                {/* Help Page */}
+                {pathSegments[0] === "help" &&
+                    renderNavItem("Pomoc", `/help`)
+                }
 
                 {/* Global search */}
                 {isSearch && (
@@ -45,7 +50,7 @@ const Navigation = () => {
                 )}
 
                 {/* Kolekcje */}
-                {!isSearch && (
+                {!isSearch && pathSegments[0] !== "help" && (
                     <>
                         {pathSegments[0] === "import-collection" &&
                             renderNavItem("Importuj kolekcję", `/import-collection`)
@@ -70,11 +75,17 @@ const Navigation = () => {
                         {pathSegments[4] === "edit-artwork" &&
                             renderNavItem("Edycja", `/collections/${collectionName}/artworks/${urlArtworkTitle}/edit-artwork`)
                         }
+
+                        {/* Create/Edit Collection */}
+                        {(pathSegments[0] === "create-collection" || (pathSegments[2] === "edit")) &&
+                            renderNavItem(pathSegments[0] === "create-collection" ? "Nowa kolekcja" : "Edytuj kolekcję", location.pathname)
+                        }
                     </>
                 )}
             </ol>
         </nav>
     );
 };
+
 
 export default Navigation;

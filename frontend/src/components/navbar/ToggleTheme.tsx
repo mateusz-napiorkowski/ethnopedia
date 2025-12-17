@@ -21,6 +21,7 @@ const ToggleTheme = () => {
 
     return (
         <button type="button"
+                title={theme === "light" ? "Włącz tryb ciemny" : "Włącz tryb jasny"}
                 className="text-gray-800 bg-white border border-gray-300 focus:outline-none
                            hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm
                            p-2.5 mr-2 dark:bg-gray-800 dark:text-white dark:border-gray-600

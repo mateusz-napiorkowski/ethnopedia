@@ -15,6 +15,7 @@ import ImportCollectionPage from "./pages/collections/ImportCollectionPage"
 import ExportDataPage from "./pages/artworks/ExportDataPage"
 import ImportToExistingCollectionPage from "./pages/artworks/ImportToExistingCollectionPage"
 import GlobalSearchPage from "./pages/artworks/GlobalSearchPage";
+import HelpPage from "./pages/help/HelpPage"
 
 const queryClient = new QueryClient()
 
@@ -24,6 +25,7 @@ const App = () => {
             <QueryClientProvider client={queryClient}>
                 <BrowserRouter basename="/ethnopedia">
                     <Routes>
+                        <Route path="/help" element={<HelpPage />} />
                         <Route path="/collections/:collectionId/artworks/:artworkId" element={<ArtworkPage />} />
                         <Route path="/artworks/:artworkId" element={<ArtworkPage />} />
 
