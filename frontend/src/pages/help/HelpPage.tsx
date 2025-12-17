@@ -493,7 +493,87 @@ const HelpPage: React.FC = () => {
                                 <p className="text-gray-700 dark:text-gray-300">Dane importować można <strong>tworząc nową kolekcję na importowane dane</strong> lub poprzez <strong>import danych do istniejącej już kolekcji</strong>.</p>
                                 <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm mb-6">
                                     <h4 className="text-xl font-medium text-gray-800 dark:text-gray-200 mb-4">5.1 Import danych do nowej kolekcji</h4>
-                                {/*    TODO*/}
+                                    <div className="space-y-4">
+                                        <div>
+                                            <p className="text-gray-700 dark:text-gray-300 mb-3"><strong>1.</strong> Na stronie głównej kliknij przycisk <strong>„Importuj kolekcję”</strong>.</p>
+                                            <img src={`${base}/help/import-kolekcji-1.png`}
+                                                 alt="Import kolekcji krok 1"
+                                                 className="rounded-lg shadow-md border max-w-full h-auto"/>
+                                        </div>
+                                        <div>
+                                            <p className="text-gray-700 dark:text-gray-300 mb-3"><strong>2.</strong> Aby dodać <strong>plik arkusza kalkulacyjnego</strong> lub <strong>plik CSV</strong>, z którego mają zostać zaimportowane dane, kliknij <strong>pole do przesyłania pliku</strong> i wybierz <strong>plik z lokalnego systemu</strong>.</p>
+                                            <img src={`${base}/help/import-kolekcji-2.png`}
+                                                 alt="Import kolekcji krok 2"
+                                                 className="rounded-lg shadow-md border max-w-full h-auto"/>
+                                        </div>
+                                        <div className="space-y-4">
+                                            <p className="text-gray-700 dark:text-gray-300 mb-3">Wgrywany plik powinien zawierać:.</p>
+                                            <ul className="list-disc ml-6 text-gray-700 dark:text-gray-300">
+                                                <li>
+                                                    <strong>nagłówek</strong> z nazwami kategorii - w pierwszym wierszu;
+                                                </li>
+                                                <li>w kolejnych wierszach powinny zostać umieszczone <strong>rekordy</strong>.
+
+                                                </li>
+                                            </ul>
+                                            <img src={`${base}/help/struktura-excel.png`}
+                                                 alt="Import kolekcji krok 2 - excel"
+                                                 className="rounded-lg shadow-md border max-w-full h-auto"/>
+                                            <p className="text-gray-700 dark:text-gray-300 mb-3">Aby móc <strong>zaimportować kategorie jako podkategorie</strong> innych kategorii w pliku, użyj <strong>notacji ze znakiem “.”</strong>, tak, jak na powyższym przykładzie. W pliku tym kategoria "Incypit gwarowy" ma podkategorię "Incypit literacki". Tak samo "Podregion" jest podkategorią kategorii "Region", "Powiat" jest podkategorią podkategorii "Podregion", a "Miejscowość" jest podkategorią podkategorii "Powiat".</p>
+                                            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mt-4">
+                                                <p className="text-yellow-800 dark:text-yellow-200"><strong>Uwaga:</strong> W komórce z nazwą podkategorii należy, używając notacji ze znakiem “.”, podać <strong>każdego przodka danej podkategorii</strong>, zaczynając od najbardziej nadrzędnej kategorii.</p>
+                                            </div>
+                                            <p className="text-gray-700 dark:text-gray-300 mb-3">Jeśli obawiasz się, że twój plik nie zostanie poprawnie wczytany lub nie chcesz w ten sposób edytować nagłówka, to możesz wgrać plik, w którym nie jest ustalona struktura kategorii w nagłówku (tak jak na poniższym przykładzie). Strukturę kategorii będziesz mógł ustalić poprzez formularz, który pojawi się po wgraniu pliku.</p>
+                                            <img src={`${base}/help/struktura-excel-2.png`}
+                                                 alt="Import kolekcji krok 2 - excel 2"
+                                                 className="rounded-lg shadow-md border max-w-full h-auto"/>
+                                            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mt-4">
+                                                <p className="text-yellow-800 dark:text-yellow-200"><strong>Uwaga:</strong> W każdym z opisanych przypadków, aby dane zostały poprawnie wczytane, <strong>nie używaj znaku “.”</strong> w nazwie kategorii lub podkategorii.</p>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <p className="text-gray-700 dark:text-gray-300 mb-3"><strong>3.</strong> Wprowadź <strong>nazwę</strong> i <strong>opis</strong> dla importowanej kolekcji.</p>
+                                            <img src={`${base}/help/import-kolekcji-3.png`}
+                                                 alt="Import kolekcji krok 3"
+                                                 className="rounded-lg shadow-md border max-w-full h-auto"/>
+                                        </div>
+                                        <div className="space-y-4">
+                                            <p className="text-gray-700 dark:text-gray-300 mb-3"><strong>4.</strong> Za pomocą poniższego formularza upewnij się, że struktura kategorii została wczytana poprawnie. Jeśli wcześniej nie ustaliłeś struktury kategorii w nagłówku pliku, to możesz zdefiniować ją teraz.</p>
+                                            <img src={`${base}/help/import-kolekcji-4.png`}
+                                                 alt="Import kolekcji krok 4"
+                                                 className="rounded-lg shadow-md border max-w-full h-auto"/>
+                                            <p className="text-gray-700 dark:text-gray-300 mb-3">Po lewej stronie formularza (strzałka 1) znajdują się nazwy kategorii lub podkategorii, które zostały wykryte we wczytanym pliku. Dla każdej kategorii po lewej, po prawej stronie formularza (strzałka 2) znajduje się rozwijana lista, z której można wybrać kategorię nadrzędną dla danej kategorii. Innymi słowy, możemy ustalić, że kategoria z kolumny po lewej będzie podkategorią kategorii wybranej z rozwijanej listy po prawej. Jeśli chcemy, aby kategoria po lewej nie była podkategorią żadnej kategorii, z rozwijanej listy należy wybrać “-”.</p>
+                                            <p className="text-gray-700 dark:text-gray-300 mb-3">W przypadku, gdy wcześniej poprawnie ustaliliśmy strukturę kategorii w nagłówku importowanego pliku, to odpowiednie opcje w prawej kolumnie formularza powinny zostać wybrane automatycznie po wgraniu pliku. Przed importem upewnij się, że wszystko się zgadza. Jeśli nie, to wybierz w formularzu odpowiednie opcje lub poprawnie zmodyfikuj nagłówek importowanego pliku i wgraj plik jeszcze raz.</p>
+                                        </div>
+                                        <div className="space-y-4">
+                                            <p className="text-gray-700 dark:text-gray-300 mb-3"><strong>5.Krok opcjonalny:</strong> Zaimportuj archiwum z plikami do skojarzenia z importowanymi rekordami. Kliknij pole do przesyłania pliku i wybierz plik z lokalnego systemu.</p>
+                                            <img src={`${base}/help/import-kolekcji-5.png`}
+                                                 alt="Import kolekcji krok 5"
+                                                 className="rounded-lg shadow-md border max-w-full h-auto"/>
+                                            <p className="text-gray-700 dark:text-gray-300 mb-3"><strong>Archiwum</strong> to można pozyskać w procesie <strong>eksportu danych z innej kolekcji</strong>. Import tego archiwum ma na celu umożliwienie powielenia danych z innej kolekcji, wraz z plikami skojarzonymi z rekordami tej kolekcji. Wtedy wraz z archiwum, zaimportować należy plik arkusza kalkulacyjnego lub plik CSV wyeksportowany wcześniej z tej samej kolekcji, co archiwum. Więcej informacji na ten temat znajduje się w sekcji <strong>Eksport danych</strong>.</p>
+                                        </div>
+                                        <div className="space-y-4">
+                                            <p className="text-gray-700 dark:text-gray-300 mb-3"><strong>6.Ustal dostępność kolekcji:</strong>  kliknij przycisk <strong> “Kolekcja publiczna”</strong>  lub <strong> “Kolekcja prywatna”</strong>  na dole ekranu.</p>
+                                            <img src={`${base}/help/import-kolekcji-6.png`}
+                                                 alt="Import kolekcji krok 6"
+                                                 className="rounded-lg shadow-md border max-w-full h-auto"/>
+                                            <p className="text-gray-700 dark:text-gray-300 mb-3"></p>
+                                        </div>
+                                        <div className="space-y-4">
+                                            <p className="text-gray-700 dark:text-gray-300 mb-3"><strong>7.</strong> Zaimportuj dane klikając przycisk <strong>“Importuj kolekcję”</strong>.</p>
+                                            <img src={`${base}/help/import-kolekcji-7.png`}
+                                                 alt="Import kolekcji krok 7"
+                                                 className="rounded-lg shadow-md border max-w-full h-auto"/>
+                                            <p className="text-gray-700 dark:text-gray-300 mb-3"></p>
+                                        </div>
+                                        <div className="space-y-4">
+                                            <p className="text-gray-700 dark:text-gray-300 mb-3">Po pomyślnym imporcie, nowa kolekcja pojawi się na liście kolekcji na stronie głównej.</p>
+                                            <img src={`${base}/help/import-kolekcji-8.png`}
+                                                 alt="Import kolekcji krok 8"
+                                                 className="rounded-lg shadow-md border max-w-full h-auto"/>
+                                            <p className="text-gray-700 dark:text-gray-300 mb-3"></p>
+                                        </div>
+                                    </div>
                                     <h4 className="text-xl font-medium text-gray-800 dark:text-gray-200 mb-4">5.2 Import danych do istniejącej kolekcji</h4>
                                 </div>
                             </div>
