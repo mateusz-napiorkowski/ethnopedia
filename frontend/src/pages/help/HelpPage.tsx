@@ -575,6 +575,48 @@ const HelpPage: React.FC = () => {
                                         </div>
                                     </div>
                                     <h4 className="text-xl font-medium text-gray-800 dark:text-gray-200 mb-4">5.2 Import danych do istniejącej kolekcji</h4>
+                                    <div className="space-y-4">
+                                        <div className="space-y-4">
+                                            <p className="text-gray-700 dark:text-gray-300 mb-3"><strong>1. </strong>Znajdując się na stronie kolekcji, do której chcesz zaimportować dane, kliknij przycisk <strong>„Importuj dane”</strong>.</p>
+                                            <img src={`${base}/help/import-danych-1.png`}
+                                                 alt="Import danych krok 1"
+                                                 className="rounded-lg shadow-md border max-w-full h-auto"/>
+                                        </div>
+                                        <div className="space-y-4">
+                                            <p className="text-gray-700 dark:text-gray-300 mb-3"><strong>2. </strong>Aby dodać <strong>plik</strong>, z którego mają zostać zaimportowane dane, kliknij <strong>pole do przesyłania pliku</strong> i wybierz <strong>plik z lokalnego systemu</strong>.</p>
+                                            <img src={`${base}/help/import-danych-2.png`}
+                                                 alt="Import danych krok 2"
+                                                 className="rounded-lg shadow-md border max-w-full h-auto"/>
+                                        </div>
+                                        <div className="space-y-4">
+                                            <p className="text-gray-700 dark:text-gray-300 mb-3"><strong>Wgrywany plik</strong> powinien zawierać:</p>
+                                            <ul className="list-disc ml-6 text-gray-700 dark:text-gray-300">
+                                                <li>
+                                                    <strong>nagłówek</strong> z nazwami kategorii - w pierwszym wierszu; nazwy te powinny odzwierciedlać <strong>nazwy kategorii zdefiniowanych w ramach kolekcji</strong>;
+                                                </li>
+                                                <li>
+                                                    w kolejnych wierszach powinny zostać umieszczone <strong>rekordy</strong>.
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div className="space-y-4">
+                                            <p className="text-gray-700 dark:text-gray-300 mb-3">Jeśli w twoim <strong>pliku</strong> wartości kategorii <strong>nie odzwierciedlają nazw kategorii w kolekcji</strong> i/lub <strong>nie jest w tym pliku ustalona struktura kategorii za pomocą notacji ze znakiem “.”</strong>, to będziesz mógł to skonfigurować w <strong>formularzu</strong>, który pojawi się po wgraniu <strong>pliku</strong>. Najważniejsze jest jednak, aby we wgrywanym <strong>pliku</strong> znajdowało się <strong>tyle samo kolumn, ile wynosi liczba kategorii kolekcji</strong>, do której importujemy dane.</p>
+                                        </div>
+                                        <div className="space-y-4">
+                                            <p className="text-gray-700 dark:text-gray-300 mb-3"><strong>3. </strong>Po załadowaniu <strong>pliku</strong> zostanie wyświetlony <strong>formularz</strong>.</p>
+                                            <img src={`${base}/help/import-danych-3.png`}
+                                                 alt="Import danych krok 3"
+                                                 className="rounded-lg shadow-md border max-w-full h-auto"/>
+                                            <p className="text-gray-700 dark:text-gray-300 mb-3">Po lewej stronie <strong>formularza</strong> (strzałka 1) znajdują się <strong>nazwy kategorii</strong> lub <strong>podkategorii</strong>, które zostały wykryte we wczytanym <strong>pliku</strong>. Dla każdej kategorii po lewej, po prawej stronie <strong>formularza</strong> (strzałka 2) znajduje się rozwijana lista, z której można wybrać <strong>kategorię z kolekcji</strong>, której odpowiadać ma <strong>kolumna wczytanego pliku</strong>.</p>
+                                            <p className="text-gray-700 dark:text-gray-300 mb-3">Jeśli <strong>nagłówek</strong> wgrywanego <strong>pliku</strong> dokładnie <strong>odzwierciedla strukturę kategorii</strong>, to po wgraniu <strong>pliku</strong>, w formularzu <strong>automatycznie</strong> zostaną zaznaczone odpowiednie opcje.</p>
+                                        </div>
+                                        <div className="space-y-4">
+                                            <p className="text-gray-700 dark:text-gray-300 mb-3"><strong>4. </strong>Zaimportuj dane do kolekcji, klikając przycisk <strong>“Importuj dane”</strong>.</p>
+                                            <img src={`${base}/help/import-danych-4.png`}
+                                                 alt="Import danych krok 4"
+                                                 className="rounded-lg shadow-md border max-w-full h-auto"/>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
