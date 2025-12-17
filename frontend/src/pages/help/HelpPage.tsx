@@ -172,7 +172,7 @@ const HelpPage: React.FC = () => {
                                 <h3 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">1. Wprowadzenie</h3>
                                 <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
                                     <p className="text-gray-700 dark:text-gray-300 mb-4">
-                                        Ethnopedia to system stworzony z myślą o etnomuzykologach, którzy potrzebują wygodnego i intuicyjnego narzędzia do gromadzenia danych w trakcie badań. Jest to rekonfigurowalny system do zarządzania metadanymi tekstowymi, który służy do przechowywania, opisywania i wyszukiwania dzieł oraz kolekcji.
+                                        <strong>Ethnopedia</strong> to system stworzony z myślą o etnomuzykologach, którzy potrzebują wygodnego i intuicyjnego narzędzia do gromadzenia danych w trakcie badań. Dane te stanowią <strong>kolekcje metadanych</strong> dzieł opisanych zgodnie ze <strong>strukturą określoną przez użytkownika</strong>, co umożliwia ich przechowywanie, porządkowanie i wyszukiwanie w sposób dostosowany do potrzeb badawczych.
                                     </p>
                                     <p className="text-gray-700 dark:text-gray-300 mb-4">Dzięki Ethnopedii można:</p>
                                     <ul className="list-disc ml-6 space-y-1 text-gray-700 dark:text-gray-300 mb-4">
@@ -184,7 +184,7 @@ const HelpPage: React.FC = () => {
                                         <li>przechowywać pliki powiązane z dziełem (np. MIDI, MEI).</li>
                                     </ul>
                                     <p className="text-gray-700 dark:text-gray-300">
-                                        Elastyczna struktura systemu pozwala użytkownikowi samodzielnie ustalić nazwy pól i hierarchię metadanych, dzięki czemu Ethnopedia może być wykorzystywana nie tylko w badaniach muzycznych, lecz także w innych dziedzinach wymagających systematycznego opisu i analizy danych.
+                                        Elastyczna struktura systemu pozwala użytkownikowi samodzielnie ustalić <strong>nazwy pól i hierarchię metadanych</strong>, dzięki czemu Ethnopedia może być wykorzystywana nie tylko w badaniach muzycznych, lecz także w innych dziedzinach wymagających systematycznego opisu i analizy danych.
                                     </p>
                                 </div>
                             </div>
@@ -199,48 +199,49 @@ const HelpPage: React.FC = () => {
 
                                     <div className="space-y-4">
                                         <div>
-                                            <p className="text-gray-700 dark:text-gray-300 mb-3">1. Na stronie głównej kliknij przycisk „+ Nowa kolekcja".</p>
+                                            <p className="text-gray-700 dark:text-gray-300 mb-3">1. Na stronie głównej kliknij przycisk <strong>„+ Nowa kolekcja"</strong>.</p>
                                             <img src={`${base}/help/dodawanie-kolekcji-1.png`} alt="Dodawanie kolekcji krok 1" className="rounded-lg shadow-md border max-w-full h-auto" />
                                         </div>
 
                                         <div>
                                             <p className="text-gray-700 dark:text-gray-300 mb-3">2. Wprowadź podstawowe informacje:</p>
                                             <ul className="list-disc ml-6 mb-3 text-gray-700 dark:text-gray-300">
-                                                <li>Nazwa kolekcji – np. „Nagrania z Podlasia 1975–1980"</li>
-                                                <li>Opis kolekcji – np. „Zbiór nagrań terenowych dotyczących muzyki weselnej z północnego Podlasia"</li>
+                                                <li><strong>Nazwa kolekcji</strong> – np. „Nagrania z Podlasia 1975–1980"</li>
+                                                <li><strong>Opis kolekcji</strong> – np. „Zbiór nagrań terenowych dotyczących muzyki weselnej z północnego Podlasia"</li>
                                             </ul>
                                             <img src={`${base}/help/dodawanie-kolekcji-2.png`} alt="Dodawanie kolekcji krok 2" className="rounded-lg shadow-md border max-w-full h-auto" />
                                         </div>
 
                                         <div>
-                                            <p className="text-gray-700 dark:text-gray-300 mb-3">3. Zaprojektuj strukturę metadanych:</p>
+                                            <p className="text-gray-700 dark:text-gray-300 mb-3">3. Zaprojektuj <strong>strukturę kategorii dla metadanych kolekcji</strong>:</p>
                                             <ul className="list-disc ml-6 mb-3 text-gray-700 dark:text-gray-300">
                                                 <li>Każda kolekcja ma własny układ pól, zwanych kategoriami (np. „Wykonawca", „Miejscowość", „Rok nagrania", „Rodzaj utworu").</li>
                                                 <li>Użytkownik może sam nazwać kategorie i ustalić ich liczbę.</li>
                                                 <li>Kategorie można układać hierarchicznie (np. „Wykonawca → Data urodzenia" i „Wykonawca → Miejsce urodzenia").</li>
                                                 <li>Kategoria nadrzędna, nawet jeśli posiada podkategorie, również przyjmuje własną wartość.</li>
                                             </ul>
-                                            <img src={`${base}/help/dodawanie-kolekcji-3.png`} alt="Dodawanie kolekcji krok 3" className="rounded-lg shadow-md border max-w-full h-auto mb-4" />
-
-                                            <h5 className="font-medium text-gray-800 dark:text-gray-200 mb-3">Tworzenie struktury metadanych krok po kroku:</h5>
+                                            <div>
+                                                <p className="text-gray-700 dark:text-gray-300 mb-2"><strong>Wprowadzenie nazwy kategorii</strong>: wpisz nazwę w polu tekstowym.</p>
+                                                <img src={`${base}/help/dodawanie-kolekcji-3.png`} alt="Dodawanie kolekcji krok 3" className="rounded-lg shadow-md border max-w-full h-auto mb-4" />
+                                            </div>
                                             <div className="space-y-4">
                                                 <div>
-                                                    <p className="text-gray-700 dark:text-gray-300 mb-2"><strong>Dodawanie kategorii:</strong> wpisz nazwę w polu tekstowym i kliknij „+ Dodaj kategorię", aby dodać kolejne pole.</p>
+                                                    <p className="text-gray-700 dark:text-gray-300 mb-2"><strong>Dodawanie kategorii:</strong> kliknij przycisk <strong>„+ Dodaj kategorię”</strong>, aby dodać kolejne pole.</p>
                                                     <img src={`${base}/help/dodawanie-kolekcji-3-1.png`} alt="Dodawanie kategorii" className="rounded-lg shadow-md border max-w-full h-auto" />
                                                 </div>
 
                                                 <div>
-                                                    <p className="text-gray-700 dark:text-gray-300 mb-2"><strong>Dodawanie podkategorii:</strong> najedź myszką na kategorię, po prawej stronie obok pola kliknij ikonę +, aby dodać podkategorię poniżej wybranej kategorii.</p>
+                                                    <p className="text-gray-700 dark:text-gray-300 mb-2"><strong>Dodawanie podkategorii danej kategorii:</strong> najedź myszką na kategorię, po prawej stronie obok pola kliknij ikonę <strong>“+”</strong>, aby dodać podkategorię wybranej kategorii.</p>
                                                     <img src={`${base}/help/dodawanie-kolekcji-3-2.png`} alt="Dodawanie podkategorii" className="rounded-lg shadow-md border max-w-full h-auto" />
                                                 </div>
 
                                                 <div>
-                                                    <p className="text-gray-700 dark:text-gray-300 mb-2"><strong>Usuwanie kategorii:</strong> najedź na kategorię i kliknij ikonę kosza po prawej stronie pola.</p>
+                                                    <p className="text-gray-700 dark:text-gray-300 mb-2"><strong>Usuwanie kategorii:</strong> najedź myszką na kategorię, po prawej stronie obok pola kliknij ikonę <strong>“kosz”</strong> aby usunąć wskazaną kategorię.</p>
                                                     <img src={`${base}/help/dodawanie-kolekcji-3-3.png`} alt="Usuwanie kategorii" className="rounded-lg shadow-md border max-w-full h-auto" />
                                                 </div>
 
                                                 <div>
-                                                    <p className="text-gray-700 dark:text-gray-300 mb-2"><strong>Zmiana kolejności kategorii:</strong> kliknij i przytrzymaj ikonę trzech kropek po prawej stronie pola, przeciągnij kategorię w nowe miejsce.</p>
+                                                    <p className="text-gray-700 dark:text-gray-300 mb-2"><strong>Zmiana kolejności kategorii:</strong> kliknij i przytrzymaj ikonę <strong>”trzy kropki”</strong> po prawej stronie pola, przeciągnij kategorię w nowe miejsce.</p>
                                                     <img src={`${base}/help/dodawanie-kolekcji-3-4.png`} alt="Zmiana kolejności kategorii" className="rounded-lg shadow-md border max-w-full h-auto" />
                                                 </div>
                                             </div>
@@ -252,11 +253,17 @@ const HelpPage: React.FC = () => {
                                             <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mt-4">
                                                 <p className="text-blue-800 dark:text-blue-200"><strong>Ważne:</strong> zaprojektowana struktura metadanych obowiązuje wszystkie rekordy w kolekcji.</p>
                                             </div>
+
+                                            <div className="space-y-4 mt-2">
+                                                <div>
+                                                    <p className="text-gray-700 dark:text-gray-300 mb-3">4. <strong>Ustal dostępność kolekcji:</strong> kliknij przycisk <strong>“Kolekcja publiczna”</strong> lub <strong>“Kolekcja prywatna”</strong> na dole ekranu.</p>
+                                                    <img src={`${base}/help/dodawanie-kolekcji-3-5.png`} alt="Dodawanie kategorii" className="rounded-lg shadow-md border max-w-full h-auto" />
+                                                </div>
+                                            </div>
                                         </div>
 
                                         <div>
-                                            <p className="text-gray-700 dark:text-gray-300 mb-3">4. Aby zapisać
-                                                kolekcję, kliknij przycisk „Utwórz" na dole ekranu.</p>
+                                            <p className="text-gray-700 dark:text-gray-300 mb-3">5. <strong>Utwórz kolekcję</strong>: kliknij przycisk <strong>„Utwórz”</strong> na dole ekranu.</p>
                                             <img src={`${base}/help/dodawanie-kolekcji-4.png`}
                                                  alt="Dodawanie kolekcji krok 4"
                                                  className="rounded-lg shadow-md border max-w-full h-auto"/>
@@ -275,13 +282,13 @@ const HelpPage: React.FC = () => {
                                 <div id="kolekcje edycja" className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm mb-6">
                                     <h4 className="text-xl font-medium text-gray-800 dark:text-gray-200 mb-4">2.2 Edycja kolekcji</h4>
                                     <div className="space-y-4">
-                                        <p className="text-gray-700 dark:text-gray-300">1. Na stronie kolekcji kliknij przycisk „Edytuj" po prawej stronie od nazwy kolekcji.</p>
+                                        <p className="text-gray-700 dark:text-gray-300">1. Na stronie kolekcji kliknij przycisk <strong>„Edytuj"</strong> po prawej stronie od nazwy kolekcji.</p>
                                         <img src={`${base}/help/edycja-kolekcji.png`} alt="Edycja kolekcji" className="rounded-lg shadow-md border max-w-full h-auto" />
                                         <div>
                                             <p className="text-gray-700 dark:text-gray-300 mb-2">2. Na stronie edycji możesz:</p>
                                             <ul className="list-disc ml-6 text-gray-700 dark:text-gray-300">
-                                                <li>zmienić nazwę i opis kolekcji,</li>
-                                                <li>zmienić nazwy kategorii i podkategorii,</li>
+                                                <li>zmienić <strong>nazwę i opis kolekcji</strong>,</li>
+                                                <li>zmienić <strong>nazwy kategorii i podkategorii</strong>,</li>
                                                 <li>dodać nowe kategorie, ale tylko na końcu istniejącej struktury metadanych.</li>
                                             </ul>
                                         </div>
@@ -294,8 +301,8 @@ const HelpPage: React.FC = () => {
                                     <h4 className="text-xl font-medium text-gray-800 dark:text-gray-200 mb-4">2.3 Cofanie i przywracanie zmian</h4>
                                     <ul className="list-disc ml-6 space-y-2 text-gray-700 dark:text-gray-300">
                                         <li>Każda zmiana w formularzu (np. wpisanie tekstu, dodanie kategorii) jest zapisywana w historii.</li>
-                                        <li><strong>Cofanie zmiany:</strong> użyj Ctrl+Z lub przycisku ze strzałką na dolnym pasku narzędzi.</li>
-                                        <li><strong>Przywracanie cofniętej zmiany:</strong> użyj Ctrl+Y lub przycisku ze strzałką na dolnym pasku narzędzi.</li>
+                                        <li><strong>Cofanie zmiany:</strong> użyj <strong>Ctrl+Z</strong> lub przycisku ze strzałką na dolnym pasku narzędzi.</li>
+                                        <li><strong>Przywracanie cofniętej zmiany:</strong> użyj <strong>Ctrl+Y</strong> lub przycisku ze strzałką na dolnym pasku narzędzi.</li>
                                     </ul>
                                 </div>
                             </div>
@@ -310,8 +317,8 @@ const HelpPage: React.FC = () => {
                                     <div className="space-y-4">
                                         <div>
                                             <p className="text-gray-700 dark:text-gray-300 mb-3">1. Na stronie kolekcji,
-                                                do której chcesz dodać dzieło/metadane, kliknij przycisk „+ Nowy
-                                                rekord".</p>
+                                                do której chcesz dodać rekord, kliknij przycisk <strong>„+ Nowy
+                                                rekord"</strong>.</p>
                                             <img src={`${base}/help/dodawanie-rekordu-1.png`}
                                                  alt="Dodawanie rekordu krok 1"
                                                  className="rounded-lg shadow-md border max-w-full h-auto"/>
@@ -321,32 +328,35 @@ const HelpPage: React.FC = () => {
                                             <p className="text-gray-700 dark:text-gray-300 mb-3">2. Uzupełnij pola
                                                 formularza odpowiednimi wartościami dla każdej kategorii.</p>
                                             <ul className="list-disc ml-6 mb-3 text-gray-700 dark:text-gray-300">
-                                                <li>Po kliknięciu w pole tekstowe wyświetlają się propozycje
-                                                    autouzupełnienia na podstawie istniejących już w kolekcji rekordów.
+                                                <li>Po kliknięciu w pole tekstowe wyświetlają się <strong>propozycje
+                                                    autouzupełnienia</strong> na podstawie istniejących już w kolekcji rekordów.
                                                 </li>
                                                 <li>Aby zatwierdzić sugestię, kliknij ją myszką lub wybierz strzałkami
-                                                    na klawiaturze i zatwierdź klawiszem Tab.
+                                                    na klawiaturze i zatwierdź klawiszem <strong>Tab</strong>.
                                                 </li>
-                                            </ul>
-                                        </div>
-
-                                        <div>
-                                            <p className="text-gray-700 dark:text-gray-300 mb-3">3. Aby dodać pliki
-                                                powiązane z rekordem, kliknij pole do przesyłania plików i wybierz plik
-                                                z lokalnego systemu.</p>
-                                            <ul className="list-disc ml-6 mb-3 text-gray-700 dark:text-gray-300">
-                                                <li>Obsługiwane formaty: mei, midi, musicxml, xml, wav, mp3, txt</li>
-                                                <li>Maksymalny rozmiar pliku: 25 MB</li>
                                             </ul>
                                             <img src={`${base}/help/dodawanie-rekordu-2.png`}
                                                  alt="Dodawanie rekordu krok 2"
                                                  className="rounded-lg shadow-md border max-w-full h-auto"/>
                                         </div>
 
+                                        <div>
+                                            <p className="text-gray-700 dark:text-gray-300 mb-3">3. Aby dodać <strong>pliki
+                                                powiązane z rekordem</strong>, kliknij pole do przesyłania plików i wybierz plik
+                                                z lokalnego systemu.</p>
+                                            <ul className="list-disc ml-6 mb-3 text-gray-700 dark:text-gray-300">
+                                                <li>Obsługiwane formaty: <span className="text-green-700 dark:text-green-500 font-roboto">mei, midi, musicxml, xml, wav, mp3, txt</span></li>
+                                                <li>Maksymalny rozmiar pliku: <strong>25 MB</strong></li>
+                                            </ul>
+                                            <img src={`${base}/help/dodawanie-rekordu-3.png`}
+                                                 alt="Dodawanie rekordu krok 3"
+                                                 className="rounded-lg shadow-md border max-w-full h-auto"/>
+                                        </div>
+
                                         <p className="text-gray-700 dark:text-gray-300">4. Aby zapisać rekord w
-                                            kolekcji, kliknij „Utwórz".</p>
-                                        <img src={`${base}/help/dodawanie-rekordu-3.png`}
-                                             alt="Dodawanie rekordu krok 3"
+                                            kolekcji, kliknij <strong>„Utwórz"</strong>.</p>
+                                        <img src={`${base}/help/dodawanie-rekordu-4.png`}
+                                             alt="Dodawanie rekordu krok 4"
                                              className="rounded-lg shadow-md border max-w-full h-auto"/>
                                     </div>
                                 </div>
@@ -354,22 +364,18 @@ const HelpPage: React.FC = () => {
                                 {/* Edycja rekordu */}
                                 <div id="rekordy edycja" className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm mb-6">
                                     <h4 className="text-xl font-medium text-gray-800 dark:text-gray-200 mb-4">3.2 Edycja rekordu</h4>
-                                    <ol className="list-decimal ml-6 space-y-2 text-gray-700 dark:text-gray-300">
-                                        <li>Na stronie rekordu kliknij przycisk „Edytuj".</li>
-                                        <li>Możesz zmieniać wszystkie pola formularza tak samo jak przy dodawaniu nowego rekordu.</li>
-                                        <li>Możesz również dodawać lub usuwać pliki powiązane z rekordem.</li>
-                                        <li>Aby zachować zmiany, kliknij „Zapisz".</li>
-                                    </ol>
-                                </div>
-
-                                {/* Cofanie i przywracanie zmian dla rekordów */}
-                                <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
-                                    <h4 className="text-xl font-medium text-gray-800 dark:text-gray-200 mb-4">3.3 Cofanie i przywracanie zmian</h4>
-                                    <ul className="list-disc ml-6 space-y-2 text-gray-700 dark:text-gray-300">
-                                        <li>Każda zmiana w formularzu (np. wpisanie tekstu) jest zapisywana w historii.</li>
-                                        <li><strong>Cofanie zmiany:</strong> użyj Ctrl+Z lub przycisku ze strzałką na dolnym pasku narzędzi.</li>
-                                        <li><strong>Przywracanie cofniętej zmiany:</strong> użyj Ctrl+Y lub przycisku ze strzałką na dolnym pasku narzędzi.</li>
-                                    </ul>
+                                    <div>
+                                        <p className="text-gray-700 dark:text-gray-300 my-3">Na stronie rekordu kliknij przycisk <strong>„Edytuj".</strong></p>
+                                        <img src={`${base}/help/edycja-rekordu-1.png`}
+                                                alt="Edycja rekordu krok 1"
+                                                className="rounded-lg shadow-md border max-w-full h-auto"/>
+                                    </div>
+                                    <div>
+                                        <p className="text-gray-700 dark:text-gray-300 my-3">Edytując rekord możesz zmieniać wszystkie pola tak jak przy dodawaniu nowego rekordu. Aby zachować zmiany, kliknij przycisk <strong>“Zapisz”</strong>.</p>
+                                        <img src={`${base}/help/edycja-rekordu-2.png`}
+                                                alt="Edycja rekordu krok 2"
+                                                className="rounded-lg shadow-md border max-w-full h-auto"/>
+                                    </div>
                                 </div>
                             </div>
 
@@ -380,21 +386,35 @@ const HelpPage: React.FC = () => {
                                 {/* Wyszukiwanie lokalne */}
                                 <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm mb-6">
                                     <h4 className="text-xl font-medium text-gray-800 dark:text-gray-200 mb-4">4.1 Wyszukiwanie lokalne</h4>
-                                    <p className="text-gray-700 dark:text-gray-300 mb-4">Na stronie wybranej kolekcji znajduje się obszar wyszukiwania pod nazwą i opisem kolekcji. Dostępne są dwie zakładki: "Szybkie wyszukiwanie" i "Zaawansowane wyszukiwanie".</p>
+                                    {/* <p className="text-gray-700 dark:text-gray-300 mb-4">Na stronie wybranej kolekcji znajduje się obszar wyszukiwania pod nazwą i opisem kolekcji. Dostępne są dwie zakładki: "Szybkie wyszukiwanie" i "Zaawansowane wyszukiwanie".</p> */}
 
                                     <div className="space-y-4">
                                         <div>
-                                            <h5 className="font-medium text-gray-800 dark:text-gray-200 mb-3">Szybkie wyszukiwanie:</h5>
-                                            <ul className="list-disc ml-6 mb-3 text-gray-700 dark:text-gray-300">
+                                            {/* <h5 className="font-medium text-gray-800 dark:text-gray-200 mb-3">Szybkie wyszukiwanie:</h5> */}
+                                            <p className="text-gray-700 dark:text-gray-300 mb-4"><strong>Szybkie wyszukiwanie</strong>: wpisz frazę w polu wyszukiwania. Po kliknięciu przycisku <strong>“Wyszukaj”</strong> lista rekordów zostanie ograniczona do tych, które spełniają warunek wyszukiwania (ciąg podanych znaków zostanie znaleziony w dowolnym polu rekordu).</p>
+                                            {/* <ul className="list-disc ml-6 mb-3 text-gray-700 dark:text-gray-300">
                                                 <li>Wpisz frazę w polu wyszukiwania.</li>
                                                 <li>System przeszuka wszystkie metadane w obrębie kolekcji.</li>
                                                 <li>Po kliknięciu „Wyszukaj" lista rekordów zostanie ograniczona do tych, które spełniają warunek wyszukiwania.</li>
-                                            </ul>
-                                            <img src={`${base}/help/wyszukiwanie-szybkie.png`} alt="Wyszukiwanie szybkie" className="rounded-lg shadow-md border max-w-full h-auto" />
+                                            </ul> */}
+                                            <img src={`${base}/help/wyszukiwanie-szybkie.png`} alt="Wyszukiwanie szybkie" className="rounded-lg shadow-md border max-w-full h-auto mb-3" />
+                                            <img src={`${base}/help/wyszukiwanie-szybkie-2.png`} alt="Wyszukiwanie szybkie 2" className="rounded-lg shadow-md border max-w-full h-auto" />
+
                                         </div>
 
                                         <div>
-                                            <h5 className="font-medium text-gray-800 dark:text-gray-200 mb-3">Zaawansowane
+                                            <p className="text-gray-700 dark:text-gray-300 mb-4"><strong>Zaawansowane wyszukiwanie</strong>: umożliwia wyszukiwanie po konkretnych kategoriach.</p>
+                                            <p className="text-gray-700 dark:text-gray-300 mb-4">Aby dodać regułę wyszukiwania:</p>
+                                            <ul className="list-disc ml-6 mb-3 text-gray-700 dark:text-gray-300 space-y-2">
+                                                <li>Wybierz kategorię z rozwijanej listy.</li>
+                                                <li>Wpisz szukaną frazę dla wybranej kategorii.</li>
+                                                <li>Kliknij <strong>„+ Dodaj regułę"</strong>.</li>
+                                            </ul>
+                                            <p className="text-gray-700 dark:text-gray-300 mb-4">Możesz dodać kilka reguł dla różnych kategorii – wówczas wyniki
+                                                    wyszukiwania pokażą <strong>tylko rekordy spełniające wszystkie reguły </strong>
+                                                    (koniunkcja).</p>
+                                            <p className="text-gray-700 dark:text-gray-300 mb-4">Aby uruchomić wyszukiwanie, kliknij <strong>„Wyszukaj”</strong>.</p>
+                                            {/* <h5 className="font-medium text-gray-800 dark:text-gray-200 mb-3">Zaawansowane
                                                 wyszukiwanie:</h5>
                                             <ul className="list-disc ml-6 mb-3 text-gray-700 dark:text-gray-300 space-y-2">
                                                 <li>Umożliwia wyszukiwanie po konkretnych kategoriach.</li>
@@ -407,7 +427,7 @@ const HelpPage: React.FC = () => {
                                                     </ul>
                                                 </li>
                                                 <li>Aby uruchomić wyszukiwanie, kliknij „Wyszukaj".</li>
-                                            </ul>
+                                            </ul> */}
 
                                             <img src={`${base}/help/wyszukiwanie-zaawansowane-1.png`}
                                                  alt="Wyszukiwanie zaawansowane 1"
@@ -419,12 +439,12 @@ const HelpPage: React.FC = () => {
                                                  alt="Wyszukiwanie zaawansowane 3"
                                                  className="rounded-lg shadow-md border max-w-full h-auto mb-4"/>
 
-                                            <ul className="list-disc ml-6 mb-3 text-gray-700 dark:text-gray-300">
+                                            {/* <ul className="list-disc ml-6 mb-3 text-gray-700 dark:text-gray-300">
                                                 <li>Możesz dodać kilka reguł dla różnych kategorii – wówczas wyniki
                                                     wyszukiwania pokażą tylko rekordy spełniające wszystkie reguły
                                                     (koniunkcja).
                                                 </li>
-                                            </ul>
+                                            </ul> */}
                                             <img src={`${base}/help/wyszukiwanie-zaawansowane-4.png`}
                                                  alt="Wyszukiwanie zaawansowane 4"
                                                  className="rounded-lg shadow-md border max-w-full h-auto"/>
@@ -437,20 +457,20 @@ const HelpPage: React.FC = () => {
                                     <h4 className="text-xl font-medium text-gray-800 dark:text-gray-200 mb-4">4.2
                                         Wyszukiwanie globalne</h4>
                                     <div className="space-y-4">
-                                        <p className="text-gray-700 dark:text-gray-300">Aby przejść do wyszukiwania
-                                            globalnego, kliknij ikonę lupy na górnym pasku aplikacji.</p>
+                                        <p className="text-gray-700 dark:text-gray-300">Aby przejść do <strong>wyszukiwania
+                                            globalnego</strong>, kliknij ikonę <strong>lupy</strong> na górnym pasku aplikacji.</p>
                                         <img src={`${base}/help/wyszukiwanie-globalne-1.png`}
                                              alt="Wyszukiwanie globalne 1"
                                              className="rounded-lg shadow-md border max-w-full h-auto"/>
 
                                         <p>Możesz wybrać, w których kolekcjach chcesz wyszukiwać, korzystając z
-                                                rozwijanej listy. Domyślnie zaznaczone są wszystkie kolekcje.</p>
+                                                rozwijanej listy.</p>
                                         <img src={`${base}/help/wyszukiwanie-globalne-2.png`}
                                              alt="Wyszukiwanie globalne 2"
                                              className="rounded-lg shadow-md border max-w-full h-auto"/>
-
-                                        <p>Na stronie wyszukiwania globalnego dostępne są dwie zakładki: "Szybkie
-                                            wyszukiwanie" i "Zaawansowane wyszukiwanie", tak jak w wyszukiwaniu lokalnym.
+                                        <p className="text-gray-700 dark:text-gray-300">Domyślnie zaznaczone są <strong>wszystkie kolekcje</strong>.</p>
+                                        <p className="text-gray-700 dark:text-gray-300">Na stronie wyszukiwania globalnego dostępne są <strong>dwie zakładki</strong>: <strong>"Szybkie
+                                            wyszukiwanie"</strong> i <strong>"Zaawansowane wyszukiwanie"</strong>, tak jak w wyszukiwaniu lokalnym.
                                         </p>
                                         <ul className="list-disc ml-6 text-gray-700 dark:text-gray-300">
                                             <li><strong>Szybkie wyszukiwanie:</strong> przeszukuje wszystkie metadane w
@@ -468,10 +488,13 @@ const HelpPage: React.FC = () => {
                             {/* Import */}
                             <div id="importowanie" className="mb-8">
                                 <h3 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">5.
-                                    Importowanie danych</h3>
+                                    Importowanie metadanych z pliku</h3>
+                                <p className="text-gray-700 dark:text-gray-300">Ethnopedia umożliwia <strong>importowanie danych</strong> z <strong>pliku arkusza kalkulacyjnego</strong> lub <strong>pliku CSV</strong>.</p>
+                                <p className="text-gray-700 dark:text-gray-300">Dane importować można <strong>tworząc nową kolekcję na importowane dane</strong> lub poprzez <strong>import danych do istniejącej już kolekcji</strong>.</p>
                                 <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm mb-6">
-                                    <h4 className="text-xl font-medium text-gray-800 dark:text-gray-200 mb-4">5.1 Importowanie z pliku Excel</h4>
+                                    <h4 className="text-xl font-medium text-gray-800 dark:text-gray-200 mb-4">5.1 Import danych do nowej kolekcji</h4>
                                 {/*    TODO*/}
+                                    <h4 className="text-xl font-medium text-gray-800 dark:text-gray-200 mb-4">5.2 Import danych do istniejącej kolekcji</h4>
                                 </div>
                             </div>
 
