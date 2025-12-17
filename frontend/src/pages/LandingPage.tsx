@@ -77,11 +77,11 @@ const LandingPage = () => {
                                     >
                                         Zaloguj się
                                     </button>
-                                    <button type="button" onClick={() => navigate("/register")}
+                                    {/* <button type="button" onClick={() => navigate("/register")}
                                             aria-label="landing-page-register"
                                             className="px-16 py-2 bg-white">
                                         Zarejestruj się
-                                    </button>
+                                    </button> */}
                                 </div>
                                 <div className="mt-8">
                                     <button
@@ -163,8 +163,8 @@ const LandingPage = () => {
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                            {fetchedData?.collections.map((collection) => {
-                                // przycinamy nazwy i opisy jeśli są za długie
+                            {fetchedData?.collections.map((collection) => { 
+                                
                                 const maxNameLength = 65;
                                 const maxDescLength = 120;
                                 const name =
@@ -189,13 +189,9 @@ const LandingPage = () => {
                                     >
                                         <div className="flex flex-col h-full pr-2">
                                             <h2 className="text-lg font-semibold mb-2 break-words">{name}</h2>
-                                            <p className="text-gray-600 dark:text-gray-300 flex-grow break-words">
-                                                {description}
-                                            </p>
+                                            <p className="text-gray-600 dark:text-gray-300 flex-grow break-words">{description}</p>
                                             <div className="mt-2 text-md flex items-center">
-                                                <span className="font-bold mr-1">
-                                                  {collection.artworksCount ?? 0}
-                                                </span>
+                                                <span className="font-bold mr-1">{collection.artworksCount ?? 0}</span>
                                                 {(collection.artworksCount ?? 0) === 1
                                                     ? "rekord"
                                                     : (collection.artworksCount ?? 0) > 1 &&
@@ -205,8 +201,8 @@ const LandingPage = () => {
                                             </div>
                                         </div>
                                     </div>
-                                );
-                            })}
+                                )}
+                            )}
                         </div>
 
                     </section>

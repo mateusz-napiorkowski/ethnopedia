@@ -14,12 +14,13 @@ jest.mock('react-router-dom', () => ({
 interface FormValues {
     username: string,
     firstName: string,
-    password: string
+    password: string,
+    secret: string
 }
 
 const mockRegisterUser = jest.fn()
 jest.mock('../../api/auth', () => ({
-    registerUser: ({ username, firstName, password }: FormValues) => mockRegisterUser({ username, firstName, password })
+    registerUser: ({ username, firstName, password, secret }: FormValues) => mockRegisterUser({ username, firstName, password, secret })
 }))
 
 const queryClient = new QueryClient();
@@ -113,7 +114,7 @@ describe("RegisterPage tests", () => {
         },
       ])('$testName', async ({fieldLabels, valuesToTypeIn, errorMessages, showErrorMessages}) => {
         const {getByLabelText, getByRole, queryByText } = renderComponent()
-        const registerButton = getByRole("button", {name: /zarejestruj się/i})
+        const registerButton = getByRole("button", {name: /zarejestruj/i})
 
         for (const [fieldIndex, fieldLabel] of fieldLabels.entries()) {
             const fieldElement = getByLabelText(fieldLabel);
@@ -137,18 +138,21 @@ describe("RegisterPage tests", () => {
         const usernameField = getByLabelText("Nazwa użytkownika");
         const passwordField = getByLabelText("Hasło");
         const confirmPasswordField = getByLabelText("Powtórz hasło");
-        const registerButton = getByRole("button", {name: /zarejestruj się/i})
+        const secretField = getByLabelText("access_token_secret");
+        const registerButton = getByRole("button", {name: /zarejestruj/i})
 
         await user.type(firstNameField, "Jacek");
         await user.type(usernameField, "ExistingUsername");
         await user.type(passwordField, "haslojacka");
         await user.type(confirmPasswordField, "haslojacka");
+        await user.type(secretField, "123456789");
         await user.click(registerButton)
 
         expect(mockRegisterUser).toHaveBeenCalledWith({
             username: "ExistingUsername",
             firstName: "Jacek",
-            password: "haslojacka"
+            password: "haslojacka",
+            secret: "123456789"
         })
         expect(getByText("Użytkownik już istnieje.")).toBeInTheDocument()
         await waitForElementToBeRemoved(() => queryByText("Użytkownik już istnieje."), {timeout: 5000})
@@ -162,12 +166,14 @@ describe("RegisterPage tests", () => {
         const usernameField = getByLabelText("Nazwa użytkownika");
         const passwordField = getByLabelText("Hasło");
         const confirmPasswordField = getByLabelText("Powtórz hasło");
-        const registerButton = getByRole("button", {name: /zarejestruj się/i})
+        const registerButton = getByRole("button", {name: /zarejestruj/i})
+        const secretField = getByLabelText("access_token_secret");
 
         await user.type(firstNameField, "Jacek");
         await user.type(usernameField, "ExistingUsername");
         await user.type(passwordField, "haslojacka");
         await user.type(confirmPasswordField, "haslojacka");
+        await user.type(secretField, "123456789");
         await user.click(registerButton)
         await user.click(getByLabelText("Close"))
 
@@ -183,18 +189,21 @@ describe("RegisterPage tests", () => {
         const usernameField = getByLabelText("Nazwa użytkownika");
         const passwordField = getByLabelText("Hasło");
         const confirmPasswordField = getByLabelText("Powtórz hasło");
-        const registerButton = getByRole("button", {name: /zarejestruj się/i})
+        const registerButton = getByRole("button", {name: /zarejestruj/i})
+        const secretField = getByLabelText("access_token_secret");
 
         await user.type(firstNameField, "Jacek");
         await user.type(usernameField, "jacek123");
         await user.type(passwordField, "haslojacka");
         await user.type(confirmPasswordField, "haslojacka");
+        await user.type(secretField, "123456789");
         await user.click(registerButton)
 
         expect(mockRegisterUser).toHaveBeenCalledWith({
             username: "jacek123",
             firstName: "Jacek",
-            password: "haslojacka"
+            password: "haslojacka",
+            secret: "123456789"
         })
         expect(mockUseNavigate).toHaveBeenCalledWith("/")
     })

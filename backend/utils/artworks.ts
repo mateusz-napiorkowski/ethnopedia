@@ -109,7 +109,9 @@ export const constructTopmostCategorySearchTextFilter = (searchText: string) => 
 
 const getOnlySearchRulesArray = (reqQuery: any, forArtworkPage = true) => {
     const rulesArray: any = []
-    const keywordsToSkip = forArtworkPage ? ["page", "pageSize", "sortOrder", "search", "collectionIds", "sortBy"] : ["columnNames", "selectedArtworks", "exportExtent", "collectionIds"]
+    const keywordsToSkip = forArtworkPage ?
+        ["page", "pageSize", "sortOrder", "search", "collectionIds", "sortBy"] :
+        ["columnNames", "selectedArtworks", "exportExtent", "collectionIds", "includeIds", "includeFilenames", "exportAsCSV"]
     for(const categoryName in reqQuery) {
         if(!keywordsToSkip.includes(categoryName)) {
             rulesArray.push([categoryName, reqQuery[categoryName]])
@@ -127,7 +129,6 @@ const getOnlySearchRulesArray = (reqQuery: any, forArtworkPage = true) => {
 
 export const constructAdvSearchFilter = (requestQuery: any, collectionNames: Array<string>, forArtworkPage = true) => {
     const searchRules = getOnlySearchRulesArray(requestQuery, forArtworkPage)
-
     const queryFilter: any = {
         collectionName: {$in: collectionNames},
         categories: {$all: []}

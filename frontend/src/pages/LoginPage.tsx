@@ -26,7 +26,7 @@ const LoginPage = () => {
                 const token = response.token;
                 localStorage.setItem("token", token);
                 const decodedToken = jwtDecode<JWT>(token);
-                setUserData(true, decodedToken.firstName, token, decodedToken.userId);
+                setUserData(true, decodedToken.firstName, token, decodedToken.userId, decodedToken.username);
                 navigate("/");
             },
             onError: (error: any) => {
@@ -110,13 +110,14 @@ const LoginPage = () => {
                             )}
                         </Formik>
                         <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                            Nie masz konta?{" "}
+                            Nie masz konta? Poproś administratora systemu o utworzenie go dla Ciebie.
+                            {/* {" "}
                             <span
                                 className="ml-1 font-medium text-primary-600 hover:underline dark:text-primary-500 cursor-pointer"
                                 onClick={() => navigate("/register")}
                             >
                                 Zarejestruj się.
-                            </span>
+                            </span> */}
                         </p>
                     </div>
                 </div>

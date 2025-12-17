@@ -1,0 +1,115 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AdvancedSearch tests should add and render search rules correctly 1`] = `
+<div
+  data-testid="rules-container"
+>
+  <div
+    class="flex items-center gap-2 mt-4"
+  >
+    <button
+      aria-label="delete Tytuł"
+      class="border-none p-0 mr-2"
+    >
+      <svg />
+    </button>
+    <span
+      class="border border-blue-300 p-2 rounded-lg bg-blue-100 text-blue-500 font-semibold"
+    >
+      Tytuł
+    </span>
+    <span
+      class="border border-blue-300 p-2 rounded-lg bg-blue-100 text-blue-500 font-semibold"
+    >
+      Przykładowy tytuł
+    </span>
+  </div>
+  <div
+    class="flex items-center gap-2 mt-4"
+  >
+    <button
+      aria-label="delete Rok"
+      class="border-none p-0 mr-2"
+    >
+      <svg />
+    </button>
+    <span
+      class="border border-blue-300 p-2 rounded-lg bg-blue-100 text-blue-500 font-semibold"
+    >
+      Rok
+    </span>
+    <span
+      class="border border-blue-300 p-2 rounded-lg bg-blue-100 text-blue-500 font-semibold"
+    >
+       
+    </span>
+  </div>
+  <div
+    class="flex items-center gap-2 mt-4"
+  >
+    <button
+      aria-label="delete Tytuł.Podtytuł"
+      class="border-none p-0 mr-2"
+    >
+      <svg />
+    </button>
+    <span
+      class="border border-blue-300 p-2 rounded-lg bg-blue-100 text-blue-500 font-semibold"
+    >
+      Tytuł.Podtytuł
+    </span>
+    <span
+      class="border border-blue-300 p-2 rounded-lg bg-blue-100 text-blue-500 font-semibold"
+    >
+      Przykładowy podtytuł
+    </span>
+  </div>
+</div>
+`;
+
+exports[`AdvancedSearch tests should delete appropriate search rules and render search rules correctly 1`] = `
+<div
+  data-testid="rules-container"
+>
+  <div
+    class="flex items-center gap-2 mt-4"
+  >
+    <button
+      aria-label="delete Rok"
+      class="border-none p-0 mr-2"
+    >
+      <svg />
+    </button>
+    <span
+      class="border border-blue-300 p-2 rounded-lg bg-blue-100 text-blue-500 font-semibold"
+    >
+      Rok
+    </span>
+    <span
+      class="border border-blue-300 p-2 rounded-lg bg-blue-100 text-blue-500 font-semibold"
+    >
+      1410
+    </span>
+  </div>
+  <div
+    class="flex items-center gap-2 mt-4"
+  >
+    <button
+      aria-label="delete Artyści"
+      class="border-none p-0 mr-2"
+    >
+      <svg />
+    </button>
+    <span
+      class="border border-blue-300 p-2 rounded-lg bg-blue-100 text-blue-500 font-semibold"
+    >
+      Artyści
+    </span>
+    <span
+      class="border border-blue-300 p-2 rounded-lg bg-blue-100 text-blue-500 font-semibold"
+    >
+      Jan Nowak
+    </span>
+  </div>
+</div>
+`;

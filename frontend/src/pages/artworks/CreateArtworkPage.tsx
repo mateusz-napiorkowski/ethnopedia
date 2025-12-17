@@ -14,6 +14,7 @@ import { Metadata } from '../../@types/Metadata';
 import useUndoRedoFormState from '../../hooks/useUndoRedoFormState';
 import {MdRedo as RedoArrow, MdUndo as UndoArrow} from "react-icons/md";
 import FileErrorsPopup from './FileErrorsPopup';
+import { UploadedFileData } from '../../@types/Files';
 
 interface FormValues {
     categories: Metadata[];
@@ -32,13 +33,13 @@ const CreateArtworkPage: React.FC = () => {
 
     const { data: catData, isLoading: catsLoading } = useQuery(
         ['categories', collectionId],
-        () => getAllCategories([collectionId as string]),
+        () => getAllCategories([collectionId as string], jwtToken),
         { enabled: !!collectionId }
     );
 
     const { data: collData } = useQuery(
         ['collection', collectionId],
-        () => getCollection(collectionId!),
+        () => getCollection(collectionId!, jwtToken),
         { enabled: !!collectionId }
     );
 
@@ -52,21 +53,18 @@ const CreateArtworkPage: React.FC = () => {
                 'createdAt',
                 'desc',
                 '',
-                {}
+                {},
+                jwtToken
             ),
         { enabled: !!collectionId }
     );
 
-    const [initialCategoryPaths, setInitialCategoryPaths] = useState<string[]>([]);
-    const [initialMetadataTree, setInitialMetadataTree] = useState<Metadata[] | undefined>(
-        undefined
-    );
     const [isInitialized, setIsInitialized] = useState(false);
 
     // File upload state from main branch
-    const [filesToUpload, setFilesToUpload] = useState([]);
+    const [filesToUpload, setFilesToUpload] = useState<File[]>([]);
     const [currentFiles, setCurrentFiles] = useState([]);
-    const [filesToDelete, setFilesToDelete] = useState([]);
+    const [filesToDelete, setFilesToDelete] = useState<UploadedFileData[]>([]);
     const [showFileErrorsPopup, setShowFileErrorsPopup] = useState(false);
     const [failedUploadsCauses, setFailedUploadsCauses] = useState([]);
     const [failedDeletesCauses, setFailedDeletesCauses] = useState([]);
@@ -129,19 +127,17 @@ const CreateArtworkPage: React.FC = () => {
         if (isInitialized) return;
 
         if (artworkId) {
-            getArtwork(artworkId).then((res) => {
+            getArtwork(artworkId, jwtToken).then((res) => {
                 const initialData = {
                     categories: res.artwork.categories || [],
                     filesToUpload: [],
                     filesToDelete: []
                 };
-                setInitialMetadataTree(res.artwork.categories);
                 setCurrentFiles(res.artwork.files || []);
                 initializeState(initialData);
                 setIsInitialized(true);
             });
         } else if (catData?.categories) {
-            setInitialCategoryPaths(catData.categories);
             // Build hierarchy from category paths
             const hierarchy = buildHierarchyFromPaths(catData.categories);
             const initialData = {
@@ -149,10 +145,10 @@ const CreateArtworkPage: React.FC = () => {
                 filesToUpload: [],
                 filesToDelete: []
             };
-            setInitialMetadataTree(hierarchy);
             initializeState(initialData);
             setIsInitialized(true);
         }
+        // eslint-disable-next-line
     }, [artworkId, catData, isInitialized, initializeState]);
 
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -199,7 +195,7 @@ const CreateArtworkPage: React.FC = () => {
             const resData = artworkId ?
                 await editArtwork(artworkId, collectionId as string, formValues.categories,
                     filesToUpload, filesToDelete, jwtToken!) :
-                await createArtwork(collectionId, formValues.categories, filesToUpload, jwtToken!);
+                await createArtwork(collectionId!, formValues.categories, filesToUpload, jwtToken!);
 
             queryClient.invalidateQueries(['artworks', collectionId]);
             queryClient.invalidateQueries(['allArtworks', collectionId]);
@@ -239,7 +235,11 @@ const CreateArtworkPage: React.FC = () => {
         !isInitialized ||
         !artworksData?.artworks
     ) {
-        return <LoadingPage />;
+        return (
+            <div data-testid="loading-page-container">
+                <LoadingPage />
+            </div>
+        )
     }
 
     return (

@@ -66,7 +66,7 @@ describe("Sort options tests", () => {
 
     it("should rotate sorting direction button after sorting direction button is clicked and change its title to 'Sortuj rosnąco', should call selectCurrentPage(1)", async () => {          
         const {container, getByLabelText} = renderComponent()
-        const sortingDirectionButton = getByLabelText("Zmień kierunek sortowania")
+        const sortingDirectionButton = getByLabelText("toggle-sort-direction")
 
         await user.click(sortingDirectionButton)
         
@@ -76,7 +76,7 @@ describe("Sort options tests", () => {
 
     it("should rotate sorting direction button after sorting direction button is clicked and change its title to 'Sortuj malejąco', should call selectCurrentPage(1)", async () => {          
         const {container, getByLabelText} = renderComponent()
-        const sortingDirectionButton = getByLabelText("Zmień kierunek sortowania")
+        const sortingDirectionButton = getByLabelText("toggle-sort-direction")
 
         await user.click(sortingDirectionButton)
         

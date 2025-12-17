@@ -10,6 +10,7 @@ import { useLocation, useNavigate } from "react-router-dom"
 import { v4 as uuidv4 } from "uuid"
 import DOMPurify from "dompurify"
 import Dropdown from "../Dropdown"
+import { useUser } from "../../providers/UserProvider"
 
 interface SearchComponentProps {
     collectionIds: string | string[];
@@ -32,6 +33,7 @@ const AdvancedSearch: React.FC<SearchComponentProps> = ({ collectionIds, mode })
     const [errorMessage, setErrorMessage] = useState<string | null>(null)
     const [duplicateCategoryError, setDuplicateCategoryError] = useState(false)
     const [valueError, setValueError] = useState(false)
+    const { jwtToken } = useUser();
 
     useEffect(() => {
         if (location.state && location.state.rules) {
@@ -41,18 +43,14 @@ const AdvancedSearch: React.FC<SearchComponentProps> = ({ collectionIds, mode })
         }
     }, [location])
 
-    const { data: categoriesData, isLoading } = useQuery({
+    const { data: categoriesData } = useQuery({
         queryKey: ["allCategories", mode, collectionIds],
         queryFn: () =>
             Array.isArray(collectionIds)
-                ? getAllCategories(collectionIds)
-                : getAllCategories([collectionIds]),
+                ? getAllCategories(collectionIds, jwtToken)
+                : getAllCategories([collectionIds], jwtToken),
         enabled: !!collectionIds,
     });
-
-    useEffect(() => {
-        console.log("AdvancedSearch collectionIds:", collectionIds);
-    }, [collectionIds]);
 
     const options: { label: string; value: string }[] = React.useMemo(() => {
         if (!categoriesData?.categories) return [];

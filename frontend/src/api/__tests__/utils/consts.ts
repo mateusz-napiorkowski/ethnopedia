@@ -56,19 +56,28 @@ export const jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6In
     + "lcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaecc"
     + "N-rDSjRS3kApqlA"
 
-export const artworkPayload = {
-    "categories": [
-        {
-            "name": "Tytuł",
-            "value": "testowy",
-            "subcategories": []
-        },
-    ],
-    "collectionName": collectionName
-}
+export const categories = [
+    {
+        "name": "Tytuł",
+        "value": "testowy",
+        "subcategories": []
+    },
+]
+
+export const filesToUpload = [
+    new File(["foo"], "foo.txt", {
+        type: "text/plain",
+    })
+]
+
+export const zipFile = new File(
+  [new Uint8Array([0x50, 0x4B, 0x03, 0x04])],
+  "archive.zip",
+  { type: "application/zip" }
+);
 
 export const createArtworkMockReturnValue = {
-    ...artworkPayload,
+    ...categories,
     "_id": "6839828f96472c0836a60c7f",
     "createdAt": "2025-05-30T10:03:59.103Z",
     "updatedAt": "2025-05-30T10:03:59.103Z",
@@ -383,4 +392,13 @@ export const importDataAsCollectionMockReturnData = {
             "updatedAt": "2025-06-02T12:19:59.995Z"
         }
     ]
+}
+
+export const fileToDownloadData = {
+    "originalFilename": "MIDI_sample.mid",
+    "newFilename": "68d0774653968e8a29c54e99_0.mid",
+    "filePath": "uploads/68d054fb7bce5a5b80f3013f/68d0774653968e8a29c54e99_0.mid",
+    "size": 8444,
+    "uploadedAt": new Date("2025-09-21T22:08:06.816Z"),
+    "_id": "68d0774653968e8a29c54e9b"
 }

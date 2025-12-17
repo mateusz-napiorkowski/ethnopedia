@@ -1,6 +1,5 @@
 import axios from "axios"
 import { Collection } from "../@types/Collection"
-import { useMutation } from "react-query"
 import { API_URL } from "../config"
 import { Category } from "../@types/Category"
 
@@ -11,44 +10,57 @@ interface CollectionsResponse {
     pageSize: number;
 }
 
-export const getAllCollections = async (page: number = 1, pageSize: number = 10, sortOrder: string): Promise<CollectionsResponse> => {
-    return axios.get(`${API_URL}v1/collection`, {
-        params: {
-            page: page,
-            pageSize: pageSize,
-            sortOrder: sortOrder
-        },
-    }).then(res => res.data)
+export const getAllCollections = async (page: number = 1, pageSize: number = 10, sortOrder: string, jwtToken: string | undefined = undefined): Promise<CollectionsResponse> => {  
+    return axios
+        .get(`${API_URL}v1/collection`, {
+            params: {
+                page: page,
+                pageSize: pageSize,
+                sortOrder: sortOrder
+            },
+            headers: jwtToken ? { Authorization: `Bearer ${jwtToken}` } : {}
+        })
+        .then(res => res.data);
 }
 
-export const getCollection = async (id: string) => {
-    return await axios.get(`${API_URL}v1/collection/${id}`, {headers: {
-        'Content-Type': 'application/json; charset=UTF-8'
-    }}).then(res => res.data)
-}
+export const getCollection = async (id: string, jwtToken: string | undefined = undefined) => {
+    return await axios
+        .get(
+            `${API_URL}v1/collection/${id}`,
+            {headers: {
+                'Content-Type': 'application/json; charset=UTF-8',
+                Authorization: jwtToken ? `Bearer ${jwtToken}`: undefined
+            }}
+        )
+        .then(res => res.data);
+};
 
 
-export const createCollection = async (name: any, description: any, categories: Category[], jwtToken: any) => {
+export const createCollection = async (name: string, description: string, categories: Category[], jwtToken: string, isCollectionPrivate: boolean) => {
     const config = {
         headers: { Authorization: `Bearer ${jwtToken}` }
     };
+
     return await axios
-        .post(`${API_URL}v1/collection/create`, {name, description, categories}, config)
-        .then(res => res.data)
-}
+        .post(`${API_URL}v1/collection/create`, {name, description, categories, isCollectionPrivate}, config)
+        .then(res => res.data);
+};
 
 export const updateCollection = async (
     id: string,
     name: string,
     description: string,
     categories: Category[],
+    isCollectionPrivate: boolean,
     jwtToken: string
 ) => {
-    return await axios.put(
-        `${API_URL}v1/collection/edit/${id}`,
-        { name, description, categories },
-        { headers: { Authorization: `Bearer ${jwtToken}` } }
-    ).then(res => res.data)
+    return await axios
+        .put(
+            `${API_URL}v1/collection/edit/${id}`,
+            { name, description, categories, isCollectionPrivate },
+            { headers: { Authorization: `Bearer ${jwtToken}` } }
+        )
+        .then(res => res.data);
 };
 
 export const deleteCollections = async (collectionIds: Array<string>, jwtToken: string) => {
@@ -58,5 +70,5 @@ export const deleteCollections = async (collectionIds: Array<string>, jwtToken: 
             headers: { Authorization: `Bearer ${jwtToken}` },
             data: { ids: collectionIds}
         }
-    ).then(res => res.data)
-}
+    ).then(res => res.data);
+};

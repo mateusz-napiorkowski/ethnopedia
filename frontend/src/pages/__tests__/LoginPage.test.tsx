@@ -84,15 +84,6 @@ describe("LoginPage tests", () => {
         expect(mockLoginUser).toHaveBeenCalledWith({username: "username", password: "password"})
     });
 
-    it("should call useNavigate('/register') after register button is clicked", async () => {
-        const { getByText } = renderPage();
-        const registerButton = getByText(/zarejestruj się/i)
-        
-        await user.click(registerButton)
-
-        expect(mockUseNavigate).toHaveBeenCalledWith("/register")
-    });
-
     it("should show error toast when user with provided username and password doesn't exist, toast should disappear after a few seconds", async () => {
         mockLoginUser.mockImplementation(() => {throw Error("Mocked loginUser error")})          
         const { getByPlaceholderText, getByRole, getByText, queryByText } = renderPage()

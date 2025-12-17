@@ -1,4 +1,4 @@
-name: Build Metadata editor frontend page
+name: Build frontend
 
 on:
   push:

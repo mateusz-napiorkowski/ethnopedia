@@ -2,14 +2,6 @@ export const jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6In
     + "lcklkIjoiNjZiNjUwNmZiYjY0ZGYxNjVlOGE5Y2U2IiwiaWF0IjoxNzI0MTg0MTE0LCJleHAiOjE3MjUxODQxMTR9.fzHPaXFMzQTVUf9IdZ0G6oeiaecc"
     + "N-rDSjRS3kApqlA"
 
-export const loggedInUserContextProps = {
-    isUserLoggedIn: true,
-    firstName: "123",
-    userId: "66b6506fbb64df165e8a9ce6",
-    jwtToken: jwtToken,
-    setUserData: jest.fn()
-};
-
 export const collectionData = {
     "_id": "675ddf8c1e6d01766fbc5b2e",
     "name": "example collection",
@@ -18,6 +10,17 @@ export const collectionData = {
         {name: 'Tytuł', subcategories: [{name: "Podtytuł", subcategories: []}]},
         {name: 'Artyści', subcategories: []},
         {name: 'Rok', subcategories: []},
+    ],
+    "__v": 0
+}
+
+export const collectionData2 = {
+    _id: '662e928b11674920c8cc0aaa',
+    name: 'example collection',
+    description: 'example collection description',
+    "categories": [
+        {name: 'Title', subcategories: [{name: "Subtitle", subcategories: [{name: "Subsubtitle", subcategories: []}]}]},
+        {name: 'Artists', subcategories: []}
     ],
     "__v": 0
 }
@@ -254,3 +257,18 @@ export const artworksDataSecondPage = {
     "currentPage": 1,
     "pageSize": 3
 }
+
+export const fileData = [
+    ['Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Artists'],
+    ['title 1', 'subtitle 1', 'subsubtitle 1', "artist 1"],
+]
+
+export const newFileData = [
+    ['Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Artists'],
+    ['new file title 1', 'new file subtitle 1', 'new file subsubtitle 1', "new file artist 1"],
+]
+
+export const fileDataWithIdsAndFilenames = [
+    ['_id', 'nazwy plików', 'Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Artists'],
+    ['1234aaaa46e5db48231024ef', '0:filename.mid', 'title 1', 'subtitle 1', 'subsubtitle 1', "artist 1"],
+]

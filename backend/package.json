@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "start": "PORT=3000 MONGO_URI=mongodb://ethnopedia-mongodb:27017 ts-node-esm index.ts",
+    "start": "PORT=3000 ts-node-esm index.ts",
+    "start:local": "PORT=3000 MONGO_URI=mongodb://ethnopedia-mongodb:27017 ts-node-esm index.ts",
     "test": "jest --coverage",
     "dev": "PORT=3000 MONGO_URI=mongodb://localhost:27017 nodemon --exec ts-node-esm index.ts",
     "lint": "eslint",
@@ -49,6 +50,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.1.0",
     "mongoose": "^7.6.6",
-    "multer": "^2.0.1"
+    "multer": "^2.0.1",
+    "unzipper": "^0.12.3"
   }
 }

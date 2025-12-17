@@ -21,15 +21,8 @@ const Navbar = () => {
         setIsDropdownOpen(false)
         setShowDeleteAccountWarning(false)
         localStorage.removeItem("token")
-        setUserData(false, "", "", "")
+        setUserData(false, "", "", "", "")
 
-        // const lastUrlSegment = decodeURIComponent(location.pathname)
-        //     .split("/")
-        //     .filter(Boolean)
-        //     .pop()
-        // if(lastUrlSegment === "create-artwork" || lastUrlSegment === "edit-artwork") {
-        //     navigate(-1)
-        // }
         navigate("/")
     }
 
@@ -59,13 +52,22 @@ const Navbar = () => {
             <ul className="py-2">
                 <li>
                     <div
+                        onClick={() => navigate("/user-edit")}
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100
+                            dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white cursor-pointer"
+                    >
+                        Zmień dane użytkownika
+                    </div>
+                </li>
+                {/* <li>
+                    <div
                         onClick={onDeleteAccount}
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100
                             dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white cursor-pointer"
                     >
                         Usuń konto
                     </div>
-                </li>
+                </li> */}
                 <li>
                     <div
                         onClick={onLogout}
@@ -128,12 +130,11 @@ const Navbar = () => {
                                 onClick={() => navigate("/login")}>
                             Zaloguj się
                         </button>
-                        <button type="button"
-                                title="Zarejestruj się"
+                        {/* <button type="button"
                                 className="bg-blue-500 hover:bg-blue-400 font-semibold text-white border-none"
                                 onClick={() => navigate("/register")}>
                             Zarejestruj się
-                        </button>
+                        </button> */}
                     </>
                 }
             </div>

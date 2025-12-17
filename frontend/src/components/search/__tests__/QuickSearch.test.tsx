@@ -52,7 +52,7 @@ describe("QuickSearch tests", () => {
         await user.type(inputField, "ExampleTextValue")
         await user.click(getByRole("button"))
 
-        expect(mockUseNavigate).toHaveBeenCalledWith("?searchText=ExampleTextValue")
+        expect(mockUseNavigate).toHaveBeenCalledWith(`/collections/${exampleCollectionId}/artworks?searchText=ExampleTextValue`)
     })
 
     it("should render element with error message when user typed in rule value with forbidden characters", async () => {        

@@ -7,4 +7,5 @@ export type Collection = {
     categories?: Category[];
     artworksCount?: number
     categoriesCount?: number
+    isPrivate: boolean
 }

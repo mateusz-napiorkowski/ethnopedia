@@ -1,14 +1,12 @@
-// src/pages/artwork/ArtworksListPage.tsx
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { getArtworksForPage, deleteArtworks } from "../../api/artworks";
-import { getCollection } from "../../api/collections";
+import { getCollection, updateCollection } from "../../api/collections";
+import { getUserById } from "../../api/auth";
 import LoadingPage from "../LoadingPage";
 import { useEffect, useState } from "react";
 import Navbar from "../../components/navbar/Navbar";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import SearchComponent from "../../components/search/SearchComponent";
-import ImportOptions from "../../components/ImportOptions";
-import ExportOptions from "../../components/ExportOptions";
 import { ReactComponent as PlusIcon } from "../../assets/icons/plus.svg";
 import { ReactComponent as FileImportIcon } from "../../assets/icons/fileImport.svg";
 import { ReactComponent as FileExportIcon } from "../../assets/icons/fileExport.svg";
@@ -20,17 +18,17 @@ import { useUser } from "../../providers/UserProvider";
 import { getAllCategories } from "../../api/categories";
 import MultiselectDropdown from "../../components/MultiselectDropdown";
 import { ReactComponent as EditIcon } from "../../assets/icons/edit.svg"
+import { ReactComponent as MakePublicIcon } from "../../assets/icons/make-public.svg";
+import { ReactComponent as MakePrivateIcon } from "../../assets/icons/make-private.svg";
 import ArtworksList from '../../components/artwork/ArtworksList';
 
 const ArtworksListPage = ({ pageSize = 10 }) => {
     const [selectedArtworks, setSelectedArtworks] = useState<{ [key: string]: boolean }>({});
-    const [showImportOptions, setShowImportOptions] = useState<boolean>(false);
-    const [showExportOptions, setShowExportOptions] = useState<boolean>(false);
     const [showDeleteRecordsWarning, setShowDeleteRecordsWarning] = useState(false);
     const [sortCategory, setSortCategory] = useState<string>("");
     const [sortDirection, setSortDirection] = useState<string>("asc");
     const [selectedDisplayCategories, setSelectedDisplayCategories] = useState<string[]>([]);
-    const { jwtToken } = useUser();
+    const { jwtToken, userId } = useUser();
     const location = useLocation();
     const [currentPage, setCurrentPage] = useState(1);
     const { collectionId } = useParams();
@@ -66,7 +64,8 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                 sortCategory || "createdAt", // sortBy
                 sortDirection || "asc",      // sortOrder
                 new URLSearchParams(location.search).get("searchText"),
-                Object.fromEntries(new URLSearchParams(location.search).entries())
+                Object.fromEntries(new URLSearchParams(location.search).entries()),
+                jwtToken
             ),
         enabled: !!collectionId,
         keepPreviousData: false,
@@ -75,13 +74,19 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
     const { data: collectionData } = useQuery({
         queryKey: [collectionId],
         enabled: !!collectionId,
-        queryFn: () => getCollection(collectionId as string),
+        queryFn: () => getCollection(collectionId as string, jwtToken),
     });
 
     const { data: categoriesData } = useQuery({
         queryKey: ["allCategories", collectionId],
-        queryFn: () => getAllCategories([collectionId as string]),
+        queryFn: () => getAllCategories([collectionId as string], jwtToken),
         enabled: !!collectionId,
+    });
+
+    const { data: collectionOwnerData } = useQuery({
+        queryKey: ["user", collectionId],
+        queryFn: () => getUserById(collectionData.owner),
+        enabled: !!collectionData?.owner,
     });
 
     type Option = { value: string; label: string };
@@ -133,7 +138,27 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
         }
     );
 
-    if (!artworkData || !collectionData) return <LoadingPage />;
+    const updateCollectionMutation = useMutation(
+        () => updateCollection(
+            collectionData._id,
+            collectionData.name,
+            collectionData.description,
+            collectionData.categories,
+            !collectionData.isPrivate,
+            jwtToken
+        ),
+        {
+            onSuccess: () => {
+                queryClient.invalidateQueries([collectionId])
+            }
+        }
+    )
+
+    if (!artworkData || !collectionData) return (
+        <div data-testid="loading-page-container">
+            <LoadingPage />
+        </div>
+    );
 
     return (
         <div data-testid="loaded-artwork-page-container">
@@ -150,7 +175,10 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                 <div className="flex flex-col max-w-screen-xl w-full lg:px-6">
                     <Navigation />
                     {/* Nazwa + opis */}
-                    <div className="flex flex-row mb-4 mt-2 items-start w-full">
+                    <div 
+                        data-testid="collection-name-and-description-container"
+                        className="flex flex-row mb-4 mt-2 items-start w-full"
+                    >
                         <div className="flex-1 min-w-0 pr-4">
                             <h2 className="text-4xl font-bold text-gray-800 dark:text-white mb-1 break-words leading-tight">
                                 {collectionData?.name}
@@ -185,15 +213,30 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                                     </div>
                                 );
                             })()}
+                            <p className="text-l text-gray-800 dark:text-white break-words leading-relaxed font-normal mt-1">
+                                {collectionData?.isPrivate ? "Kolekcja prywatna": "Kolekcja publiczna"} użytkownika <span className="font-medium">{`${collectionOwnerData?.firstName ? collectionOwnerData?.firstName : ""}`}</span>
+                            </p>
                         </div>
-                        <div className="flex-shrink-0">
-                            <button
+                        <div className="flex flex-col">
+                            <div className="ml-auto mr-0">
+                                <button
+                                    disabled={!jwtToken}
+                                    className={`text-sm font-semibold h-fit ml-4 flex items-center ${jwtToken ? "" : "bg-gray-100 hover:bg-gray-100"}`}
+                                    onClick={() => navigate(`/collections/${collectionId}/edit`, { state: { collectionId, mode: "edit", name: collectionData?.name, description: collectionData?.description, categories: collectionData?.categories, isCollectionPrivate: collectionData?.isPrivate, owner: collectionData?.owner } })}
+                                >
+                                    <EditIcon className="h-4 w-5"/> <p className="ml-1">Edytuj</p>
+                                </button>
+                            </div>
+                            {collectionData?.owner === userId && <button
                                 disabled={!jwtToken}
-                                className={`text-sm font-semibold h-fit ml-4 flex items-center ${jwtToken ? "" : "bg-gray-100 hover:bg-gray-100"}`}
-                                onClick={() => navigate(`/collections/${collectionId}/edit`, { state: { collectionId, mode: "edit", name: collectionData?.name, description: collectionData?.description, categories: collectionData?.categories } })}
+                                className={`text-sm font-semibold h-fit ml-4 mt-7 flex items-center ${jwtToken ? "" : "bg-gray-100 hover:bg-gray-100"}`}
+                                onClick={() => updateCollectionMutation.mutate()}
                             >
-                                <EditIcon /> <p className="ml-1">Edytuj</p>
-                            </button>
+                                {
+                                    collectionData.isPrivate ? 
+                                        <MakePublicIcon className="h-5 w-5"/> : <MakePrivateIcon className="h-5 w-5"/>}
+                                        <p className="ml-1">{`${collectionData.isPrivate ? "Upublicznij" : "Uprywatnij"}`} kolekcję</p>
+                            </button>}
                         </div>
                     </div>
 
@@ -220,9 +263,17 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                             <button
                                 className="flex items-center justify-center dark:text-white hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium px-4 py-2 dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
                                 type="button"
-                                onClick={async () => {
-                                    setShowExportOptions((prev) => !prev);
-                                }}
+                                onClick={() => {navigate(
+                                    `/collections/${collectionId}/export-data`,
+                                    {
+                                        state: {
+                                            initialFilename: collectionData.name,
+                                            initialArchiveFilename: collectionData.name,
+                                            selectedArtworks: selectedArtworks,
+                                            searchParams: searchParams.toString()
+                                        }
+                                    }
+                                )}}
                             >
                                 <span className="text-white dark:text-gray-400">
                                     <FileExportIcon/>
@@ -278,19 +329,10 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                         </div>
                     </div>
 
-                    {showImportOptions && <ImportOptions onClose={() => setShowImportOptions(false)} collectionData={collectionData}/>}
-
-                    {showExportOptions && (
-                        <ExportOptions
-                            onClose={() => setShowExportOptions(false)}
-                            selectedArtworks={selectedArtworks}
-                            initialFilename={`${collectionData?.name}.xlsx`}
-                            collectionIds={[collectionData?._id]}
-                        />
-                    )}
-
                     {/* Kategorie + sortowanie */}
-                    <div className="flex w-full md:w-auto pt-4 flex-row items-center text-sm">
+                    <div 
+                        className="flex w-full md:w-auto pt-4 flex-row items-center text-sm"
+                    >
                         <p className="pr-2">Wyświetlane kategorie:</p>
                         <MultiselectDropdown
                             selectedValues={selectedDisplayCategories}
@@ -313,7 +355,10 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
             </div>
 
             <div className="flex flex-row w-full justify-center">
-                <div className="w-full max-w-screen-xl lg:px-6">
+                <div 
+                    data-testid="artworks-listed"
+                    className="w-full max-w-screen-xl lg:px-6"
+                >
                     <ArtworksList
                         artworksData={artworkData}
                         isLoading={isLoadingArtworks}

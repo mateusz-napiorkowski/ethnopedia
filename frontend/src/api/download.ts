@@ -1,10 +1,12 @@
 import axios from "axios"
 import { API_URL } from "../config"
+import { UploadedFileData } from "../@types/Files";
 
-export const downloadFile = async (file: any) => {
-  const response = await axios.get(`${API_URL}v1/${file.filePath}`, {
-    responseType: 'blob',
-  });
+export const downloadFile = async (file: UploadedFileData) => {
+  const response = await axios
+    .get(`${API_URL}v1/${file.filePath}`, {
+      responseType: 'blob',
+    });
 
   const blob = new Blob([response.data]);
   const url = window.URL.createObjectURL(blob);

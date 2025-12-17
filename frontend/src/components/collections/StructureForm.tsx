@@ -77,7 +77,17 @@ const StructureForm: React.FC<StructureFormProps> = ({
 
     const newData = moveAt(initialFormData, fromPath, oldIndex, newIndex);
     // traktujemy przestawienie jako zmiane strukturalną
-    setFieldValue('categories', newData, true);
+    if (undoRedoSystem) {
+      undoRedoSystem.setState(
+        {
+          ...undoRedoSystem.currentState,
+          categories: newData,
+        },
+        { shouldDebounce: false }
+      );
+    } else {
+      setFieldValue('categories', newData, true);
+    }
   };
 
 
@@ -96,7 +106,17 @@ const StructureForm: React.FC<StructureFormProps> = ({
     const path = idx.split('-').map(Number);
     const newData = addSub(initialFormData, path);
     // Structural change -> commit immediately
-    setFieldValue('categories', newData, true);
+    if (undoRedoSystem) {
+      undoRedoSystem.setState(
+        {
+          ...undoRedoSystem.currentState,
+          categories: newData,
+        },
+        { shouldDebounce: false }
+      );
+    } else {
+      setFieldValue('categories', newData, true);
+    }
   };
 
   const handleAddCat = () => {
@@ -105,7 +125,17 @@ const StructureForm: React.FC<StructureFormProps> = ({
       { name: '', subcategories: [], isNew: true }
     ];
     // Structural change -> commit immediately
-    setFieldValue('categories', newData, true);
+    if (undoRedoSystem) {
+      undoRedoSystem.setState(
+        {
+          ...undoRedoSystem.currentState,
+          categories: newData,
+        },
+        { shouldDebounce: false }
+      );
+    } else {
+      setFieldValue('categories', newData, true);
+    }
   };
 
   const removeAt = (list: Category[], path: number[]): Category[] => {
@@ -121,7 +151,17 @@ const StructureForm: React.FC<StructureFormProps> = ({
   const handleRemove = (idx: string) => {
     const newData = removeAt(initialFormData, idx.split('-').map(Number));
     // Structural change -> commit immediately
-    setFieldValue('categories', newData, true);
+    if (undoRedoSystem) {
+      undoRedoSystem.setState(
+        {
+          ...undoRedoSystem.currentState,
+          categories: newData,
+        },
+        { shouldDebounce: false }
+      );
+    } else {
+      setFieldValue('categories', newData, true);
+    }
   };
 
   // Handle typing / input changes. We try to use undoRedoSystem.setState with per-field debounce
@@ -143,14 +183,23 @@ const StructureForm: React.FC<StructureFormProps> = ({
 
     // Jeśli mamy dostęp do undoRedoSystem, użyjemy jego setState z opcją debounce per-field.
     if (undoRedoSystem && typeof undoRedoSystem.setState === 'function') {
-      undoRedoSystem.setState((prev: any) => ({ ...prev, categories: clone }), {
-        shouldDebounce: true,
-        fieldKey: `category-${idx}`,
-        debounceMs: 500
-      });
+      undoRedoSystem.setState(
+        { ...undoRedoSystem.currentState, categories: clone },
+        { shouldDebounce: true, fieldKey: `category-${idx}`, debounceMs: 500 }
+      );
     } else {
       // fallback: zwykłe ustawienie (nie structural)
-      setFieldValue('categories', clone, false);
+      if (undoRedoSystem) {
+        undoRedoSystem.setState(
+          {
+            ...undoRedoSystem.currentState,
+            categories: clone,
+          },
+          { shouldDebounce: false }
+        );
+    } else {
+      setFieldValue('categories', clone, true);
+    }
     }
   };
 
@@ -165,7 +214,17 @@ const StructureForm: React.FC<StructureFormProps> = ({
     cur[parts[parts.length - 1]]['name'] = value;
 
     // Commit immediate (non-structural)
-    setFieldValue('categories', clone, false);
+    if (undoRedoSystem) {
+      undoRedoSystem.setState(
+        {
+          ...undoRedoSystem.currentState,
+          categories: clone,
+        },
+        { shouldDebounce: false }
+      );
+    } else {
+      setFieldValue('categories', clone, true);
+    }
   };
 
 

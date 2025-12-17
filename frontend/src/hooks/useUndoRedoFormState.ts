@@ -179,6 +179,7 @@ export function useUndoRedoFormState<T>(initialState: T) {
     useEffect(() => {
         return () => {
             timersRef.current.forEach(timer => clearTimeout(timer));
+            // eslint-disable-next-line react-hooks/exhaustive-deps
             timersRef.current.clear();
         };
     }, []);

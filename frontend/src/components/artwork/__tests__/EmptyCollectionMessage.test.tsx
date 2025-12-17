@@ -48,15 +48,6 @@ describe("EmptyCollectionMessage", () => {
         expect(mockUseNavigate).toHaveBeenCalledWith("/login")
     })
 
-    it("should call useNavigate(/register) after register button is clicked", async () => {
-        const {getByText} = renderComponent()
-        const registerButton = getByText(/zarejestruj się/i)
-
-        await user.click(registerButton)
-        
-        expect(mockUseNavigate).toHaveBeenCalledWith("/register")
-    })
-
     it("should render EmptyCollectionMessage component with message for logged in user", () => {
         const {container} = renderComponent(jwtToken)
         expect(container).toMatchSnapshot()
@@ -71,12 +62,12 @@ describe("EmptyCollectionMessage", () => {
         expect(mockUseNavigate).toHaveBeenCalledWith(`/collections/${collectionId}/create-artwork`)
     })
 
-    it("should call setShowImportOptions(true) after add new record button is clicked", async () => {
+    it("should call useNavigate(/collections/:collectionId/import-data) after import button button is clicked", async () => {
         const {getByText} = renderComponent(jwtToken)
         const importRecordsButton = getByText(/zaimportuj/i)
 
         await user.click(importRecordsButton)
 
-        expect(mockSetShowImportOptions).toHaveBeenCalledWith(true)
+        expect(mockUseNavigate).toHaveBeenCalledWith(`/collections/${collectionId}/import-data`)
     })
 })

@@ -78,7 +78,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, setCurrentPage, to
                      hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
                      dark:hover:text-white cursor-pointer"
                     >
-                        <HiChevronLeft size={18} />
+                        <HiChevronLeft aria-label="previous-page"size={18} />
                     </div>
                 </li>
                 {
@@ -192,7 +192,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, setCurrentPage, to
                             dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700
                             dark:hover:text-white cursor-pointer"
                     >
-                        <HiChevronRight size={18} />
+                        <HiChevronRight aria-label="next-page" size={18} />
                     </div>
                 </li>
             </ul>

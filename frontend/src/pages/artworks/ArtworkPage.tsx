@@ -17,8 +17,8 @@ const ArtworkPage = () => {
     const [showDeleteArtworkWarning, setShowDeleteArtworkWarning] = useState(false)
 
     const { data: fetchedData } = useQuery({
-        queryKey: ["artwork", artworkId],
-        queryFn: () => getArtwork(artworkId as string),
+        queryKey: ["artwork", artworkId, jwtToken],
+        queryFn: () => getArtwork(artworkId as string, jwtToken),
         enabled: !!artworkId,
     })
 
@@ -64,6 +64,7 @@ const ArtworkPage = () => {
                     <Navigation />
                     <ArtworkDetails
                         collectionName={artworkData.collectionName}
+                        collectionId={artworkData.collectionId}
                         detailsToShow={artworkData}
                         handleEditClick={() => {
                             // Keep the more specific navigation from search-all-frontend

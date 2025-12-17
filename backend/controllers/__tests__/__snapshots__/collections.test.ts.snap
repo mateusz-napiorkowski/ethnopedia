@@ -83,6 +83,8 @@ exports[`collections controller PUT endpoints updateCollection should respond wi
     },
   ],
   "description": "nowy opis kolekcji",
+  "isPrivate": false,
   "name": "nowa nazwa kolekcji",
+  "owner": "675ddf3b1e6d01766fbc5b17",
 }
 `;

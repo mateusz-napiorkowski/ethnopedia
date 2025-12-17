@@ -64,8 +64,8 @@ const loggedInUserContextProps = {
 const artworkData = {
     "artwork": {
         "_id": "670c2aecc29b79e5aaef1b9b",
-        "createdAt": "2024-11-05T20:14:22.883Z",
-        "updatedAt": "2024-11-05T20:14:22.883Z",
+        "createdAt": "mock date",
+        "updatedAt": "mock date",
         "__v": 0,
         "categories": [
             {
@@ -121,7 +121,8 @@ const artworkData = {
                 ]
             }
         ],
-        "collectionName": "example collection"
+        "collectionName": "example collection",
+        files: []
     }
 }
 
@@ -133,7 +134,8 @@ const artworkDataWithoutCategories = {
         "__v": 0,
         "categories": [
         ],
-        "collectionName": "example collection"
+        "collectionName": "example collection",
+        files: []
     }
 }
 
@@ -181,7 +183,7 @@ describe("ArtworkPage tests", () => {
         }))
 
         expect(mockUseNavigate).toHaveBeenCalledWith(
-            "edit-artwork", 
+            `/collections/${exampleCollectionId}/artworks/${artworkId}/edit-artwork`, 
             {state: {categories: artworkData.artwork.categories}}
         )
     })

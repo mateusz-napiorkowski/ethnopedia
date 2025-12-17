@@ -6,6 +6,6 @@ import upload from "../middleware/upload"
 const router = express.Router()
 
 router.route("/").post(importData)
-router.route("/:collection").post(upload.single("file"), importDataAsCollection)
+router.route("/newCollection").post(upload.single("file"), importDataAsCollection)
 
 export default router;

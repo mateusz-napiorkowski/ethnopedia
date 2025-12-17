@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { render } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from "react-query";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
@@ -23,7 +23,8 @@ jest.mock('../../../api/dataImport', () => ({
         collectionName: string | undefined,
         description: string,
         jwtToken: string,
-    ) => mockImportDataAsCollection(importData, collectionName, description, jwtToken)
+        archiveFile: File | undefined,
+    ) => mockImportDataAsCollection(importData, collectionName, description, jwtToken, archiveFile)
 }));
 
 const exampleCollectionData = {
@@ -37,8 +38,17 @@ const jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rvd
 
 const fileData = [
     ['Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Artists'],
-    ['title 1', 'subtitle 1',
-    'subsubtitle 1', "artist 1"],
+    ['title 1', 'subtitle 1', 'subsubtitle 1', "artist 1"],
+]
+
+const newFileData = [
+    ['Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Artists'],
+    ['new file title 1', 'new file subtitle 1', 'new file subsubtitle 1', "new file artist 1"],
+]
+
+const fileDataWithIdsAndFilenames = [
+    ['_id', 'nazwy plików', 'Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Artists'],
+    ['1234aaaa46e5db48231024ef', '0:filename.mid', 'title 1', 'subtitle 1', 'subsubtitle 1', "artist 1"],
 ]
 
 const createXlsxFile = (xlsxData: Array<Array<string>>, fileName: string) => {
@@ -83,8 +93,10 @@ describe("ImportCollectionPage tests", () => {
     });
 
     it("should render initial state", () => {           
-        const {container} = renderComponent()
+        const {container, getByLabelText} = renderComponent()
+
         expect(container).toMatchSnapshot()
+        expect(getByLabelText("import-data")).toBeDisabled()
     })
 
     it("should navigate to previous page after cancel button is clicked", async () => {           
@@ -97,21 +109,143 @@ describe("ImportCollectionPage tests", () => {
     })
 
     it("should update upload component and show loaded categories configuration menu with correct initial category structure after file is loaded", async () => {           
-        const {getByRole, getByText, getByLabelText, container} = renderComponent()
+        const {getByLabelText, getByText, container} = renderComponent()
         const uploadField = getByLabelText("upload")
         const file = createXlsxFile(fileData, "example.xlsx")      
 
         await user.upload(uploadField, file)
+        await waitFor(() =>
+            expect(getByText("example.xlsx")).toBeInTheDocument()
+        );
 
-        const importCollectionButton = getByRole("button", {name: /importuj kolekcję/i})
+        expect(container).toMatchSnapshot()
+    })
 
-        await user.click(importCollectionButton)
+    
+    it("should unload file data after remove file to upload button is clicked and hide categories configuration menu", async () => {           
+        const {getByLabelText, getByText, container} = renderComponent()
+        const uploadField = getByLabelText("upload")
+        const file = createXlsxFile(fileData, "example.xlsx")
+            
+        await user.upload(uploadField, file)
+        await waitFor(() =>
+            expect(getByText("example.xlsx")).toBeInTheDocument()
+        );
+        await user.click(getByLabelText("remove-file-to-load"))
+        
+        expect(container).toMatchSnapshot()
+    })
+
+    it("should reload file data after file is loaded then removed and loaded again", async () => {
+        const {getByLabelText, getByText, container} = renderComponent()
+        const uploadField = getByLabelText("upload")
+        const file = createXlsxFile(fileData, "example.xlsx")
+
+        await user.upload(uploadField, file)
+        await waitFor(() =>
+            expect(getByText("example.xlsx")).toBeInTheDocument()
+        );
+        await user.click(getByLabelText("remove-file-to-load"))
+        await user.upload(uploadField, file)
+        await waitFor(() =>
+            expect(getByText("example.xlsx")).toBeInTheDocument()
+        );
+
+        expect(container).toMatchSnapshot()
+    })
+
+    it("should load file data of new file after some file is loaded then removed and then the new file is loaded", async () => {
+        const {getByLabelText, getByText, container} = renderComponent()
+        const uploadField = getByLabelText("upload")
+        const file = createXlsxFile(fileData, "example.xlsx")
+        const newFile = createXlsxFile(newFileData, "new_example.xlsx")
+
+        await user.upload(uploadField, file)
+        await waitFor(() =>
+            expect(getByText("example.xlsx")).toBeInTheDocument()
+        );
+        await user.click(getByLabelText("remove-file-to-load"))
+        await user.upload(uploadField, newFile)
+        await waitFor(() =>
+            expect(getByText("new_example.xlsx")).toBeInTheDocument()
+        );
+        
+        expect(container).toMatchSnapshot()
+    })
+
+    it("should load zipfile", async () => {           
+        const {getByLabelText, getByText, container} = renderComponent()
+        const uploadField = getByLabelText("upload-zip") 
+        const zipContent = new Blob(["fake zip data"], { type: "application/zip" });
+        const zipFile = new File([zipContent], "archive.zip", { type: "application/zip" });    
+
+        await user.upload(uploadField, zipFile)
+        await waitFor(() =>
+            expect(getByText("archive.zip")).toBeInTheDocument()
+        );
+
+        expect(container).toMatchSnapshot()
+    })
+
+    it("should unload zipfile after remove archive file to upload button is clicked", async () => {           
+        const {getByLabelText, getByText, container} = renderComponent()
+        const uploadField = getByLabelText("upload-zip") 
+        const zipContent = new Blob(["fake zip data"], { type: "application/zip" });
+        const zipFile = new File([zipContent], "archive.zip", { type: "application/zip" });    
+
+        await user.upload(uploadField, zipFile)
+        await waitFor(() =>
+            expect(getByText("archive.zip")).toBeInTheDocument()
+        );
+
+        await user.click(getByLabelText("remove-archive-file-to-load"))
+        
+        expect(container).toMatchSnapshot()
+    })
+
+    it("should reload archive file data after archive file is loaded then removed and loaded again", async () => {
+        const {getByLabelText, getByText, container} = renderComponent()
+        const uploadField = getByLabelText("upload-zip") 
+        const zipContent = new Blob(["fake zip data"], { type: "application/zip" });
+        const zipFile = new File([zipContent], "archive.zip", { type: "application/zip" });    
+
+        await user.upload(uploadField, zipFile)
+        await waitFor(() =>
+            expect(getByText("archive.zip")).toBeInTheDocument()
+        );
+        await user.click(getByLabelText("remove-archive-file-to-load"))
+        await user.upload(uploadField, zipFile)
+        await waitFor(() =>
+            expect(getByText("archive.zip")).toBeInTheDocument()
+        );
+
+        expect(container).toMatchSnapshot()
+    })
+
+    it("should load archive file data of new archive file after some archive file is loaded then removed and then the new archive file is loaded", async () => {
+        const {getByLabelText, getByText, container} = renderComponent()
+        const uploadField = getByLabelText("upload-zip") 
+        const zipContent = new Blob(["fake zip data"], { type: "application/zip" });
+        const zipFile = new File([zipContent], "archive.zip", { type: "application/zip" });
+        const newZipContent = new Blob(["new fake zip data"], { type: "application/zip" });
+        const newZipFile = new File([zipContent], "new_archive.zip", { type: "application/zip" });
+
+        await user.upload(uploadField, zipFile)
+        await waitFor(() =>
+            expect(getByText("archive.zip")).toBeInTheDocument()
+        );
+        await user.click(getByLabelText("remove-archive-file-to-load"))
+        await user.upload(uploadField, newZipFile)
+        await waitFor(() =>
+            expect(getByText("new_archive.zip")).toBeInTheDocument()
+        );
+        
         expect(container).toMatchSnapshot()
     })
 
     it("should have import collection button disabled if file was not loaded", async () => {           
-        const {getByRole, getByLabelText, queryByText} = renderComponent()
-        const importCollectionButton = getByRole("button", {name: /importuj kolekcję/i})
+        const {getByLabelText, queryByText} = renderComponent()
+        const importCollectionButton = getByLabelText("import-data")
         const collectionNameInputField = getByLabelText("name")
         const descriptionInputField = getByLabelText("description")
 
@@ -129,7 +263,7 @@ describe("ImportCollectionPage tests", () => {
         const file = createXlsxFile(fileData, "example.xlsx")      
         const uploadField = getByLabelText("upload")
         const descriptionInputField = getByLabelText("description")
-        const importCollectionButton = getByRole("button", {name: /importuj kolekcję/i})
+        const importCollectionButton = getByLabelText("import-data")
         
         await user.upload(uploadField, file)
         await user.type(descriptionInputField, exampleCollectionData.description)
@@ -145,7 +279,7 @@ describe("ImportCollectionPage tests", () => {
         const file = createXlsxFile(fileData, "example.xlsx")      
         const uploadField = getByLabelText("upload")
         const nameInputField = getByLabelText("name")
-        const importCollectionButton = getByRole("button", {name: /importuj kolekcję/i})
+        const importCollectionButton = getByLabelText("import-data")
 
         await user.upload(uploadField, file)
         await user.type(nameInputField, exampleCollectionData.name)
@@ -156,36 +290,112 @@ describe("ImportCollectionPage tests", () => {
         expect(queryByText(/nazwa kolekcji jest wymagana/i)).not.toBeInTheDocument()
     })
 
-    it("should call importDataAsCollection with correct arguments when import collection button is clicked", async () => {           
-        const {getByRole, getByText, queryByText, getByLabelText} = renderComponent()
-        const file = createXlsxFile(fileData, "example.xlsx")      
+    it.each([
+        {
+            loadedFileData: fileData,
+            case: "standard excel data"
+        },
+        {
+            loadedFileData: [
+                ['Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Artists', ''],
+                ['title 1', 'subtitle 1', 'subsubtitle 1', "artist 1", '']
+            ],
+            case: "last column of excel data with empty strings"
+        },
+        {
+            loadedFileData: [
+                ['Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Artists', ''],
+                ['title 1', 'subtitle 1', 'subsubtitle 1', "artist 1"],
+            ],
+            case: "header has additional empty string at the end"
+        },
+        {
+            loadedFileData: [
+                ['Title', 'Title.Subtitle', 'Title.Subtitle.Subsubtitle', 'Artists'],
+                ['title 1', 'subtitle 1', 'subsubtitle 1', "artist 1", ''],
+            ],
+            case: "row has additional empty string at the end"
+        },
+        {
+            loadedFileData: [
+                ['Title', 'Title.Subtitle', '', 'Title.Subtitle.Subsubtitle', 'Artists', '', ''],
+                ['title 1', 'subtitle 1', '', 'subsubtitle 1', "artist 1", ''],
+            ],
+            case: "empty column between non empty columns and some empty strings at the end of each row"
+        },
+    ])(`should call importDataAsCollection with correct arguments when import collection button is clicked: $case`,
+        async ({loadedFileData}) => {
+            const {getByText, getByLabelText} = renderComponent()
+            const file = createXlsxFile(loadedFileData, "example.xlsx")      
+            const uploadField = getByLabelText("upload")
+            const zipUploadField = getByLabelText("upload-zip") 
+            const zipContent = new Blob(["fake zip data"], { type: "application/zip" });
+            const zipFile = new File([zipContent], "archive.zip", { type: "application/zip" });    
+            const nameInputField = getByLabelText("name")
+            const descriptionInputField = getByLabelText("description")
+            const importCollectionButton = getByLabelText("import-data")
+
+            await user.upload(uploadField, file)
+            await waitFor(() =>
+                expect(getByText("example.xlsx")).toBeInTheDocument()
+            );
+            await user.type(nameInputField, exampleCollectionData.name)
+            await user.type(descriptionInputField, exampleCollectionData.description)
+            await user.upload(zipUploadField, zipFile)
+            await waitFor(() =>
+                expect(getByText("archive.zip")).toBeInTheDocument()
+            );
+            await user.click(importCollectionButton)
+
+            expect(mockImportDataAsCollection).toHaveBeenCalledWith(
+                fileData,
+                exampleCollectionData.name,
+                exampleCollectionData.description,
+                jwtToken,
+                zipFile
+            )	
+        }
+    )
+
+    it("should call importData with correct parameters when id and filename columns are included in spreadsheet file", async () => {           
+        const {getByLabelText, getByText, container} = renderComponent()
         const uploadField = getByLabelText("upload")
+        const file = createXlsxFile(fileDataWithIdsAndFilenames, "example.xlsx")
         const nameInputField = getByLabelText("name")
         const descriptionInputField = getByLabelText("description")
-        const importCollectionButton = getByRole("button", {name: /importuj kolekcję/i})
 
         await user.upload(uploadField, file)
+        await waitFor(() =>
+            expect(getByText("example.xlsx")).toBeInTheDocument()
+        );
         await user.type(nameInputField, exampleCollectionData.name)
         await user.type(descriptionInputField, exampleCollectionData.description)
-        await user.click(importCollectionButton)
+        
+        expect(container).toMatchSnapshot()
+
+        await user.click(getByLabelText("import-data"))
 
         expect(mockImportDataAsCollection).toHaveBeenCalledWith(
-            fileData,
+            fileDataWithIdsAndFilenames,
             exampleCollectionData.name,
             exampleCollectionData.description,
-            jwtToken
+            jwtToken,
+            undefined
         )
     })
 
     it("should change select option when another option is selected by user and call importDataAsCollection with correct arguments when import collection button is clicked", async () => {           
-        const {getByRole, getByText, queryByText, getByLabelText} = renderComponent()
+        const {getByLabelText, getByText} = renderComponent()
         const file = createXlsxFile(fileData, "example.xlsx")      
         const uploadField = getByLabelText("upload")
-        const importCollectionButton = getByRole("button", {name: /importuj kolekcję/i})
+        const importCollectionButton = getByLabelText("import-data")
         const fileDataModified = JSON.parse(JSON.stringify(fileData))
         fileDataModified[0][3] = "Title.Subtitle.Subsubtitle.Artists"
 
         await user.upload(uploadField, file)
+        await waitFor(() =>
+            expect(getByText("example.xlsx")).toBeInTheDocument()
+        );
 
         const artistsParentSelect = getByLabelText("Artists-parent-select")
         expect(artistsParentSelect).toHaveValue("-")
@@ -193,18 +403,21 @@ describe("ImportCollectionPage tests", () => {
         expect(artistsParentSelect).toHaveValue("Subsubtitle")
         await user.click(importCollectionButton)
         
-        expect(mockImportDataAsCollection).toHaveBeenCalledWith(fileDataModified, "", "", jwtToken)
+        expect(mockImportDataAsCollection).toHaveBeenCalledWith(fileDataModified, "", "", jwtToken, undefined)
     })
 
-    it("should show circular references error when options selected by users create it", async () => {           
-        const {getByRole, getByText, queryByText, getByLabelText} = renderComponent()
+    it("should show circular references error when options selected by users cause them", async () => {           
+        const {getByText, getByLabelText} = renderComponent()
         const file = createXlsxFile(fileData, "example.xlsx")      
         const uploadField = getByLabelText("upload")
-        const importCollectionButton = getByRole("button", {name: /importuj kolekcję/i})
+        const importCollectionButton = getByLabelText("import-data")
         const fileDataModified = JSON.parse(JSON.stringify(fileData))
         fileDataModified[0][3] = "Title.Subtitle.Subsubtitle.Artists"
 
         await user.upload(uploadField, file)
+        await waitFor(() =>
+            expect(getByText("example.xlsx")).toBeInTheDocument()
+        );
 
         const subsubtitleParentSelect = getByLabelText("Title-parent-select")
 
@@ -215,4 +428,37 @@ describe("ImportCollectionPage tests", () => {
         expect(importCollectionButton).toBeDisabled()
     })
 
+    it.each([
+        {axiosError: {response: {data: {error: "Incorrect request body provided"}}}},
+        {axiosError: {response: {data: {error: "Invalid data in the spreadsheet file", cause: "Error: Header has duplicate values"}}}},
+        {axiosError: {response: {data: {error: "Invalid data in the spreadsheet file", cause: "Error: Row contains more columns than the header"}}}},
+        {axiosError: {response: {data: {error: "Invalid data in the spreadsheet file", cause: "Error: Header has empty fields"}}}},
+        {axiosError: {response: {data: {error: "Invalid data in the spreadsheet file", cause: "Error: No subcategory name after the dot symbol in header field: Title"}}}},
+        {axiosError: {response: {data: {error: "Invalid data in the spreadsheet file", cause: "Error: Missing parent category: Title"}}}},
+        {axiosError: {response: {data: {error: "Invalid categories data", cause: `Brakujące kategorie nadrzędne: Title`}}}},
+        {axiosError: {response: {data: {error: "Database unavailable"}}}},
+        
+        
+    ])(`should show appropriate error message when importData rejects with error cause - $axiosError.response.data.cause`,
+        async ({axiosError}) => {
+            mockImportDataAsCollection.mockImplementation(() => {
+                throw axiosError;
+            });
+            const {getByLabelText, getByText} = renderComponent()
+            const uploadField = getByLabelText("upload")
+            const file = createXlsxFile(fileData, "example.xlsx")
+            const nameInputField = getByLabelText("name")
+            const descriptionInputField = getByLabelText("description")
+
+            await user.upload(uploadField, file)
+            await waitFor(() =>
+                expect(getByText("example.xlsx")).toBeInTheDocument()
+            );
+            await user.type(nameInputField, exampleCollectionData.name)
+            await user.type(descriptionInputField, exampleCollectionData.description)
+            await user.click(getByLabelText("import-data"))
+            
+            expect(getByLabelText("server-error")).toMatchSnapshot()	
+        }
+    )
 })

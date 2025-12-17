@@ -27,7 +27,7 @@ services:
     depends_on:
       - mongodb
     environment:
-      - MONGO_URI=mongodb://ethnopedia-mongodb:27017
+      - MONGO_URI=mongodb://appuser:DariahHub2025user@ethnopedia-mongodb:27017/ethnopedia?replicaSet=rs0
     restart: always
   mongodb:
     container_name: ethnopedia-mongodb
@@ -36,9 +36,18 @@ services:
     # image: mongodb/mongodb-community-server:latest # use this one instead on proper processor architecture
     image: bitnami/mongodb:4.4.5  # fix for Xeon processor missing AVX instruction set https://www.mongodb.com/docs/manual/tutorial/install-mongodb-community-with-docker/
     environment:
-      # MONGODB_REPLICA_SET_MODE: primary
-      MONGO_NETWORK_MESSAGE_TIMEOUT_MS: 10000
-      ALLOW_EMPTY_PASSWORD: 'yes'
+      - MONGODB_REPLICA_SET_MODE=primary
+      - MONGODB_REPLICA_SET_NAME=rs0
+      - MONGODB_REPLICA_SET_KEY=Zx7Jm2Qp9Vt6Hs4Lb1Nf8Rw5Yk3Dc0Ga5Pr2Xn8Sz4Wu7Kv1Td6Qh9Mj3Lg8Fs2R
+      # Root admin credentials (required for replica set auth)
+      - MONGODB_ROOT_PASSWORD=DariahHub2025root
+      # Application user creation (Bitnami creates in the specified database; user stored in admin)
+      - MONGODB_USERNAME=appuser
+      - MONGODB_PASSWORD=DariahHub2025user
+      - MONGODB_DATABASE=ethnopedia
+      - MONGODB_ADVERTISED_HOSTNAME=ethnopedia-mongodb
+      - ALLOW_EMPTY_PASSWORD=yes
+      - MONGO_NETWORK_MESSAGE_TIMEOUT_MS=10000
     volumes:
       - ./mongodb_data:/bitnami/mongodb
       # - mongodb_data:/data/db # for image mongodb/mongodb-community-server:latest

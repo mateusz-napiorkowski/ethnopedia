@@ -1,13 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { getArtworksForPage, deleteArtworks } from "../../api/artworks";
-import { getCollection } from "../../api/collections";
 import LoadingPage from "../LoadingPage";
 import { useEffect, useState } from "react";
 import Navbar from "../../components/navbar/Navbar";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import SearchComponent from "../../components/search/SearchComponent";
-import ExportOptions from "../../components/ExportOptions";
-import { ReactComponent as FileExportIcon } from "../../assets/icons/fileExport.svg";
+// import ExportOptions from "../../components/ExportOptions";
 import WarningPopup from "../WarningPopup";
 import SortOptions from "../../components/SortOptions";
 import Navigation from "../../components/Navigation";
@@ -26,7 +24,7 @@ type Option = {
 
 const GlobalSearchPage = ({ pageSize = 10 }) => {
     const [selectedArtworks, setSelectedArtworks] = useState<{ [key: string]: boolean }>({});
-    const [showExportOptions, setShowExportOptions] = useState<boolean>(false);
+    // const [showExportOptions, setShowExportOptions] = useState<boolean>(false);
     const [showDeleteRecordsWarning, setShowDeleteRecordsWarning] = useState(false);
     const [sortCategory, setSortCategory] = useState<string>("");
     const [sortDirection, setSortDirection] = useState<string>("asc");
@@ -35,8 +33,7 @@ const GlobalSearchPage = ({ pageSize = 10 }) => {
     const location = useLocation();
     const [currentPage, setCurrentPage] = useState(1);
     const queryClient = useQueryClient();
-    const navigate = useNavigate();
-    const [allCollectionIds, setAllCollectionIds] = useState<string[]>([]);
+    // const [allCollectionIds, setAllCollectionIds] = useState<string[]>([]);
 
     const hasSearchParams = new URLSearchParams(location.search).toString().length > 0;
 
@@ -67,10 +64,10 @@ const GlobalSearchPage = ({ pageSize = 10 }) => {
     useEffect(() => {
         const fetchCollections = async () => {
             try {
-                const data = await getAllCollections(1, 1000, "asc");
+                const data = await getAllCollections(1, 1000, "asc", jwtToken);
                 console.log("Pobrane kolekcje:", data);
                 const ids = data.collections.map((col: any) => col.id);
-                setAllCollectionIds(ids);
+                // setAllCollectionIds(ids);
                 const valid = data.collections.filter(
                     (c): c is Collection & { id: string } => typeof c.id === 'string'
                 );
@@ -83,6 +80,7 @@ const GlobalSearchPage = ({ pageSize = 10 }) => {
             }
         };
         fetchCollections();
+        // eslint-disable-next-line
     }, []);
 
     const {
@@ -106,7 +104,8 @@ const GlobalSearchPage = ({ pageSize = 10 }) => {
                 sortCategory || "createdAt", // domyślna kategoria sortowania
                 sortDirection || "asc",      // domyślny kierunek
                 new URLSearchParams(location.search).get("searchText"),
-                Object.fromEntries(new URLSearchParams(location.search).entries())
+                Object.fromEntries(new URLSearchParams(location.search).entries()),
+                jwtToken
             ),
         enabled: selectedCollectionIds.length > 0,
         keepPreviousData: false,
@@ -114,7 +113,7 @@ const GlobalSearchPage = ({ pageSize = 10 }) => {
 
     const { data: categoriesData } = useQuery({
         queryKey: ["selectedCategories", selectedCollectionIds],
-        queryFn: () => getAllCategories(selectedCollectionIds),
+        queryFn: () => getAllCategories(selectedCollectionIds, jwtToken),
         enabled: selectedCollectionIds.length > 0,
     });
 
@@ -294,7 +293,7 @@ const GlobalSearchPage = ({ pageSize = 10 }) => {
 
                                 <div className="flex w-full md:w-auto">
                                     <div className="flex flex-1 space-x-2">
-                                        <button
+                                        {/* <button
                                             className="flex items-center justify-center dark:text-white hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium px-4 py-2 dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
                                             type="button"
                                             onClick={async () => {
@@ -305,7 +304,7 @@ const GlobalSearchPage = ({ pageSize = 10 }) => {
                                                 <FileExportIcon/>
                                             </span>
                                             Eksportuj plik
-                                        </button>
+                                        </button> */}
 
                                         <button
                                             className="flex items-center justify-center dark:text-white hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2 dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
@@ -340,14 +339,14 @@ const GlobalSearchPage = ({ pageSize = 10 }) => {
                                     </div>
                                 </div>
 
-                                {showExportOptions && (
+                                {/* {showExportOptions && (
                                     <ExportOptions
                                         onClose={() => setShowExportOptions(false)}
                                         selectedArtworks={selectedArtworks}
                                         collectionIds={selectedCollectionIds}
                                         initialFilename={`Export.xlsx`}
                                     />
-                                )}
+                                )} */}
 
                                 {categoryOptions.length > 0 && (
                                     <div className="flex w-full md:w-auto pt-4 flex-row items-center text-sm">

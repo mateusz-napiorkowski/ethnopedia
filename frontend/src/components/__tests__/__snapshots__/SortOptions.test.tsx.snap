@@ -3,21 +3,24 @@
 exports[`Sort options tests should change selected category when option from dropdown menu when clicked, should call selectCurrentPage(1) 1`] = `
 <div>
   <div
-    class="flex items-center space-x-1"
+    class="flex items-center space-x-2"
   >
     <div
       class="relative"
     >
       <div
         aria-label="sortby-category-dropdown"
-        class="cursor-pointer py-2 px-4 border bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-sm rounded-lg flex items-center justify-between"
-        style="min-width: 40px;"
+        class="cursor-pointer py-2 px-4 border bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-sm rounded-lg flex items-center justify-between overflow-hidden"
+        style="width: 60px;"
       >
-        <span>
+        <span
+          class="truncate"
+          title="Data nagrania"
+        >
           Data nagrania
         </span>
         <svg
-          class="h-4 w-4 ml-2 transition-transform duration-200 "
+          class="h-4 w-4 ml-2 flex-shrink-0 transition-transform duration-200 "
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -32,9 +35,9 @@ exports[`Sort options tests should change selected category when option from dro
       </div>
     </div>
     <button
-      aria-label="Zmień kierunek sortowania"
-      class="p-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-      title="Sortuj rosnąco"
+      aria-label="toggle-sort-direction"
+      class="p-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-center"
+      title="Sortowanie rosnące (A → Z)"
     >
       <svg
         class="h-5 w-5 text-gray-700 dark:text-gray-200 transition-transform duration-200 rotate-180"
@@ -57,21 +60,24 @@ exports[`Sort options tests should change selected category when option from dro
 exports[`Sort options tests should open dropdown menu when it is clicked 1`] = `
 <div>
   <div
-    class="flex items-center space-x-1"
+    class="flex items-center space-x-2"
   >
     <div
       class="relative"
     >
       <div
         aria-label="sortby-category-dropdown"
-        class="cursor-pointer py-2 px-4 border bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-sm rounded-lg flex items-center justify-between"
-        style="min-width: 40px;"
+        class="cursor-pointer py-2 px-4 border bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-sm rounded-lg flex items-center justify-between overflow-hidden"
+        style="width: 60px;"
       >
-        <span>
+        <span
+          class="truncate"
+          title="Tytuł"
+        >
           Tytuł
         </span>
         <svg
-          class="h-4 w-4 ml-2 transition-transform duration-200 rotate-180"
+          class="h-4 w-4 ml-2 flex-shrink-0 transition-transform duration-200 rotate-180"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -86,32 +92,35 @@ exports[`Sort options tests should open dropdown menu when it is clicked 1`] = `
       </div>
       <div
         class="absolute top-full mt-1 z-10 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-md max-h-52 overflow-y-auto"
-        style="min-width: 40px;"
+        style="min-width: 200px; width: 100px; left: 0px; white-space: normal;"
       >
         <div
           aria-label="Tytuł"
-          class="cursor-pointer py-2 px-4 hover:bg-gray-200 dark:hover:bg-gray-700"
+          class="cursor-pointer py-2 px-4 hover:bg-gray-200 dark:hover:bg-gray-700 truncate"
+          title="Tytuł"
         >
           Tytuł
         </div>
         <div
           aria-label="Tytuł.Podtytuł"
-          class="cursor-pointer py-2 px-4 hover:bg-gray-200 dark:hover:bg-gray-700"
+          class="cursor-pointer py-2 px-4 hover:bg-gray-200 dark:hover:bg-gray-700 truncate"
+          title="Tytuł.Podtytuł"
         >
           Tytuł.Podtytuł
         </div>
         <div
           aria-label="Data nagrania"
-          class="cursor-pointer py-2 px-4 hover:bg-gray-200 dark:hover:bg-gray-700"
+          class="cursor-pointer py-2 px-4 hover:bg-gray-200 dark:hover:bg-gray-700 truncate"
+          title="Data nagrania"
         >
           Data nagrania
         </div>
       </div>
     </div>
     <button
-      aria-label="Zmień kierunek sortowania"
-      class="p-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-      title="Sortuj rosnąco"
+      aria-label="toggle-sort-direction"
+      class="p-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-center"
+      title="Sortowanie rosnące (A → Z)"
     >
       <svg
         class="h-5 w-5 text-gray-700 dark:text-gray-200 transition-transform duration-200 rotate-180"
@@ -140,6 +149,7 @@ exports[`Sort options tests should render initial state 1`] = `
       class="relative"
     >
       <div
+        aria-label="sortby-category-dropdown"
         class="cursor-pointer py-2 px-4 border bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-sm rounded-lg flex items-center justify-between overflow-hidden"
         style="width: 60px;"
       >
@@ -165,6 +175,7 @@ exports[`Sort options tests should render initial state 1`] = `
       </div>
     </div>
     <button
+      aria-label="toggle-sort-direction"
       class="p-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-center"
       title="Sortowanie rosnące (A → Z)"
     >
@@ -189,21 +200,24 @@ exports[`Sort options tests should render initial state 1`] = `
 exports[`Sort options tests should rotate sorting direction button after sorting direction button is clicked and change its title to 'Sortuj malejąco', should call selectCurrentPage(1) 1`] = `
 <div>
   <div
-    class="flex items-center space-x-1"
+    class="flex items-center space-x-2"
   >
     <div
       class="relative"
     >
       <div
         aria-label="sortby-category-dropdown"
-        class="cursor-pointer py-2 px-4 border bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-sm rounded-lg flex items-center justify-between"
-        style="min-width: 40px;"
+        class="cursor-pointer py-2 px-4 border bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-sm rounded-lg flex items-center justify-between overflow-hidden"
+        style="width: 60px;"
       >
-        <span>
+        <span
+          class="truncate"
+          title="Tytuł"
+        >
           Tytuł
         </span>
         <svg
-          class="h-4 w-4 ml-2 transition-transform duration-200 "
+          class="h-4 w-4 ml-2 flex-shrink-0 transition-transform duration-200 "
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -218,9 +232,9 @@ exports[`Sort options tests should rotate sorting direction button after sorting
       </div>
     </div>
     <button
-      aria-label="Zmień kierunek sortowania"
-      class="p-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-      title="Sortuj rosnąco"
+      aria-label="toggle-sort-direction"
+      class="p-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-center"
+      title="Sortowanie rosnące (A → Z)"
     >
       <svg
         class="h-5 w-5 text-gray-700 dark:text-gray-200 transition-transform duration-200 rotate-180"
@@ -243,21 +257,24 @@ exports[`Sort options tests should rotate sorting direction button after sorting
 exports[`Sort options tests should rotate sorting direction button after sorting direction button is clicked and change its title to 'Sortuj rosnąco', should call selectCurrentPage(1) 1`] = `
 <div>
   <div
-    class="flex items-center space-x-1"
+    class="flex items-center space-x-2"
   >
     <div
       class="relative"
     >
       <div
         aria-label="sortby-category-dropdown"
-        class="cursor-pointer py-2 px-4 border bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-sm rounded-lg flex items-center justify-between"
-        style="min-width: 40px;"
+        class="cursor-pointer py-2 px-4 border bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-sm rounded-lg flex items-center justify-between overflow-hidden"
+        style="width: 60px;"
       >
-        <span>
+        <span
+          class="truncate"
+          title="Tytuł"
+        >
           Tytuł
         </span>
         <svg
-          class="h-4 w-4 ml-2 transition-transform duration-200 "
+          class="h-4 w-4 ml-2 flex-shrink-0 transition-transform duration-200 "
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -272,9 +289,9 @@ exports[`Sort options tests should rotate sorting direction button after sorting
       </div>
     </div>
     <button
-      aria-label="Zmień kierunek sortowania"
-      class="p-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-      title="Sortuj malejąco"
+      aria-label="toggle-sort-direction"
+      class="p-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-center"
+      title="Sortowanie malejące (Z → A)"
     >
       <svg
         class="h-5 w-5 text-gray-700 dark:text-gray-200 transition-transform duration-200 "

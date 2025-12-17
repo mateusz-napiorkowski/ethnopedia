@@ -43,11 +43,13 @@ export const importData = authAsyncWrapper(async (req: Request, res: Response) =
     }
 })
  
-export const importDataAsCollection = authAsyncWrapper(async (req: Request, res: Response) => {
+export const importDataAsCollection = authAsyncWrapper(async (req: Request, res: Response, user: any) => {
     try {
-        let importData;        
+        let importData;
+        let isCollectionPrivate;
         try {
             importData = JSON.parse(req.body.importData);
+            isCollectionPrivate = JSON.parse(req.body.isCollectionPrivate)
         } catch {
             throw new Error(`Incorrect request body provided`);
         }
@@ -69,7 +71,8 @@ export const importDataAsCollection = authAsyncWrapper(async (req: Request, res:
                 )
             const categories = transformCategoriesArrayToCategoriesObject(categoriesArray)
             const newCollection = await CollectionCollection.create([
-                {name: collectionName, description: description, categories: categories}
+                {name: collectionName, description: description, categories: categories,
+                    isPrivate: isCollectionPrivate ? isCollectionPrivate : false, owner: user.userId}
             ], {session})
 
             const {
@@ -88,7 +91,7 @@ export const importDataAsCollection = authAsyncWrapper(async (req: Request, res:
         if (err.message === `Incorrect request body provided` || err.message === `Invalid file extension`)
             res.status(400).json({ error: err.message })
         else if (err.message === "Invalid data in the spreadsheet file" || err.message === "Invalid categories data"){
-            res.status(400).json({ error: err.message, cause: err.cause })}
+            res.status(400).json({ error: err.message, cause: err.cause?.toString() })}
         else
             res.status(503).json({ error: `Database unavailable` })
     }

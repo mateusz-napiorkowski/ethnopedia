@@ -177,8 +177,8 @@ const FormField: React.FC<FormFieldProps> = ({
                 {label}
             </label>
 
-
             <input
+                aria-label={`${label}-input`}
                 ref={inputRef}
                 id={id}
                 type="text"
