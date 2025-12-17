@@ -73,8 +73,8 @@ export const getArtworksForPage = async (req: Request, res: Response) => {
         let queryFilter;
         if(!search)
             queryFilter = { collectionName: {$in: collectionNames} }
-        else if(searchText)
-            queryFilter = await constructQuickSearchFilter(searchText, collectionIds, collectionNames)
+        else if(searchText) 
+            queryFilter = await constructQuickSearchFilter(searchText, collectionIds, collectionNames, req.headers.authorization)
         else
             queryFilter = await constructAdvSearchFilter(req.query, collectionNames)
 

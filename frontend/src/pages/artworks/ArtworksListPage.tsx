@@ -54,8 +54,20 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
         return searchCategory(artwork.categories, parts);
     };
 
+    const { data: collectionData } = useQuery({
+        queryKey: [collectionId, jwtToken],
+        enabled: !!collectionId,
+        queryFn: () => getCollection(collectionId as string, jwtToken),
+    });
+
+    const { data: categoriesData } = useQuery({
+        queryKey: ["allCategories", collectionId, jwtToken],
+        queryFn: () => getAllCategories([collectionId as string], jwtToken),
+        enabled: !!collectionId,
+    });
+
     const { data: artworkData, isLoading: isLoadingArtworks, isFetching: isFetchingArtworks } = useQuery({
-        queryKey: ["artwork", [collectionId], currentPage, location.search, sortCategory, sortDirection],
+        queryKey: ["artwork", [collectionId], currentPage, location.search, sortCategory, sortDirection, jwtToken],
         queryFn: () =>
             getArtworksForPage(
                 [collectionId as string],
@@ -69,18 +81,6 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
             ),
         enabled: !!collectionId,
         keepPreviousData: false,
-    });
-
-    const { data: collectionData } = useQuery({
-        queryKey: [collectionId],
-        enabled: !!collectionId,
-        queryFn: () => getCollection(collectionId as string, jwtToken),
-    });
-
-    const { data: categoriesData } = useQuery({
-        queryKey: ["allCategories", collectionId],
-        queryFn: () => getAllCategories([collectionId as string], jwtToken),
-        enabled: !!collectionId,
     });
 
     const { data: collectionOwnerData } = useQuery({
