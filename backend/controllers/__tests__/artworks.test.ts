@@ -5,7 +5,7 @@ import request from "supertest";
 import ArtworksRouter from "../../routes/artwork";
 import { constructAdvSearchFilter, constructQuickSearchFilter } from "../../utils/artworks";
 import Artwork from "../../models/artwork";
-import { jwtToken, collectionId, artworkId, startSessionDefaultReturnValue, getArtworkFindByIdReturnValue, getArtworksForPageFindReturnValue, getArtworksForPageRecords, oneCollectionData, getArtworksBySearchTextMatchedInTopmostCategoryArtworkFindReturnValue, createArtworkHappyPathHandleFileUploadsReturnValue, artworksForDeletion, createArtworkHappyPathArtworkFiles, artworkFindHappyPath, artworkFindOneHappyPath, foundArtwork, foundArtworkWithDifferentCollectionName, foundArtworkWithSaveError, handleFileDeleteNoFilesReturnValue, handleFileUploadsNoFilesReturnValue, fileToDelete, handleFileDeleteReturnValue, handleFileUploadsReturnValue, editArtworkHappyPathArtworkFiles, makeFoundArtwork, artworkConstructorMockImplementation, artworkConstructorMockImplementationWithSaveError } from "./utils/consts";
+import { jwtToken, collectionId, artworkId, startSessionDefaultReturnValue, getArtworkFindByIdReturnValue, getArtworksForPageFindReturnValue, getArtworksForPageRecords, oneCollectionData, getArtworksBySearchTextMatchedInTopmostCategoryArtworkFindReturnValue, createArtworkHappyPathHandleFileUploadsReturnValue, artworksForDeletion, createArtworkHappyPathArtworkFiles, artworkFindHappyPath, foundArtwork, foundArtworkWithDifferentCollectionName, foundArtworkWithSaveError, handleFileDeleteNoFilesReturnValue, handleFileUploadsNoFilesReturnValue, fileToDelete, handleFileDeleteReturnValue, handleFileUploadsReturnValue, editArtworkHappyPathArtworkFiles, makeFoundArtwork, artworkConstructorMockImplementation, artworkConstructorMockImplementationWithSaveError } from "./utils/consts";
 import path from "path";
 
 const app = express()
@@ -150,6 +150,66 @@ describe('artworks controller', () => {
 
                 const res = await request(app)
                     .get(`/${artworkId}`)
+                    .set('Accept', 'application/json')
+
+                expect(res.status).toBe(statusCode)
+                expect(res.body.error).toBe(error)
+            }
+        )
+
+        test("getArtworkOmram should respond with status 200 and correct body", async () => {
+            mockIsValidObjectId.mockReturnValue(true)
+            mockFindById.mockReturnValue(getArtworkFindByIdReturnValue)
+            mockCollectionFindById.mockReturnValue({exec: () => (oneCollectionData)})
+
+            const res = await request(app)
+                .get(`/omram/${artworkId}`)
+                .set('Accept', 'application/json')
+
+            expect(res.status).toBe(200)
+            expect(res.body).toMatchSnapshot()
+        })
+
+        test.each([
+            {
+                isValidObjectId: false, findById: undefined, artworkId: artworkId,
+                collectionFindById: {exec: () => (oneCollectionData)},
+                statusCode: 400, error: 'Invalid artwork id'
+            },
+            {
+                isValidObjectId: true,
+                findById: {exec: () => Promise.resolve(null)},
+                artworkId: artworkId,
+                collectionFindById: {exec: () => (oneCollectionData)},
+                statusCode: 404,
+                error: "Artwork not found"
+            },
+            {
+                isValidObjectId: true,
+                findById: {exec: () => Promise.resolve(artworkFindHappyPath)},
+                artworkId: artworkId,
+                collectionFindById: {exec: () => Promise.resolve(null)},
+                statusCode: 404,
+                error: "Collection not found"
+            },
+            {
+                isValidObjectId: true, findById: {exec: () => {throw Error()}}, artworkId: artworkId,
+                collectionFindById: {exec: () => (oneCollectionData)},
+                statusCode: 503, error: "Database unavailable"
+            },
+            {
+                isValidObjectId: true, findById: {exec: () => Promise.resolve(artworkFindHappyPath)}, artworkId: artworkId,
+                collectionFindById: {exec: () => {throw Error()}},
+                statusCode: 503, error: "Database unavailable"
+            },
+        ])(`getArtworkOmram should respond with status $statusCode and correct error message`,
+            async ({isValidObjectId, findById, artworkId, collectionFindById, statusCode, error}) => {
+                mockIsValidObjectId.mockReturnValue(isValidObjectId)
+                mockFindById.mockReturnValue(findById)
+                mockCollectionFindById.mockReturnValue(collectionFindById)
+
+                const res = await request(app)
+                    .get(`/omram/${artworkId}`)
                     .set('Accept', 'application/json')
 
                 expect(res.status).toBe(statusCode)
@@ -757,9 +817,8 @@ describe('artworks controller', () => {
             },
             {
                 payload: {
-                    collectionId: collectionId,
                     categories: '[{"name": "Title", "value": "Title", "subcategories": []}]',
-                    filesToDelete: "[]"
+                    collectionId: collectionId
                 },
                 filesToUpload: [
                     "FileForUpload2.mid", "FileForUpload3.mid", "FileForUpload4.mid",
@@ -790,9 +849,8 @@ describe('artworks controller', () => {
             },
             {
                 payload: {
-                    collectionId: collectionId,
                     categories: '[{"name": "Title", "value": "Title", "subcategories": []}]',
-                    filesToDelete: "[]"
+                    collectionId: collectionId
                 },
                 filesToUpload: [],
                 startSession: () => startSessionDefaultReturnValue,
@@ -805,9 +863,8 @@ describe('artworks controller', () => {
             },
             {
                 payload: {
-                    collectionId: collectionId,
                     categories: '[{"name": "Title", "value": "Title", "subcategories": []}]',
-                    filesToDelete: "[]"
+                    collectionId: collectionId
                 },
                 filesToUpload: [],
                 startSession: () => startSessionDefaultReturnValue,
@@ -820,9 +877,8 @@ describe('artworks controller', () => {
             },
             {
                 payload: {
-                    collectionId: collectionId,
                     categories: '[{"name": "Title", "value": "Title", "subcategories": []}]',
-                    filesToDelete: "[]"
+                    collectionId: collectionId
                 },
                 filesToUpload: [],
                 startSession: () => startSessionDefaultReturnValue,
@@ -835,9 +891,8 @@ describe('artworks controller', () => {
             },
             {
                 payload: {
-                    collectionId: collectionId,
                     categories: '[{"name": "Title", "value": "Title", "subcategories": []}]',
-                    filesToDelete: "[]"
+                    collectionId: collectionId
                 },
                 filesToUpload: [],
                 startSession: () => startSessionDefaultReturnValue,
