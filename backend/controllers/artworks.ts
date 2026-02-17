@@ -14,17 +14,22 @@ interface MulterRequest extends Request {
     files: any;
 }
 
+const getArtworkWithCollection = async (artworkId: string) => {
+    if (!mongoose.isValidObjectId(artworkId))
+        throw new Error('Invalid artwork id')
+    const artwork = await Artwork.findById(artworkId).exec()
+    if (!artwork)
+        throw new Error('Artwork not found')
+    const collection = await CollectionCollection.findById(artwork.collectionId).exec()
+    if (!collection)
+        throw new Error('Collection not found')
+    return { artwork, collection }
+}
+
 export const getArtwork = async (req: Request, res: Response) => {
     try {
         const artworkId = req.params.artworkId
-        if (!mongoose.isValidObjectId(artworkId))
-            throw new Error('Invalid artwork id')
-        const artwork = await Artwork.findById(artworkId).exec()
-        if (!artwork)
-            throw new Error('Artwork not found')
-        const collection = await CollectionCollection.findById(artwork.collectionId).exec()
-        if (!collection)
-            throw new Error(`Collection not found`)
+        const { artwork, collection } = await getArtworkWithCollection(artworkId)
         if(collection.isPrivate) {
             verifyToken(req.headers.authorization)
         }
@@ -36,6 +41,23 @@ export const getArtwork = async (req: Request, res: Response) => {
             res.status(400).json({ error: err.message })
         else if(err.message === "No token provided" || err.message === 'Access denied')
             res.status(401).json({ error: err.message })
+        else if(err.message === 'Artwork not found' || err.message === 'Collection not found')
+            res.status(404).json({ error: err.message })
+        else
+            res.status(503).json({ error: 'Database unavailable' })
+    }
+}
+
+export const getArtworkOmram = async (req: Request, res: Response) => {
+    try {
+        const artworkId = req.params.artworkId
+        const { artwork } = await getArtworkWithCollection(artworkId)
+        res.status(200).json({ artwork })
+    } catch (error) {
+        const err = error as Error
+        console.error(error)
+        if (err.message === 'Invalid artwork id')
+            res.status(400).json({ error: err.message })
         else if(err.message === 'Artwork not found' || err.message === 'Collection not found')
             res.status(404).json({ error: err.message })
         else
