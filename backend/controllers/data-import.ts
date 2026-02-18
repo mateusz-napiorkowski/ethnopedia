@@ -17,7 +17,7 @@ export const importData = authAsyncWrapper(async (req: Request, res: Response) =
             if (foundCollections.length !== 1 )
                 throw new Error(`Collection not found`)
             const collectionName = foundCollections[0].name!
-            const {records} = await prepRecordsAndFiles(req.body.importData, collectionName, false, collectionId, undefined)
+            const {records} = await prepRecordsAndFiles(req.body.importData, collectionName, false, collectionId, undefined, req.headers.authorization)
             const bulkWriteOps = records.map(record => ({
                 updateOne: {
                     filter: { _id: record._id, },

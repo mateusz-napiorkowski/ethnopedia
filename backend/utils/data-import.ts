@@ -5,10 +5,10 @@ import fs from "fs";
 import unzipper from "unzipper"
 import { getAllCategories } from "./categories";
 
-export const validateExcelData = async (header: string[], dataRows: string[][], asNewCollection: boolean, collectionId: string) => {
+export const validateExcelData = async (header: string[], dataRows: string[][], asNewCollection: boolean, collectionId: string, authHeader?: string | undefined) => {
     if(!asNewCollection) {
         const headerCategories = header.filter(categoryName => categoryName.trim() !== "_id" && categoryName.trim() !== "nazwy plików")
-        const collectionCategories = await getAllCategories([collectionId])
+        const collectionCategories = await getAllCategories([collectionId], authHeader)
         const missingCategories = collectionCategories.filter((category: string) => !headerCategories.includes(category))
         const unnecessaryCategories = headerCategories.filter((category: string) => !collectionCategories.includes(category))
         if(missingCategories.length != 0 || unnecessaryCategories.length != 0) 
@@ -133,14 +133,15 @@ export const setRecordCategories = (row: string[], newRecord: any, header: strin
 
 export const prepRecordsAndFiles = async (
     data: Array<Array<string>>, collectionName: string,
-    asNewCollection: boolean, collectionId: string, zipFile?: Express.Multer.File | undefined
+    asNewCollection: boolean, collectionId: string, zipFile?: Express.Multer.File | undefined,
+    authHeader?: string | undefined
 ) => {
     try {
         const header = data[0]
             .map(categoryName => categoryName.trim().replace(/\s*\.\s*/g, '.'))
         const recordsData = data.slice(1)
 
-        await validateExcelData(header, recordsData, asNewCollection, collectionId)
+        await validateExcelData(header, recordsData, asNewCollection, collectionId, authHeader)
 
         const {collectionUploadsDir, archiveBuffer} = await prepUploadsDirAndArchiveBuffer(zipFile, collectionId)
 
