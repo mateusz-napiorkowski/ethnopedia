@@ -1,0 +1,83 @@
+name: Deploy to CKC
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Branch, tag, or SHA to deploy
+        required: false
+        default: main
+      remote_path:
+        description: Existing Ethnopedia path on CKC
+        required: false
+        default: /home/wkasperski/ethnopedia
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout selected ref
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Prepare SSH key
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s\n' "${{ secrets.CKC_SSH_PRIVATE_KEY }}" > ~/.ssh/ckc_deploy_key
+          chmod 600 ~/.ssh/ckc_deploy_key
+          ssh-keyscan -p "${{ secrets.CKC_SSH_PORT || '6624' }}" "${{ secrets.CKC_SSH_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Pack source tree
+        run: |
+          tar \
+            --exclude='.git' \
+            --exclude='node_modules' \
+            --exclude='backend/node_modules' \
+            --exclude='frontend/node_modules' \
+            --exclude='mongodb_data' \
+            --exclude='backups' \
+            -czf /tmp/ethnopedia-${{ github.run_id }}.tar.gz .
+
+      - name: Upload release archive
+        run: |
+          scp -P "${{ secrets.CKC_SSH_PORT || '6624' }}" \
+            -i ~/.ssh/ckc_deploy_key \
+            /tmp/ethnopedia-${{ github.run_id }}.tar.gz \
+            "${{ secrets.CKC_SSH_USER }}@${{ secrets.CKC_SSH_HOST }}:/tmp/ethnopedia-${{ github.run_id }}.tar.gz"
+
+      - name: Deploy without deleting CKC-local overrides
+        run: |
+          ssh -p "${{ secrets.CKC_SSH_PORT || '6624' }}" \
+            -i ~/.ssh/ckc_deploy_key \
+            "${{ secrets.CKC_SSH_USER }}@${{ secrets.CKC_SSH_HOST }}" \
+            'RUN_ID="${{ github.run_id }}" REMOTE_PATH="${{ inputs.remote_path }}" bash -s' <<'REMOTE'
+          set -euo pipefail
+
+          RELEASE_DIR="$HOME/ethnopedia-releases/$RUN_ID"
+          mkdir -p "$RELEASE_DIR"
+          tar -xzf "/tmp/ethnopedia-$RUN_ID.tar.gz" -C "$RELEASE_DIR"
+
+          cd "$REMOTE_PATH"
+          mkdir -p "$HOME/ethnopedia-deploy-backups"
+          git status --short > "$HOME/ethnopedia-deploy-backups/status-before-$RUN_ID.txt" || true
+          git diff -- docker-compose.yml frontend/package.json mongodb_scripts/backup.sh > "$HOME/ethnopedia-deploy-backups/local-overrides-$RUN_ID.patch" || true
+
+          rsync -a \
+            --exclude='.git' \
+            --exclude='node_modules' \
+            --exclude='backend/node_modules' \
+            --exclude='frontend/node_modules' \
+            --exclude='mongodb_data' \
+            --exclude='backups' \
+            --exclude='docker-compose.yml' \
+            --exclude='frontend/package.json' \
+            --exclude='frontend/package-lock.json' \
+            --exclude='mongodb_scripts/backup.sh' \
+            "$RELEASE_DIR/" "$REMOTE_PATH/"
+
+          docker compose build backend frontend
+          docker compose up -d backend frontend
+          docker compose ps
+          REMOTE

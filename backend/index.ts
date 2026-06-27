@@ -13,6 +13,7 @@ import collections from "./routes/collection";
 import categories from "./routes/category";
 import dataExport from "./routes/dataExport";
 import health from "./routes/health";
+import pbi from "./routes/pbi";
 
 app.use(cors())
 app.use(express.urlencoded({ extended: true })); 
@@ -30,6 +31,7 @@ app.use("/api/v1/collection", collections)
 app.use("/api/v1/categories", categories)
 app.use("/api/v1/dataExport", dataExport)
 app.use("/api/v1/dataImport", dataImport)
+app.use("/api/v1/pbi", pbi)
 
 const port = process.env.PORT || 5000
 
