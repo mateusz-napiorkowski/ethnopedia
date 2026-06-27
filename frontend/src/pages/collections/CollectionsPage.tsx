@@ -279,6 +279,16 @@ const CollectionsPage = () => {
                                                 }
                                                 
                                             </div>
+                                            <button
+                                                type="button"
+                                                className="mt-3 px-3 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded text-sm"
+                                                onClick={(event) => {
+                                                    event.stopPropagation();
+                                                    navigate(`/collections/${collection.id}/pbi-mapper`);
+                                                }}
+                                            >
+                                                Wyślij do PBI
+                                            </button>
                                         </div>
                                     </div>
                                 );
