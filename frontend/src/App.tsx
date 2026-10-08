@@ -16,6 +16,7 @@ import ExportDataPage from "./pages/artworks/ExportDataPage"
 import ImportToExistingCollectionPage from "./pages/artworks/ImportToExistingCollectionPage"
 import GlobalSearchPage from "./pages/artworks/GlobalSearchPage";
 import HelpPage from "./pages/help/HelpPage"
+import PbiMapperPage from "./pages/pbi/PbiMapperPage"
 
 const queryClient = new QueryClient()
 
@@ -36,6 +37,7 @@ const App = () => {
                         <Route path="/import-collection" element={<ImportCollectionPage />} />
                         <Route path="/collections/:collection/export-data" element={<ExportDataPage />} />
                         <Route path="/collections/:collection/import-data" element={<ImportToExistingCollectionPage />} />
+                        <Route path="/collections/:collectionId/pbi-mapper" element={<PbiMapperPage />} />
                         <Route path="/global-search" element={<GlobalSearchPage />} />
 
                         <Route path="/" element={<Home />} />
