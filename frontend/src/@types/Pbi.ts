@@ -1,3 +1,4 @@
+export type PbiEnvironment = "dev" | "prod"
 export type PbiAccessMode = "PRIVATE" | "PUBLIC"
 export type PbiValueMode = "literal" | "array" | "uri"
 export type PbiEnrichmentMode = "none" | "files"
@@ -50,6 +51,7 @@ export interface PbiSyncItem {
 
 export interface PbiSyncResponse {
     collectionId: string
+    environment: PbiEnvironment
     total: number
     synced: number
     skipped: number
@@ -58,6 +60,7 @@ export interface PbiSyncResponse {
 }
 
 export interface PbiStatus {
+    environment: PbiEnvironment
     pbiApiBaseUrl: string
     keycloakIssuer: string
     pbiReachable: boolean
