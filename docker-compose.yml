@@ -6,7 +6,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        - REACT_APP_API_URL=https://music-put.lab.dariah.pl/ethnopedia-api/
+        - REACT_APP_API_URL=https://ethnopedia-api.ckc.uw.edu.pl/api/
     ports:
       - "4050:80"
     volumes:
@@ -55,3 +55,4 @@ services:
 
 volumes:
   mongodb_data:
+
