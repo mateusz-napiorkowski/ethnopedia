@@ -1,26 +1,31 @@
 import axios from "axios"
 import { API_URL } from "../config"
-import { PbiMapperConfig, PbiSyncOptions } from "../@types/Pbi"
+import { PbiEnvironment, PbiMapperConfig, PbiSyncOptions } from "../@types/Pbi"
 
-const pbiHeaders = (jwtToken?: string, pbiAccessToken?: string) => ({
+const pbiHeaders = (environment: PbiEnvironment, jwtToken?: string, pbiAccessToken?: string) => ({
+    "X-PBI-Environment": environment,
     ...(jwtToken ? { Authorization: `Bearer ${jwtToken}` } : {}),
     ...(pbiAccessToken ? { "X-PBI-Access-Token": pbiAccessToken } : {})
 })
 
-export const getPbiStatus = async (jwtToken?: string, pbiAccessToken?: string) => {
+export const getPbiStatus = async (environment: PbiEnvironment, jwtToken?: string, pbiAccessToken?: string) => {
     return axios
-        .get(`${API_URL}v1/pbi/status`, { headers: pbiHeaders(jwtToken, pbiAccessToken) })
+        .get(`${API_URL}v1/pbi/status`, {
+            params: { environment },
+            headers: pbiHeaders(environment, jwtToken, pbiAccessToken)
+        })
         .then(res => res.data)
 }
 
 export const getPbiCollectionPreview = async (collectionId: string, jwtToken?: string) => {
     return axios
-        .get(`${API_URL}v1/pbi/collections/${collectionId}/preview`, { headers: pbiHeaders(jwtToken) })
+        .get(`${API_URL}v1/pbi/collections/${collectionId}/preview`, { headers: jwtToken ? { Authorization: `Bearer ${jwtToken}` } : {} })
         .then(res => res.data)
 }
 
 export const previewPbiSync = async (
     collectionId: string,
+    environment: PbiEnvironment,
     mapperConfig: PbiMapperConfig,
     jwtToken?: string,
     limit: number = 3
@@ -28,14 +33,15 @@ export const previewPbiSync = async (
     return axios
         .post(
             `${API_URL}v1/pbi/collections/${collectionId}/sync/preview`,
-            { mapperConfig, limit },
-            { headers: pbiHeaders(jwtToken) }
+            { environment, mapperConfig, limit },
+            { headers: pbiHeaders(environment, jwtToken) }
         )
         .then(res => res.data)
 }
 
 export const startPbiSync = async (
     collectionId: string,
+    environment: PbiEnvironment,
     mapperConfig: PbiMapperConfig,
     options: PbiSyncOptions,
     jwtToken: string,
@@ -44,17 +50,17 @@ export const startPbiSync = async (
     return axios
         .post(
             `${API_URL}v1/pbi/collections/${collectionId}/sync`,
-            { mapperConfig, ...options },
-            { headers: pbiHeaders(jwtToken, pbiAccessToken) }
+            { environment, mapperConfig, ...options },
+            { headers: pbiHeaders(environment, jwtToken, pbiAccessToken) }
         )
         .then(res => res.data)
 }
 
-export const getPbiSyncs = async (collectionId: string, jwtToken?: string) => {
+export const getPbiSyncs = async (collectionId: string, environment: PbiEnvironment, jwtToken?: string) => {
     return axios
         .get(`${API_URL}v1/pbi/syncs`, {
-            params: { collectionId },
-            headers: pbiHeaders(jwtToken)
+            params: { collectionId, environment },
+            headers: jwtToken ? { Authorization: `Bearer ${jwtToken}` } : {}
         })
         .then(res => res.data)
 }

@@ -4,12 +4,17 @@ const pbiSyncSchema = new mongoose.Schema({
     ethnopediaArtworkId: {
         type: String,
         required: true,
-        unique: true,
         index: true,
     },
     ethnopediaCollectionId: {
         type: String,
         required: true,
+        index: true,
+    },
+    pbiEnvironment: {
+        type: String,
+        enum: ["dev", "prod"],
+        default: "dev",
         index: true,
     },
     pbiRoIdentifier: {
@@ -45,6 +50,8 @@ const pbiSyncSchema = new mongoose.Schema({
 }, {
     timestamps: true,
 })
+
+pbiSyncSchema.index({ ethnopediaArtworkId: 1, pbiEnvironment: 1 }, { unique: true })
 
 const PbiSync = mongoose.model("PbiSync", pbiSyncSchema)
 

@@ -7,10 +7,19 @@ import { verifyToken } from "../utils/auth"
 import { flattenArtworkCategories } from "../utils/pbi-mapper"
 import { buildPbiPayloads, defaultPbiMapperConfig, PbiMapperConfig } from "../services/pbiPayloadBuilder"
 import { getPbiAuthStatus, resolvePbiAuth } from "../services/pbiAuth"
-import { addAnnotation, checkPbiReachability, createResearchObject, pbiApiBaseUrl } from "../services/pbiClient"
+import {
+    addAnnotation,
+    checkPbiReachability,
+    createResearchObject,
+    pbiApiBaseUrl,
+    pbiKeycloakIssuer,
+    resolvePbiEnvironment
+} from "../services/pbiClient"
 
-const keycloakIssuer = "https://keycloak-dev.pcss.pl/realms/pbi-dev"
 const maxSyncLimit = 50
+
+const getRequestEnvironment = (req: Request) =>
+    resolvePbiEnvironment(req.header("X-PBI-Environment") || req.body?.environment || req.query.environment)
 
 const getCollectionOrThrow = async (collectionId: string) => {
     const collection = await CollectionCollection.findOne({ _id: collectionId }).exec()
@@ -106,22 +115,25 @@ const getSyncPreviewItems = async (req: Request, res: Response, dryRun: boolean)
 }
 
 export const getPbiStatus = async (req: Request, res: Response) => {
+    const environment = getRequestEnvironment(req)
     const authStatus = getPbiAuthStatus(req)
     try {
-        const pbiReachable = await checkPbiReachability()
+        const pbiReachable = await checkPbiReachability(environment)
         return res.status(200).json({
-            pbiApiBaseUrl: pbiApiBaseUrl(),
-            keycloakIssuer,
-            pbiReachable,
-            ...authStatus
+            ...authStatus,
+            environment,
+            pbiApiBaseUrl: pbiApiBaseUrl(environment),
+            keycloakIssuer: pbiKeycloakIssuer(environment),
+            pbiReachable
         })
     } catch (error) {
         console.error(error)
         return res.status(200).json({
-            pbiApiBaseUrl: pbiApiBaseUrl(),
-            keycloakIssuer,
-            pbiReachable: false,
-            ...authStatus
+            ...authStatus,
+            environment,
+            pbiApiBaseUrl: pbiApiBaseUrl(environment),
+            keycloakIssuer: pbiKeycloakIssuer(environment),
+            pbiReachable: false
         })
     }
 }
@@ -167,6 +179,7 @@ export const previewPbiSync = async (req: Request, res: Response) => getSyncPrev
 
 export const syncCollectionToPbi = authAsyncWrapper(async (req: Request, res: Response) => {
     try {
+        const environment = getRequestEnvironment(req)
         const auth = resolvePbiAuth(req)
         const collection = await getCollectionOrThrow(req.params.collectionId)
         const limit = sanitizeLimit(req.body.limit, 1)
@@ -187,7 +200,10 @@ export const syncCollectionToPbi = authAsyncWrapper(async (req: Request, res: Re
         for (const artwork of artworks as any[]) {
             const payloads = buildPbiPayloads(artwork, mapperConfig, collection.name as string)
             try {
-                const existingSync: any = await PbiSync.findOne({ ethnopediaArtworkId: payloads.ethnopediaArtworkId }).exec()
+                const existingSync: any = await PbiSync.findOne({
+                    ethnopediaArtworkId: payloads.ethnopediaArtworkId,
+                    pbiEnvironment: environment
+                }).exec()
                 if (existingSync && existingSync.status === "synced" && existingSync.payloadHash === payloads.payloadHash && !force) {
                     skipped += 1
                     items.push({
@@ -198,17 +214,18 @@ export const syncCollectionToPbi = authAsyncWrapper(async (req: Request, res: Re
                     continue
                 }
 
-                const ro = await createResearchObject(payloads.roPayload, auth)
+                const ro = await createResearchObject(payloads.roPayload, auth, environment)
                 const annotation = payloads.annotationBody.length > 0
-                    ? await addAnnotation(ro.identifier, payloads.annotationBody, auth)
+                    ? await addAnnotation(ro.identifier, payloads.annotationBody, auth, environment)
                     : undefined
 
                 await PbiSync.updateOne(
-                    { ethnopediaArtworkId: payloads.ethnopediaArtworkId },
+                    { ethnopediaArtworkId: payloads.ethnopediaArtworkId, pbiEnvironment: environment },
                     {
                         $set: {
                             ethnopediaArtworkId: payloads.ethnopediaArtworkId,
                             ethnopediaCollectionId: req.params.collectionId,
+                            pbiEnvironment: environment,
                             pbiRoIdentifier: ro.identifier,
                             pbiAnnotationIdentifier: annotation?.identifier,
                             payloadHash: payloads.payloadHash,
@@ -231,11 +248,12 @@ export const syncCollectionToPbi = authAsyncWrapper(async (req: Request, res: Re
                 const err = syncError as Error
                 failed += 1
                 await PbiSync.updateOne(
-                    { ethnopediaArtworkId: payloads.ethnopediaArtworkId },
+                    { ethnopediaArtworkId: payloads.ethnopediaArtworkId, pbiEnvironment: environment },
                     {
                         $set: {
                             ethnopediaArtworkId: payloads.ethnopediaArtworkId,
                             ethnopediaCollectionId: req.params.collectionId,
+                            pbiEnvironment: environment,
                             payloadHash: payloads.payloadHash,
                             status: "failed",
                             lastError: err.message
@@ -253,6 +271,7 @@ export const syncCollectionToPbi = authAsyncWrapper(async (req: Request, res: Re
 
         return res.status(200).json({
             collectionId: req.params.collectionId,
+            environment,
             total: artworks.length,
             synced,
             skipped,
@@ -274,7 +293,10 @@ export const syncCollectionToPbi = authAsyncWrapper(async (req: Request, res: Re
 
 export const getPbiSyncs = async (req: Request, res: Response) => {
     try {
-        const filter = req.query.collectionId ? { ethnopediaCollectionId: req.query.collectionId } : {}
+        const filter: any = req.query.collectionId ? { ethnopediaCollectionId: req.query.collectionId } : {}
+        if (req.query.environment) {
+            filter.pbiEnvironment = resolvePbiEnvironment(req.query.environment)
+        }
         const items = await PbiSync.find(filter).sort({ updatedAt: -1 }).limit(200).exec()
         return res.status(200).json({ items })
     } catch (error) {

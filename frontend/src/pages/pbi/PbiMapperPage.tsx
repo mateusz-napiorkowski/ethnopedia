@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom"
 import Navbar from "../../components/navbar/Navbar"
 import LoadingPage from "../LoadingPage"
 import { getPbiCollectionPreview, getPbiStatus, previewPbiSync, startPbiSync } from "../../api/pbi"
-import { PbiAnnotationMapping, PbiMapperConfig, PbiSyncResponse } from "../../@types/Pbi"
+import { PbiAnnotationMapping, PbiEnvironment, PbiMapperConfig, PbiSyncResponse } from "../../@types/Pbi"
 import { useUser } from "../../providers/UserProvider"
 
 const defaultPredicateOptions = [
@@ -22,10 +22,19 @@ const emptyMapping: PbiAnnotationMapping = {
     valueMode: "literal"
 }
 
+const commonResearchAreas: { id: string, label: string }[] = [
+    { id: "DS010802N", label: "Sztuki muzyczne" },
+    { id: "DS010801N", label: "Sztuki filmowe i teatralne" },
+    { id: "DS010803N", label: "Sztuki plastyczne i konserwacja dzieł sztuki" },
+    { id: "DS010108N", label: "Etnologia i antropologia kulturowa" },
+    { id: "9a01c810-d83a-4cb1-9fc8-5ea1f7d942a4", label: "Astronomy" }
+]
+
 const PbiMapperPage: React.FC = () => {
     const params = useParams()
     const collectionId = params.collectionId || ""
     const { jwtToken } = useUser()
+    const [environment, setEnvironment] = useState<PbiEnvironment>("dev")
     const [pbiAccessToken, setPbiAccessToken] = useState("")
     const [limit, setLimit] = useState(1)
     const [force, setForce] = useState(false)
@@ -37,7 +46,7 @@ const PbiMapperPage: React.FC = () => {
         descriptionPath: "",
         staticDescription: "",
         accessMode: "PUBLIC",
-        researchAreas: ["Astronomy"],
+        researchAreas: [],
         annotationMappings: [],
         includeEthnopediaId: true,
         enrichmentMode: "none"
@@ -50,8 +59,8 @@ const PbiMapperPage: React.FC = () => {
     })
 
     const { data: pbiStatus } = useQuery({
-        queryKey: ["pbiStatus", Boolean(pbiAccessToken)],
-        queryFn: () => getPbiStatus(jwtToken, pbiAccessToken),
+        queryKey: ["pbiStatus", environment, Boolean(pbiAccessToken)],
+        queryFn: () => getPbiStatus(environment, jwtToken, pbiAccessToken),
         enabled: true
     })
 
@@ -67,7 +76,7 @@ const PbiMapperPage: React.FC = () => {
     }
 
     const dryRunMutation = useMutation(
-        () => previewPbiSync(collectionId, mapperConfig, jwtToken, Math.min(limit, 5)),
+        () => previewPbiSync(collectionId, environment, mapperConfig, jwtToken, Math.min(limit, 5)),
         {
             onSuccess: data => {
                 setPreviewResult(data)
@@ -78,7 +87,7 @@ const PbiMapperPage: React.FC = () => {
     )
 
     const syncMutation = useMutation(
-        () => startPbiSync(collectionId, mapperConfig, { limit, force }, jwtToken, pbiAccessToken),
+        () => startPbiSync(collectionId, environment, mapperConfig, { limit, force }, jwtToken, pbiAccessToken),
         {
             onSuccess: data => {
                 setSyncResult(data)
@@ -102,9 +111,37 @@ const PbiMapperPage: React.FC = () => {
                 </p>
 
                 <section className="bg-white dark:bg-gray-800 rounded-lg shadow-md border dark:border-gray-600 p-6 mb-6">
+                    <h2 className="text-xl font-semibold mb-3">Środowisko PBI</h2>
+                    <label className="flex flex-col text-sm max-w-xs">
+                        Wybierz środowisko docelowe
+                        <select
+                            className="mt-1 p-2 border rounded text-black"
+                            data-testid="pbi-environment-select"
+                            value={environment}
+                            onChange={event => {
+                                setEnvironment(event.target.value as PbiEnvironment)
+                                setSyncResult(undefined)
+                                setPreviewResult(undefined)
+                            }}
+                        >
+                            <option value="dev">Dev (dariah-hub-dev)</option>
+                            <option value="prod">Produkcja (pbi.dariah.pl)</option>
+                        </select>
+                    </label>
+                    {environment === "prod" && (
+                        <p className="mt-2 text-sm text-amber-600">
+                            Uwaga: wysyłasz dane na środowisko produkcyjne PBI. Certyfikat SSL serwera produkcyjnego
+                            może być nieważny — w razie błędu połączenia dodaj wyjątek w przeglądarce dla pbi.dariah.pl.
+                        </p>
+                    )}
+                </section>
+
+                <section className="bg-white dark:bg-gray-800 rounded-lg shadow-md border dark:border-gray-600 p-6 mb-6">
                     <h2 className="text-xl font-semibold mb-3">Status połączenia</h2>
                     <div className="text-sm space-y-1">
-                        <p>API PBI: <strong>{pbiStatus?.pbiReachable ? "osiągalne" : "niepotwierdzone"}</strong></p>
+                        <p>Środowisko: <strong>{pbiStatus?.environment || environment}</strong></p>
+                        <p>API PBI: <strong>{pbiStatus?.pbiApiBaseUrl}</strong></p>
+                        <p>Osiągalność: <strong>{pbiStatus?.pbiReachable ? "osiągalne" : "niepotwierdzone"}</strong></p>
                         <p>Auth mode: <strong>{pbiStatus?.authMode || "request_token"}</strong></p>
                         <p>Token/API key: <strong>{pbiStatus?.hasAuth ? "dostępny" : "brak"}</strong></p>
                     </div>
@@ -163,7 +200,27 @@ const PbiMapperPage: React.FC = () => {
                             </select>
                         </label>
                         <label className="flex flex-col text-sm md:col-span-2">
-                            Research areas, rozdzielone przecinkami
+                            Szybki wybór dziedziny (PBN research area ID)
+                            <select
+                                className="mt-1 p-2 border rounded text-black"
+                                value=""
+                                onChange={event => {
+                                    const id = event.target.value
+                                    if (!id) return
+                                    setMapperConfig(prev => ({
+                                        ...prev,
+                                        researchAreas: prev.researchAreas.includes(id) ? prev.researchAreas : [...prev.researchAreas, id]
+                                    }))
+                                }}
+                            >
+                                <option value="">-- dodaj z listy --</option>
+                                {commonResearchAreas.map(area => (
+                                    <option key={area.id} value={area.id}>{area.label} ({area.id})</option>
+                                ))}
+                            </select>
+                        </label>
+                        <label className="flex flex-col text-sm md:col-span-2">
+                            Research areas (identyfikatory PBN/EUROVOC, rozdzielone przecinkami)
                             <input
                                 className="mt-1 p-2 border rounded text-black"
                                 value={mapperConfig.researchAreas.join(", ")}
@@ -171,7 +228,11 @@ const PbiMapperPage: React.FC = () => {
                                     ...prev,
                                     researchAreas: event.target.value.split(",").map(area => area.trim()).filter(Boolean)
                                 }))}
+                                placeholder="np. DS010802N dla Sztuki muzyczne"
                             />
+                            {mapperConfig.researchAreas.length === 0 && (
+                                <span className="mt-1 text-amber-600">Wybierz przynajmniej jedną dziedzinę przed wysyłką.</span>
+                            )}
                         </label>
                     </div>
                 </section>
@@ -223,7 +284,7 @@ const PbiMapperPage: React.FC = () => {
                 </section>
 
                 <section className="bg-white dark:bg-gray-800 rounded-lg shadow-md border dark:border-gray-600 p-6 mb-6">
-                    <h2 className="text-xl font-semibold mb-3">Synchronizacja</h2>
+                    <h2 className="text-xl font-semibold mb-3">Synchronizacja ({environment === "prod" ? "produkcja" : "dev"})</h2>
                     <div className="flex flex-wrap items-center gap-4 mb-4">
                         <label className="text-sm">
                             Limit
@@ -244,18 +305,19 @@ const PbiMapperPage: React.FC = () => {
                     <div className="flex gap-2">
                         <button
                             type="button"
-                            className="px-4 py-2 bg-white border rounded text-black"
+                            className="px-4 py-2 bg-white border rounded text-black disabled:opacity-50"
+                            disabled={mapperConfig.researchAreas.length === 0}
                             onClick={() => dryRunMutation.mutate()}
                         >
                             Podgląd payloadów
                         </button>
                         <button
                             type="button"
-                            className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded disabled:bg-gray-500"
-                            disabled={!jwtToken || !pbiAccessToken}
+                            className={`px-4 py-2 text-white rounded disabled:bg-gray-500 ${environment === "prod" ? "bg-red-700 hover:bg-red-600" : "bg-gray-800 hover:bg-gray-700"}`}
+                            disabled={!jwtToken || !pbiAccessToken || mapperConfig.researchAreas.length === 0}
                             onClick={() => syncMutation.mutate()}
                         >
-                            Wyślij do PBI
+                            {environment === "prod" ? "Wyślij do PBI (PRODUKCJA)" : "Wyślij do PBI (dev)"}
                         </button>
                     </div>
                     {errorMessage && <p className="mt-3 text-red-500">{errorMessage}</p>}
@@ -272,7 +334,7 @@ const PbiMapperPage: React.FC = () => {
 
                 {syncResult && (
                     <section className="bg-white dark:bg-gray-800 rounded-lg shadow-md border dark:border-gray-600 p-6">
-                        <h2 className="text-xl font-semibold mb-3">Wynik synchronizacji</h2>
+                        <h2 className="text-xl font-semibold mb-3">Wynik synchronizacji ({syncResult.environment})</h2>
                         <p className="mb-3">Synced: {syncResult.synced}, skipped: {syncResult.skipped}, failed: {syncResult.failed}</p>
                         <div className="overflow-auto">
                             <table className="w-full text-sm">
