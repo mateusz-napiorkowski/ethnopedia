@@ -22,6 +22,14 @@ const emptyMapping: PbiAnnotationMapping = {
     valueMode: "literal"
 }
 
+const commonResearchAreas: { id: string, label: string }[] = [
+    { id: "DS010802N", label: "Sztuki muzyczne" },
+    { id: "DS010801N", label: "Sztuki filmowe i teatralne" },
+    { id: "DS010803N", label: "Sztuki plastyczne i konserwacja dzieł sztuki" },
+    { id: "DS010108N", label: "Etnologia i antropologia kulturowa" },
+    { id: "9a01c810-d83a-4cb1-9fc8-5ea1f7d942a4", label: "Astronomy" }
+]
+
 const PbiMapperPage: React.FC = () => {
     const params = useParams()
     const collectionId = params.collectionId || ""
@@ -38,7 +46,7 @@ const PbiMapperPage: React.FC = () => {
         descriptionPath: "",
         staticDescription: "",
         accessMode: "PUBLIC",
-        researchAreas: ["Astronomy"],
+        researchAreas: [],
         annotationMappings: [],
         includeEthnopediaId: true,
         enrichmentMode: "none"
@@ -192,7 +200,27 @@ const PbiMapperPage: React.FC = () => {
                             </select>
                         </label>
                         <label className="flex flex-col text-sm md:col-span-2">
-                            Research areas, rozdzielone przecinkami
+                            Szybki wybór dziedziny (PBN research area ID)
+                            <select
+                                className="mt-1 p-2 border rounded text-black"
+                                value=""
+                                onChange={event => {
+                                    const id = event.target.value
+                                    if (!id) return
+                                    setMapperConfig(prev => ({
+                                        ...prev,
+                                        researchAreas: prev.researchAreas.includes(id) ? prev.researchAreas : [...prev.researchAreas, id]
+                                    }))
+                                }}
+                            >
+                                <option value="">-- dodaj z listy --</option>
+                                {commonResearchAreas.map(area => (
+                                    <option key={area.id} value={area.id}>{area.label} ({area.id})</option>
+                                ))}
+                            </select>
+                        </label>
+                        <label className="flex flex-col text-sm md:col-span-2">
+                            Research areas (identyfikatory PBN/EUROVOC, rozdzielone przecinkami)
                             <input
                                 className="mt-1 p-2 border rounded text-black"
                                 value={mapperConfig.researchAreas.join(", ")}
@@ -200,7 +228,11 @@ const PbiMapperPage: React.FC = () => {
                                     ...prev,
                                     researchAreas: event.target.value.split(",").map(area => area.trim()).filter(Boolean)
                                 }))}
+                                placeholder="np. DS010802N dla Sztuki muzyczne"
                             />
+                            {mapperConfig.researchAreas.length === 0 && (
+                                <span className="mt-1 text-amber-600">Wybierz przynajmniej jedną dziedzinę przed wysyłką.</span>
+                            )}
                         </label>
                     </div>
                 </section>
@@ -273,7 +305,8 @@ const PbiMapperPage: React.FC = () => {
                     <div className="flex gap-2">
                         <button
                             type="button"
-                            className="px-4 py-2 bg-white border rounded text-black"
+                            className="px-4 py-2 bg-white border rounded text-black disabled:opacity-50"
+                            disabled={mapperConfig.researchAreas.length === 0}
                             onClick={() => dryRunMutation.mutate()}
                         >
                             Podgląd payloadów
@@ -281,7 +314,7 @@ const PbiMapperPage: React.FC = () => {
                         <button
                             type="button"
                             className={`px-4 py-2 text-white rounded disabled:bg-gray-500 ${environment === "prod" ? "bg-red-700 hover:bg-red-600" : "bg-gray-800 hover:bg-gray-700"}`}
-                            disabled={!jwtToken || !pbiAccessToken}
+                            disabled={!jwtToken || !pbiAccessToken || mapperConfig.researchAreas.length === 0}
                             onClick={() => syncMutation.mutate()}
                         >
                             {environment === "prod" ? "Wyślij do PBI (PRODUKCJA)" : "Wyślij do PBI (dev)"}
