@@ -297,6 +297,18 @@ const ArtworksListPage = ({ pageSize = 10 }) => {
                                 Importuj dane
                             </button>
                             <button
+                                disabled={!jwtToken}
+                                className={`flex items-center justify-center dark:text-white hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2 dark:focus:ring-primary-800 font-semibold text-white ${
+                                    jwtToken
+                                        ? "bg-gray-800 hover:bg-gray-700 border-gray-800"
+                                        : "bg-gray-600 hover:bg-gray-600 border-gray-800"
+                                }`}
+                                type="button"
+                                onClick={() => navigate(`/collections/${collectionId}/pbi-mapper`)}
+                            >
+                                Wyślij do PBI
+                            </button>
+                            <button
                                 className="flex items-center justify-center dark:text-white hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 px-4 py-2 dark:focus:ring-primary-800 font-semibold text-white bg-gray-800 hover:bg-gray-700 border-gray-800"
                                 type="button"
                                 onClick={selectAll}

@@ -47,7 +47,7 @@ export const DCTERMS_IDENTIFIER = "http://purl.org/dc/terms/identifier"
 export const defaultPbiMapperConfig: PbiMapperConfig = {
     titlePath: "",
     accessMode: "PUBLIC",
-    researchAreas: [process.env.PBI_DEFAULT_RESEARCH_AREA || "Astronomy"],
+    researchAreas: process.env.PBI_DEFAULT_RESEARCH_AREA ? [process.env.PBI_DEFAULT_RESEARCH_AREA] : [],
     annotationMappings: [],
     includeEthnopediaId: true,
     enrichmentMode: "none"
@@ -57,7 +57,10 @@ const normalizeResearchAreas = (researchAreas: string[] | undefined) => {
     const areas = (researchAreas || [])
         .map(area => area.trim())
         .filter(area => area.length > 0)
-    return areas.length > 0 ? areas : [process.env.PBI_DEFAULT_RESEARCH_AREA || "Astronomy"]
+    if (areas.length > 0) {
+        return areas
+    }
+    return process.env.PBI_DEFAULT_RESEARCH_AREA ? [process.env.PBI_DEFAULT_RESEARCH_AREA] : []
 }
 
 const valueForMode = (value: string, mode: PbiValueMode): string | string[] => {
