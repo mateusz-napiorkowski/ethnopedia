@@ -1,9 +1,26 @@
 import { PbiAuth } from "./pbiAuth"
 import { PbiAnnotationBodyItem, PbiRoPayload } from "./pbiPayloadBuilder"
 
-const defaultPbiApiBaseUrl = "https://dariah-hub-dev.apps.dcw1.paas.psnc.pl/api"
+export type PbiEnvironment = "dev" | "prod"
 
-export const pbiApiBaseUrl = () => (process.env.PBI_API_BASE_URL || defaultPbiApiBaseUrl).replace(/\/$/, "")
+export const pbiEnvironments: Record<PbiEnvironment, { apiBaseUrl: string, keycloakIssuer: string }> = {
+    dev: {
+        apiBaseUrl: process.env.PBI_API_BASE_URL_DEV || "https://dariah-hub-dev.apps.dcw1.paas.psnc.pl/api",
+        keycloakIssuer: process.env.PBI_KEYCLOAK_ISSUER_DEV || "https://keycloak-dev.pcss.pl/realms/pbi-dev"
+    },
+    prod: {
+        apiBaseUrl: process.env.PBI_API_BASE_URL_PROD || "https://pbi.dariah.pl/api",
+        keycloakIssuer: process.env.PBI_KEYCLOAK_ISSUER_PROD || "https://login.dariah.pl/realms/pbi"
+    }
+}
+
+export const resolvePbiEnvironment = (env: unknown): PbiEnvironment => (env === "prod" ? "prod" : "dev")
+
+export const pbiApiBaseUrl = (env: unknown = "dev") =>
+    pbiEnvironments[resolvePbiEnvironment(env)].apiBaseUrl.replace(/\/$/, "")
+
+export const pbiKeycloakIssuer = (env: unknown = "dev") =>
+    pbiEnvironments[resolvePbiEnvironment(env)].keycloakIssuer
 
 const authHeaders = (auth: PbiAuth): Record<string, string> => {
     if (auth.type === "bearer") {
@@ -26,24 +43,24 @@ const parseResponse = async (response: Response) => {
     return body
 }
 
-const pbiFetch = async (path: string, auth: PbiAuth, init: RequestInit = {}) => {
+const pbiFetch = async (path: string, auth: PbiAuth, env: PbiEnvironment, init: RequestInit = {}) => {
     const headers = {
         ...authHeaders(auth),
         ...(init.headers || {}) as Record<string, string>,
     }
-    return fetch(`${pbiApiBaseUrl()}${path}`, {
+    return fetch(`${pbiApiBaseUrl(env)}${path}`, {
         ...init,
         headers
     })
 }
 
-export const checkPbiReachability = async () => {
-    const response = await fetch(`${pbiApiBaseUrl()}/ros/`, { method: "GET" })
+export const checkPbiReachability = async (env: unknown = "dev") => {
+    const response = await fetch(`${pbiApiBaseUrl(env)}/ros/`, { method: "GET" })
     return response.ok
 }
 
-export const createResearchObject = async (payload: PbiRoPayload, auth: PbiAuth) => {
-    const response = await pbiFetch("/ros/", auth, {
+export const createResearchObject = async (payload: PbiRoPayload, auth: PbiAuth, env: PbiEnvironment = "dev") => {
+    const response = await pbiFetch("/ros/", auth, env, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
@@ -51,31 +68,32 @@ export const createResearchObject = async (payload: PbiRoPayload, auth: PbiAuth)
     return parseResponse(response)
 }
 
-export const getResearchObjectFull = async (identifier: string, auth: PbiAuth) => {
-    const response = await pbiFetch(`/ros/${identifier}/full`, auth)
+export const getResearchObjectFull = async (identifier: string, auth: PbiAuth, env: PbiEnvironment = "dev") => {
+    const response = await pbiFetch(`/ros/${identifier}/full`, auth, env)
     return parseResponse(response)
 }
 
-export const getResearchObjectAnnotations = async (identifier: string, auth: PbiAuth) => {
-    const response = await pbiFetch(`/ros/${identifier}/annotations/full`, auth)
+export const getResearchObjectAnnotations = async (identifier: string, auth: PbiAuth, env: PbiEnvironment = "dev") => {
+    const response = await pbiFetch(`/ros/${identifier}/annotations/full`, auth, env)
     return parseResponse(response)
 }
 
-export const findByEthnopediaId = async (ethnopediaArtworkId: string, auth: PbiAuth) => {
+export const findByEthnopediaId = async (ethnopediaArtworkId: string, auth: PbiAuth, env: PbiEnvironment = "dev") => {
     const params = new URLSearchParams({
         predicate: "http://purl.org/dc/terms/identifier",
         object: ethnopediaArtworkId
     })
-    const response = await pbiFetch(`/triples?${params.toString()}`, auth)
+    const response = await pbiFetch(`/triples?${params.toString()}`, auth, env)
     return parseResponse(response)
 }
 
 export const addAnnotation = async (
     roIdentifier: string,
     bodySpecificationJson: PbiAnnotationBodyItem[],
-    auth: PbiAuth
+    auth: PbiAuth,
+    env: PbiEnvironment = "dev"
 ) => {
-    const response = await pbiFetch("/annotations/", auth, {
+    const response = await pbiFetch("/annotations/", auth, env, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
