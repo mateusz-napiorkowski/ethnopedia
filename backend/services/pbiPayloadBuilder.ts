@@ -77,11 +77,26 @@ export const buildPbiPayloads = (
 ): BuiltPbiPayloads => {
     const ethnopediaArtworkId = artwork._id.toString()
     const flatCategories = flattenArtworkCategories(artwork.categories || [])
-    const titleFallback = `Ethnopedia record ${ethnopediaArtworkId}`
+    const autoTitleFallback = (() => {
+        // Prefer a human-readable top-level field (e.g. "Incipit gwarowy",
+        // "Tytuł") over the raw Mongo id so objects are distinguishable in PBI.
+        const preferredFields = ["Tytuł", "Incipit gwarowy", "Incipit literacki", "Tytuł utworu", "Numer w publikacji"]
+        for (const field of preferredFields) {
+            const value = flatCategories[field]
+            if (value && value.toString().trim() !== "") {
+                return `${collectionName} – ${value.toString().trim()}`
+            }
+        }
+        const firstNonEmpty = Object.entries(flatCategories).find(([, v]) => v && v.toString().trim() !== "")
+        if (firstNonEmpty) {
+            return `${collectionName} – ${firstNonEmpty[1].toString().trim()}`
+        }
+        return `Ethnopedia record ${ethnopediaArtworkId}`
+    })()
     const descriptionFallback = mapperConfig.staticDescription?.trim()
         || `Imported from Ethnopedia collection ${collectionName}`
 
-    const title = getMappedValue(flatCategories, mapperConfig.titlePath, titleFallback)
+    const title = getMappedValue(flatCategories, mapperConfig.titlePath, autoTitleFallback)
     const description = mapperConfig.staticDescription?.trim()
         || getMappedValue(flatCategories, mapperConfig.descriptionPath, descriptionFallback)
 
@@ -93,18 +108,39 @@ export const buildPbiPayloads = (
         })
     }
 
-    for (const mapping of mapperConfig.annotationMappings || []) {
-        if (!mapping.sourcePath || !mapping.predicate) {
-            continue
+    const explicitMappings = mapperConfig.annotationMappings || []
+    if (explicitMappings.length > 0) {
+        for (const mapping of explicitMappings) {
+            if (!mapping.sourcePath || !mapping.predicate) {
+                continue
+            }
+            const value = getMappedValue(flatCategories, mapping.sourcePath)
+            if (!value) {
+                continue
+            }
+            annotationBody.push({
+                property: mapping.predicate,
+                value: valueForMode(value, mapping.valueMode)
+            })
         }
-        const value = getMappedValue(flatCategories, mapping.sourcePath)
-        if (!value) {
-            continue
+    } else {
+        // No explicit field mapping provided: auto-map every non-empty
+        // Ethnopedia category field to an RDF triple instead of silently
+        // dropping all metadata (only the Ethnopedia id would otherwise be synced).
+        for (const [fieldPath, value] of Object.entries(flatCategories)) {
+            if (value === undefined || value === null || value.toString().trim() === "") {
+                continue
+            }
+            const slug = fieldPath
+                .normalize("NFKD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .replace(/[^a-zA-Z0-9]+/g, "_")
+                .replace(/^_+|_+$/g, "")
+            annotationBody.push({
+                property: `https://ethnopedia.ckc.uw.edu.pl/vocab/${slug}`,
+                value: value.toString()
+            })
         }
-        annotationBody.push({
-            property: mapping.predicate,
-            value: valueForMode(value, mapping.valueMode)
-        })
     }
 
     const roPayload: PbiRoPayload = {
